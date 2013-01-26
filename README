@@ -1,0 +1,3 @@
+libZelda provides several basic classes that can be used to read from 
+and write to files, and memory, classes such as Stream, BinaryReader, 
+BinaryWriter, and the currently work in progress TextStream.
