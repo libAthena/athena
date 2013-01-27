@@ -161,7 +161,7 @@ Int8 Stream::readByte()
         m_position += sizeof(Uint8);
     }
     if (m_position + 1 > m_length)
-        throw IOException("Position passed stream bounds: " + m_position);
+        throw IOException("Position passed stream bounds");
 
     return *(Int8*)(m_data + m_position++);
 }
@@ -228,7 +228,7 @@ void Stream::seek(Int64 position, SeekOrigin origin)
 void Stream::resize(Uint64 newSize)
 {
     if (newSize < m_length)
-        throw InvalidOperationException("Stream:Resize() -> New size cannot be less to the old size.");
+        throw InvalidOperationException("Stream::Resize() -> New size cannot be less to the old size.");
 
     // Allocate and copy new buffer
     Uint8* newArray = new Uint8[newSize];
@@ -274,7 +274,7 @@ Int64 Stream::position()
 
 bool Stream::atEnd()
 {
-    return m_position == m_length;
+    return m_position >= m_length;
 }
 
 void Stream::setAutoResizing(bool val)

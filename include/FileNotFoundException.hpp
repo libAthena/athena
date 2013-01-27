@@ -21,9 +21,7 @@
 /*! \class FileNotFoundException
  *  \brief An excpeption thrown when a file could not be found at the given path.
  *
- *  This should only be thrown when the library tries to write to a buffer
- *  e.g when the position is greater than the position and the stream
- *  is not set to autoresize.<br />
+ *  This should only be thrown when the Stream is unable to open a file.<br />
  *  <br />
  *  It is <b>NOT</b> appropriate to use <b>throw new</b> so avoid doing so,
  *  keeping things on the stack as much as possible is very important for speed.

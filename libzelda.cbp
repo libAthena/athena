@@ -75,6 +75,7 @@
 		<Unit filename="include/IOException.hpp" />
 		<Unit filename="include/InvalidOperationException.hpp" />
 		<Unit filename="include/Stream.hpp" />
+		<Unit filename="include/TextStream.hpp" />
 		<Unit filename="include/Types.hpp" />
 		<Unit filename="include/utf8.h" />
 		<Unit filename="include/utf8/checked.h" />
@@ -84,6 +85,7 @@
 		<Unit filename="src/BinaryReader.cpp" />
 		<Unit filename="src/BinaryWriter.cpp" />
 		<Unit filename="src/Stream.cpp" />
+		<Unit filename="src/TextStream.cpp" />
 		<Unit filename="src/utility.cpp" />
 		<Extensions>
 			<code_completion />

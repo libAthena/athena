@@ -26,9 +26,12 @@ public:
     void                  setCurrentLine(Uint32 line);
     Uint32                   currentLine() const;
 private:
+    void        loadLines();
     std::string m_filename;
     FileMode    m_filemode;
     AccessMode  m_accessmode;
+
+    std::vector<std::string> m_lines;
     Uint32      m_currentLine;
     Uint32      m_startLength;
 };

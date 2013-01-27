@@ -46,12 +46,28 @@ TextStream::TextStream(const std::string& filename, FileMode fileMode, AccessMod
 
     m_length = length;
     m_startLength = length;
+
+    loadLines();
 }
 
 void  TextStream::save(const std::string& filename)
 {
     if (filename != std::string())
         m_filename = filename;
+
+    // We need a new buffer to write the new lines
+    if (m_data)
+        delete[] m_data;
+
+    m_position = 0;
+    m_length = 1;
+
+    // Set the new buffer
+    m_data = new Uint8[m_length];
+
+    // Now write all the strings to the new buffer
+    for (std::string s : m_lines)
+        writeBytes((Int8*)s.c_str(), s.size());
 
     FILE* out = fopen(m_filename.c_str(), "wb");
 
@@ -63,43 +79,27 @@ void  TextStream::save(const std::string& filename)
     else
         throw FileNotFoundException(m_filename);
 }
+
 std::string TextStream::readLine()
 {
-    std::string ret;
-    Uint8 c;
-    for (;;)
-    {
-        c = readByte();
-
-        if (c == '\r' || c == '\n')
-        {
-            m_currentLine++;
-            ret.push_back(c);
-            if (*(Uint8*)(m_data + m_position + 1) == '\n')
-            {
-                ret.push_back('\n');
-                m_currentLine++;
-                m_position++; // advance position past the new line character
-            }
-            break;
-        }
-
-        if (c == '\0')
-        {
-            ret.push_back('\n');
-            m_currentLine++;
-            break;
-        }
-        ret.push_back(c);
-    }
-    return ret;
+    if (m_currentLine > m_lines.size())
+        throw IOException("Position past stream bounds");
+    return m_lines[m_currentLine++];
 }
 
 
 void  TextStream::writeLine(const std::string& str)
 {
-    this->writeBytes((Int8*)str.c_str(), str.size());
-    m_currentLine++;
+    if (m_currentLine > m_lines.size() && !m_autoResize)
+        throw IOException("Position past stream bounds");
+    else if (m_currentLine > m_lines.size())
+    {
+        m_lines.push_back(str);
+        m_currentLine++;
+        return;
+    }
+
+    m_lines[m_currentLine++] = str;
 }
 
 void TextStream::writeLines(std::vector<std::string> strings)
@@ -110,14 +110,11 @@ void TextStream::writeLines(std::vector<std::string> strings)
 
 std::vector<std::string> TextStream::readLines(Uint32 numLines)
 {
-    m_position = 0;
-    m_currentLine = 0;
+    Uint32 currentLine = m_currentLine;
     std::vector<std::string> ret;
 
-    while ((numLines--) > 0)
-    {
-        ret.push_back(readLine());
-    }
+    while ((m_currentLine++) <= currentLine + numLines)
+        ret.push_back(m_lines[m_currentLine]);
 
     return ret;
 }
@@ -127,44 +124,56 @@ std::string TextStream::readLineAt(Uint32 line)
     if (line <= 0)
         throw InvalidOperationException("A line cannot be zero indexed");
 
-    m_position = 0;
-    m_currentLine = 0;
-    while (m_currentLine < line - 1)
-    {
-        readLine();
-    }
-
-    return readLine();
+    return m_lines[line - 1];
 }
 
 std::vector<std::string> TextStream::readAllLines()
 {
-    m_position = 0;
-    m_currentLine = 0;
-    std::vector<std::string> ret;
-
-    while (!atEnd())
-    {
-        ret.push_back(readLine());
-    }
-
-    return ret;
+    return m_lines;
 }
 
 void TextStream::setCurrentLine(Uint32 line)
 {
     if (line <= 0)
         throw InvalidOperationException("A line cannot be zero indexed");
-    m_currentLine = 0;
-    m_position = 0;
-
-    while(m_currentLine != line - 1)
-    {
-        readLine();
-    }
+    m_currentLine = line - 1;
 }
 
 Uint32 TextStream::currentLine() const
 {
-    return m_currentLine;
+    return m_currentLine + 1;
+}
+
+void TextStream::loadLines()
+{
+    while (!atEnd())
+    {
+        std::string line;
+        Uint8 c;
+        for (;;)
+        {
+            c = readByte();
+
+            if (c == '\r' || c == '\n')
+            {
+                m_currentLine++;
+                line.push_back(c);
+                if (*(Uint8*)(m_data + m_position + 1) == '\n')
+                {
+                    line.push_back('\n');
+                    m_position++; // advance position past the new line character
+                }
+                break;
+            }
+
+            if (c == '\0')
+            {
+                line.push_back('\n');
+                break;
+            }
+            line.push_back(c);
+        }
+
+        m_lines.push_back(line);
+    }
 }
