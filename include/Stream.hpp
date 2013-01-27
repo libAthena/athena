@@ -1,3 +1,17 @@
+// This file is part of libZelda.
+//
+// libZelda is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// libZelda is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with libZelda.  If not, see <http://www.gnu.org/licenses/>
 #ifndef __STREAM_HPP__
 #define __STREAM_HPP__
 
@@ -61,6 +75,10 @@ public:
      *  \param stream The stream to read data from
      */
     Stream(Stream* stream);
+
+    /*! \brief The destructor cleans up memory and sets everything back
+     *         to the default settings.
+     */
     virtual ~Stream();
 
     /*! \brief Writes a bit at the current position and advances the position by one bit.
