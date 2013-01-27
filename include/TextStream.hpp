@@ -85,6 +85,13 @@ public:
      */
     std::string readLineAt(Uint32 line);
 
+    /*! \brief Writes a line at the given address.
+     *
+     *  \param line The address to write to.
+     *  \param str The string to write.
+     */
+    void writeLineAt(Uint32 line, const std::string& str);
+
     /*! \brief Sets the current line in the Stream.
      *
      *  \param line The line to seek to.

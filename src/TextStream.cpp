@@ -52,6 +52,8 @@ TextStream::TextStream(const std::string& filename, TextMode fileMode, AccessMod
 
 void  TextStream::save(const std::string& filename)
 {
+    if (m_accessmode != WriteOnly || m_accessmode != ReadWrite)
+        throw InvalidOperationException("Stream not open for writing");
     if (filename != std::string())
         m_filename = filename;
 
@@ -95,7 +97,7 @@ std::string TextStream::readLine()
 void  TextStream::writeLine(const std::string& str)
 {
     if (m_accessmode != WriteOnly || m_accessmode != ReadWrite)
-        throw InvalidOperationException("Stream not open for reading");
+        throw InvalidOperationException("Stream not open for writing");
     else if (m_currentLine > m_lines.size())
     {
         m_lines.push_back(str);
@@ -109,7 +111,7 @@ void  TextStream::writeLine(const std::string& str)
 void TextStream::writeLines(std::vector<std::string> strings)
 {
     if (m_accessmode != WriteOnly || m_accessmode != ReadWrite)
-        throw InvalidOperationException("Stream not open for reading");
+        throw InvalidOperationException("Stream not open for writing");
 
     for (std::string s: strings)
         writeLine(s);
@@ -142,6 +144,17 @@ std::string TextStream::readLineAt(Uint32 line)
     if ((line - 1) >= m_lines.size())
         throw IOException("Line index out of range");
     return m_lines[line - 1];
+}
+
+void TextStream::writeLineAt(Uint32 line, const std::string& line)
+{
+    if (m_accessmode != WriteOnly || m_accessmode != ReadWrite)
+        throw InvalidOperationException("Stream not open for reading");
+    if (line <= 0)
+        throw InvalidOperationException("A line cannot be zero indexed");
+
+    m_currentLine = line;
+    writeLine(line);
 }
 
 std::vector<std::string> TextStream::readAllLines()
