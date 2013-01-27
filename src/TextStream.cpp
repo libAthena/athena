@@ -4,9 +4,9 @@
 #include "InvalidOperationException.hpp"
 #include "IOException.hpp"
 
-TextStream::TextStream(const std::string& filename, FileMode fileMode, AccessMode accessMode) :
+TextStream::TextStream(const std::string& filename, TextMode fileMode, AccessMode accessMode) :
     m_filename(filename),
-    m_filemode(fileMode),
+    m_textmode(fileMode),
     m_accessmode(accessMode),
     m_currentLine(0)
 {
@@ -82,16 +82,20 @@ void  TextStream::save(const std::string& filename)
 
 std::string TextStream::readLine()
 {
+    if (m_accessmode != ReadOnly || m_accessmode != ReadWrite)
+        throw InvalidOperationException("Stream not open for reading");
+
     if (m_currentLine > m_lines.size())
         throw IOException("Position past stream bounds");
+
     return m_lines[m_currentLine++];
 }
 
 
 void  TextStream::writeLine(const std::string& str)
 {
-    if (m_currentLine > m_lines.size() && !m_autoResize)
-        throw IOException("Position past stream bounds");
+    if (m_accessmode != WriteOnly || m_accessmode != ReadWrite)
+        throw InvalidOperationException("Stream not open for reading");
     else if (m_currentLine > m_lines.size())
     {
         m_lines.push_back(str);
@@ -104,12 +108,21 @@ void  TextStream::writeLine(const std::string& str)
 
 void TextStream::writeLines(std::vector<std::string> strings)
 {
+    if (m_accessmode != WriteOnly || m_accessmode != ReadWrite)
+        throw InvalidOperationException("Stream not open for reading");
+
     for (std::string s: strings)
         writeLine(s);
 }
 
 std::vector<std::string> TextStream::readLines(Uint32 numLines)
 {
+    if (m_accessmode != ReadOnly || m_accessmode != ReadWrite)
+        throw InvalidOperationException("Stream not open for reading");
+
+    if (numLines > m_lines.size())
+        throw InvalidOperationException("numLines exceeds the number of stored strings.");
+
     Uint32 currentLine = m_currentLine;
     std::vector<std::string> ret;
 
@@ -121,14 +134,21 @@ std::vector<std::string> TextStream::readLines(Uint32 numLines)
 
 std::string TextStream::readLineAt(Uint32 line)
 {
+    if (m_accessmode != ReadOnly || m_accessmode != ReadWrite)
+        throw InvalidOperationException("Stream not open for reading");
     if (line <= 0)
         throw InvalidOperationException("A line cannot be zero indexed");
 
+    if ((line - 1) >= m_lines.size())
+        throw IOException("Line index out of range");
     return m_lines[line - 1];
 }
 
 std::vector<std::string> TextStream::readAllLines()
 {
+    if (m_accessmode != ReadOnly || m_accessmode != ReadWrite)
+        throw InvalidOperationException("Stream not open for reading");
+
     return m_lines;
 }
 
@@ -144,6 +164,27 @@ Uint32 TextStream::currentLine() const
     return m_currentLine + 1;
 }
 
+void TextStream::setAccessMode(AccessMode mode)
+{
+    m_accessmode = mode;
+}
+
+TextStream::AccessMode TextStream::accessMode() const
+{
+    return m_accessmode;
+}
+
+void TextStream::setTextMode(TextMode mode)
+{
+    m_textmode = mode;
+}
+
+TextStream::TextMode TextStream::textMode() const
+{
+    return m_textmode;
+}
+
+// PRIVATE FUNCTIONS
 void TextStream::loadLines()
 {
     while (!atEnd())

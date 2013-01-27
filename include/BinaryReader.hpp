@@ -19,6 +19,7 @@
 #include <string>
 
 /*! \class BinaryReader
+ *  \brief A Stream class for reading binary data
  *
  *  A Class for reading binary data from a file or memory stream,
  *  all work is done using a memory buffer, and not read directly from the disk

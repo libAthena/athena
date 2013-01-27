@@ -19,6 +19,7 @@
 #include <string>
 
 /*! \class BinaryWriter
+ *  \brief A Stream class for writing binary data
  *
  *  A Class for writing binary data to a file or memory stream,
  *  all work is done using a memory buffer, and not written directly to the disk
