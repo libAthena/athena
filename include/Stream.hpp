@@ -193,13 +193,13 @@ public:
      *
      *  \return True if open for reading; False otherwise.
      */
-    virtual bool isOpenForReading();
+    virtual bool isOpenForReading() const;
 
     /*! \brief Retuns whether or not the Stream is open for writing
      *
      *  \return True if open for writing; False otherwise.
      */
-    virtual bool isOpenForWriting();
+    virtual bool isOpenForWriting() const;
 
     /*! \brief Sets the Endianss of the stream
      *

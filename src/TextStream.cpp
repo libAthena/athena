@@ -146,7 +146,7 @@ std::string TextStream::readLineAt(Uint32 line)
     return m_lines[line - 1];
 }
 
-void TextStream::writeLineAt(Uint32 line, const std::string& line)
+void TextStream::writeLineAt(Uint32 line, const std::string& str)
 {
     if (m_accessmode != WriteOnly || m_accessmode != ReadWrite)
         throw InvalidOperationException("Stream not open for reading");
@@ -154,7 +154,7 @@ void TextStream::writeLineAt(Uint32 line, const std::string& line)
         throw InvalidOperationException("A line cannot be zero indexed");
 
     m_currentLine = line;
-    writeLine(line);
+    writeLine(str);
 }
 
 std::vector<std::string> TextStream::readAllLines()
@@ -195,6 +195,16 @@ void TextStream::setTextMode(TextMode mode)
 TextStream::TextMode TextStream::textMode() const
 {
     return m_textmode;
+}
+
+bool TextStream::isOpenForReading() const
+{
+    return ((m_accessmode == ReadOnly || m_accessmode == ReadWrite) && m_accessmode != WriteOnly);
+}
+
+bool TextStream::isOpenForReading() const
+{
+    return ((m_accessmode == WriteOnly || m_accessmode == ReadWrite) && m_accessmode != ReadOnly);
 }
 
 // PRIVATE FUNCTIONS

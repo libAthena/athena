@@ -287,12 +287,12 @@ bool Stream::autoResizing() const
     return m_autoResize;
 }
 
-bool Stream::isOpenForReading()
+bool Stream::isOpenForReading() const
 {
     return true;
 }
 
-bool Stream::isOpenForWriting()
+bool Stream::isOpenForWriting() const
 {
     return true;
 }
