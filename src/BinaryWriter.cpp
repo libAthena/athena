@@ -9,6 +9,7 @@
 #include <vector>
 #include <iostream>
 
+
 BinaryWriter::BinaryWriter(const Uint8* data, Uint64 length)
     : Stream(data, length)
 {}
@@ -41,7 +42,24 @@ void BinaryWriter::save(const std::string& filename)
     if (!out)
         throw FileNotFoundException(m_filename);
 
-    fwrite(m_data, 1, m_length, out);
+    Uint32 done = 0;
+    Uint32 blocksize = BLOCKSZ;
+    do
+    {
+        if (blocksize > m_length - done)
+            blocksize = m_length - done;
+
+        Int32 ret = fwrite(m_data + done, 1, blocksize, out);
+
+        if (ret < 0)
+            throw IOException("Error writing data to disk");
+        else if (ret == 0)
+            break;
+
+        done += blocksize;
+        std::cout << "Wrote " << done << " bytes" << std::endl;
+    }while (done < m_length);
+
     fclose(out);
 }
 

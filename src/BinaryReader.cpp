@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
+#include <iostream>
 
 BinaryReader::BinaryReader(const Stream& stream) :
     Stream(stream)
@@ -21,8 +22,7 @@ BinaryReader::BinaryReader(const Uint8* data, Uint64 length) :
 }
 
 BinaryReader::BinaryReader(const std::string& filename)
-    : m_bitPosition(0),
-    m_filename(filename)
+    : m_filename(filename)
 {
     Stream::setAutoResizing(false);
     FILE* in;
@@ -37,7 +37,24 @@ BinaryReader::BinaryReader(const std::string& filename)
     fseek(in, 0, SEEK_SET);
     m_data = new Uint8[length];
 
-    fread(m_data, 1, length, in);
+    Uint32 done = 0;
+    Uint32 blocksize = BLOCKSZ;
+    do
+    {
+        if (blocksize > length - done)
+            blocksize = length - done;
+
+        Int32 ret = fread(m_data + done, 1, blocksize, in);
+
+        if (ret < 0)
+            throw IOException("Error readin data from disk");
+        else if (ret == 0)
+            break;
+
+        done += blocksize;
+        std::cout << "Read " << done << " bytes" << std::endl;
+    }while (done < m_length);
+
     fclose(in);
     m_length = length;
     m_position = 0;

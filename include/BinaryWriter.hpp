@@ -4,6 +4,13 @@
 #include "Stream.hpp"
 #include <string>
 
+/*! \class BinaryWriter
+ *
+ *  A Class for writing binary data to a file or memory stream,
+ *  all work is done using a memory buffer, and not written directly to the disk
+ *  this allows for fast, flexible code as well as the ability to quickly modify data
+ *  \sa Stream
+ */
 class BinaryWriter : public Stream
 {
 public:

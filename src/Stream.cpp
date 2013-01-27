@@ -4,6 +4,9 @@
 #include <string.h>
 #include <sstream>
 
+
+const Uint32 Stream::BLOCKSZ = 512;
+
 Stream::Stream() :
     m_bitPosition(0),
     m_position(0),

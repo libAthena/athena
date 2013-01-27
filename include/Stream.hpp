@@ -18,6 +18,7 @@
 class Stream
 {
 public:
+    static const Uint32 BLOCKSZ;
 
     /*! \enum Endian
      *  \brief Allows the user to specify the Endianness of the stream buffer.<br />
@@ -46,7 +47,7 @@ public:
     Stream();
     /*! \brief This constructor takes an existing buffer to read from.
      *
-     *   \param data The existing buffer
+     *   \param bytes The existing buffer
      *   \param length The length of the existing buffer
      */
     Stream(const Uint8* bytes, Uint64 length);
@@ -120,7 +121,9 @@ public:
 
     /*! \brief Sets the buffer to the given one, deleting the current one.<br />
      *         <b>BEWARE:</b> As this deletes the current buffer it WILL cause a loss of data
-     *         if that was not the intent.
+     *         if that was not the intent.<br />
+     *         Once you pass the data to setData <b>DO NOT</b> delete the buffer
+     *         as Stream now owns the address, this is done to keep memory usage down.
      *  \param data The new buffer.
      *  \param length The length of the new buffer.
      *  \throw IOException
@@ -133,31 +136,85 @@ public:
      *         directly edit the buffer and use setData to set the new information.<br />
      *         However once you pass the data to setData <b>DO NOT</b> delete the buffer
      *         as Stream now owns the address, this is done to keep memory usage down.
-     *  \return Uint8* The copy of the buffer
+     *  \return Uint8* The copy of the buffer.
      */
     Uint8* data() const;
 
     /*! \brief Returns the length of the Stream.
+     *
+     *  \return Int64 The length of the stream.
+     */
     Int64 length();
+
+    /*! \brief Returns the current position in the stream.
+     *
+     *  \return Int64 The current position in the stream.
+     */
     Int64 position();
+
+    /*! \brief Returns whether or not the stream is at the end.
+     *
+     *  \return bool True if at end; False otherwise.
+     */
     bool atEnd();
+
+    /*! \brief Sets whether the Stream resizes when the at the end of the buffer.
+     *
+     *  \param val True for resizing; False for no resizing.
+     */
     void setAutoResizing(bool val);
+
+    /*! \brief Retuns whether or not the Stream currenty autoresizes.
+     *
+     *  \return True for resizing; False otherwise.
+     */
     bool autoResizing() const;
 
+
+    /*! \brief Retuns whether or not the Stream is open for reading.
+     *
+     *  \return True if open for reading; False otherwise.
+     */
     virtual bool isOpenForReading();
+
+    /*! \brief Retuns whether or not the Stream is open for writing
+     *
+     *  \return True if open for writing; False otherwise.
+     */
     virtual bool isOpenForWriting();
 
+    /*! \brief Sets the Endianss of the stream
+     *
+     *  \param endian The Endianess to set \sa Endian
+     */
     void setEndianess(Endian endian);
+
+    /*! \brief Returns the current Endianness of the stream
+     *
+     *  \return Endian The current Stream Endianess
+     */
     Endian endianness() const;
+
+
+    /*! \brief Returns whether the stream is BigEndian
+     *
+     *  \return bool True for BigEndian; False for LittleEndian
+     */
     bool isBigEndian() const;
+
+    /*! \brief Returns whether the stream is LittleEndian
+     *
+     *  \return bool True for LittleEndian; False for BigEndian
+     */
     bool isLittleEndian() const;
+
 protected:
-    Uint32  m_bitPosition;
-    Uint64  m_position;
-    Uint64  m_length;
-    Endian  m_endian;
-    Uint8*  m_data;
-    bool    m_autoResize;
+    Uint32  m_bitPosition; //!< The current position in the current byte
+    Uint64  m_position;    //!< The current position in the Stream
+    Uint64  m_length;      //!< The length of the Stream
+    Endian  m_endian;      //!< The Endianess of the Stream
+    Uint8*  m_data;        //!< The Stream buffer
+    bool    m_autoResize;  //!< Whether the stream is autoresizing
 };
 
 #endif // __STREAM_HPP__
