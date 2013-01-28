@@ -52,7 +52,7 @@ TextStream::TextStream(const std::string& filename, TextMode fileMode, AccessMod
 
 void  TextStream::save(const std::string& filename)
 {
-    if (m_accessmode != WriteOnly || m_accessmode != ReadWrite)
+    if (m_accessmode != WriteOnly && m_accessmode != ReadWrite)
         throw InvalidOperationException("Stream not open for writing");
     if (filename != std::string())
         m_filename = filename;
@@ -84,7 +84,7 @@ void  TextStream::save(const std::string& filename)
 
 std::string TextStream::readLine()
 {
-    if (m_accessmode != ReadOnly || m_accessmode != ReadWrite)
+    if (m_accessmode != ReadOnly && m_accessmode != ReadWrite)
         throw InvalidOperationException("Stream not open for reading");
 
     if (m_currentLine > m_lines.size())
@@ -96,7 +96,7 @@ std::string TextStream::readLine()
 
 void  TextStream::writeLine(const std::string& str)
 {
-    if (m_accessmode != WriteOnly || m_accessmode != ReadWrite)
+    if (m_accessmode != WriteOnly && m_accessmode != ReadWrite)
         throw InvalidOperationException("Stream not open for writing");
     else if (m_currentLine > m_lines.size())
     {
@@ -110,7 +110,7 @@ void  TextStream::writeLine(const std::string& str)
 
 void TextStream::writeLines(std::vector<std::string> strings)
 {
-    if (m_accessmode != WriteOnly || m_accessmode != ReadWrite)
+    if (m_accessmode != WriteOnly && m_accessmode != ReadWrite)
         throw InvalidOperationException("Stream not open for writing");
 
     for (std::string s: strings)
@@ -119,7 +119,7 @@ void TextStream::writeLines(std::vector<std::string> strings)
 
 std::vector<std::string> TextStream::readLines(Uint32 numLines)
 {
-    if (m_accessmode != ReadOnly || m_accessmode != ReadWrite)
+    if (m_accessmode != ReadOnly && m_accessmode != ReadWrite)
         throw InvalidOperationException("Stream not open for reading");
 
     if (numLines > m_lines.size())
@@ -136,7 +136,7 @@ std::vector<std::string> TextStream::readLines(Uint32 numLines)
 
 std::string TextStream::readLineAt(Uint32 line)
 {
-    if (m_accessmode != ReadOnly || m_accessmode != ReadWrite)
+    if (m_accessmode != ReadOnly && m_accessmode != ReadWrite)
         throw InvalidOperationException("Stream not open for reading");
     if (line <= 0)
         throw InvalidOperationException("A line cannot be zero indexed");
@@ -148,7 +148,7 @@ std::string TextStream::readLineAt(Uint32 line)
 
 void TextStream::writeLineAt(Uint32 line, const std::string& str)
 {
-    if (m_accessmode != WriteOnly || m_accessmode != ReadWrite)
+    if (m_accessmode != WriteOnly && m_accessmode != ReadWrite)
         throw InvalidOperationException("Stream not open for reading");
     if (line <= 0)
         throw InvalidOperationException("A line cannot be zero indexed");
@@ -159,7 +159,7 @@ void TextStream::writeLineAt(Uint32 line, const std::string& str)
 
 std::vector<std::string> TextStream::readAllLines()
 {
-    if (m_accessmode != ReadOnly || m_accessmode != ReadWrite)
+    if (m_accessmode != ReadOnly && m_accessmode != ReadWrite)
         throw InvalidOperationException("Stream not open for reading");
 
     return m_lines;
