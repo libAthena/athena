@@ -202,7 +202,7 @@ bool TextStream::isOpenForReading() const
     return ((m_accessmode == ReadOnly || m_accessmode == ReadWrite) && m_accessmode != WriteOnly);
 }
 
-bool TextStream::isOpenForReading() const
+bool TextStream::isOpenForWriting() const
 {
     return ((m_accessmode == WriteOnly || m_accessmode == ReadWrite) && m_accessmode != ReadOnly);
 }
