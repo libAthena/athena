@@ -188,7 +188,7 @@ void Stream::seek(Int64 position, SeekOrigin origin)
     switch (origin)
     {
         case Beginning:
-            if ((position < 0 || (Uint32)position > m_length) && !m_autoResize)
+            if ((position < 0 || (Int64)position > (Int64)m_length) && !m_autoResize)
             {
                 std::stringstream ss;
                 ss << position;
@@ -199,7 +199,7 @@ void Stream::seek(Int64 position, SeekOrigin origin)
             m_position = position;
             break;
         case Current:
-            if (((m_position + position) < 0 || (m_position + position) > m_length) && !m_autoResize)
+            if ((((Int64)m_position + position) < 0 || (m_position + position) > m_length) && !m_autoResize)
             {
                 std::stringstream ss;
                 ss << (m_position + position);
@@ -211,7 +211,7 @@ void Stream::seek(Int64 position, SeekOrigin origin)
             m_position += position;
             break;
         case End:
-            if (((m_length - position < 0) || (m_length - position) > m_length) && !m_autoResize)
+            if ((((Int64)m_length - position < 0) || (m_length - position) > m_length) && !m_autoResize)
             {
                 std::stringstream ss;
                 ss << std::hex << "0x" << (m_length - position);

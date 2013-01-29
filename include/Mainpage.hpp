@@ -37,7 +37,34 @@
  *       return 0;
  *  }
  *  \endcode
+ *  \section example_sec BinaryReader example
+ *  \code
+ *  #include "BinaryReader.hpp"
+ *  #include "FileNotFoundException.hpp"
+ *  #include "Exception.hpp"
+ *  int main()
+ *  {
+ *       try
+ *       {
+ *           BinaryReader writer("test.bin");
+ *           std::cout << reader.readByte() << std::endl;
+ *           std::cout << reader.readInt32() << std::endl;
+ *       }
+ *       catch (FileNotFoundException e)
+ *       {
+ *           std::cout << e.message() << std::endl;
+ *       }
+ *       catch (Exception e)
+ *       {
+ *           std::cout << e.message() << std::endl;
+ *       }
+ *       catch(...)
+ *       {
+ *       }
+ *       return 0;
+ *  }
+ *  \endcode
  *  \section Credits
- *  Chibi Zelda: AnimeWaterFall on Deviantart
+ *  Chibi Zelda:  <a href="http://animewaterfall.deviantart.com/art/Chibi-Zelda-331611090">AnimeWaterFall</a> on Deviantart
  */
 #endif // __MAINPAGE_HPP__

@@ -139,7 +139,7 @@ public:
      */
     std::string readUnicode();
 
-private:
+protected:
     /*! \brief Overload of isOpenForWriting in Stream
      *
      * \return false

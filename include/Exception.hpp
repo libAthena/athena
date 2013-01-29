@@ -30,14 +30,15 @@ public:
     /*! \brief The constructor for an Exception
      *  \param message The error message to throw
      */
-    Exception(const std::string& message) :
+    inline Exception(const std::string& message) :
         m_message(message)
-    {};
+    {
+    };
 
     /*! \brief Returns the Error message of the exception
      *  \return std::string The error message
      */
-    std::string message() const
+    inline std::string message() const
     {
         return m_message;
     };

@@ -32,7 +32,7 @@ public:
     /*! \brief The constructor for an FileNotFoundException
      *  \param filename The path of the offending file.
      */
-    FileNotFoundException(const std::string& filename) :
+    inline FileNotFoundException(const std::string& filename) :
         Exception("FileNotFoundException:\nCouldn't not find \"" + filename + "\", please check that it exists."),
         m_filename(filename)
     {}
@@ -40,7 +40,7 @@ public:
     /*! \brief Returns the path of the offending file.
      *  \return std::string The filename of the file including the path.
      */
-    std::string filename() const { return m_filename; }
+    inline std::string filename() const { return m_filename; }
 private:
     std::string m_filename;
 };

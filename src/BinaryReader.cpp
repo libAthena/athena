@@ -68,7 +68,7 @@ BinaryReader::BinaryReader(const std::string& filename)
 
         done += blocksize;
         std::cout << "Read " << done << " bytes" << std::endl;
-    }while (done < m_length);
+    }while (done < length);
 
     fclose(in);
     m_length = length;

@@ -34,7 +34,7 @@ public:
     /*! \brief The constructor for an InvalidOperationException
      *  \param error The error message to throw
      */
-    InvalidOperationException(const std::string& error)
+    inline InvalidOperationException(const std::string& error)
         : Exception("InvalidOperationException:\n" + error)
     {
     }

@@ -32,6 +32,7 @@
 class Stream
 {
 public:
+    //! \brief Default buffer block size.
     static const Uint32 BLOCKSZ;
 
     /*! \enum Endian

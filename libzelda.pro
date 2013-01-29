@@ -28,3 +28,6 @@ SOURCES += \
     src/BinaryWriter.cpp \
     src/BinaryReader.cpp
 
+system("exec doxygen libzelda.conf")
+system("cd doc/latex && make")
+system("cd ../../")
