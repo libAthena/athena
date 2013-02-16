@@ -12,40 +12,29 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with libZelda.  If not, see <http://www.gnu.org/licenses/>
-#ifndef __WII__SAVE_HPP__
-#define __WII__SAVE_HPP__
 
-#include <unordered_map>
+#ifndef __ALTTP_FILE_WRITER_HPP__
+#define __ALTTP_FILE_WRITER_HPP__
+
 #include <string>
 #include <Types.hpp>
+#include <BinaryWriter.hpp>
+#include "ALTTPQuest.hpp"
 
-class WiiFile;
-class WiiBanner;
-class WiiImage;
-class BinaryReader;
-class BinaryWriter;
+class ALTTPFile;
 
-class WiiSave
+class ALTTPFileWriter : public BinaryWriter
 {
 public:
+    ALTTPFileWriter(Uint8*, Uint64);
+    ALTTPFileWriter(const std::string&);
 
-    typedef std::unordered_map<std::string, WiiFile*>::const_iterator FileIterator;
-    WiiSave();
-    virtual ~WiiSave();
-
-    void     addFile(const std::string& filename, WiiFile* file);
-    WiiFile* file(const std::string& filename) const;
-    std::unordered_map<std::string, WiiFile*>& fileList();
-
-    void     setBanner(WiiBanner* banner);
-    WiiBanner* banner() const;
-
-protected:
+    void writeFile(ALTTPFile* file);
 private:
-
-    std::unordered_map<std::string, WiiFile*> m_files;
-    WiiBanner* m_banner;
-
+    void writeRoomFlags(ALTTPRoomFlags*);
+    void writeOverworldEvent(ALTTPOverworldEvent*);
+    void writeDungeonItems(ALTTPDungeonItemFlags);
+    Uint16 calculateChecksum(Uint32 game);
 };
 
-#endif // __WII__SAVE_HPP__
+#endif // __ALTTP_FILE_WRITER_HPP__

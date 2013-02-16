@@ -20,11 +20,8 @@ HEADERS += \
     include/Exception.hpp \
     include/BinaryWriter.hpp \
     include/BinaryReader.hpp \
-    include/WiiBanner.h \
     include/WiiBanner.hpp \
-    include/WiiFile.h \
     include/WiiFile.hpp \
-    include/WiiSave.h \
     include/WiiSave.hpp \
     include/WiiSaveReader.hpp \
     include/WiiSaveWriter.hpp \
@@ -32,7 +29,13 @@ HEADERS += \
     include/bn.h \
     include/ec.h \
     include/md5.h \
-    include/sha1.h
+    include/sha1.h \
+    include/ALTTPStructs.hpp \
+    include/ALTTPQuest.hpp \
+    include/ALTTPFileWriter.hpp \
+    include/ALTTPFileReader.hpp \
+    include/ALTTPFile.hpp \
+    include/ALTTPEnums.hpp
 
 SOURCES += \
     src/utility.cpp \
@@ -49,7 +52,12 @@ SOURCES += \
     src/bn.cpp \
     src/ec.cpp \
     src/md5.c \
-    src/sha1.cpp
+    src/sha1.cpp \
+    src/ALTTPStructs.cpp \
+    src/ALTTPQuest.cpp \
+    src/ALTTPFileWriter.cpp \
+    src/ALTTPFileReader.cpp \
+    src/ALTTPFile.cpp
 
 system("exec doxygen libzelda.conf")
 system("cd doc/latex && make")

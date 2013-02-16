@@ -155,7 +155,7 @@ protected:
      * \throw IOException
      */
     void writeBytes(Int8*, Int64);
-    std::string m_filename;
+    std::string m_filepath;
 };
 
 #endif

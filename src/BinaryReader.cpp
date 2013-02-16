@@ -37,11 +37,11 @@ BinaryReader::BinaryReader(const Uint8* data, Uint64 length) :
 }
 
 BinaryReader::BinaryReader(const std::string& filename)
-    : m_filename(filename)
+    : m_filepath(filename)
 {
     Stream::setAutoResizing(false);
     FILE* in;
-    int length;
+    Uint32 length;
     in = fopen(filename.c_str(), "rb");
 
     if (!in)
@@ -67,7 +67,6 @@ BinaryReader::BinaryReader(const std::string& filename)
             break;
 
         done += blocksize;
-        std::cout << "Read " << done << " bytes" << std::endl;
     }while (done < length);
 
     fclose(in);

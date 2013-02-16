@@ -1,7 +1,22 @@
+// This file is part of libZelda.
+//
+// libZelda is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// libZelda is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with libZelda.  If not, see <http://www.gnu.org/licenses/>
+
 #include "WiiSaveReader.hpp"
-#include "WiiSave.h"
-#include "WiiFile.h"
-#include "WiiBanner.h"
+#include "WiiSave.hpp"
+#include "WiiFile.hpp"
+#include "WiiBanner.hpp"
 #include "md5.h"
 #include "aes.h"
 #include "ec.h"
@@ -26,7 +41,6 @@ WiiSaveReader::WiiSaveReader(const Uint8* data, Uint64 length)
 WiiSaveReader::WiiSaveReader(const std::string& filename)
     : BinaryReader(filename)
 {
-    std::cout << filename << std::endl;
     setEndianess(BigEndian);
 }
 

@@ -12,6 +12,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with libZelda.  If not, see <http://www.gnu.org/licenses/>
+
 #ifndef __BINARYWRITER_HPP__
 #define __BINARYWRITER_HPP__
 
