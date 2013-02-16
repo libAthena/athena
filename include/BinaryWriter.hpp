@@ -136,7 +136,7 @@ protected:
     Int8 readByte();
     Int8* readBytes(Int64);
     bool isOpenForReading();
-    std::string m_filename;
+    std::string m_filepath;
 };
 
 #endif

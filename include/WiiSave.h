@@ -18,11 +18,9 @@ public:
     WiiSave();
     virtual ~WiiSave();
 
-    bool     saveToFile(const std::string& filepath, Uint8* macAddress, Uint32 ngId, Uint8* ngPriv, Uint8* ngSig, Uint32 ngKeyId);
-
     void     addFile(const std::string& filename, WiiFile* file);
-    WiiFile* getFile(const std::string& filename) const;
-    std::unordered_map<std::string, WiiFile*>& getFileList();
+    WiiFile* file(const std::string& filename) const;
+    std::unordered_map<std::string, WiiFile*>& fileList();
 
     void     setBanner(WiiBanner* banner);
     WiiBanner* banner() const;

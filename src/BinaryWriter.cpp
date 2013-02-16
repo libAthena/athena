@@ -34,7 +34,7 @@ BinaryWriter::BinaryWriter(const Stream& stream) :
 {}
 
 BinaryWriter::BinaryWriter(const std::string& filename)
-    : m_filename(filename)
+    : m_filepath(filename)
 {
     m_length = 0x10;
     m_bitPosition = 0;
@@ -47,15 +47,15 @@ BinaryWriter::BinaryWriter(const std::string& filename)
 
 void BinaryWriter::save(const std::string& filename)
 {
-    if (filename.empty() && m_filename.empty())
+    if (filename.empty() && m_filepath.empty())
         throw Exception("InvalidOperationException: BinaryWriter::Save() -> No file specified, cannot save.");
 
     if (!filename.empty())
-        m_filename = filename;
+        m_filepath = filename;
 
-    FILE* out = fopen(m_filename.c_str(), "wb");
+    FILE* out = fopen(m_filepath.c_str(), "wb");
     if (!out)
-        throw FileNotFoundException(m_filename);
+        throw FileNotFoundException(m_filepath);
 
     Uint32 done = 0;
     Uint32 blocksize = BLOCKSZ;
