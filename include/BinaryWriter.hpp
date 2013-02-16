@@ -132,7 +132,7 @@ public:
      *  \param str The string to write to the buffer
      */
     void writeUnicode(const std::string& str);
-private:
+protected:
     Int8 readByte();
     Int8* readBytes(Int64);
     bool isOpenForReading();
