@@ -41,7 +41,8 @@ HEADERS += \
     include/MCFileWriter.hpp \
     include/ZQuestFileWriter.hpp \
     include/ZQuestFileReader.hpp \
-    include/ZQuest.hpp
+    include/ZQuest.hpp \
+    include/Compression.hpp
 
 SOURCES += \
     src/utility.cpp \
@@ -66,8 +67,6 @@ SOURCES += \
     src/MCFileReader.cpp \
     src/MCFile.cpp \
     src/MCFileWriter.cpp \
-    src/RARCFileReader.cpp \
-    src/RARCFileEntry.cpp \
     src/ZQuestFileWriter.cpp \
     src/ZQuestFileReader.cpp \
     src/ZQuest.cpp
