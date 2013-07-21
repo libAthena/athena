@@ -21,20 +21,47 @@
 #include <BinaryWriter.hpp>
 #include "ALTTPQuest.hpp"
 
+namespace zelda
+{
+
 class ALTTPFile;
 
-class ALTTPFileWriter : public BinaryWriter
+/*! \class ALTTPFileWriter
+ *  \brief A Link to the Past save data writer class
+ *
+ *  A Class for writing binary data to an ALTTP Save File,
+ *  all work is done using a memory buffer, and not written directly to the disk.
+ *  \sa BinaryReader
+ */
+class ALTTPFileWriter : public io::BinaryWriter
 {
 public:
+    /*! \brief This constructor takes an existing buffer to write to.
+     *
+     *   \param data The existing buffer
+     *   \param length The length of the existing buffer
+     */
     ALTTPFileWriter(Uint8*, Uint64);
+
+    /*! \brief This constructor creates an instance from a file on disk.
+     *
+     * \param filename The file to create the stream from
+     */
     ALTTPFileWriter(const std::string&);
 
+    /*! \brief Writes the given SRAM data to a file on disk
+     *
+     * \param file SRAM data to right
+     */
     void writeFile(ALTTPFile* file);
+
 private:
     void writeRoomFlags(ALTTPRoomFlags*);
     void writeOverworldEvent(ALTTPOverworldEvent*);
     void writeDungeonItems(ALTTPDungeonItemFlags);
     Uint16 calculateChecksum(Uint32 game);
 };
+
+} // zelda
 
 #endif // __ALTTP_FILE_WRITER_HPP__

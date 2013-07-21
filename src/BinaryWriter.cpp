@@ -24,6 +24,10 @@
 #include <vector>
 #include <iostream>
 
+namespace zelda
+{
+namespace io
+{
 
 BinaryWriter::BinaryWriter(const Uint8* data, Uint64 length)
     : Stream(data, length)
@@ -72,7 +76,6 @@ void BinaryWriter::save(const std::string& filename)
             break;
 
         done += blocksize;
-        std::cout << "Wrote " << done << " bytes" << std::endl;
     }while (done < m_length);
 
     fclose(out);
@@ -101,7 +104,7 @@ void BinaryWriter::writeInt16(Int16 val)
     else if (m_position > m_length)
         throw IOException("BinaryWriter::WriteInt16() -> Position outside stream bounds");
 
-    if ((!isSystemBigEndian() && m_endian == Stream::BigEndian) || (isSystemBigEndian() && m_endian == Stream::LittleEndian))
+    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
         val = swap16(val);
 
     *(Int16*)(m_data + m_position) = val;
@@ -122,7 +125,7 @@ void BinaryWriter::writeUInt16(Uint16 val)
         throw IOException("BinaryWriter::WriteUInt16() -> Position outside stream bounds");
 
 
-    if ((!isSystemBigEndian() && m_endian == Stream::BigEndian) || (isSystemBigEndian() && m_endian == Stream::LittleEndian))
+    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
         val = swapU16(val);
 
     *(Uint16*)(m_data + m_position) = val;
@@ -142,7 +145,7 @@ void BinaryWriter::writeInt32(Int32 val)
     else if (m_position > m_length)
         throw IOException("BinaryWriter::WriteInt32() -> Position outside stream bounds");
 
-    if ((!isSystemBigEndian() && m_endian == Stream::BigEndian) || (isSystemBigEndian() && m_endian == Stream::LittleEndian))
+    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
         val = swap32(val);
 
     *(Int32*)(m_data + m_position) = val;
@@ -162,7 +165,7 @@ void BinaryWriter::writeUInt32(Uint32 val)
     else if (m_position > m_length)
         throw IOException("BinaryWriter::WriteUInt32() -> Position outside stream bounds");
 
-    if ((!isSystemBigEndian() && m_endian == Stream::BigEndian) || (isSystemBigEndian() && m_endian == Stream::LittleEndian))
+    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
         val = swap32(val);
 
     *(Uint32*)(m_data + m_position) = val;
@@ -183,7 +186,7 @@ void BinaryWriter::writeInt64(Int64 val)
         throw IOException("BinaryWriter::WriteInt64() -> Position outside stream bounds");
 
 
-    if ((!isSystemBigEndian() && m_endian == Stream::BigEndian) || (isSystemBigEndian() && m_endian == Stream::LittleEndian))
+    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
         val = swap64(val);
 
     *(Int64*)(m_data + m_position) = val;
@@ -203,7 +206,7 @@ void BinaryWriter::writeUInt64(Uint64 val)
     else if (m_position > m_length)
         throw IOException("BinaryWriter::WriteUInt64() -> Position outside stream bounds");
 
-    if ((!isSystemBigEndian() && m_endian == Stream::BigEndian) || (isSystemBigEndian() && m_endian == Stream::LittleEndian))
+    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
         val = swap64(val);
 
     *(Uint64*)(m_data + m_position) = val;
@@ -223,7 +226,7 @@ void BinaryWriter::writeFloat(float val)
     else if (m_position > m_length)
         throw IOException("BinaryWriter::WriteFloat() -> Position outside stream bounds");
 
-    if ((!isSystemBigEndian() && m_endian == Stream::BigEndian) || (isSystemBigEndian() && m_endian == Stream::LittleEndian))
+    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
         val = swapFloat(val);
 
     *(float*)(m_data + m_position) = val;
@@ -243,7 +246,7 @@ void BinaryWriter::writeDouble(double val)
     else if (m_position > m_length)
         throw IOException("BinaryWriter::WriteDouble() -> Position outside stream bounds");
 
-    if ((!isSystemBigEndian() && m_endian == Stream::BigEndian) || (isSystemBigEndian() && m_endian == Stream::LittleEndian))
+    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
         val = swapDouble(val);
 
     *(double*)(m_data + m_position)= val;
@@ -287,4 +290,5 @@ bool BinaryWriter::isOpenForReading()
 {
     return false;
 }
-
+} // io
+} // zelda

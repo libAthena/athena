@@ -1,6 +1,8 @@
 #ifndef BN_H
 #define BN_H
 
+#ifndef __DOXYGEN_IGNORE__
+
 #include <Types.hpp>
 
 int  bn_compare(Uint8 *a, Uint8 *b, Uint32 n);
@@ -10,4 +12,5 @@ void bn_mul(Uint8 *d, Uint8 *a, Uint8 *b, Uint8 *N, Uint32 n);
 void bn_exp(Uint8 *d, Uint8 *a, Uint8 *N, Uint32 n, Uint8 *e, Uint32 en);
 void bn_inv(Uint8 *d, Uint8 *a, Uint8 *N, Uint32 n);
 
+#endif // __DOXYGEN_IGNORE__
 #endif // BN_H

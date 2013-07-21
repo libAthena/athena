@@ -19,10 +19,13 @@
 #include <Types.hpp>
 #include <vector>
 
+namespace zelda
+{
+
 class ALTTPQuest;
 
 /*! \class ALTTPFile
- *  \brief A Link to the Past data container class
+ *  \brief A Link to the Past data container class class
  *
  * Contains all relevant data for an A Link to the Past
  * SRM file.
@@ -84,4 +87,5 @@ private:
     std::vector<ALTTPQuest*> m_backup;
 };
 
+} // zelda
 #endif // __ALTTP_FILE_HPP__

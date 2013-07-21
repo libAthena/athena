@@ -12,6 +12,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with libZelda.  If not, see <http://www.gnu.org/licenses/>
+
 #ifndef __MAINPAGE_HPP__
 #define __MAINPAGE_HPP__
 
@@ -22,7 +23,7 @@
  *  <br />
  *  libZelda provides several basic classes that can be used to read from
  *  and write to files, and memory, classes such as Stream, BinaryReader, BinaryWriter,
- *  and the currently work in progress TextStream.
+ *  and TextStream.
  *  \section example_sec BinaryWriter example
  *  \code
  *  #include "BinaryWriter.hpp"

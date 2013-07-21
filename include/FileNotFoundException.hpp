@@ -18,6 +18,9 @@
 
 #include "Exception.hpp"
 
+namespace zelda
+{
+
 /*! \class FileNotFoundException
  *  \brief An excpeption thrown when a file could not be found at the given path.
  *
@@ -44,5 +47,7 @@ public:
 private:
     std::string m_filename;
 };
+
+} // zelda
 
 #endif

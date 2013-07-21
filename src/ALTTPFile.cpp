@@ -16,8 +16,10 @@
 #include "ALTTPFile.hpp"
 #include "ALTTPQuest.hpp"
 
-#include <InvalidOperationException.hpp>
+#include "InvalidOperationException.hpp"
 
+namespace zelda
+{
 ALTTPFile::ALTTPFile()
 {}
 
@@ -51,3 +53,4 @@ Uint32 ALTTPFile::questCount() const
 {
     return m_quests.size();
 }
+} // zelda

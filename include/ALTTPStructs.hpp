@@ -16,11 +16,14 @@
 #ifndef __ALTTP_STRUCTS_HPP__
 #define __ALTTP_STRUCTS_HPP__
 
+#ifndef __DOXYGEN_IGNORE__
+
 #include <string>
 #include "Types.hpp"
 
-/*! \struct ALTTPRoomFlags
- */
+namespace zelda
+{
+
 struct ALTTPRoomFlags
 {
     bool Chest1:1;
@@ -41,8 +44,6 @@ struct ALTTPRoomFlags
     bool ChestOrTile:1;
 };
 
-/*! \struct ALTTPOverworldEvent
- */
 struct ALTTPOverworldEvent
 {
     bool Unused1:1;
@@ -55,8 +56,6 @@ struct ALTTPOverworldEvent
     bool Unused5:1;
 };
 
-/*! \struct ALTTPInventory
- */
 struct ALTTPInventory
 {
     char Bow;
@@ -88,12 +87,6 @@ struct ALTTPInventory
     char Shield;
     char Armor;
     char BottleTypes[4];
-
-    std::string bowType();
-    std::string boomerangType();
-    std::string magicType();
-    std::string armorType();
-    std::string bottleType(Uint32);
 };
 
 /*! \struct ALTTPLightDarkWorldIndicator
@@ -204,4 +197,7 @@ struct ALTTPProgressFlags2
     bool SmithsHaveSword:1;
 };
 
+}
+
+#endif // __DOXYGEN_IGNORE__
 #endif // __ALTTP_STRUCTS_HPP__

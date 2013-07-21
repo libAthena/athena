@@ -1,7 +1,7 @@
 CONFIG += staticlib
 TEMPLATE=lib
 TARGET=zelda
-QMAKE_CXXFLAGS = -std=c++11
+QMAKE_CXXFLAGS += -std=c++0x
 INCLUDEPATH += include
 
 HEADERS += \
@@ -35,7 +35,13 @@ HEADERS += \
     include/ALTTPFileWriter.hpp \
     include/ALTTPFileReader.hpp \
     include/ALTTPFile.hpp \
-    include/ALTTPEnums.hpp
+    include/ALTTPEnums.hpp \
+    include/MCFileReader.hpp \
+    include/MCFile.hpp \
+    include/MCFileWriter.hpp \
+    include/ZQuestFileWriter.hpp \
+    include/ZQuestFileReader.hpp \
+    include/ZQuest.hpp
 
 SOURCES += \
     src/utility.cpp \
@@ -53,12 +59,19 @@ SOURCES += \
     src/ec.cpp \
     src/md5.c \
     src/sha1.cpp \
-    src/ALTTPStructs.cpp \
     src/ALTTPQuest.cpp \
     src/ALTTPFileWriter.cpp \
     src/ALTTPFileReader.cpp \
-    src/ALTTPFile.cpp
+    src/ALTTPFile.cpp \
+    src/MCFileReader.cpp \
+    src/MCFile.cpp \
+    src/MCFileWriter.cpp \
+    src/RARCFileReader.cpp \
+    src/RARCFileEntry.cpp \
+    src/ZQuestFileWriter.cpp \
+    src/ZQuestFileReader.cpp \
+    src/ZQuest.cpp
 
 system("exec doxygen libzelda.conf")
-system("cd doc/latex && make")
+#system("cd doc/latex && make")
 system("cd ../../")

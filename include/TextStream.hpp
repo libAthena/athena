@@ -20,6 +20,10 @@
 #include <vector>
 
 
+namespace zelda
+{
+namespace io
+{
 // TODO (Phil#1#): Need to actually use AccessMode
 /*! \class TextStream
  *  \brief A Class for reading or writing Text data.
@@ -122,28 +126,28 @@ public:
      *
      *  \param mode The mode to set.
      */
-     void setAccessMode(AccessMode mode);
+    void setAccessMode(AccessMode mode);
 
     /*! \brief Returns the AccessMode of the Stream.
      *
      *  \return AccessModeThe mode to set.
      */
-     AccessMode accessMode() const;
+    AccessMode accessMode() const;
 
-     /*! \brief Sets the Textmode of the Stream.
+    /*! \brief Sets the Textmode of the Stream.
      *
      *  \param mode The mode to set.
      */
-     void setTextMode(TextMode mode);
+    void setTextMode(TextMode mode);
 
     /*! \brief Returns the TextMode of the Stream.
      *
      *  \return TextMode The mode to set.
      */
-     TextMode textMode() const;
+    TextMode textMode() const;
 
-     bool isOpenForReading() const;
-     bool isOpenForWriting() const;
+    bool isOpenForReading() const;
+    bool isOpenForWriting() const;
 private:
     void        loadLines();
     std::string m_filename;
@@ -154,5 +158,6 @@ private:
     Uint32      m_currentLine;
     Uint32      m_startLength;
 };
-
+} // io
+} // zelda
 #endif

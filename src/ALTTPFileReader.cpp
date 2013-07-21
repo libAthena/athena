@@ -18,6 +18,9 @@
 #include "ALTTPQuest.hpp"
 #include <iostream>
 
+namespace zelda
+{
+
 ALTTPFileReader::ALTTPFileReader(Uint8* data, Uint64 length)
     : BinaryReader(data, length)
 {
@@ -35,6 +38,7 @@ ALTTPFile* ALTTPFileReader::readFile()
 
     for (Uint32 i = 0; i < 6; i++)
     {
+        // Temporary values to use for each save
         ALTTPQuest* quest = new ALTTPQuest();
         std::vector<ALTTPRoomFlags*>        roomFlags;
         std::vector<ALTTPOverworldEvent*>   owEvents;
@@ -192,35 +196,37 @@ ALTTPRoomFlags* ALTTPFileReader::readRoomFlags()
 ALTTPOverworldEvent* ALTTPFileReader::readOverworldEvent()
 {
     ALTTPOverworldEvent* event = new ALTTPOverworldEvent;
-    event->Unused1 = readBit();
-    event->HeartPiece= readBit();
-    event->Overlay= readBit();
-    event->Unused2= readBit();
-    event->Unused3= readBit();
-    event->Unused4= readBit();
-    event->Set= readBit();
-    event->Unused5= readBit();
+    event->Unused1    = readBit();
+    event->HeartPiece = readBit();
+    event->Overlay    = readBit();
+    event->Unused2    = readBit();
+    event->Unused3    = readBit();
+    event->Unused4    = readBit();
+    event->Set        = readBit();
+    event->Unused5    = readBit();
     return event;
 }
 
 ALTTPDungeonItemFlags ALTTPFileReader::readDungeonFlags()
 {
-        ALTTPDungeonItemFlags flags;
-        flags.Unused1 = readBit();
-        flags.GanonsTower = readBit();
-        flags.TurtleRock = readBit();
-        flags.GargoylesDomain = readBit();
-        flags.TowerOfHera = readBit();
-        flags.IcePalace = readBit();
-        flags.SkullWoods = readBit();
-        flags.MiseryMire = readBit();
-        flags.DarkPalace = readBit();
-        flags.SwampPalace = readBit();
-        flags.HyruleCastle2 = readBit();
-        flags.DesertPalace = readBit();
-        flags.EasternPalace = readBit();
-        flags.HyruleCastle = readBit();
-        flags.SewerPassage = readBit();
+    ALTTPDungeonItemFlags flags;
+    flags.Unused1         = readBit();
+    flags.GanonsTower     = readBit();
+    flags.TurtleRock      = readBit();
+    flags.GargoylesDomain = readBit();
+    flags.TowerOfHera     = readBit();
+    flags.IcePalace       = readBit();
+    flags.SkullWoods      = readBit();
+    flags.MiseryMire      = readBit();
+    flags.DarkPalace      = readBit();
+    flags.SwampPalace     = readBit();
+    flags.HyruleCastle2   = readBit();
+    flags.DesertPalace    = readBit();
+    flags.EasternPalace   = readBit();
+    flags.HyruleCastle    = readBit();
+    flags.SewerPassage    = readBit();
 
-        return flags;
+    return flags;
 }
+
+} // zelda

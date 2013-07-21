@@ -17,6 +17,17 @@
 
 #include <limits.h>
 
+/*! \enum Endian
+ *  \brief Allows the user to specify the Endianness of data.<br />
+ *         The proper actions are automatically taken depending on platform and
+ *         buffer settings
+ */
+enum Endian
+{
+    LittleEndian, //!< Specifies that the Stream is Little Endian (LSB)
+    BigEndian //!< Specifies that the Stream is Big Endian (MSB)
+};
+
 // 8 bits integer types
 #if UCHAR_MAX == 0xFF
     typedef signed   char Int8;
@@ -55,5 +66,13 @@
 
 typedef signed   long long Int64;
 typedef unsigned long long Uint64;
+
+#ifndef NULL
+#ifdef __cplusplus
+#define NULL 0
+#else // __cplusplus
+#define NULL (void*)0
+#endif
+#endif // NULL
 
 #endif

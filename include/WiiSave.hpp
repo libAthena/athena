@@ -19,25 +19,67 @@
 #include <string>
 #include <Types.hpp>
 
+namespace zelda
+{
+
 class WiiFile;
 class WiiBanner;
 class WiiImage;
 class BinaryReader;
 class BinaryWriter;
 
+/*! \class WiiSave
+ *  \brief Wii data.bin container class
+ *
+ * Contains all relevant data for a Wii data.bin file.
+ */
 class WiiSave
 {
 public:
 
+    /*!
+     * \brief FileIterator
+     */
     typedef std::unordered_map<std::string, WiiFile*>::const_iterator FileIterator;
+
+    /*!
+     * \brief WiiSave
+     */
     WiiSave();
+    /*!
+     * \brief ~WiiSave
+     */
     virtual ~WiiSave();
 
+    /*!
+     * \brief addFile
+     * \param filename
+     * \param file
+     */
     void     addFile(const std::string& filename, WiiFile* file);
+
+    /*!
+     * \brief file
+     * \param filename
+     * \return
+     */
     WiiFile* file(const std::string& filename) const;
+    /*!
+     * \brief fileList
+     * \return
+     */
     std::unordered_map<std::string, WiiFile*>& fileList();
 
+    /*!
+     * \brief setBanner
+     * \param banner
+     */
     void     setBanner(WiiBanner* banner);
+
+    /*!
+     * \brief banner
+     * \return
+     */
     WiiBanner* banner() const;
 
 protected:
@@ -48,4 +90,5 @@ private:
 
 };
 
+} // zelda
 #endif // __WII__SAVE_HPP__

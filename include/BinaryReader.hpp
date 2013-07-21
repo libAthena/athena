@@ -12,12 +12,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with libZelda.  If not, see <http://www.gnu.org/licenses/>
+
 #ifndef __BINARYREADER_HPP__
 #define __BINARYREADER_HPP__
 
 #include "Stream.hpp"
 #include <string>
 
+namespace zelda
+{
+namespace io
+{
 /*! \class BinaryReader
  *  \brief A Stream class for reading binary data
  *
@@ -139,6 +144,13 @@ public:
      */
     std::string readUnicode();
 
+    /*! \brief Reads a string and advances the position in the file
+     *
+     *  \return std::string The value at the current address
+     *  \throw IOException when address is out of range
+     */
+    std::string readString();
+
 protected:
     /*! \brief Overload of isOpenForWriting in Stream
      *
@@ -155,7 +167,14 @@ protected:
      * \throw IOException
      */
     void writeBytes(Int8*, Int64);
-    std::string m_filepath;
+    std::string m_filepath; //!< Path to the target file
 };
+}
+}
 
-#endif
+#ifndef BINARYREADER_BASE
+#define BINARYREADER_BASE \
+    private: \
+    typedef zelda::io::BinaryReader base;
+#endif // BINARYREADER_BASE
+#endif // __BINARYREADER_HPP__

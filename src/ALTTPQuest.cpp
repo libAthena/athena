@@ -17,6 +17,9 @@
 #include "InvalidOperationException.hpp"
 #include <iostream>
 
+namespace zelda
+{
+
 ALTTPQuest::ALTTPQuest()
 {
 }
@@ -676,3 +679,5 @@ Uint16 ALTTPQuest::checksum() const
 {
     return m_checksum;
 }
+
+} // zelda

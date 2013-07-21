@@ -36,6 +36,9 @@
 #include <iomanip>
 
 
+namespace zelda
+{
+
 const Uint8 SD_KEY[16]      = {0xab, 0x01, 0xb9, 0xd8, 0xe1, 0x62, 0x2b, 0x08, 0xaf, 0xba, 0xd8, 0x4d, 0xbf, 0xc2, 0xa5, 0x5d};
 const Uint8 SD_IV[16]       = {0x21, 0x67, 0x12, 0xe6, 0xaa, 0x1f, 0x68, 0x9f, 0x95, 0xc5, 0xa2, 0x23, 0x24, 0xdc, 0x6a, 0x98};
 const Uint8 MD5_BLANKER[16] = {0x0e, 0x65, 0x37, 0x81, 0x99, 0xbe, 0x45, 0x17, 0xab, 0x06, 0xec, 0x22, 0x45, 0x1a, 0x57, 0x93};
@@ -44,7 +47,7 @@ WiiSaveWriter::WiiSaveWriter(const std::string &filename)
     : BinaryWriter(filename)
 {
     this->setAutoResizing(true);
-    this->setEndianess(Stream::BigEndian);
+    this->setEndianess(BigEndian);
 }
 
 
@@ -89,7 +92,7 @@ bool WiiSaveWriter::writeSave(WiiSave *save, Uint8 *macAddress, Uint32 ngId, Uin
 
 void WiiSaveWriter::writeBanner(WiiBanner *banner)
 {
-    this->setEndianess(Stream::BigEndian);
+    this->setEndianess(BigEndian);
     this->setAutoResizing(true);
     this->writeInt64(banner->gameID());
     this->writeInt32((0x60a0+0x1200)*banner->icons().size());
@@ -249,3 +252,5 @@ void WiiSaveWriter::writeCerts(Uint32 filesSize, Uint32 ngId, Uint8 *ngPriv, Uin
     this->writeBytes((Int8*)ngCert, 0x180);
     this->writeBytes((Int8*)apCert, 0x180);
 }
+
+} // zelda

@@ -16,5 +16,3 @@ void aes_set_key(const Uint8 *key );
 #endif
 
 #endif //__AES_H_
-
-

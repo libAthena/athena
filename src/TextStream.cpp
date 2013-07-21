@@ -19,6 +19,10 @@
 #include "InvalidOperationException.hpp"
 #include "IOException.hpp"
 
+namespace zelda
+{
+namespace io
+{
 TextStream::TextStream(const std::string& filename, TextMode fileMode, AccessMode accessMode) :
     m_filename(filename),
     m_textmode(fileMode),
@@ -256,3 +260,7 @@ void TextStream::loadLines()
         m_lines.push_back(line);
     }
 }
+
+} // io
+} // zelda
+

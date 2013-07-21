@@ -17,7 +17,10 @@
 #define __INVALID_OPERATION_EXCEPTION_HPP__
 
 #include <string>
-#include <Exception.hpp>
+#include "Exception.hpp"
+
+namespace zelda
+{
 
 /*! \class InvalidOperationException
  *  \brief An excpeption thrown on Invalid Operations calls.
@@ -39,4 +42,7 @@ public:
     {
     }
 };
+
+} // zelda
+
 #endif // __INVALID_OPERATION_EXCEPTION_HPP__

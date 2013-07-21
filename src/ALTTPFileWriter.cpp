@@ -18,6 +18,9 @@
 #include "ALTTPQuest.hpp"
 #include <iostream>
 
+namespace zelda
+{
+
 ALTTPFileWriter::ALTTPFileWriter(Uint8* data, Uint64 length)
     : BinaryWriter(data, length)
 {
@@ -180,9 +183,36 @@ void ALTTPFileWriter::writeDungeonItems(ALTTPDungeonItemFlags flags)
 
 Uint16 ALTTPFileWriter::calculateChecksum(Uint32 game)
 {
-    Uint16 sum = 0x5a5a;
-    for (Uint32 i = 0; i < 0x4FE; i += 2)
-        sum -= *(Uint16*)(m_data + (i + (0x500 * game)));
+    /*
+     * ALTTP's checksum is very basic
+     * It adds each word up and then subtracts the sum from 0x5a5a
+     * The number seems pretty arbitrary, but it enables the game to differentiate
+     * it from a number that just happens to equal the sum outright, preventing "false positives."
+     *
+     * Ignoring the algorithm for figuring out it's position in the buffer the equation is basically:
+     * s = s + w
+     * s = (0x5a5a - s);
+     * s == sum
+     * w == current word
+     *
+     * For those who don't know a word is a two byte pair, i.e 0xFF and 0xFE constitutes a word.
+     */
 
-    return sum;
+    // First we start at 0
+    Uint16 sum = 0;
+    for (Uint32 i = 0; i < 0x4FE; i += 2)
+        // Add each word one by one
+        sum += *(Uint16*)(m_data + (i + (0x500 * game)));
+
+    // Subtract it from 0x5a5a to get our true checksum
+    return (0x5a5a - sum);
+
+    /*
+     * There is one caveat to this algorithm however,
+     * It makes it difficult to manually edit this in a hex editor since it's not a common
+     * algorithm and most hexeditor with built in checksum calculators won't have it, however it's
+     * it's extremely basic, making it a non-issue really.
+     */
 }
+
+} // zelda

@@ -15,6 +15,11 @@
 
 #include "WiiFile.hpp"
 
+
+namespace zelda
+{
+
+//! TODO: Remove this?
 WiiFile::WiiFile() :
     m_permissions(WiiFile::GroupRW|WiiFile::OtherRW|WiiFile::OwnerRW),
     m_attributes(0),
@@ -128,3 +133,4 @@ bool WiiFile::isFile() const
     return (m_type == WiiFile::File);
 }
 
+} // zelda

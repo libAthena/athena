@@ -13,27 +13,13 @@
 // You should have received a copy of the GNU General Public License
 // along with libZelda.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __UTILITY_H__
-#define __UTILITY_H__
+#include "MCFile.hpp"
 
-#include <string>
-#include "Types.hpp"
+namespace zelda
+{
 
-bool isEmpty(Int8*, size_t);
+MCFile::MCFile()
+{
+}
 
-unsigned short swapU16(unsigned short val );
-short swap16 (short val );
-unsigned int   swapU32(unsigned int val);
-int   swap32 (int val );
-long long  swap64 (long long val);
-
-float swapFloat(float val);
-double  swapDouble(double val);
-
-bool isSystemBigEndian();
-
-void fillRandom(Uint8 * rndArea, Uint8 count);
-
-void yaz0Decode(Uint8* src, Uint8* dst, Uint32 uncompressedSize);
-
-#endif
+} // zelda

@@ -20,22 +20,67 @@
 #include <string>
 #include <Types.hpp>
 
+namespace zelda
+{
+
+/*!
+ * \brief The WiiImage class
+ */
 class WiiImage
 {
 public:
+    /*!
+     * \brief WiiImage
+     */
     WiiImage();
+    /*!
+     * \brief WiiImage
+     * \param width
+     * \param height
+     * \param data
+     */
     WiiImage(Uint32 width, Uint32 height, Uint8* data);
     ~WiiImage();
 
+    /*!
+     * \brief setWidth
+     * \param width
+     */
     void setWidth(const Uint32 width);
+
+    /*!
+     * \brief width
+     * \return
+     */
     Uint32  width() const;
 
+    /*!
+     * \brief setHeight
+     * \param height
+     */
     void  setHeight(const Uint32 height);
+
+    /*!
+     * \brief height
+     * \return
+     */
     Uint32   height() const;
 
+    /*!
+     * \brief setData
+     * \param data
+     */
     void  setData(const Uint8* data);
+    /*!
+     * \brief data
+     * \return
+     */
     Uint8*   data();
 
+    /*!
+     * \brief toRGBA32 DOES NOT WORK!!! DO NOT USE!!!
+     * \return
+     */
     Uint8* toRGBA32();
 
 private:
@@ -44,41 +89,156 @@ private:
     Uint8* m_data;
 };
 
+/*! \class WiiBanner
+ *  \brief Wii banner container class
+ *
+ * Contains all relevant data for a Wii banner.
+ */
 class WiiBanner
 {
 public:
-    enum { NoCopy = 0x00000001, Bounce = 0x00000010, NoCopyBounce = NoCopy | Bounce };
+    enum
+    {
+        NoCopy = 0x00000001,
+        Bounce = 0x00000010,
+        NoCopyBounce = NoCopy | Bounce
+    };
+
+    /*!
+     * \brief WiiBanner
+     */
     WiiBanner();
+    /*!
+     * \brief WiiBanner
+     * \param gameId
+     * \param title
+     * \param subtitle
+     * \param m_banner
+     * \param icons
+     */
     WiiBanner(Uint32 gameId, const std::string& title, const std::string& subtitle, WiiImage* m_banner, std::vector<WiiImage*> icons);
     virtual ~WiiBanner();
 
+    /*!
+     * \brief setGameID
+     * \param id
+     */
     void setGameID(Uint64 id);
+
+    /*!
+     * \brief gameID
+     * \return
+     */
     Uint64  gameID() const;
 
+    /*!
+     * \brief setBannerImage
+     * \param banner
+     */
     void setBannerImage(WiiImage* banner);
+
+    /*!
+     * \brief bannerImage
+     * \return
+     */
     WiiImage* bannerImage() const;
 
+    /*!
+     * \brief setBannerSize
+     * \param size
+     */
     void setBannerSize(Uint32 size);
+
+    /*!
+     * \brief bannerSize
+     * \return
+     */
     Uint32  bannerSize() const;
 
+    /*!
+     * \brief setTitle
+     * \param title
+     */
     void setTitle(const std::string& title);
+
+    /*!
+     * \brief title
+     * \return
+     */
     std::string title() const;
 
-    void     setSubtitle(const std::string& subtitle);
+    /*!
+     * \brief setSubtitle
+     * \param subtitle
+     */
+    void setSubtitle(const std::string& subtitle);
+
+    /*!
+     * \brief subtitle
+     * \return
+     */
     std::string subtitle() const;
 
+    /*!
+     * \brief addIcon
+     * \param icon
+     */
     void      addIcon(WiiImage* icon);
+
+    /*!
+     * \brief setIcon
+     * \param id
+     * \param icon
+     */
     void      setIcon(Uint32 id, WiiImage* icon);
+
+    /*!
+     * \brief getIcon
+     * \param id
+     * \return
+     */
     WiiImage* getIcon(Uint32 id) const;
+
+    /*!
+     * \brief icons
+     * \return
+     */
     std::vector<WiiImage*> icons() const;
 
+    /*!
+     * \brief setAnimationSpeed
+     * \param animSpeed
+     */
     void setAnimationSpeed(Uint16 animSpeed);
+
+    /*!
+     * \brief animationSpeed
+     * \return
+     */
     Uint16  animationSpeed() const;
 
+    /*!
+     * \brief setPermissions
+     * \param permissions
+     */
     void setPermissions(Uint8 permissions);
+
+    /*!
+     * \brief permissions
+     * \return
+     */
     Uint8   permissions() const;
 
+    /*!
+     * \brief setFlags
+     * \param flags
+     */
     void setFlags(Uint32 flags);
+
+    /*!
+     * \brief flags
+     * \return
+     */
     Uint32  flags() const;
 protected:
 private:
@@ -92,5 +252,6 @@ private:
     std::string            m_title;
     std::string            m_subtitle;
 };
+} // zelda
 
 #endif // WIIBANNER_H

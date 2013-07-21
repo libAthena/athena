@@ -24,6 +24,11 @@
 #include <vector>
 #include <iostream>
 
+namespace zelda
+{
+namespace io
+{
+
 BinaryReader::BinaryReader(const Stream& stream) :
     Stream(stream)
 {
@@ -67,7 +72,7 @@ BinaryReader::BinaryReader(const std::string& filename)
             break;
 
         done += blocksize;
-    }while (done < length);
+    } while (done < length);
 
     fclose(in);
     m_length = length;
@@ -85,7 +90,6 @@ void BinaryReader::writeBytes(Int8*, Int64)
     throw IOException("BinaryReader::writeBytes() -> Stream not open for writing");
 }
 
-
 Int16 BinaryReader::readInt16()
 {
     if (m_bitPosition > 0)
@@ -99,7 +103,7 @@ Int16 BinaryReader::readInt16()
     Int16 ret = *(Int16*)(m_data + m_position);
     m_position += 2;
 
-    if ((!isSystemBigEndian() && m_endian == Stream::BigEndian) || (isSystemBigEndian() && m_endian == Stream::LittleEndian))
+    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
         ret = swap16(ret);
     return ret;
 }
@@ -116,7 +120,7 @@ Uint16 BinaryReader::readUInt16()
     Uint16 ret = *(Uint16*)(m_data + m_position);
     m_position += 2;
 
-    if ((!isSystemBigEndian() && m_endian == Stream::BigEndian) || (isSystemBigEndian() && m_endian == Stream::LittleEndian))
+    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
         ret = swapU16(ret);
 
     return ret;
@@ -134,7 +138,7 @@ Int32 BinaryReader::readInt32()
     Int32 ret = *(Int32*)(m_data + m_position);
     m_position += 4;
 
-    if ((!isSystemBigEndian() && m_endian == Stream::BigEndian) || (isSystemBigEndian() && m_endian == Stream::LittleEndian))
+    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
         ret = swap32(ret);
     return ret;
 }
@@ -152,7 +156,7 @@ Uint32 BinaryReader::readUInt32()
     Uint32 ret = *(Uint32*)(m_data + m_position);
     m_position += 4;
 
-    if ((!isSystemBigEndian() && m_endian == Stream::BigEndian) || (isSystemBigEndian() && m_endian == Stream::LittleEndian))
+    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
         ret = swapU32(ret);
     return ret;
 }
@@ -170,7 +174,7 @@ Int64 BinaryReader::readInt64()
     Int64 ret = *(Int64*)(m_data + m_position);
     m_position += 8;
 
-    if ((!isSystemBigEndian() && m_endian == Stream::BigEndian) || (isSystemBigEndian() && m_endian == Stream::LittleEndian))
+    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
         ret = swap64(ret);
     return ret;
 }
@@ -187,7 +191,7 @@ Uint64 BinaryReader::readUInt64()
     Uint64 ret = *(Uint64*)(m_data + m_position);
     m_position += 8;
 
-    if ((!isSystemBigEndian() && m_endian == Stream::BigEndian) || (isSystemBigEndian() && m_endian == Stream::LittleEndian))
+    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
         ret = swap64(ret);
     return ret;
 }
@@ -205,7 +209,7 @@ float BinaryReader::readFloat()
     float ret = *(float*)(m_data + m_position);
     m_position += 4;
 
-    if ((!isSystemBigEndian() && m_endian == Stream::BigEndian) || (isSystemBigEndian() && m_endian == Stream::LittleEndian))
+    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
         ret = swapFloat(ret);
     return ret;
 }
@@ -223,7 +227,7 @@ double BinaryReader::readDouble()
     double ret = *(double*)(m_data + m_position);
     m_position += 8;
 
-    if ((!isSystemBigEndian() && m_endian == Stream::BigEndian) || (isSystemBigEndian() && m_endian == Stream::LittleEndian))
+    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
         ret = swapDouble(ret);
 
     return ret;
@@ -262,8 +266,23 @@ std::string BinaryReader::readUnicode()
     return ret;
 }
 
+std::string BinaryReader::readString()
+{
+    std::string ret = "";
+    Uint8 chr = readByte();
+
+    while (chr != 0)
+    {
+        ret += chr;
+        chr = readByte();
+    }
+
+    return ret;
+}
+
 bool BinaryReader::isOpenForWriting()
 {
     return false;
 }
-
+}
+}

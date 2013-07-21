@@ -21,7 +21,7 @@
 #include "IOException.hpp"
 #include "aes.h"
 #include "ec.h"
-#include <utility.hpp>
+#include "utility.hpp"
 #include "md5.h"
 #include "sha1.h"
 
@@ -32,6 +32,9 @@
 #include <iostream>
 #include <iomanip>
 
+
+namespace zelda
+{
 
 WiiSave::WiiSave()
     : m_banner(NULL)
@@ -79,3 +82,5 @@ WiiBanner* WiiSave::banner() const
 {
     return m_banner;
 }
+
+} // zelda

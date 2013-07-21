@@ -17,6 +17,11 @@
 
 #include "Types.hpp"
 
+namespace zelda
+{
+namespace io
+{
+
 /*! \class Stream
  *  \brief Stream is the main class all streams inherit from
  *
@@ -35,17 +40,6 @@ public:
     //! \brief Default buffer block size.
     static const Uint32 BLOCKSZ;
 
-    /*! \enum Endian
-     *  \brief Allows the user to specify the Endianness of the stream buffer.<br />
-     *         The proper actions are automatically taken depending on platform and
-     *         buffer settings
-     */
-    enum Endian
-    {
-        LittleEndian, //!< Specifies that the Stream is Little Endian (LSB)
-        BigEndian //!< Specifies that the Stream is Big Endian (MSB)
-    };
-
     /*! \enum SeekOrigin
      *  \brief Specifies how to seek in a stream.
      */
@@ -56,9 +50,8 @@ public:
         End            //!< Tells the Stream to seek from the End of the buffer.
     };
 
-
     /*! \brief The default constructor
-     */
+         */
     Stream();
     /*! \brief This constructor takes an existing buffer to read from.
      *
@@ -87,12 +80,26 @@ public:
      * \throw IOException
      */
     virtual void writeBit(bool val);
-
     /*! \brief Writes a byte at the current position and advances the position by one byte.
      * \param byte The value to write
      * \throw IOException
      */
+    virtual void writeUByte(Uint8 byte);
+
+    /*! \brief Writes a byte at the current position and advances the position by one byte.
+         * \param byte The value to write
+         * \throw IOException
+         */
     virtual void writeByte(Int8 byte);
+
+    /*! \brief Writes the given buffer with the specified length, buffers can be bigger than the length
+     *  however it's undefined behavior to try and write a buffer which is smaller than the given length.
+     *
+     * \param data The buffer to write
+     * \param length The amount to write
+     * \throw IOException
+     */
+    virtual void writeUBytes(Uint8* data, Int64 length);
 
     /*! \brief Writes the given buffer with the specified length, buffers can be bigger than the length
      *  however it's undefined behavior to try and write a buffer which is smaller than the given length.
@@ -212,7 +219,7 @@ public:
      *
      *  \return Endian The current Stream Endianess
      */
-    Endian endianness() const;
+    Endian endian() const;
 
 
     /*! \brief Returns whether the stream is BigEndian
@@ -235,5 +242,6 @@ protected:
     Uint8*  m_data;        //!< The Stream buffer
     bool    m_autoResize;  //!< Whether the stream is autoresizing
 };
-
+} // io
+} // zelda
 #endif // __STREAM_HPP__

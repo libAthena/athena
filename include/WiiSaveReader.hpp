@@ -19,17 +19,41 @@
 #include <utility.hpp>
 #include <BinaryReader.hpp>
 
+namespace zelda
+{
+
 class WiiSave;
 class WiiBanner;
 class WiiFile;
 class WiiImage;
 
-class WiiSaveReader : public BinaryReader
+/*! \class WiiSaveReader
+ *  \brief Wii data.bin reader class
+ *
+ *  A Class for reading binary data from a wii data.bin file,
+ *  all work is done using a memory buffer, and not read directly from the disk.
+ *  \sa BinaryReader
+ */
+class WiiSaveReader : public io::BinaryReader
 {
 public:
+    /*! \brief This constructor takes an existing buffer to read from.
+     *
+     *   \param data The existing buffer
+     *   \param length The length of the existing buffer
+     */
     WiiSaveReader(const Uint8*, Uint64);
+
+    /*! \brief This constructor creates an instance from a file on disk.
+     *
+     * \param filename The file to create the stream from
+     */
     WiiSaveReader(const std::string&);
 
+    /*!
+     * \brief readSave
+     * \return
+     */
     WiiSave* readSave();
 private:
     WiiBanner* readBanner();
@@ -37,4 +61,6 @@ private:
     WiiImage*  readImage(Uint32 width, Uint32 height);
     void       readCerts(Uint32 totalSize);
 };
+
+} // zelda
 #endif // __WII_SAVE_READER_HPP__

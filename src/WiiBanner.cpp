@@ -17,6 +17,9 @@
 #include <utility.hpp>
 #include <string.h>
 
+namespace zelda
+{
+
 WiiImage::WiiImage(Uint32 width, Uint32 height, Uint8* data) :
     m_width(width),
     m_height(height),
@@ -178,3 +181,4 @@ Uint32 WiiBanner::flags() const
     return m_flags;
 }
 
+} // zelda

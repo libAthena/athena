@@ -110,33 +110,33 @@
  */
 
 static const uint8_t K[3][16] = {
-/* Round 1: skipped (since it is simply sequential). */
-{ 1, 6, 11, 0, 5, 10, 15, 4, 9, 14, 3, 8, 13, 2, 7, 12 }, /* R2 */
-{ 5, 8, 11, 14, 1, 4, 7, 10, 13, 0, 3, 6, 9, 12, 15, 2 }, /* R3 */
-{ 0, 7, 14, 5, 12, 3, 10, 1, 8, 15, 6, 13, 4, 11, 2, 9 } /* R4 */
+    /* Round 1: skipped (since it is simply sequential). */
+    { 1, 6, 11, 0, 5, 10, 15, 4, 9, 14, 3, 8, 13, 2, 7, 12 }, /* R2 */
+    { 5, 8, 11, 14, 1, 4, 7, 10, 13, 0, 3, 6, 9, 12, 15, 2 }, /* R3 */
+    { 0, 7, 14, 5, 12, 3, 10, 1, 8, 15, 6, 13, 4, 11, 2, 9 } /* R4 */
 };
 
 static const uint8_t S[4][4] = { { 7, 12, 17, 22 }, /* Round 1 */
-{ 5, 9, 14, 20 }, /* Round 2 */
-{ 4, 11, 16, 23 }, /* Round 3 */
-{ 6, 10, 15, 21 } /* Round 4 */
-};
+                                 { 5, 9, 14, 20 }, /* Round 2 */
+                                 { 4, 11, 16, 23 }, /* Round 3 */
+                                 { 6, 10, 15, 21 } /* Round 4 */
+                               };
 
 static const uint32_t T[4][16] = { { 0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, /* Round 1 */
-0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501, 0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be, 0x6b901122, 0xfd987193,
-		0xa679438e, 0x49b40821 },
+                                     0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501, 0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be, 0x6b901122, 0xfd987193,
+                                     0xa679438e, 0x49b40821 },
 
-{ 0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa, /* Round 2 */
-0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8, 0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed, 0xa9e3e905, 0xfcefa3f8,
-		0x676f02d9, 0x8d2a4c8a },
+                                   { 0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa, /* Round 2 */
+                                     0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8, 0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed, 0xa9e3e905, 0xfcefa3f8,
+                                     0x676f02d9, 0x8d2a4c8a },
 
-{ 0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c, /* Round 3 */
-0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70, 0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05, 0xd9d4d039, 0xe6db99e5,
-		0x1fa27cf8, 0xc4ac5665 },
+                                   { 0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c, /* Round 3 */
+                                     0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70, 0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05, 0xd9d4d039, 0xe6db99e5,
+                                     0x1fa27cf8, 0xc4ac5665 },
 
-{ 0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039, /* Round 4 */
-0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1, 0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1, 0xf7537e82, 0xbd3af235,
-		0x2ad7d2bb, 0xeb86d391 }, };
+                                   { 0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039, /* Round 4 */
+                                     0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1, 0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1, 0xf7537e82, 0xbd3af235,
+                                     0x2ad7d2bb, 0xeb86d391 }, };
 
 /* -------------------------------------------------------------------------- **
  * Macros:
@@ -197,87 +197,87 @@ static void Permute(uint32_t ABCD[4], const unsigned char block[64])
  * ------------------------------------------------------------------------ **
  */
 {
-	int round;
-	int i, j;
-	uint8_t s;
-	uint32_t a, b, c, d;
-	uint32_t KeepABCD[4];
-	uint32_t X[16];
+    int round;
+    int i, j;
+    uint8_t s;
+    uint32_t a, b, c, d;
+    uint32_t KeepABCD[4];
+    uint32_t X[16];
 
-	/* Store the current ABCD values for later re-use.
-	 */
-	for (i = 0; i < 4; i++)
-		KeepABCD[i] = ABCD[i];
+    /* Store the current ABCD values for later re-use.
+     */
+    for (i = 0; i < 4; i++)
+        KeepABCD[i] = ABCD[i];
 
-	/* Convert the input block into an array of unsigned longs, taking care
-	 * to read the block in Little Endian order (the algorithm assumes this).
-	 * The uint32_t values are then handled in host order.
-	 */
-	for (i = 0, j = 0; i < 16; i++)
-	{
-		X[i] = (uint32_t) block[j++];
-		X[i] |= ((uint32_t) block[j++] << 8);
-		X[i] |= ((uint32_t) block[j++] << 16);
-		X[i] |= ((uint32_t) block[j++] << 24);
-	}
+    /* Convert the input block into an array of unsigned longs, taking care
+     * to read the block in Little Endian order (the algorithm assumes this).
+     * The uint32_t values are then handled in host order.
+     */
+    for (i = 0, j = 0; i < 16; i++)
+    {
+        X[i] = (uint32_t) block[j++];
+        X[i] |= ((uint32_t) block[j++] << 8);
+        X[i] |= ((uint32_t) block[j++] << 16);
+        X[i] |= ((uint32_t) block[j++] << 24);
+    }
 
-	/* This loop performs the four rounds of permutations.
-	 * The rounds are each very similar.  The differences are in three areas:
-	 *   - The function (F, G, H, or I) used to perform bitwise permutations
-	 *	 on the registers,
-	 *   - The order in which values from X[] are chosen.
-	 *   - Changes to the number of bits by which the registers are rotated.
-	 * This implementation uses a switch statement to deal with some of the
-	 * differences between rounds.  Other differences are handled by storing
-	 * values in arrays and using the round number to select the correct set
-	 * of values.
-	 *
-	 * (My implementation appears to be a poor compromise between speed, size,
-	 * and clarity.  Ugh.  [crh])
-	 */
-	for (round = 0; round < 4; round++)
-	{
-		for (i = 0; i < 16; i++)
-		{
-			j = (4 - (i % 4)) & 0x3; /* <j> handles the rotation of ABCD.		  */
-			s = S[round][i % 4]; /* <s> is the bit shift for this iteration.   */
+    /* This loop performs the four rounds of permutations.
+     * The rounds are each very similar.  The differences are in three areas:
+     *   - The function (F, G, H, or I) used to perform bitwise permutations
+     *	 on the registers,
+     *   - The order in which values from X[] are chosen.
+     *   - Changes to the number of bits by which the registers are rotated.
+     * This implementation uses a switch statement to deal with some of the
+     * differences between rounds.  Other differences are handled by storing
+     * values in arrays and using the round number to select the correct set
+     * of values.
+     *
+     * (My implementation appears to be a poor compromise between speed, size,
+     * and clarity.  Ugh.  [crh])
+     */
+    for (round = 0; round < 4; round++)
+    {
+        for (i = 0; i < 16; i++)
+        {
+            j = (4 - (i % 4)) & 0x3; /* <j> handles the rotation of ABCD.		  */
+            s = S[round][i % 4]; /* <s> is the bit shift for this iteration.   */
 
-			b = ABCD[(j + 1) & 0x3]; /* Copy the b,c,d values per ABCD rotation.   */
-			c = ABCD[(j + 2) & 0x3]; /* This isn't really necessary, it just looks */
-			d = ABCD[(j + 3) & 0x3]; /* clean & will hopefully be optimized away.  */
+            b = ABCD[(j + 1) & 0x3]; /* Copy the b,c,d values per ABCD rotation.   */
+            c = ABCD[(j + 2) & 0x3]; /* This isn't really necessary, it just looks */
+            d = ABCD[(j + 3) & 0x3]; /* clean & will hopefully be optimized away.  */
 
-			/* The actual perumation function.
-			 * This is broken out to minimize the code within the switch().
-			 */
-			switch (round)
-			{
-				case 0:
-					/* round 1 */
-					a = md5F( b, c, d ) + X[i];
-					break;
-				case 1:
-					/* round 2 */
-					a = md5G( b, c, d ) + X[K[0][i]];
-					break;
-				case 2:
-					/* round 3 */
-					a = md5H( b, c, d ) + X[K[1][i]];
-					break;
-				default:
-					/* round 4 */
-					a = md5I( b, c, d ) + X[K[2][i]];
-					break;
-			}
-			a = 0xFFFFFFFF & (ABCD[j] + a + T[round][i]);
-			ABCD[j] = b + (0xFFFFFFFF & ((a << s) | (a >> (32 - s))));
-		}
-	}
+            /* The actual perumation function.
+             * This is broken out to minimize the code within the switch().
+             */
+            switch (round)
+            {
+                case 0:
+                    /* round 1 */
+                    a = md5F( b, c, d ) + X[i];
+                    break;
+                case 1:
+                    /* round 2 */
+                    a = md5G( b, c, d ) + X[K[0][i]];
+                    break;
+                case 2:
+                    /* round 3 */
+                    a = md5H( b, c, d ) + X[K[1][i]];
+                    break;
+                default:
+                    /* round 4 */
+                    a = md5I( b, c, d ) + X[K[2][i]];
+                    break;
+            }
+            a = 0xFFFFFFFF & (ABCD[j] + a + T[round][i]);
+            ABCD[j] = b + (0xFFFFFFFF & ((a << s) | (a >> (32 - s))));
+        }
+    }
 
-	/* Use the stored original A, B, C, D values to perform
-	 * one last convolution.
-	 */
-	for (i = 0; i < 4; i++)
-		ABCD[i] = 0xFFFFFFFF & (ABCD[i] + KeepABCD[i]);
+    /* Use the stored original A, B, C, D values to perform
+     * one last convolution.
+     */
+    for (i = 0; i < 4; i++)
+        ABCD[i] = 0xFFFFFFFF & (ABCD[i] + KeepABCD[i]);
 
 } /* Permute */
 
@@ -314,22 +314,22 @@ auth_md5Ctx *auth_md5InitCtx(auth_md5Ctx *ctx)
  * ------------------------------------------------------------------------ **
  */
 {
-	ctx->len = 0;
-	ctx->b_used = 0;
+    ctx->len = 0;
+    ctx->b_used = 0;
 
-	ctx->ABCD[0] = 0x67452301; /* The array ABCD[] contains the four 4-byte  */
-	ctx->ABCD[1] = 0xefcdab89; /* "registers" that are manipulated to		*/
-	ctx->ABCD[2] = 0x98badcfe; /* produce the MD5 digest.  The input acts	*/
-	ctx->ABCD[3] = 0x10325476; /* upon the registers, not the other way	  */
-	/* 'round.  The initial values are those	  */
-	/* given in RFC 1321 (pg. 4).  Note, however, that RFC 1321   */
-	/* provides these values as bytes, not as longwords, and the  */
-	/* bytes are arranged in little-endian order as if they were  */
-	/* the bytes of (little endian) 32-bit ints.  That's		  */
-	/* confusing as all getout (to me, anyway). The values given  */
-	/* here are provided as 32-bit values in C language format,   */
-	/* so they are endian-agnostic.  */
-	return (ctx);
+    ctx->ABCD[0] = 0x67452301; /* The array ABCD[] contains the four 4-byte  */
+    ctx->ABCD[1] = 0xefcdab89; /* "registers" that are manipulated to		*/
+    ctx->ABCD[2] = 0x98badcfe; /* produce the MD5 digest.  The input acts	*/
+    ctx->ABCD[3] = 0x10325476; /* upon the registers, not the other way	  */
+    /* 'round.  The initial values are those	  */
+    /* given in RFC 1321 (pg. 4).  Note, however, that RFC 1321   */
+    /* provides these values as bytes, not as longwords, and the  */
+    /* bytes are arranged in little-endian order as if they were  */
+    /* the bytes of (little endian) 32-bit ints.  That's		  */
+    /* confusing as all getout (to me, anyway). The values given  */
+    /* here are provided as 32-bit values in C language format,   */
+    /* so they are endian-agnostic.  */
+    return (ctx);
 } /* auth_md5InitCtx */
 
 auth_md5Ctx *auth_md5SumCtx(auth_md5Ctx *ctx, const unsigned char *src, const int len)
@@ -349,29 +349,29 @@ auth_md5Ctx *auth_md5SumCtx(auth_md5Ctx *ctx, const unsigned char *src, const in
  * ------------------------------------------------------------------------ **
  */
 {
-	int i;
+    int i;
 
-	/* Add the new block's length to the total length.
-	 */
-	ctx->len += (uint32_t) len;
+    /* Add the new block's length to the total length.
+     */
+    ctx->len += (uint32_t) len;
 
-	/* Copy the new block's data into the context block.
-	 * Call the Permute() function whenever the context block is full.
-	 */
-	for (i = 0; i < len; i++)
-	{
-		ctx->block[ctx->b_used] = src[i];
-		(ctx->b_used)++;
-		if (64 == ctx->b_used)
-		{
-			Permute(ctx->ABCD, ctx->block);
-			ctx->b_used = 0;
-		}
-	}
+    /* Copy the new block's data into the context block.
+     * Call the Permute() function whenever the context block is full.
+     */
+    for (i = 0; i < len; i++)
+    {
+        ctx->block[ctx->b_used] = src[i];
+        (ctx->b_used)++;
+        if (64 == ctx->b_used)
+        {
+            Permute(ctx->ABCD, ctx->block);
+            ctx->b_used = 0;
+        }
+    }
 
-	/* Return the updated context.
-	 */
-	return (ctx);
+    /* Return the updated context.
+     */
+    return (ctx);
 } /* auth_md5SumCtx */
 
 auth_md5Ctx *auth_md5CloseCtx(auth_md5Ctx *ctx, unsigned char *dst)
@@ -394,57 +394,57 @@ auth_md5Ctx *auth_md5CloseCtx(auth_md5Ctx *ctx, unsigned char *dst)
  * ------------------------------------------------------------------------ **
  */
 {
-	int i;
-	uint32_t l;
+    int i;
+    uint32_t l;
 
-	/* Add the required 0x80 padding initiator byte.
-	 * The auth_md5SumCtx() function always permutes and resets the context
-	 * block when it gets full, so we know that there must be at least one
-	 * free byte in the context block.
-	 */
-	ctx->block[ctx->b_used] = 0x80;
-	(ctx->b_used)++;
+    /* Add the required 0x80 padding initiator byte.
+     * The auth_md5SumCtx() function always permutes and resets the context
+     * block when it gets full, so we know that there must be at least one
+     * free byte in the context block.
+     */
+    ctx->block[ctx->b_used] = 0x80;
+    (ctx->b_used)++;
 
-	/* Zero out any remaining free bytes in the context block.
-	 */
-	for (i = ctx->b_used; i < 64; i++)
-		ctx->block[i] = 0;
+    /* Zero out any remaining free bytes in the context block.
+     */
+    for (i = ctx->b_used; i < 64; i++)
+        ctx->block[i] = 0;
 
-	/* We need 8 bytes to store the length field.
-	 * If we don't have 8, call Permute() and reset the context block.
-	 */
-	if (56 < ctx->b_used)
-	{
-		Permute(ctx->ABCD, ctx->block);
-		for (i = 0; i < 64; i++)
-			ctx->block[i] = 0;
-	}
+    /* We need 8 bytes to store the length field.
+     * If we don't have 8, call Permute() and reset the context block.
+     */
+    if (56 < ctx->b_used)
+    {
+        Permute(ctx->ABCD, ctx->block);
+        for (i = 0; i < 64; i++)
+            ctx->block[i] = 0;
+    }
 
-	/* Add the total length and perform the final perumation.
-	 * Note:  The 60'th byte is read from the *original* <ctx->len> value
-	 *		and shifted to the correct position.  This neatly avoids
-	 *		any MAXINT numeric overflow issues.
-	 */
-	l = ctx->len << 3;
-	for (i = 0; i < 4; i++)
-		ctx->block[56 + i] |= GetLongByte( l, i );
-	ctx->block[60] = ((GetLongByte( ctx->len, 3 ) & 0xE0) >> 5); /* See Above! */
-	Permute(ctx->ABCD, ctx->block);
+    /* Add the total length and perform the final perumation.
+     * Note:  The 60'th byte is read from the *original* <ctx->len> value
+     *		and shifted to the correct position.  This neatly avoids
+     *		any MAXINT numeric overflow issues.
+     */
+    l = ctx->len << 3;
+    for (i = 0; i < 4; i++)
+        ctx->block[56 + i] |= GetLongByte( l, i );
+    ctx->block[60] = ((GetLongByte( ctx->len, 3 ) & 0xE0) >> 5); /* See Above! */
+    Permute(ctx->ABCD, ctx->block);
 
-	/* Now copy the result into the output buffer and we're done.
-	 */
-	for (i = 0; i < 4; i++)
-	{
-		dst[0 + i] = GetLongByte( ctx->ABCD[0], i );
-		dst[4 + i] = GetLongByte( ctx->ABCD[1], i );
-		dst[8 + i] = GetLongByte( ctx->ABCD[2], i );
-		dst[12 + i] = GetLongByte( ctx->ABCD[3], i );
-	}
+    /* Now copy the result into the output buffer and we're done.
+     */
+    for (i = 0; i < 4; i++)
+    {
+        dst[0 + i] = GetLongByte( ctx->ABCD[0], i );
+        dst[4 + i] = GetLongByte( ctx->ABCD[1], i );
+        dst[8 + i] = GetLongByte( ctx->ABCD[2], i );
+        dst[12 + i] = GetLongByte( ctx->ABCD[3], i );
+    }
 
-	/* Return the context.
-	 * This is done for compatibility with the other auth_md5*Ctx() functions.
-	 */
-	return (ctx);
+    /* Return the context.
+     * This is done for compatibility with the other auth_md5*Ctx() functions.
+     */
+    return (ctx);
 } /* auth_md5CloseCtx */
 
 unsigned char * MD5(unsigned char *dst, const unsigned char *src, const int len)
@@ -481,13 +481,13 @@ unsigned char * MD5(unsigned char *dst, const unsigned char *src, const int len)
  * ------------------------------------------------------------------------ **
  */
 {
-	auth_md5Ctx ctx[1];
+    auth_md5Ctx ctx[1];
 
-	(void) auth_md5InitCtx(ctx); /* Open a context.	  */
-	(void) auth_md5SumCtx(ctx, src, len); /* Pass only one block. */
-	(void) auth_md5CloseCtx(ctx, dst); /* Close the context.   */
+    (void) auth_md5InitCtx(ctx); /* Open a context.	  */
+    (void) auth_md5SumCtx(ctx, src, len); /* Pass only one block. */
+    (void) auth_md5CloseCtx(ctx, dst); /* Close the context.   */
 
-	return (dst); /* Makes life easy.	 */
+    return (dst); /* Makes life easy.	 */
 } /* auth_md5Sum */
 
 unsigned char * MD5fromFile(unsigned char *dst, const char *src)
@@ -522,89 +522,89 @@ unsigned char * MD5fromFile(unsigned char *dst, const char *src)
  * ------------------------------------------------------------------------ **
  */
 {
-	auth_md5Ctx ctx[1];
+    auth_md5Ctx ctx[1];
 
-	FILE * file;
-	unsigned int blksize = 0;
-	unsigned int read = 0;
-	unsigned int filesize;
-	unsigned char* buffer;
+    FILE * file;
+    unsigned int blksize = 0;
+    unsigned int read = 0;
+    unsigned int filesize;
+    unsigned char* buffer;
 
-	file = fopen(src, "rb");
+    file = fopen(src, "rb");
 
-	if (file == NULL)
-	{
-		return NULL;
-	}
+    if (file == NULL)
+    {
+        return NULL;
+    }
 
-	(void) auth_md5InitCtx(ctx); /* Open a context.	  */
+    (void) auth_md5InitCtx(ctx); /* Open a context.	  */
 
-	fseek(file, 0, SEEK_END);
+    fseek(file, 0, SEEK_END);
     filesize = ftell(file);
-	rewind(file);
+    rewind(file);
 
-	if (filesize < 1048576) //1MB cache for files bigger than 1 MB
-		blksize = filesize;
-	else blksize = 1048576;
+    if (filesize < 1048576) //1MB cache for files bigger than 1 MB
+        blksize = filesize;
+    else blksize = 1048576;
 
-	buffer = malloc(blksize);
+    buffer = malloc(blksize);
 
-	if (buffer == NULL)
-	{
-		//no memory
-		fclose(file);
-		return NULL;
-	}
+    if (buffer == NULL)
+    {
+        //no memory
+        fclose(file);
+        return NULL;
+    }
 
-	do
-	{
-		read = fread(buffer, 1, blksize, file);
-		(void) auth_md5SumCtx(ctx, buffer, read); /* Pass only one block. */
+    do
+    {
+        read = fread(buffer, 1, blksize, file);
+        (void) auth_md5SumCtx(ctx, buffer, read); /* Pass only one block. */
 
-	} while (read > 0);
+    } while (read > 0);
 
-	fclose(file);
-	free(buffer);
+    fclose(file);
+    free(buffer);
 
-	(void) auth_md5CloseCtx(ctx, dst); /* Close the context.   */
+    (void) auth_md5CloseCtx(ctx, dst); /* Close the context.   */
 
-	return (dst); /* Makes life easy.	 */
+    return (dst); /* Makes life easy.	 */
 } /* auth_md5Sum */
 
 const char * MD5ToString(const unsigned char * hash, char * dst)
 {
-	char hexchar[3];
-	short i = 0, n = 0;
+    char hexchar[3];
+    short i = 0, n = 0;
 
-	for (i = 0; i < 16; i++)
-	{
-		sprintf(hexchar, "%02X", hash[i]);
+    for (i = 0; i < 16; i++)
+    {
+        sprintf(hexchar, "%02X", hash[i]);
 
-		dst[n++] = hexchar[0];
-		dst[n++] = hexchar[1];
-	}
+        dst[n++] = hexchar[0];
+        dst[n++] = hexchar[1];
+    }
 
-	dst[n] = 0x00;
+    dst[n] = 0x00;
 
-	return dst;
+    return dst;
 }
 
 unsigned char * StringToMD5(const char * hash, unsigned char * dst)
 {
-	char hexchar[2];
-	short i = 0, n = 0;
+    char hexchar[2];
+    short i = 0, n = 0;
 
-	for (i = 0; i < 16; i++)
-	{
-		hexchar[0] = hash[n++];
-		hexchar[1] = hash[n++];
+    for (i = 0; i < 16; i++)
+    {
+        hexchar[0] = hash[n++];
+        hexchar[1] = hash[n++];
 
-		dst[i] = STR2HEX( hexchar[0] );
-		dst[i] <<= 4;
-		dst[i] += STR2HEX( hexchar[1] );
-	}
+        dst[i] = STR2HEX( hexchar[0] );
+        dst[i] <<= 4;
+        dst[i] += STR2HEX( hexchar[1] );
+    }
 
-	return dst;
+    return dst;
 }
 
 /* ========================================================================== */

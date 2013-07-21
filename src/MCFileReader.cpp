@@ -13,27 +13,19 @@
 // You should have received a copy of the GNU General Public License
 // along with libZelda.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __UTILITY_H__
-#define __UTILITY_H__
+#include "MCFileReader.hpp"
 
-#include <string>
-#include "Types.hpp"
+namespace zelda
+{
 
-bool isEmpty(Int8*, size_t);
+MCFileReader::MCFileReader(Uint8* data, Uint64 length)
+    : BinaryReader(data, length)
+{
+}
 
-unsigned short swapU16(unsigned short val );
-short swap16 (short val );
-unsigned int   swapU32(unsigned int val);
-int   swap32 (int val );
-long long  swap64 (long long val);
+MCFileReader::MCFileReader(const std::string& filename)
+    : BinaryReader(filename)
+{
+}
 
-float swapFloat(float val);
-double  swapDouble(double val);
-
-bool isSystemBigEndian();
-
-void fillRandom(Uint8 * rndArea, Uint8 count);
-
-void yaz0Decode(Uint8* src, Uint8* dst, Uint32 uncompressedSize);
-
-#endif
+} // zelda

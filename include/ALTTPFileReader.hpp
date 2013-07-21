@@ -21,14 +21,38 @@
 #include "BinaryReader.hpp"
 #include "ALTTPQuest.hpp"
 
+namespace zelda
+{
+
+/*! \class ALTTPFileReader
+ *  \brief A Link to the Past save data reader class
+ *
+ *  A Class for reading binary data from an ALTTP Save File,
+ *  all work is done using a memory buffer, and not read directly from the disk.
+ *  \sa BinaryReader
+ */
 class ALTTPFile;
 
-class ALTTPFileReader : public BinaryReader
+class ALTTPFileReader : public io::BinaryReader
 {
 public:
+    /*! \brief This constructor takes an existing buffer to read from.
+     *
+     *   \param data The existing buffer
+     *   \param length The length of the existing buffer
+     */
     ALTTPFileReader(Uint8*, Uint64);
+
+    /*! \brief This constructor creates an instance from a file on disk.
+     *
+     * \param filename The file to create the stream from
+     */
     ALTTPFileReader(const std::string&);
 
+    /*! \brief Reads the SRAM data from the buffer
+     *
+     * \return ALTTPFile* SRAM data
+     */
     ALTTPFile* readFile();
 private:
     ALTTPRoomFlags* readRoomFlags();
@@ -36,4 +60,5 @@ private:
     ALTTPDungeonItemFlags readDungeonFlags();
 };
 
+} // zelda
 #endif // __ALTTP_FILE_READER_HPP__

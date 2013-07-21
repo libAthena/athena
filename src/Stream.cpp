@@ -19,6 +19,10 @@
 #include <string.h>
 #include <sstream>
 
+namespace zelda
+{
+namespace io
+{
 
 const Uint32 Stream::BLOCKSZ = 512;
 
@@ -26,7 +30,7 @@ Stream::Stream() :
     m_bitPosition(0),
     m_position(0),
     m_length(0),
-    m_endian(Stream::LittleEndian),
+    m_endian(LittleEndian),
     m_data(NULL),
     m_autoResize(true)
 {}
@@ -34,7 +38,7 @@ Stream::Stream() :
 Stream::Stream(const Uint8* data, Uint64 length) :
     m_bitPosition(0),
     m_position(0),
-    m_endian(Stream::LittleEndian),
+    m_endian(LittleEndian),
     m_autoResize(true)
 {
     if (length <= 0)
@@ -97,6 +101,11 @@ void Stream::writeBit(bool val)
     }
 }
 
+void Stream::writeUByte(Uint8 byte)
+{
+    writeByte((Int8)byte);
+}
+
 void Stream::writeByte(Int8 byte)
 {
     if (m_bitPosition > 0)
@@ -111,6 +120,11 @@ void Stream::writeByte(Int8 byte)
 
     *(Int8*)(m_data + m_position) = byte;
     m_position++;
+}
+
+void Stream::writeUBytes(Uint8* data, Int64 length)
+{
+    writeBytes((Int8*)data, length);
 }
 
 void Stream::writeBytes(Int8* data, Int64 length)
@@ -302,7 +316,10 @@ void Stream::setEndianess(Endian endian)
     m_endian = endian;
 }
 
-Stream::Endian Stream::endianness() const
+Endian Stream::endian() const
 {
     return m_endian;
 }
+
+} // io
+} // zelda

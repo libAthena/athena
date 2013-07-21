@@ -18,6 +18,9 @@
 
 #include <string>
 
+namespace zelda
+{
+
 /*! \class Exception
  *  \brief The baseclass for all Exceptions.
  *
@@ -33,7 +36,7 @@ public:
     inline Exception(const std::string& message) :
         m_message(message)
     {
-    };
+    }
 
     /*! \brief Returns the Error message of the exception
      *  \return std::string The error message
@@ -41,9 +44,10 @@ public:
     inline std::string message() const
     {
         return m_message;
-    };
+    }
 protected:
-    std::string m_message;
+    std::string m_message; //!< The error message string
 };
 
+} // zelda
 #endif

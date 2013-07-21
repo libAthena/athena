@@ -19,6 +19,11 @@
 #include "Stream.hpp"
 #include <string>
 
+namespace zelda
+{
+namespace io
+{
+
 /*! \class BinaryWriter
  *  \brief A Stream class for writing binary data
  *
@@ -136,8 +141,15 @@ public:
 protected:
     Int8 readByte();
     Int8* readBytes(Int64);
-    bool isOpenForReading();
-    std::string m_filepath;
+    bool isOpenForReading(); //!< Overridden from \sa Stream
+    std::string m_filepath; //!< Path to the target file
 };
+}
+}
 
-#endif
+#ifndef BINARYWRITER_BASE
+#define BINARYWRITER_BASE \
+    private: \
+        typedef zelda::io::BinaryWriter base;
+#endif // BINARYWRITER_BASE
+#endif // __BINARY_WRITER_HPP__

@@ -19,6 +19,9 @@
 #include "Exception.hpp"
 
 
+namespace zelda
+{
+
 /*! \class IOException
  *  \brief An excpeption thrown on inappropriate IO calls.
  *
@@ -36,8 +39,9 @@ public:
      *  \param message The error message to throw
      */
     IOException(const std::string& message) :
-    Exception("IOException: " + message)
+        Exception("IOException: " + message)
     {};
 };
 
+} // zelda
 #endif

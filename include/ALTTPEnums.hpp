@@ -16,6 +16,8 @@
 #ifndef __ALTTP_ENUMS_HPP__
 #define __ALTTP_ENUMS_HPP__
 
+#ifndef __DOXYGEN_IGNORE__
+
 #include "Types.hpp"
 
 enum BowType : char
@@ -103,4 +105,5 @@ enum ALTTPTagAlong
     AfterBoss
 };
 
+#endif // __DOXYGEN_IGNORE__
 #endif // __ALTTP_ENUMS_HPP__
