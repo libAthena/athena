@@ -21,6 +21,8 @@
 
 namespace zelda
 {
+namespace error
+{
 
 /*! \class IOException
  *  \brief An excpeption thrown on inappropriate IO calls.
@@ -40,8 +42,9 @@ public:
      */
     IOException(const std::string& message) :
         Exception("IOException: " + message)
-    {};
+    {}
 };
 
+} // error
 } // zelda
 #endif

@@ -17,11 +17,11 @@
 #include "WiiSave.hpp"
 #include "WiiFile.hpp"
 #include "WiiBanner.hpp"
+#include "WiiImage.hpp"
 #include "WiiSave.hpp"
 #include "WiiFile.hpp"
 #include "WiiBanner.hpp"
 #include "BinaryWriter.hpp"
-#include "IOException.hpp"
 #include "aes.h"
 #include "ec.h"
 #include "utility.hpp"
@@ -39,15 +39,18 @@
 namespace zelda
 {
 
+namespace io
+{
+
 const Uint8 SD_KEY[16]      = {0xab, 0x01, 0xb9, 0xd8, 0xe1, 0x62, 0x2b, 0x08, 0xaf, 0xba, 0xd8, 0x4d, 0xbf, 0xc2, 0xa5, 0x5d};
 const Uint8 SD_IV[16]       = {0x21, 0x67, 0x12, 0xe6, 0xaa, 0x1f, 0x68, 0x9f, 0x95, 0xc5, 0xa2, 0x23, 0x24, 0xdc, 0x6a, 0x98};
 const Uint8 MD5_BLANKER[16] = {0x0e, 0x65, 0x37, 0x81, 0x99, 0xbe, 0x45, 0x17, 0xab, 0x06, 0xec, 0x22, 0x45, 0x1a, 0x57, 0x93};
 
 WiiSaveWriter::WiiSaveWriter(const std::string &filename)
-    : BinaryWriter(filename)
+    : base(filename)
 {
-    this->setAutoResizing(true);
-    this->setEndianess(BigEndian);
+    base::setAutoResizing(true);
+    base::setEndianess(BigEndian);
 }
 
 
@@ -58,65 +61,65 @@ bool WiiSaveWriter::writeSave(WiiSave *save, Uint8 *macAddress, Uint32 ngId, Uin
 
     writeBanner(save->banner());
 
-    this->writeUInt32(0x70);
-    this->writeUInt32(0x426B0001);
-    this->writeUInt32(ngId); // NG-ID
-    this->writeUInt32(save->fileList().size());
-    this->writeUInt32(0); // Size of files;
-    this->seek(8);
-    this->writeUInt32(0); // totalSize
-    this->seek(64);
-    this->writeUInt64(save->banner()->gameID());
-    this->writeBytes((Int8*)macAddress, 6);
-    this->seek(2); // unknown;
-    this->seek(0x10); // padding;
+    base::writeUInt32(0x70);
+    base::writeUInt32(0x426B0001);
+    base::writeUInt32(ngId); // NG-ID
+    base::writeUInt32(save->fileList().size());
+    base::writeUInt32(0); // Size of files;
+    base::seek(8);
+    base::writeUInt32(0); // totalSize
+    base::seek(64);
+    base::writeUInt64(save->banner()->gameID());
+    base::writeBytes((Int8*)macAddress, 6);
+    base::seek(2); // unknown;
+    base::seek(0x10); // padding;
     Uint32 totalSize = 0;
     for (std::unordered_map<std::string, WiiFile*>::const_iterator iter = save->fileList().begin(); iter != save->fileList().end(); ++iter)
     {
         totalSize += writeFile(iter->second);
     }
-    int pos = this->position();
+    int pos = base::position();
     // Write size data
-    this->seek(0xF0C0 + 0x10, Stream::Beginning);
-    this->writeUInt32(totalSize);
-    this->seek(0xF0C0 + 0x1C, Stream::Beginning);
-    this->writeUInt32(totalSize + 0x3c0);
-    this->seek(pos, Stream::Beginning);
+    base::seek(0xF0C0 + 0x10, Stream::Beginning);
+    base::writeUInt32(totalSize);
+    base::seek(0xF0C0 + 0x1C, Stream::Beginning);
+    base::writeUInt32(totalSize + 0x3c0);
+    base::seek(pos, Stream::Beginning);
 
     writeCerts(totalSize, ngId, ngPriv, ngSig, ngKeyId);
 
-    this->save();
+    base::save();
 
     return true;
 }
 
 void WiiSaveWriter::writeBanner(WiiBanner *banner)
 {
-    this->setEndianess(BigEndian);
-    this->setAutoResizing(true);
-    this->writeInt64(banner->gameID());
-    this->writeInt32((0x60a0+0x1200)*banner->icons().size());
-    this->writeByte((Int8)banner->permissions());
-    this->seek(1);
-    this->writeBytes((Int8*)MD5_BLANKER, 16);
-    this->seek(2);
-    this->writeInt32(0x5749424E); // WIBN
-    this->writeInt32(banner->flags());
-    this->writeInt16(banner->animationSpeed());
-    this->seek(22);
+    base::setEndianess(BigEndian);
+    base::setAutoResizing(true);
+    base::writeInt64(banner->gameID());
+    base::writeInt32((0x60a0+0x1200)*banner->icons().size());
+    base::writeByte((Int8)banner->permissions());
+    base::seek(1);
+    base::writeBytes((Int8*)MD5_BLANKER, 16);
+    base::seek(2);
+    base::writeInt32(0x5749424E); // WIBN
+    base::writeInt32(banner->flags());
+    base::writeInt16(banner->animationSpeed());
+    base::seek(22);
 
-    this->writeUnicode(banner->title());
+    base::writeUnicode(banner->title());
 
-    if (this->position() != 0x0080)
-        this->seek(0x0080, Stream::Beginning);
+    if (base::position() != 0x0080)
+        base::seek(0x0080, Stream::Beginning);
 
-    this->writeUnicode(banner->subtitle());
+    base::writeUnicode(banner->subtitle());
 
-    if (this->position() != 0x00C0)
-        this->seek(0x00C0, Stream::Beginning);
+    if (base::position() != 0x00C0)
+        base::seek(0x00C0, Stream::Beginning);
 
     WiiImage* bannerImage = banner->bannerImage();
-    this->writeBytes((Int8*)bannerImage->data(), bannerImage->width()*bannerImage->height()*2);
+    base::writeBytes((Int8*)bannerImage->data(), bannerImage->width()*bannerImage->height()*2);
 
     // For empty icons
     Uint8* tmpIcon = new Uint8[48*48*2];
@@ -129,27 +132,27 @@ void WiiSaveWriter::writeBanner(WiiBanner *banner)
         }
         else
         {
-            this->writeBytes((Int8*)tmpIcon, 48*48*2);
+            base::writeBytes((Int8*)tmpIcon, 48*48*2);
         }
     }
 
     delete[] tmpIcon; // delete tmp buffer;
 
     Uint8* hash = new Uint8[0x10];
-    MD5(hash, (Uint8*)this->data(), 0xF0C0);
-    this->seek(0x0E, Stream::Beginning);
-    this->writeBytes((Int8*)hash, 0x10);
+    MD5(hash, (Uint8*)base::data(), 0xF0C0);
+    base::seek(0x0E, Stream::Beginning);
+    base::writeBytes((Int8*)hash, 0x10);
 
     aes_set_key(SD_KEY);
     Uint8 data[0xF0C0];
-    memcpy(data, this->data(), 0xF0C0);
+    memcpy(data, base::data(), 0xF0C0);
     Uint8  tmpIV[26];
     memcpy(tmpIV, SD_IV, 16);
     aes_encrypt(tmpIV, data, data, 0xF0C0);
 
-    this->seek(0, Stream::Beginning);
-    this->writeBytes((Int8*)data, 0xF0C0);
-    this->seek(0xF0C0, Stream::Beginning);
+    base::seek(0, Stream::Beginning);
+    base::writeBytes((Int8*)data, 0xF0C0);
+    base::seek(0xF0C0, Stream::Beginning);
 }
 
 Uint32 WiiSaveWriter::writeFile(WiiFile *file)
@@ -157,23 +160,23 @@ Uint32 WiiSaveWriter::writeFile(WiiFile *file)
     Uint32 ret = 0x80;
 
     // Write the File magic
-    this->writeUInt32(0x03ADF17E);
-    this->writeUInt32(file->length());
-    this->writeByte(file->permissions());
-    this->writeByte(file->attributes());
-    this->writeByte(file->type());
+    base::writeUInt32(0x03ADF17E);
+    base::writeUInt32(file->length());
+    base::writeByte(file->permissions());
+    base::writeByte(file->attributes());
+    base::writeByte(file->type());
 
     Uint8 name[0x45];
     fillRandom(name, 0x45);
     memcpy(name, file->filename().c_str(), file->filename().size());
     name[file->filename().size()] = '\0';
-    this->writeBytes((Int8*)name, 0x45);
+    base::writeBytes((Int8*)name, 0x45);
     Uint8 iv[16];
     fillRandom(iv, 0x10);
-    this->writeBytes((Int8*)iv, 0x10);
+    base::writeBytes((Int8*)iv, 0x10);
     Uint8 crap[0x20];
     fillRandom(crap, 0x20);
-    this->writeBytes((Int8*)crap, 0x20);
+    base::writeBytes((Int8*)crap, 0x20);
 
     if (file->type() == WiiFile::File)
     {
@@ -184,7 +187,7 @@ Uint32 WiiSaveWriter::writeFile(WiiFile *file)
         aes_set_key(SD_KEY);
         aes_encrypt(iv, file->data(), data, roundedSize);
 
-        this->writeBytes((Int8*)data, roundedSize);
+        base::writeBytes((Int8*)data, roundedSize);
         ret += roundedSize;
         delete[] data;
     }
@@ -196,7 +199,7 @@ Uint32 WiiSaveWriter::writeFile(WiiFile *file)
 void WiiSaveWriter::writeImage(WiiImage* image)
 {
     Int8* data = (Int8*)image->data();
-    this->writeBytes(data, image->width() * image->height() * 2);
+    base::writeBytes(data, image->width() * image->height() * 2);
 }
 
 void WiiSaveWriter::writeCerts(Uint32 filesSize, Uint32 ngId, Uint8 *ngPriv, Uint8 *ngSig, Uint32 ngKeyId)
@@ -232,7 +235,7 @@ void WiiSaveWriter::writeCerts(Uint32 filesSize, Uint32 ngId, Uint8 *ngPriv, Uin
 
     dataSize = filesSize + 0x80;
     data = new Uint8[dataSize];
-    Uint8* rawData = this->data();
+    Uint8* rawData = base::data();
     memcpy(data, rawData + 0xF0C0, dataSize);
 
     hash = getSha1(data, dataSize);
@@ -248,9 +251,10 @@ void WiiSaveWriter::writeCerts(Uint32 filesSize, Uint32 ngId, Uint8 *ngPriv, Uin
     *(Uint32*)(sig+60) = stuff;
     delete[] hash2;
 
-    this->writeBytes((Int8*)sig, 0x40);
-    this->writeBytes((Int8*)ngCert, 0x180);
-    this->writeBytes((Int8*)apCert, 0x180);
+    base::writeBytes((Int8*)sig, 0x40);
+    base::writeBytes((Int8*)ngCert, 0x180);
+    base::writeBytes((Int8*)apCert, 0x180);
 }
 
+} // io
 } // zelda

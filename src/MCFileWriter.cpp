@@ -19,12 +19,12 @@ namespace zelda
 {
 
 MCFileWriter::MCFileWriter(Uint8* data, Uint64 length)
-    : io::BinaryWriter(data, length)
+    : base(data, length)
 {
 }
 
 MCFileWriter::MCFileWriter(const std::string& filename)
-    : io::BinaryWriter(filename)
+    : base(filename)
 {
 }
 

@@ -20,6 +20,8 @@
 
 namespace zelda
 {
+namespace error
+{
 
 /*! \class Exception
  *  \brief The baseclass for all Exceptions.
@@ -49,5 +51,6 @@ protected:
     std::string m_message; //!< The error message string
 };
 
+} // error
 } // zelda
 #endif

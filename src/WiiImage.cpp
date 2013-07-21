@@ -14,9 +14,12 @@
 // along with libZelda.  If not, see <http://www.gnu.org/licenses/>
 
 #include "WiiImage.hpp"
-#include <utility.hpp>
+#include "utility.hpp"
 #include <string.h>
 #include <stdlib.h>
+
+namespace zelda
+{
 
 WiiImage::WiiImage(Uint32 width, Uint32 height, Uint8* data) :
     m_width(width),
@@ -96,3 +99,5 @@ Uint8 *WiiImage::toRGBA()
     }
     return bitmapdata;
 }
+
+} // zelda

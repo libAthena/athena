@@ -28,6 +28,9 @@ class WiiBanner;
 class WiiFile;
 class WiiImage;
 
+namespace io
+{
+
 /*! \class WiiSaveWriter
  *  \brief Wii data.bin writer class
  *
@@ -37,6 +40,7 @@ class WiiImage;
  */
 class WiiSaveWriter : public io::BinaryWriter
 {
+    BINARYWRITER_BASE
 public:
     /*! \brief This constructor creates an instance from a file on disk.
      *
@@ -64,5 +68,6 @@ private:
     void writeCerts(Uint32 filesSize, Uint32 ngId, Uint8* ngPriv, Uint8* ngSig, Uint32 ngKeyId);
 };
 
+} // io
 } // zelda
 #endif // __WII_SAVE_WRITER_HPP__

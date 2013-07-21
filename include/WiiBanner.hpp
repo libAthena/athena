@@ -22,73 +22,7 @@
 
 namespace zelda
 {
-
-/*!
- * \brief The WiiImage class
- */
-class WiiImage
-{
-public:
-    /*!
-     * \brief WiiImage
-     */
-    WiiImage();
-    /*!
-     * \brief WiiImage
-     * \param width
-     * \param height
-     * \param data
-     */
-    WiiImage(Uint32 width, Uint32 height, Uint8* data);
-    ~WiiImage();
-
-    /*!
-     * \brief setWidth
-     * \param width
-     */
-    void setWidth(const Uint32 width);
-
-    /*!
-     * \brief width
-     * \return
-     */
-    Uint32  width() const;
-
-    /*!
-     * \brief setHeight
-     * \param height
-     */
-    void  setHeight(const Uint32 height);
-
-    /*!
-     * \brief height
-     * \return
-     */
-    Uint32   height() const;
-
-    /*!
-     * \brief setData
-     * \param data
-     */
-    void  setData(const Uint8* data);
-    /*!
-     * \brief data
-     * \return
-     */
-    Uint8*   data();
-
-    /*!
-     * \brief toRGBA32 DOES NOT WORK!!! DO NOT USE!!!
-     * \return
-     */
-    Uint8* toRGBA32();
-
-private:
-    Uint32 m_width;
-    Uint32 m_height;
-    Uint8* m_data;
-};
-
+class WiiImage;
 /*! \class WiiBanner
  *  \brief Wii banner container class
  *

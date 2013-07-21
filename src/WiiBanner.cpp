@@ -14,39 +14,13 @@
 // along with libZelda.  If not, see <http://www.gnu.org/licenses/>
 
 #include "WiiBanner.hpp"
+#include "WiiImage.hpp"
+
 #include <utility.hpp>
 #include <string.h>
 
 namespace zelda
 {
-
-WiiImage::WiiImage(Uint32 width, Uint32 height, Uint8* data) :
-    m_width(width),
-    m_height(height),
-    m_data(data)
-{
-}
-WiiImage::~WiiImage()
-{
-    if (m_data)
-        delete[] m_data;
-    m_data = NULL;
-}
-
-Uint8* WiiImage::data()
-{
-    return m_data;
-}
-
-Uint32 WiiImage::width() const
-{
-    return m_width;
-}
-
-Uint32 WiiImage::height() const
-{
-    return m_height;
-}
 
 WiiBanner::WiiBanner() :
     m_gameId(0),

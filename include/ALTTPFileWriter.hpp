@@ -23,9 +23,10 @@
 
 namespace zelda
 {
-
 class ALTTPFile;
 
+namespace io
+{
 /*! \class ALTTPFileWriter
  *  \brief A Link to the Past save data writer class
  *
@@ -35,6 +36,8 @@ class ALTTPFile;
  */
 class ALTTPFileWriter : public io::BinaryWriter
 {
+    BINARYWRITER_BASE
+
 public:
     /*! \brief This constructor takes an existing buffer to write to.
      *
@@ -62,6 +65,7 @@ private:
     Uint16 calculateChecksum(Uint32 game);
 };
 
+} // io
 } // zelda
 
 #endif // __ALTTP_FILE_WRITER_HPP__

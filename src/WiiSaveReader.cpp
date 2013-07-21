@@ -16,6 +16,7 @@
 #include "WiiSaveReader.hpp"
 #include "WiiSave.hpp"
 #include "WiiFile.hpp"
+#include "WiiImage.hpp"
 #include "WiiBanner.hpp"
 #include "md5.h"
 #include "aes.h"
@@ -25,9 +26,13 @@
 #include <iomanip>
 #include <utility.hpp>
 #include <IOException.hpp>
+#include <InvalidOperationException.hpp>
 #include <string.h>
 
 namespace zelda
+{
+
+namespace io
 {
 
 const Uint8 SD_KEY[16]      = {0xab, 0x01, 0xb9, 0xd8, 0xe1, 0x62, 0x2b, 0x08, 0xaf, 0xba, 0xd8, 0x4d, 0xbf, 0xc2, 0xa5, 0x5d};
@@ -35,13 +40,13 @@ const Uint8 SD_IV[16]       = {0x21, 0x67, 0x12, 0xe6, 0xaa, 0x1f, 0x68, 0x9f, 0
 const Uint8 MD5_BLANKER[16] = {0x0e, 0x65, 0x37, 0x81, 0x99, 0xbe, 0x45, 0x17, 0xab, 0x06, 0xec, 0x22, 0x45, 0x1a, 0x57, 0x93};
 
 WiiSaveReader::WiiSaveReader(const Uint8* data, Uint64 length)
-    : BinaryReader(data, length)
+    : base(data, length)
 {
     setEndianess(BigEndian);
 }
 
 WiiSaveReader::WiiSaveReader(const std::string& filename)
-    : BinaryReader(filename)
+    : base(filename)
 {
     setEndianess(BigEndian);
 }
@@ -50,37 +55,37 @@ WiiSave* WiiSaveReader::readSave()
 {
     WiiSave* ret = new WiiSave;
     if (length() < 0xF0C0)
-        throw IOException("Not a valid WiiSave");
+        throw error::InvalidOperationException("WiiSaveReader::readSave -> Not a valid WiiSave");
 
     WiiBanner* banner = this->readBanner();
     if (!banner)
-        throw IOException("Invalid banner");
+        throw error::InvalidOperationException("WiiSaveReader::readSave -> Invalid banner");
 
     ret->setBanner(banner);
-    Uint32 bkVer = this->readUInt32();
+    Uint32 bkVer = base::readUInt32();
 
     if (bkVer != 0x00000070)
-        throw IOException("Invalid BacKup header size");
+        throw error::InvalidOperationException("WiiSaveReader::readSave -> Invalid BacKup header size");
 
-    Uint32 bkMagic = this->readUInt32();
+    Uint32 bkMagic = base::readUInt32();
     bkMagic = bkMagic;
     if (bkMagic != 0x426B0001)
-        throw IOException("Invalid BacKup header magic");
+        throw error::InvalidOperationException("WiiSaveReader::readSave -> Invalid BacKup header magic");
 
-    Uint32 ngId = this->readUInt32();
+    Uint32 ngId = base::readUInt32();
     ngId = ngId;
 
-    Uint32 numFiles = this->readUInt32();
+    Uint32 numFiles = base::readUInt32();
 
-    /*int fileSize =*/ this->readUInt32();
-    seek(8); // skip unknown data;
+    /*int fileSize =*/ base::readUInt32();
+    base::seek(8); // skip unknown data;
 
-    Uint32 totalSize = this->readUInt32();
-    this->seek(64); // Unknown (Most likely padding)
-    this->seek(8);
-    this->seek(6);
-    this->seek(2);
-    this->seek(0x10);
+    Uint32 totalSize = base::readUInt32();
+    base::seek(64); // Unknown (Most likely padding)
+    base::seek(8);
+    base::seek(6);
+    base::seek(2);
+    base::seek(0x10);
 
     WiiFile* file;
     for (Uint32 i = 0; i < numFiles; ++i)
@@ -98,10 +103,10 @@ WiiBanner* WiiSaveReader::readBanner()
 {
     Uint8* dec = new Uint8[0xf0c0];
     memset(dec, 0, 0xF0C0);
-    Uint8* data = (Uint8*)this->readBytes(0xF0C0);
-    Uint8* oldData = this->data();
-    Uint64 oldPos = this->position();
-    Uint64 oldLen = this->length();
+    Uint8* data = (Uint8*)base::readBytes(0xF0C0);
+    Uint8* oldData = base::data();
+    Uint64 oldPos = base::position();
+    Uint64 oldLen = base::length();
     Uint64 gameId;
     Uint32 bannerSize;
     Uint8  permissions;
@@ -135,20 +140,20 @@ WiiBanner* WiiSaveReader::readBanner()
         for (int i = 0; i < 16; ++i)
             std::cerr << std::hex << (int)(md5Calc[i]);
         std::cerr << std::endl;
-        this->setData(oldData, oldLen);
-        this->seek(oldPos, Stream::Beginning);
-        throw IOException("MD5 Mismatch");
+        base::setData(oldData, oldLen);
+        base::seek(oldPos, Stream::Beginning);
+        throw error::InvalidOperationException("WiiSaveReader::readBanner -> MD5 Mismatch");
     }
     // Set the binary reader buffer;
-    this->setData(dec, 0xF0C0);
+    base::setData(dec, 0xF0C0);
     // Start reading the header
-    gameId = this->readUInt64();
-    bannerSize = this->readUInt32();
-    permissions = this->readByte();
-/*    unk =*/ this->readByte();
-    this->seek(0x10);
+    gameId = base::readUInt64();
+    bannerSize = base::readUInt32();
+    permissions = base::readByte();
+/*    unk =*/ base::readByte();
+    base::seek(0x10);
     // skip padding
-    this->seek(2);
+    base::seek(2);
 
     int magic;
     int flags;
@@ -156,28 +161,28 @@ WiiBanner* WiiSaveReader::readBanner()
     std::string gameTitle;
     std::string subTitle;
 
-    magic = this->readUInt32();
+    magic = base::readUInt32();
 
     // Ensure that the header magic is valid.
     if (magic != 0x5749424E)
     {
         // Make sure to reset m_reader values back to the old ones.
-        this->setData(oldData, oldLen);
-        this->seek(oldPos, Stream::Beginning);
-        throw IOException("Invalid Header Magic");
+        base::setData(oldData, oldLen);
+        base::seek(oldPos, Stream::Beginning);
+        throw error::InvalidOperationException("WiiSaveReader::readBanner -> Invalid Header Magic");
     }
 
-    flags = this->readUInt32();
-    animSpeed = this->readUInt16();
-    this->seek(22);
+    flags = base::readUInt32();
+    animSpeed = base::readUInt16();
+    base::seek(22);
 
-    gameTitle = this->readUnicode();
-    if (this->position() != 0x0080)
-        this->seek(0x0080, Stream::Beginning);
+    gameTitle = base::readUnicode();
+    if (base::position() != 0x0080)
+        base::seek(0x0080, Stream::Beginning);
 
-    subTitle = this->readUnicode();
-    if (this->position() != 0x00C0)
-        this->seek(0x00C0, Stream::Beginning);
+    subTitle = base::readUnicode();
+    if (base::position() != 0x00C0)
+        base::seek(0x00C0, Stream::Beginning);
 
     WiiBanner* banner = new WiiBanner;
     banner->setGameID(gameId);
@@ -211,14 +216,14 @@ WiiBanner* WiiSaveReader::readBanner()
         }
     }
 
-    this->setData(oldData, oldLen);
-    this->seek(oldPos, Stream::Beginning);
+    base::setData(oldData, oldLen);
+    base::seek(oldPos, Stream::Beginning);
     return banner;
 }
 
 WiiImage* WiiSaveReader::readImage(Uint32 width, Uint32 height)
 {
-    Uint8* image = (Uint8*)this->readBytes(width*height*2);
+    Uint8* image = (Uint8*)base::readBytes(width*height*2);
 
     if (!isEmpty((Int8*)image, width*height*2))
         return new WiiImage(width, height, image);
@@ -237,30 +242,30 @@ WiiFile* WiiSaveReader::readFile()
     Uint8* filedata;
     WiiFile* ret;
 
-    Uint32 magic = this->readUInt32();
+    Uint32 magic = base::readUInt32();
     if (magic != 0x03adf17e)
     {
         std::cerr << "Not a valid File entry header: 0x" << std::hex << magic << std::endl;
         return NULL;
     }
 
-    fileLen     = this->readUInt32();
-    permissions = this->readByte();
-    attributes  = this->readByte();
-    type        = (WiiFile::Type)this->readByte();
-    name        = std::string((const char*)this->readBytes(0x45));
+    fileLen     = base::readUInt32();
+    permissions = base::readByte();
+    attributes  = base::readByte();
+    type        = (WiiFile::Type)base::readByte();
+    name        = std::string((const char*)base::readBytes(0x45));
     ret         = new WiiFile(std::string(name));
     ret->setPermissions(permissions);
     ret->setAttributes(attributes);
     ret->setType((WiiFile::Type)type);
-    Uint8* iv = (Uint8*)this->readBytes(0x10);
-    this->seek(0x20);
+    Uint8* iv = (Uint8*)base::readBytes(0x10);
+    base::seek(0x20);
 
     if (type == WiiFile::File)
     {
         // Read file data
         int roundedLen = (fileLen + 63) & ~63;
-        filedata = (Uint8*)this->readBytes(roundedLen);
+        filedata = (Uint8*)base::readBytes(roundedLen);
 
         // Decrypt file
         Uint8* decData = new Uint8[roundedLen];
@@ -278,11 +283,11 @@ WiiFile* WiiSaveReader::readFile()
 void WiiSaveReader::readCerts(Uint32 totalSize)
 {
     Uint32 dataSize = totalSize - 0x340;
-    Uint8* sig    = (Uint8*)this->readBytes(0x40);
-    Uint8* ngCert = (Uint8*)this->readBytes(0x180);
-    Uint8* apCert = (Uint8*)this->readBytes(0x180);
-    this->seek(0xF0C0, Stream::Beginning);
-    Uint8* data   = (Uint8*)this->readBytes(dataSize);
+    Uint8* sig    = (Uint8*)base::readBytes(0x40);
+    Uint8* ngCert = (Uint8*)base::readBytes(0x180);
+    Uint8* apCert = (Uint8*)base::readBytes(0x180);
+    base::seek(0xF0C0, Stream::Beginning);
+    Uint8* data   = (Uint8*)base::readBytes(dataSize);
     Uint8* hash;
 
     hash = getSha1(data, dataSize);
@@ -291,4 +296,5 @@ void WiiSaveReader::readCerts(Uint32 totalSize)
     check_ec(ngCert, apCert, sig, hash2);
 }
 
+} // io
 } // zelda

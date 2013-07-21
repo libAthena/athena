@@ -24,6 +24,9 @@ namespace zelda
 
 class MCFile;
 
+namespace io
+{
+
 /*! \class MCFileReader
  *  \brief The Minish Cap Save save data reader class
  *
@@ -33,6 +36,7 @@ class MCFile;
  */
 class MCFileReader : public io::BinaryReader
 {
+    BINARYREADER_BASE
 public:
     /*!
      *  \brief This constructor takes an existing buffer to read from.
@@ -57,6 +61,7 @@ public:
     MCFile* readFile();
 };
 
+} // io
 } // zelda
 
 #endif // __MCFILEREADER_HPP__

@@ -71,7 +71,7 @@ std::vector<ALTTPOverworldEvent*> ALTTPQuest::overworldEvents() const
 ALTTPOverworldEvent* ALTTPQuest::overworldEvent(Uint32 id) const
 {
     if (id > m_overworldEvents.size() - 1)
-        throw InvalidOperationException("ALTTPQuest::overworldEvents(Uint32) -> index out of range");
+        throw error::InvalidOperationException("ALTTPQuest::overworldEvents -> index out of range");
     return m_overworldEvents[id];
 }
 
@@ -301,7 +301,7 @@ void ALTTPQuest::setDungeonKeys(std::vector<Uint8> val)
 void ALTTPQuest::setDungeonKeys(Uint32 id, Uint8 val)
 {
     if (id > m_dungeonKeys.size() - 1)
-        throw InvalidOperationException("ALTTPQuest::setDungeonKeys(Uint32, Uint8) -> index out of range");
+        throw error::InvalidOperationException("ALTTPQuest::setDungeonKeys -> index out of range");
 
     m_dungeonKeys[id] = val;
 }
@@ -309,7 +309,7 @@ void ALTTPQuest::setDungeonKeys(Uint32 id, Uint8 val)
 Uint8 ALTTPQuest::dungeonKeys(Uint32 id) const
 {
     if (id > m_dungeonKeys.size() - 1)
-        throw InvalidOperationException("ALTTPQuest::dungeonKeys() -> index out of range");
+        throw error::InvalidOperationException("ALTTPQuest::dungeonKeys -> index out of range");
 
     return m_dungeonKeys[id];
 }
@@ -398,7 +398,7 @@ void ALTTPQuest::setOldManFlags(std::vector<Uint8> flags)
 void ALTTPQuest::setOldManFlag(Uint32 id, Uint8 val)
 {
     if (id > m_oldManFlags.size() - 1)
-        throw InvalidOperationException("ALTTPQuest::setOldManFlag(Uint32, Uint8) -> index out of range");
+        throw error::InvalidOperationException("ALTTPQuest::setOldManFlag -> index out of range");
 
     m_oldManFlags[id] = val;
 }
@@ -406,7 +406,7 @@ void ALTTPQuest::setOldManFlag(Uint32 id, Uint8 val)
 Uint8 ALTTPQuest::oldManFlag(Uint32 id)
 {
     if (id > m_oldManFlags.size() - 1)
-        throw InvalidOperationException("ALTTPQuest::oldManFlag(Uint32) -> index out of range");
+        throw error::InvalidOperationException("ALTTPQuest::oldManFlag -> index out of range");
 
     return m_oldManFlags[id];
 }
@@ -434,7 +434,7 @@ void ALTTPQuest::setUnknown1(std::vector<Uint8> flags)
 void ALTTPQuest::setUnknown1(Uint32 id, Uint8 val)
 {
     if (id > m_unknown1.size())
-        throw InvalidOperationException("ALTTPQuest::setUnknown1(Uint32, Uint8) -> index out of range");
+        throw error::InvalidOperationException("ALTTPQuest::setUnknown1) -> index out of range");
 
     m_unknown1[id] = val;
 }
@@ -442,7 +442,7 @@ void ALTTPQuest::setUnknown1(Uint32 id, Uint8 val)
 Uint8 ALTTPQuest::unknown1(Uint32 id)
 {
     if (id > m_unknown1.size())
-        throw InvalidOperationException("ALTTPQuest::unknown1(Uint32) -> index out of range");
+        throw error::InvalidOperationException("ALTTPQuest::unknown1 -> index out of range");
 
     return m_unknown1[id];
 }
@@ -460,7 +460,7 @@ void ALTTPQuest::setPlayerName(std::vector<Uint16> playerName)
 void ALTTPQuest::setPlayerName(const std::string& playerName)
 {
     if (playerName == std::string() || playerName.size() > 6)
-        throw InvalidOperationException("ALTTPQuest::setPlayerName(const std::string&) -> playerName invalid");
+        throw error::InvalidOperationException("ALTTPQuest::setPlayerName -> playerName invalid");
 
     m_playerName.clear();
 
@@ -623,7 +623,7 @@ void ALTTPQuest::setDungeonDeathTotals(std::vector<Uint16> val)
 void ALTTPQuest::setDungeonDeathTotal(Uint32 id, Uint16 val)
 {
     if (id > m_dungeonDeathTotals.size())
-        throw InvalidOperationException("ALTTPQuest::setDungeonDeathTotal(Uint32, Uint16) -> index out of range");
+        throw error::InvalidOperationException("ALTTPQuest::setDungeonDeathTotal -> index out of range");
 
     m_dungeonDeathTotals[id] = val;
 }
@@ -631,7 +631,7 @@ void ALTTPQuest::setDungeonDeathTotal(Uint32 id, Uint16 val)
 Uint16 ALTTPQuest::dungeonDeathTotal(Uint32 id) const
 {
     if (id > m_dungeonDeathTotals.size())
-        throw InvalidOperationException("ALTTPQuest::setDungeonDeathTotal(Uint32) -> index out of range");
+        throw error::InvalidOperationException("ALTTPQuest::setDungeonDeathTotal -> index out of range");
 
     return m_dungeonDeathTotals[id];
 }

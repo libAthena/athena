@@ -33,6 +33,7 @@ class MCFile;
  */
 class MCFileWriter : public io::BinaryWriter
 {
+    BINARYWRITER_BASE
 public:
     /*!
      * \brief This constructor takes an existing buffer to write to.

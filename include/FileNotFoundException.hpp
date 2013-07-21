@@ -20,6 +20,8 @@
 
 namespace zelda
 {
+namespace error
+{
 
 /*! \class FileNotFoundException
  *  \brief An excpeption thrown when a file could not be found at the given path.
@@ -48,6 +50,7 @@ private:
     std::string m_filename;
 };
 
+} // error
 } // zelda
 
 #endif

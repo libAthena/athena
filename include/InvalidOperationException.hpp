@@ -21,6 +21,8 @@
 
 namespace zelda
 {
+namespace error
+{
 
 /*! \class InvalidOperationException
  *  \brief An excpeption thrown on Invalid Operations calls.
@@ -43,6 +45,7 @@ public:
     }
 };
 
+} // error
 } // zelda
 
 #endif // __INVALID_OPERATION_EXCEPTION_HPP__

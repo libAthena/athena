@@ -17,6 +17,9 @@
 
 #include "Types.hpp"
 
+namespace zelda
+{
+
 /*!
  * \brief The WiiImage class
  */
@@ -87,5 +90,7 @@ private:
     Uint32 m_height;
     Uint8* m_data;
 };
+
+} // zelda
 
 #endif // WIIIMAGE_HPP

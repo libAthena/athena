@@ -1,6 +1,15 @@
 CONFIG += staticlib
 TEMPLATE=lib
-TARGET=zelda
+
+CONFIG(debug, debug|release){
+    DEFINES += DEBUG
+    TARGET=zelda-d
+}
+CONFIG(release, release|debug){
+    DEFINES -= DEBUG
+    TARGET=zelda
+}
+
 QMAKE_CXXFLAGS += -std=c++0x
 INCLUDEPATH += include
 
@@ -42,7 +51,8 @@ HEADERS += \
     include/ZQuestFileWriter.hpp \
     include/ZQuestFileReader.hpp \
     include/ZQuest.hpp \
-    include/Compression.hpp
+    include/Compression.hpp \
+    include/WiiImage.hpp
 
 SOURCES += \
     src/utility.cpp \
@@ -70,7 +80,8 @@ SOURCES += \
     src/ZQuestFileWriter.cpp \
     src/ZQuestFileReader.cpp \
     src/ZQuest.cpp \
-    src/Compression.cpp
+    src/Compression.cpp \
+    src/WiiImage.cpp
 
 system("exec doxygen libzelda.conf")
 #system("cd doc/latex && make")

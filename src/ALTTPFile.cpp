@@ -32,7 +32,7 @@ ALTTPFile::ALTTPFile(std::vector<ALTTPQuest*> quests, std::vector<ALTTPQuest*> b
 void ALTTPFile::setQuest(Uint32 id, ALTTPQuest* val)
 {
     if (id > m_quests.size())
-        throw InvalidOperationException("ALTTPFile::setQuest(Uint32, ALTTPQuest*) -> index out of range");
+        throw error::InvalidOperationException("ALTTPFile::setQuest -> index out of range");
 
     m_quests[id] = val;
 }
@@ -44,7 +44,7 @@ std::vector<ALTTPQuest*> ALTTPFile::questList() const
 ALTTPQuest* ALTTPFile::quest(Uint32 id) const
 {
     if (id > m_quests.size())
-        throw InvalidOperationException("ALTTPFile::setQuest(Uint32) -> index out of range");
+        throw error::InvalidOperationException("ALTTPFile::setQuest -> index out of range");
 
     return m_quests[id];
 }

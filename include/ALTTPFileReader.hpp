@@ -23,6 +23,9 @@
 
 namespace zelda
 {
+class ALTTPFile;
+namespace io
+{
 
 /*! \class ALTTPFileReader
  *  \brief A Link to the Past save data reader class
@@ -31,10 +34,10 @@ namespace zelda
  *  all work is done using a memory buffer, and not read directly from the disk.
  *  \sa BinaryReader
  */
-class ALTTPFile;
 
 class ALTTPFileReader : public io::BinaryReader
 {
+    BINARYREADER_BASE
 public:
     /*! \brief This constructor takes an existing buffer to read from.
      *
@@ -60,5 +63,6 @@ private:
     ALTTPDungeonItemFlags readDungeonFlags();
 };
 
+} // io
 } // zelda
 #endif // __ALTTP_FILE_READER_HPP__

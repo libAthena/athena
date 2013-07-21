@@ -18,14 +18,18 @@
 namespace zelda
 {
 
+namespace io
+{
+
 MCFileReader::MCFileReader(Uint8* data, Uint64 length)
-    : BinaryReader(data, length)
+    : base(data, length)
 {
 }
 
 MCFileReader::MCFileReader(const std::string& filename)
-    : BinaryReader(filename)
+    : base(filename)
 {
 }
 
+} // io
 } // zelda

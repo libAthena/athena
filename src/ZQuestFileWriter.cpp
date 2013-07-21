@@ -1,9 +1,26 @@
+// This file is part of libZelda.
+//
+// libZelda is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// libZelda is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with libZelda.  If not, see <http://www.gnu.org/licenses/>
+
 #include "ZQuestFileWriter.hpp"
 #include "InvalidOperationException.hpp"
 #include "ZQuest.hpp"
 #include "Compression.hpp"
 
 namespace zelda
+{
+namespace io
 {
 
 ZQuestFileWriter::ZQuestFileWriter(Uint8* data, Uint64 length)
@@ -19,7 +36,7 @@ ZQuestFileWriter::ZQuestFileWriter(const std::string& filename)
 void ZQuestFileWriter::write(ZQuest* quest, bool compress)
 {
     if (!quest)
-        throw InvalidOperationException("ZQuestFileWriter::writer -> quest cannot be NULL");
+        throw error::InvalidOperationException("ZQuestFileWriter::writer -> quest cannot be NULL");
 
     base::writeUInt32(ZQuest::Magic);
     base::writeUInt32(ZQuest::Version);
@@ -54,6 +71,9 @@ void ZQuestFileWriter::write(ZQuest* quest, bool compress)
     base::writeUInt16(quest->endian() == BigEndian ? 0xFEFF : 0xFFFE);
     base::seek(0x0A);
     base::writeUBytes(questData, compLen);
+
+    base::save();
 }
 
+} // io
 } // zelda

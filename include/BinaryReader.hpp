@@ -174,7 +174,7 @@ protected:
 
 #ifndef BINARYREADER_BASE
 #define BINARYREADER_BASE \
-    private: \
+private: \
     typedef zelda::io::BinaryReader base;
 #endif // BINARYREADER_BASE
 #endif // __BINARYREADER_HPP__

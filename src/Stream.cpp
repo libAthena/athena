@@ -42,7 +42,7 @@ Stream::Stream(const Uint8* data, Uint64 length) :
     m_autoResize(true)
 {
     if (length <= 0)
-        throw InvalidOperationException("Length cannot be <= to 0");
+        throw error::InvalidOperationException("Stream::Stream -> Length cannot be <= to 0");
 
     m_length = length;
     if (data)
@@ -90,7 +90,7 @@ void Stream::writeBit(bool val)
     if (m_position + sizeof(Uint8) > m_length && m_autoResize)
         resize(m_position + sizeof(Uint8));
     else if (m_position > m_length)
-        throw IOException("Stream::writeBit() -> Position outside stream bounds");
+        throw error::IOException("Stream::writeBit() -> Position outside stream bounds");
 
     *(Uint8*)(m_data + m_position) |= ((Uint32)val << m_bitPosition);
     m_bitPosition++;
@@ -116,7 +116,7 @@ void Stream::writeByte(Int8 byte)
     if (m_position + 1 > m_length && m_autoResize)
         resize(m_position + 1);
     else if (m_position > m_length)
-        throw IOException("Stream::writeByte() -> Position outside stream bounds");
+        throw error::IOException("Stream::writeByte() -> Position outside stream bounds");
 
     *(Int8*)(m_data + m_position) = byte;
     m_position++;
@@ -136,11 +136,11 @@ void Stream::writeBytes(Int8* data, Int64 length)
     }
 
     if (!data)
-        throw InvalidOperationException("BinaryWriter::writeBytes() -> data cannnot be NULL");
+        throw error::InvalidOperationException("Stream::writeBytes -> data cannnot be NULL");
     if (m_position + length > m_length && m_autoResize)
         resize(m_position + length);
     else if (m_position > m_length)
-        throw IOException("BinaryWriter::writeBytes() -> Position outside stream bounds");
+        throw error::IOException("Stream::writeBytes -> Position outside stream bounds");
 
 
     memcpy((Int8*)(m_data + m_position), data, length);
@@ -153,7 +153,7 @@ bool Stream::readBit()
     if (m_position + sizeof(Uint8) > m_length && m_autoResize)
         resize(m_position + sizeof(Uint8));
     else if (m_position > m_length)
-        throw IOException("BinaryWriter::WriteInt16() -> Position outside stream bounds");
+        throw error::IOException("Stream::writeInt16 -> Position outside stream bounds");
 
     bool ret = (*(Uint8*)(m_data + m_position) & (1 << m_bitPosition));
 
@@ -175,7 +175,7 @@ Int8 Stream::readByte()
         m_position += sizeof(Uint8);
     }
     if (m_position + 1 > m_length)
-        throw IOException("Position passed stream bounds");
+        throw error::IOException("Stream::readByte -> Position passed stream bounds");
 
     return *(Int8*)(m_data + m_position++);
 }
@@ -189,7 +189,7 @@ Int8* Stream::readBytes(Int64 length)
     }
 
     if (m_position + length > m_length)
-        throw IOException("Position passed stream bounds: " + m_position);
+        throw error::IOException("Stream::readBytes -> Position passed stream bounds: " + m_position);
 
     Int8* ret = new Int8[length];
     memcpy(ret, (const Int8*)(m_data + m_position), length);
@@ -206,7 +206,7 @@ void Stream::seek(Int64 position, SeekOrigin origin)
             {
                 std::stringstream ss;
                 ss << position;
-                throw IOException("Stream::seek() Beginnning -> Position outside stream bounds: " + ss.str());
+                throw error::IOException("Stream::seek() Beginnning -> Position outside stream bounds: " + ss.str());
             }
             if ((Uint64)position > m_length)
                 this->resize(position);
@@ -217,7 +217,7 @@ void Stream::seek(Int64 position, SeekOrigin origin)
             {
                 std::stringstream ss;
                 ss << (m_position + position);
-                throw IOException("Stream::seek() Current -> Position outside stream bounds: " + ss.str());
+                throw error::IOException("Stream::seek() Current -> Position outside stream bounds: " + ss.str());
             }
             else if ((m_position + position) > m_length)
                 this->resize(m_position + position);
@@ -229,7 +229,7 @@ void Stream::seek(Int64 position, SeekOrigin origin)
             {
                 std::stringstream ss;
                 ss << std::hex << "0x" << (m_length - position);
-                throw IOException("Stream::seek() End -> Position outside stream bounds " + ss.str());
+                throw error::IOException("Stream::seek() End -> Position outside stream bounds " + ss.str());
             }
             else if ((m_length - position) > m_length)
                 this->resize(m_length - position);
@@ -242,7 +242,7 @@ void Stream::seek(Int64 position, SeekOrigin origin)
 void Stream::resize(Uint64 newSize)
 {
     if (newSize < m_length)
-        throw InvalidOperationException("Stream::Resize() -> New size cannot be less to the old size.");
+        throw error::InvalidOperationException("Stream::resize() -> New size cannot be less to the old size.");
 
     // Allocate and copy new buffer
     Uint8* newArray = new Uint8[newSize];

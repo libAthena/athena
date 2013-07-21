@@ -21,11 +21,13 @@
 
 namespace zelda
 {
-
 class WiiSave;
 class WiiBanner;
 class WiiFile;
 class WiiImage;
+
+namespace io
+{
 
 /*! \class WiiSaveReader
  *  \brief Wii data.bin reader class
@@ -36,6 +38,7 @@ class WiiImage;
  */
 class WiiSaveReader : public io::BinaryReader
 {
+    BINARYREADER_BASE
 public:
     /*! \brief This constructor takes an existing buffer to read from.
      *
@@ -62,5 +65,6 @@ private:
     void       readCerts(Uint32 totalSize);
 };
 
+} // io
 } // zelda
 #endif // __WII_SAVE_READER_HPP__
