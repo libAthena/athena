@@ -69,7 +69,8 @@ SOURCES += \
     src/MCFileWriter.cpp \
     src/ZQuestFileWriter.cpp \
     src/ZQuestFileReader.cpp \
-    src/ZQuest.cpp
+    src/ZQuest.cpp \
+    src/Compression.cpp
 
 system("exec doxygen libzelda.conf")
 #system("cd doc/latex && make")
