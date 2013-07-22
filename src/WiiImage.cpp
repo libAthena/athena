@@ -72,7 +72,7 @@ Uint8 *WiiImage::toRGBA()
                     Uint16 oldpixel = *(Uint16*)(m_data + ((iv++) * 2));
                     //if((x >= m_width) || (y >= m_height))
                     //        continue;
-                    oldpixel = swapU16(oldpixel);
+                    oldpixel = utility::swapU16(oldpixel);
                     if(oldpixel & (1 << 15))
                     {
                         // RGB5

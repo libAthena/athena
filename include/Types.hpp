@@ -17,6 +17,9 @@
 
 #include <limits.h>
 
+#ifdef __cplusplus
+namespace zelda
+{
 /*! \enum Endian
  *  \brief Allows the user to specify the Endianness of data.<br />
  *         The proper actions are automatically taken depending on platform and
@@ -27,6 +30,8 @@ enum Endian
     LittleEndian, //!< Specifies that the Stream is Little Endian (LSB)
     BigEndian //!< Specifies that the Stream is Big Endian (MSB)
 };
+} // zelda
+#endif
 
 // 8 bits integer types
 #if UCHAR_MAX == 0xFF

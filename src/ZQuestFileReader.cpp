@@ -14,7 +14,7 @@
 // along with libZelda.  If not, see <http://www.gnu.org/licenses/>
 
 #include "ZQuestFileReader.hpp"
-#include "ZQuest.hpp"
+#include "ZQuestFile.hpp"
 #include "InvalidOperationException.hpp"
 #include "Compression.hpp"
 
@@ -33,26 +33,26 @@ ZQuestFileReader::ZQuestFileReader(const std::string &filename)
 {
 }
 
-ZQuest *ZQuestFileReader::read()
+ZQuestFile *ZQuestFileReader::read()
 {
     Uint32 magic, version, compressedLen, uncompressedLen;
-    ZQuest::Game game;
+    ZQuestFile::Game game;
     Uint16 BOM;
     Uint8* data;
 
     magic = base::readUInt32();
 
-    if (magic != ZQuest::Magic)
+    if (magic != ZQuestFile::Magic)
         throw error::InvalidOperationException("ZQuestFileReader::read -> Not a valid ZQuest file");
 
     version = base::readUInt32();
 
-    if (version != ZQuest::Version)
+    if (version != ZQuestFile::Version)
         throw error::InvalidOperationException("ZQuestFileReader::read -> Unsupported ZQuest version");
 
     compressedLen = base::readUInt32();
     uncompressedLen = base::readUInt32();
-    game = (ZQuest::Game)base::readUInt32();
+    game = (ZQuestFile::Game)base::readUInt32();
     BOM = base::readUInt16();
     base::seek(0x0A);
     data = (Uint8*)base::readBytes(compressedLen); // compressedLen is always the total file size
@@ -73,7 +73,7 @@ ZQuest *ZQuestFileReader::read()
         data = dst;
     }
 
-    return new ZQuest(game, BOM == 0xFEFF ? BigEndian : LittleEndian, data, uncompressedLen);
+    return new ZQuestFile(game, BOM == 0xFEFF ? BigEndian : LittleEndian, data, uncompressedLen);
 }
 
 } // io

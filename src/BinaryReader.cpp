@@ -103,8 +103,8 @@ Int16 BinaryReader::readInt16()
     Int16 ret = *(Int16*)(m_data + m_position);
     m_position += 2;
 
-    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
-        ret = swap16(ret);
+    if ((!utility::isSystemBigEndian() && m_endian == BigEndian) || (utility::isSystemBigEndian() && m_endian == LittleEndian))
+        ret = utility::swap16(ret);
     return ret;
 }
 
@@ -120,8 +120,8 @@ Uint16 BinaryReader::readUInt16()
     Uint16 ret = *(Uint16*)(m_data + m_position);
     m_position += 2;
 
-    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
-        ret = swapU16(ret);
+    if ((!utility::isSystemBigEndian() && m_endian == BigEndian) || (utility::isSystemBigEndian() && m_endian == LittleEndian))
+        ret = utility::swapU16(ret);
 
     return ret;
 }
@@ -138,8 +138,8 @@ Int32 BinaryReader::readInt32()
     Int32 ret = *(Int32*)(m_data + m_position);
     m_position += 4;
 
-    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
-        ret = swap32(ret);
+    if ((!utility::isSystemBigEndian() && m_endian == BigEndian) || (utility::isSystemBigEndian() && m_endian == LittleEndian))
+        ret = utility::swap32(ret);
     return ret;
 }
 
@@ -156,8 +156,8 @@ Uint32 BinaryReader::readUInt32()
     Uint32 ret = *(Uint32*)(m_data + m_position);
     m_position += 4;
 
-    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
-        ret = swapU32(ret);
+    if ((!utility::isSystemBigEndian() && m_endian == BigEndian) || (utility::isSystemBigEndian() && m_endian == LittleEndian))
+        ret = utility::swapU32(ret);
     return ret;
 }
 
@@ -174,8 +174,8 @@ Int64 BinaryReader::readInt64()
     Int64 ret = *(Int64*)(m_data + m_position);
     m_position += 8;
 
-    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
-        ret = swap64(ret);
+    if ((!utility::isSystemBigEndian() && m_endian == BigEndian) || (utility::isSystemBigEndian() && m_endian == LittleEndian))
+        ret = utility::swap64(ret);
     return ret;
 }
 
@@ -191,8 +191,8 @@ Uint64 BinaryReader::readUInt64()
     Uint64 ret = *(Uint64*)(m_data + m_position);
     m_position += 8;
 
-    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
-        ret = swap64(ret);
+    if ((!utility::isSystemBigEndian() && m_endian == BigEndian) || (utility::isSystemBigEndian() && m_endian == LittleEndian))
+        ret = utility::swapU64(ret);
     return ret;
 }
 
@@ -209,8 +209,8 @@ float BinaryReader::readFloat()
     float ret = *(float*)(m_data + m_position);
     m_position += 4;
 
-    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
-        ret = swapFloat(ret);
+    if ((!utility::isSystemBigEndian() && m_endian == BigEndian) || (utility::isSystemBigEndian() && m_endian == LittleEndian))
+        ret = utility::swapFloat(ret);
     return ret;
 }
 
@@ -227,8 +227,8 @@ double BinaryReader::readDouble()
     double ret = *(double*)(m_data + m_position);
     m_position += 8;
 
-    if ((!isSystemBigEndian() && m_endian == BigEndian) || (isSystemBigEndian() && m_endian == LittleEndian))
-        ret = swapDouble(ret);
+    if ((!utility::isSystemBigEndian() && m_endian == BigEndian) || (utility::isSystemBigEndian() && m_endian == LittleEndian))
+        ret = utility::swapDouble(ret);
 
     return ret;
 }

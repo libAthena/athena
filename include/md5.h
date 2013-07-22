@@ -88,7 +88,7 @@ extern "C"
  * Typedefs:
  */
 
-typedef struct
+typedef struct auth_md5Ctx_
 {
     unsigned int len;
     unsigned int ABCD[4];

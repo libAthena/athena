@@ -386,8 +386,8 @@ Uint8* getSha1( Uint8 * stuff, Uint32 stuff_size )
     for( int i = 0; i < 5 ; i++ )
     {
         int val = sha.Message_Digest[ i ];
-        if (!isSystemBigEndian())
-            val = swap32(val);
+        if (!zelda::utility::isSystemBigEndian())
+            val = zelda::utility::swap32(val);
 
         memcpy( (char*)ret + ( i * 4 ), &val, 4 );
     }

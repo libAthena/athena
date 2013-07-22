@@ -138,6 +138,13 @@ public:
      *  \param str The string to write to the buffer
      */
     void writeUnicode(const std::string& str);
+
+    /*! \brief Writes an string to the buffer and advances the buffer.
+     *
+     *  \sa Endian
+     *  \param str The string to write to the buffer
+     */
+    void writeString(const std::string& str);
 protected:
     Int8 readByte();
     Int8* readBytes(Int64);

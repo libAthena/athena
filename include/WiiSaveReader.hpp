@@ -12,12 +12,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with libZelda.  If not, see <http://www.gnu.org/licenses/>
+
 #ifndef __WII_SAVE_READER_HPP__
 #define __WII_SAVE_READER_HPP__
 
-#include <Types.hpp>
-#include <utility.hpp>
-#include <BinaryReader.hpp>
+#include "Types.hpp"
+#include "utility.hpp"
+#include "BinaryReader.hpp"
 
 namespace zelda
 {
@@ -36,7 +37,7 @@ namespace io
  *  all work is done using a memory buffer, and not read directly from the disk.
  *  \sa BinaryReader
  */
-class WiiSaveReader : public io::BinaryReader
+class WiiSaveReader : protected BinaryReader
 {
     BINARYREADER_BASE
 public:

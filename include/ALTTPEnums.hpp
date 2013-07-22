@@ -20,6 +20,9 @@
 
 #include "Types.hpp"
 
+namespace zelda
+{
+
 enum BowType : char
 {
     BowNone,
@@ -105,5 +108,6 @@ enum ALTTPTagAlong
     AfterBoss
 };
 
+} // zelda
 #endif // __DOXYGEN_IGNORE__
 #endif // __ALTTP_ENUMS_HPP__

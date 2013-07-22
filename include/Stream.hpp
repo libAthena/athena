@@ -80,16 +80,16 @@ public:
      * \throw IOException
      */
     virtual void writeBit(bool val);
+
     /*! \brief Writes a byte at the current position and advances the position by one byte.
      * \param byte The value to write
      * \throw IOException
      */
     virtual void writeUByte(Uint8 byte);
-
     /*! \brief Writes a byte at the current position and advances the position by one byte.
-         * \param byte The value to write
-         * \throw IOException
-         */
+     * \param byte The value to write
+     * \throw IOException
+     */
     virtual void writeByte(Int8 byte);
 
     /*! \brief Writes the given buffer with the specified length, buffers can be bigger than the length

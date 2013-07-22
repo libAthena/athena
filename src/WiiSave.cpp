@@ -18,7 +18,6 @@
 #include "WiiBanner.hpp"
 #include "BinaryReader.hpp"
 #include "BinaryWriter.hpp"
-#include "IOException.hpp"
 #include "aes.h"
 #include "ec.h"
 #include "utility.hpp"

@@ -13,21 +13,21 @@
 // You should have received a copy of the GNU General Public License
 // along with libZelda.  If not, see <http://www.gnu.org/licenses/>
 
-#include "ZQuest.hpp"
+#include "ZQuestFile.hpp"
 
 namespace zelda
 {
 
-const Uint32 ZQuest::Major = 1;
-const Uint32 ZQuest::Minor = 0;
-const Uint32 ZQuest::Revision = 0;
-const Uint32 ZQuest::Build = 0;
+const Uint32 ZQuestFile::Major = 1;
+const Uint32 ZQuestFile::Minor = 0;
+const Uint32 ZQuestFile::Revision = 0;
+const Uint32 ZQuestFile::Build = 0;
 
-const Uint32 ZQuest::Version = Major | (Minor << 8) | (Revision << 16) | (Build << 24);
+const Uint32 ZQuestFile::Version = Major | (Minor << 8) | (Revision << 16) | (Build << 24);
 
-const Uint32 ZQuest::Magic   = 'Z' | ('Q' << 8) | ('S' << 16) | ('1' << 24);
+const Uint32 ZQuestFile::Magic   = 'Z' | ('Q' << 8) | ('S' << 16) | ('1' << 24);
 
-ZQuest::ZQuest()
+ZQuestFile::ZQuestFile()
     : m_game(NoGame),
       m_endian(LittleEndian),
       m_data(NULL),
@@ -36,7 +36,7 @@ ZQuest::ZQuest()
     initGameStrings();
 }
 
-ZQuest::ZQuest(ZQuest::Game game, Endian endian, Uint8* data, Uint32 length)
+ZQuestFile::ZQuestFile(ZQuestFile::Game game, Endian endian, Uint8* data, Uint32 length)
     : m_game(game),
       m_endian(endian),
       m_data(data),
@@ -45,34 +45,34 @@ ZQuest::ZQuest(ZQuest::Game game, Endian endian, Uint8* data, Uint32 length)
     initGameStrings();
 }
 
-ZQuest::~ZQuest()
+ZQuestFile::~ZQuestFile()
 {
     delete[] m_data;
     m_data = NULL;
     m_length = 0;
 }
 
-void ZQuest::setGame(ZQuest::Game game)
+void ZQuestFile::setGame(ZQuestFile::Game game)
 {
     m_game = game;
 }
 
-ZQuest::Game ZQuest::game() const
+ZQuestFile::Game ZQuestFile::game() const
 {
     return m_game;
 }
 
-void ZQuest::setEndian(Endian endian)
+void ZQuestFile::setEndian(Endian endian)
 {
     m_endian = endian;
 }
 
-Endian ZQuest::endian() const
+Endian ZQuestFile::endian() const
 {
     return m_endian;
 }
 
-void ZQuest::setData(Uint8* data)
+void ZQuestFile::setData(Uint8* data, Uint32 length)
 {
     // ensure we're not overwritting our data without freeing first
     // or assigning unnecessisarily
@@ -80,25 +80,22 @@ void ZQuest::setData(Uint8* data)
     {
         delete[] m_data;
         m_data = data;
+        m_length = length;
     }
 }
 
-Uint8* ZQuest::data() const
+Uint8* ZQuestFile::data() const
 {
     return m_data;
 }
 
-void ZQuest::setLength(Uint32 length)
-{
-    m_length = length;
-}
 
-Uint32 ZQuest::length() const
+Uint32 ZQuestFile::length() const
 {
     return m_length;
 }
 
-std::string ZQuest::gameString() const
+std::string ZQuestFile::gameString() const
 {
     if (m_game > m_gameStrings.size() - 1)
         return "Unsupported Game";
@@ -106,7 +103,7 @@ std::string ZQuest::gameString() const
     return m_gameStrings[m_game];
 }
 
-void ZQuest::initGameStrings()
+void ZQuestFile::initGameStrings()
 {
     m_gameStrings.push_back("No Game");
     m_gameStrings.push_back("Legend Of Zelda");

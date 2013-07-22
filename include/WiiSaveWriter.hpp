@@ -22,7 +22,6 @@
 
 namespace zelda
 {
-
 class WiiSave;
 class WiiBanner;
 class WiiFile;
@@ -38,7 +37,7 @@ namespace io
  *  all work is done using a memory buffer, and not written directly to the disk.
  *  \sa BinaryReader
  */
-class WiiSaveWriter : public io::BinaryWriter
+class WiiSaveWriter : protected BinaryWriter
 {
     BINARYWRITER_BASE
 public:

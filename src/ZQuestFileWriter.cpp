@@ -15,7 +15,7 @@
 
 #include "ZQuestFileWriter.hpp"
 #include "InvalidOperationException.hpp"
-#include "ZQuest.hpp"
+#include "ZQuestFile.hpp"
 #include "Compression.hpp"
 
 namespace zelda
@@ -33,22 +33,23 @@ ZQuestFileWriter::ZQuestFileWriter(const std::string& filename)
 {
 }
 
-void ZQuestFileWriter::write(ZQuest* quest, bool compress)
+void ZQuestFileWriter::write(ZQuestFile* quest, bool compress)
 {
     if (!quest)
-        throw error::InvalidOperationException("ZQuestFileWriter::writer -> quest cannot be NULL");
+        throw error::InvalidOperationException("ZQuestFileWriter::write -> quest cannot be NULL");
 
-    base::writeUInt32(ZQuest::Magic);
-    base::writeUInt32(ZQuest::Version);
+    base::writeUInt32(ZQuestFile::Magic);
+    base::writeUInt32(ZQuestFile::Version);
     Uint8* questData = quest->data();
-    Uint32 compLen = quest->length();
+    Uint32 compLen;
     if (compress)
     {
-        Uint8* compData = new Uint8[quest->length() + 0x20]; // add 20 bytes because sometimes the file grows with compression
-        io::Compression::compressZlib(questData, quest->length(), compData, &compLen);
+        Uint8* compData = new Uint8[quest->length() + 0x40]; // add 20 bytes because sometimes the file grows with compression
+        compLen = quest->length() + 0x40;
+        compLen = io::Compression::compressZlib(questData, quest->length(), compData, compLen);
 
         // if the compressed data is the same length or larger than the original data, just store the original
-        if (compLen >= quest->length())
+        if (compLen >= quest->length() || compLen <= 0)
         {
             compLen = quest->length();
             // Delete the compressed data since we won't be using it
@@ -64,7 +65,10 @@ void ZQuestFileWriter::write(ZQuest* quest, bool compress)
         }
     }
     else
+    {
+        compLen = quest->length();
         base::writeUInt32(quest->length());
+    }
 
     base::writeUInt32(quest->length());
     base::writeUInt32(quest->game());
@@ -73,6 +77,12 @@ void ZQuestFileWriter::write(ZQuest* quest, bool compress)
     base::writeUBytes(questData, compLen);
 
     base::save();
+    // Delete compressed data to preven memory leaks
+    if (questData != quest->data())
+    {
+        delete[] questData;
+        questData = NULL;
+    }
 }
 
 } // io

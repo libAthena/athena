@@ -23,6 +23,7 @@ namespace zelda
 {
 namespace io
 {
+
 /*! \class BinaryReader
  *  \brief A Stream class for reading binary data
  *
@@ -177,4 +178,5 @@ protected:
 private: \
     typedef zelda::io::BinaryReader base;
 #endif // BINARYREADER_BASE
+
 #endif // __BINARYREADER_HPP__

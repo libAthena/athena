@@ -156,9 +156,9 @@ std::vector<std::string> TextStream::readLines(Uint32 numLines)
 std::string TextStream::readLineAt(Uint32 line)
 {
     if (m_accessmode != ReadOnly && m_accessmode != ReadWrite)
-        throw error::InvalidOperationException("Stream not open for reading");
+        throw error::InvalidOperationException("TextStream::readLineAt -> Stream not open for reading");
     if (line <= 0)
-        throw error::InvalidOperationException("A line cannot be zero indexed");
+        throw error::InvalidOperationException("TextStream::readLineAt -> A line cannot be zero indexed");
 
     if ((line - 1) >= m_lines.size())
         throw error::IOException("TextStream::readLineAt -> Line index out of range");

@@ -16,7 +16,7 @@
 #ifndef ZQUEST_HPP
 #define ZQUEST_HPP
 
-#include <Types.hpp>
+#include "Types.hpp"
 #include <string>
 #include <vector>
 
@@ -25,65 +25,70 @@ namespace zelda
 /*!
  * \brief The ZQuest class
  */
-class ZQuest
+class ZQuestFile
 {
 public:
     /*!
-     * \brief Major
+     * \brief The current major version of the ZQuest format
      */
     static const Uint32 Major;
     /*!
-     * \brief Minor
+     * \brief The current minor version of the ZQuest format
      */
     static const Uint32 Minor;
     /*!
-     * \brief Revision
+     * \brief The current revision of the ZQuest format
      */
     static const Uint32 Revision;
     /*!
-     * \brief Build
+     * \brief The current build of the ZQuest format
      */
     static const Uint32 Build;
     /*!
-     * \brief Version
+     * \brief The current version of the ZQuest format
      */
     static const Uint32 Version;
 
     /*!
-     * \brief Magic
+     * \brief The magic number used to identify the file e.g. "ZQS1"
      */
     static const Uint32 Magic;
 
     /*!
-     * \brief The Game enum
+     * \enum Game
+     * \brief The list of games currently supported by ZQuest
      */
     enum Game
     {
-        NoGame,
-        LegendofZelda,
-        AdventureOfLink,
-        ALinkToThePast,
-        LinksAwakening,
-        OcarinaOfTime,
-        OcarinaOfTime3D,
-        MajorasMask,
-        OracleOfSeasons,
-        OracleOfAges,
-        FourSwords,
-        WindWaker,
-        FourSwordsAdventures,
-        MinishCap,
-        TwilightPrincess,
-        PhantomHourglass,
-        SpiritTracks,
-        SkywardSword,
-        ALinkBetweenWorlds // Not released
+        NoGame, //!< None or Unsupported
+        LoZ,    //!< Legend of Zelda
+        AoL,    //!< Adventure of Link
+        ALttP,  //!< A Link to the Past
+        LA,     //!< Links Awakening
+        OoT,    //!< Ocarin of Time
+        OoT3D,  //!< Ocarina of Time 3D
+        MM,     //!< Majora's Mask
+        OoS,    //!< Oracle of Season
+        OoA,    //!< Oracle of Ages
+        FS,     //!< Four Swords
+        WW,     //!< Wind Waker
+        FSA,    //!< Four Swords Adventures
+        MC,     //!< Minish Cap
+        TP,     //!< Twilight Princess
+        PH,     //!< Phantom Hourglass
+        ST,     //!< Spirit Tracks
+        SS,     //!< Skyward Sword
+        ALBW,   //!< A Link Between Worlds
+        // Add more games here
+
+        // This must always be last
+        GameCount //!< Total number of supported games
     };
 
     /*!
      * \brief ZQuest
      */
-    ZQuest();
+    ZQuestFile();
 
     /*!
      * \brief ZQuest
@@ -92,8 +97,8 @@ public:
      * \param data
      * \param length
      */
-    ZQuest(Game game, Endian endian, Uint8* data, Uint32 length);
-    ~ZQuest();
+    ZQuestFile(Game game, Endian endian, Uint8* data, Uint32 length);
+    ~ZQuestFile();
 
     /*!
      * \brief setGame
@@ -121,21 +126,16 @@ public:
 
     /*!
      * \brief setData
-     * \param data
+     * \param data   The data to assign
+     * \param length The length of the data
      */
-    void setData(Uint8* data);
+    void setData(Uint8* data, Uint32 length);
 
     /*!
      * \brief data
      * \return
      */
     Uint8* data() const;
-
-    /*!
-     * \brief setLength
-     * \param length
-     */
-    void setLength(Uint32 length);
 
     /*!
      * \brief length

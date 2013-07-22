@@ -18,57 +18,65 @@
 #include <string.h>
 #include <stdlib.h>
 
-bool isEmpty(Int8* buf, size_t size)
+namespace zelda
+{
+namespace utility
+{
+
+bool isEmpty(Int8* buf, Uint32 size)
 {
     return buf[0] == 0 && !memcmp(buf, buf + 1, size - 1);
 }
 
-unsigned short swapU16(unsigned short val )
+Uint16 swapU16(Uint16 val )
 {
-    return (val << 8) | (val >> 8 );
+    return (Uint16)swap16(val);
 }
 
-short swap16(short val )
+Int16 swap16(Int16 val )
 {
     return (val << 8) | ((val >> 8) & 0xFF);
 }
 
-unsigned int swapU32(unsigned int val)
+Uint32 swapU32(Uint32 val)
 {
-    val = (val & 0x0000FFFF) << 16 | (val & 0xFFFF0000) >> 16;
-    val = (val & 0x00FF00FF) << 8 | (val & 0xFF00FF00) >> 8;
-    return (Uint32)val;
+    return (Uint32)swap32(val);
 }
 
-int swap32( int val )
+int swap32(Int32 val )
 {
     val = (val & 0x0000FFFF) << 16 | (val & 0xFFFF0000) >> 16;
     val = (val & 0x00FF00FF) << 8 | (val & 0xFF00FF00) >> 8;
     return val;
 }
 
-long long swap64(long long val)
+Uint64 swapU64(Uint64 val)
 {
-    return ((long long)((((long long)(val) & 0xFF00000000000000ULL) >> 56) |
-          (((long long)(val) & 0x00FF000000000000ULL) >> 40) |
-          (((long long)(val) & 0x0000FF0000000000ULL) >> 24) |
-          (((long long)(val) & 0x000000FF00000000ULL) >>  8) |
-          (((long long)(val) & 0x00000000FF000000ULL) <<  8) |
-          (((long long)(val) & 0x0000000000FF0000ULL) << 24) |
-          (((long long)(val) & 0x000000000000FF00ULL) << 40) |
-          (((long long)(val) & 0x00000000000000FFULL) << 56)));
+    return (Uint64)swap64(val);
+}
+
+Int64 swap64(Int64 val)
+{
+    return ((Int64)((((Int64)(val) & 0xFF00000000000000ULL) >> 56) |
+                        (((Int64)(val) & 0x00FF000000000000ULL) >> 40) |
+                        (((Int64)(val) & 0x0000FF0000000000ULL) >> 24) |
+                        (((Int64)(val) & 0x000000FF00000000ULL) >>  8) |
+                        (((Int64)(val) & 0x00000000FF000000ULL) <<  8) |
+                        (((Int64)(val) & 0x0000000000FF0000ULL) << 24) |
+                        (((Int64)(val) & 0x000000000000FF00ULL) << 40) |
+                        (((Int64)(val) & 0x00000000000000FFULL) << 56)));
 }
 
 bool isSystemBigEndian()
 {
-    char* test = (char*)"\xFE\xFF";
-    return (*(unsigned short*)test == 0xFEFF);
+    Uint8* test = (Uint8*)"\xFE\xFF";
+    return (*(Uint16*)test == 0xFEFF);
 }
 
 void fillRandom(Uint8 * rndArea, Uint8 count)
 {
-        for(Uint16 i = 0; i < count; i++)
-                rndArea[i]=rand();
+    for(Uint16 i = 0; i < count; i++)
+        rndArea[i]=rand();
 }
 
 float swapFloat(float val)
@@ -108,57 +116,60 @@ double swapDouble(double val)
 //the second 4 bytes in the Yaz0 header).
 void yaz0Decode(Uint8* src, Uint8* dst, Uint32 uncompressedSize)
 {
-  Uint32 srcPlace = 0, dstPlace = 0; //current read/write positions
+    Uint32 srcPlace = 0, dstPlace = 0; //current read/write positions
 
-  Int32 validBitCount = 0; //number of valid bits left in "code" byte
-  Uint8 currCodeByte;
-  while(dstPlace < uncompressedSize)
-  {
-    //read new "code" byte if the current one is used up
-    if(validBitCount == 0)
+    Int32 validBitCount = 0; //number of valid bits left in "code" byte
+    Uint8 currCodeByte;
+    while(dstPlace < uncompressedSize)
     {
-      currCodeByte = src[srcPlace];
-      ++srcPlace;
-      validBitCount = 8;
+        //read new "code" byte if the current one is used up
+        if(validBitCount == 0)
+        {
+            currCodeByte = src[srcPlace];
+            ++srcPlace;
+            validBitCount = 8;
+        }
+
+        if((currCodeByte & 0x80) != 0)
+        {
+            //straight copy
+            dst[dstPlace] = src[srcPlace];
+            dstPlace++;
+            srcPlace++;
+        }
+        else
+        {
+            //RLE part
+            Uint8 byte1 = src[srcPlace];
+            Uint8 byte2 = src[srcPlace + 1];
+            srcPlace += 2;
+
+            Uint32 dist = ((byte1 & 0xF) << 8) | byte2;
+            Uint32 copySource = dstPlace - (dist + 1);
+
+            Uint32 numBytes = byte1 >> 4;
+            if(numBytes == 0)
+            {
+                numBytes = src[srcPlace] + 0x12;
+                srcPlace++;
+            }
+            else
+                numBytes += 2;
+
+            //copy run
+            for(Uint32 i = 0; i < numBytes; ++i)
+            {
+                dst[dstPlace] = dst[copySource];
+                copySource++;
+                dstPlace++;
+            }
+        }
+
+        //use next bit from "code" byte
+        currCodeByte <<= 1;
+        validBitCount-=1;
     }
-
-    if((currCodeByte & 0x80) != 0)
-    {
-      //straight copy
-      dst[dstPlace] = src[srcPlace];
-      dstPlace++;
-      srcPlace++;
-    }
-    else
-    {
-      //RLE part
-      Uint8 byte1 = src[srcPlace];
-      Uint8 byte2 = src[srcPlace + 1];
-      srcPlace += 2;
-
-      Uint32 dist = ((byte1 & 0xF) << 8) | byte2;
-      Uint32 copySource = dstPlace - (dist + 1);
-
-      Uint32 numBytes = byte1 >> 4;
-      if(numBytes == 0)
-      {
-        numBytes = src[srcPlace] + 0x12;
-        srcPlace++;
-      }
-      else
-        numBytes += 2;
-
-      //copy run
-      for(Uint32 i = 0; i < numBytes; ++i)
-      {
-        dst[dstPlace] = dst[copySource];
-        copySource++;
-        dstPlace++;
-      }
-    }
-
-    //use next bit from "code" byte
-    currCodeByte <<= 1;
-    validBitCount-=1;
-  }
 }
+
+} // utility
+} // zelda

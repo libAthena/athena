@@ -321,14 +321,6 @@ static void point_mul(Uint8 *d, Uint8 *a, Uint8 *b)	// a is bignum
         }
 }
 
-
-// DUPE FUNCTION! NUKE IT!!
-void sillyRandom(Uint8 * rndArea, Uint8 count)
-{
-    for(Uint16 i = 0; i < count; i++)
-        rndArea[i]=rand();
-}
-
 void generate_ecdsa(Uint8 *R, Uint8 *S, Uint8 *k, Uint8 *hash)
 {
     Uint8 e[30];
@@ -341,7 +333,7 @@ void generate_ecdsa(Uint8 *R, Uint8 *S, Uint8 *k, Uint8 *hash)
     elt_zero(e);
     memcpy(e + 10, hash, 20);
 
-    sillyRandom(m, sizeof(m));
+    zelda::utility::fillRandom(m, sizeof(m));
     m[0] = 0;
 
     //	R = (mG).x
@@ -416,11 +408,11 @@ bool check_ec(Uint8 *ng, Uint8 *ap, Uint8 *sig, Uint8 *sig_hash)
 void make_ec_cert(Uint8 *cert, Uint8 *sig, char *signer, char *name, Uint8 *priv, Uint32 key_id )
 {
     memset(cert, 0, 0x180);
-    *(Uint32*)(cert) =  swapU32(0x10002);
+    *(Uint32*)(cert) =  zelda::utility::swapU32(0x10002);
     memcpy((char*)cert + 4, sig, 60);
     strcpy((char*)cert + 0x80, signer);
-    *(Uint32*)(cert + 0xc0) =  swapU32(2);
+    *(Uint32*)(cert + 0xc0) =  zelda::utility::swapU32(2);
     strcpy((char*)cert + 0xc4, name);
-    *(Uint32*)(cert + 0x104) =  swapU32(key_id);
+    *(Uint32*)(cert + 0x104) =  zelda::utility::swapU32(key_id);
     ec_priv_to_pub(priv, cert + 0x108);
 }

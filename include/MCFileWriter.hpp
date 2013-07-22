@@ -24,6 +24,9 @@ namespace zelda
 
 class MCFile;
 
+namespace io
+{
+
 /*! \class MCFileWriter
  *  \brief The Minish Cap Save save data writer class
  *
@@ -31,7 +34,7 @@ class MCFile;
  *  all work is done using a memory buffer, and not written directly from the disk.
  *  \sa BinaryWriter
  */
-class MCFileWriter : public io::BinaryWriter
+class MCFileWriter : protected BinaryWriter
 {
     BINARYWRITER_BASE
 public:
@@ -64,6 +67,7 @@ private:
     void unscramble();
 };
 
+} // io
 } // zelda
 
 #endif // __MCFILEWRITER_HPP__

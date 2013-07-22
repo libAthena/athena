@@ -20,7 +20,7 @@
 
 namespace zelda
 {
-class ZQuest;
+class ZQuestFile;
 
 namespace io
 {
@@ -28,7 +28,7 @@ namespace io
 /*!
  * \brief The ZQuestFileWriter class
  */
-class ZQuestFileWriter : public io::BinaryWriter
+class ZQuestFileWriter : protected BinaryWriter
 {
     BINARYWRITER_BASE
 
@@ -51,7 +51,7 @@ public:
      * \param quest
      * \param compress
      */
-    void write(ZQuest* quest, bool compress = true);
+    void write(ZQuestFile* quest, bool compress = true);
 };
 
 } // io

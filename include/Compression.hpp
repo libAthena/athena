@@ -25,7 +25,7 @@ namespace io
 namespace Compression
 {
     Int32 decompressZlib(Uint8* src, Uint32 srcLen, Uint8* dst, Uint32 dstLen);
-    void compressZlib(const Uint8* src, Uint32 srcLen, Uint8* dst, Uint32* dstLen);
+    Int32 compressZlib(const Uint8* src, Uint32 srcLen, Uint8* dst, Uint32 dstLen);
 }
 }
 }

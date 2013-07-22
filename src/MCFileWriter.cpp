@@ -17,6 +17,8 @@
 
 namespace zelda
 {
+namespace io
+{
 
 MCFileWriter::MCFileWriter(Uint8* data, Uint64 length)
     : base(data, length)
@@ -93,4 +95,5 @@ void MCFileWriter::unscramble()
     }
 }
 
+} // io
 } // zelda

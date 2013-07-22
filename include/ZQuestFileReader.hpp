@@ -20,16 +20,18 @@
 
 namespace zelda
 {
-class ZQuest;
+class ZQuestFile;
+
 namespace io
 {
 
 /*!
  * \brief The ZQuestFileReader class
  */
-class ZQuestFileReader : public io::BinaryReader
+class ZQuestFileReader : protected BinaryReader
 {
     BINARYREADER_BASE
+
 public:    
     /*!
      * \brief ZQuestFileReader
@@ -48,7 +50,7 @@ public:
      * \brief read
      * \return
      */
-    ZQuest* read();
+    ZQuestFile* read();
 };
 
 } // io

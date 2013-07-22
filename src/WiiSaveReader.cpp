@@ -225,7 +225,7 @@ WiiImage* WiiSaveReader::readImage(Uint32 width, Uint32 height)
 {
     Uint8* image = (Uint8*)base::readBytes(width*height*2);
 
-    if (!isEmpty((Int8*)image, width*height*2))
+    if (!utility::isEmpty((Int8*)image, width*height*2))
         return new WiiImage(width, height, image);
 
     return NULL;

@@ -167,15 +167,15 @@ Uint32 WiiSaveWriter::writeFile(WiiFile *file)
     base::writeByte(file->type());
 
     Uint8 name[0x45];
-    fillRandom(name, 0x45);
+    utility::fillRandom(name, 0x45);
     memcpy(name, file->filename().c_str(), file->filename().size());
     name[file->filename().size()] = '\0';
     base::writeBytes((Int8*)name, 0x45);
     Uint8 iv[16];
-    fillRandom(iv, 0x10);
+    utility::fillRandom(iv, 0x10);
     base::writeBytes((Int8*)iv, 0x10);
     Uint8 crap[0x20];
-    fillRandom(crap, 0x20);
+    utility::fillRandom(crap, 0x20);
     base::writeBytes((Int8*)crap, 0x20);
 
     if (file->type() == WiiFile::File)
@@ -245,8 +245,8 @@ void WiiSaveWriter::writeCerts(Uint32 filesSize, Uint32 ngId, Uint8 *ngPriv, Uin
 
     generate_ecdsa(sig, sig+30, apPriv, hash2);
     int stuff = 0x2f536969;
-    if (!isSystemBigEndian())
-        stuff = swap32(stuff);
+    if (!utility::isSystemBigEndian())
+        stuff = utility::swap32(stuff);
 
     *(Uint32*)(sig+60) = stuff;
     delete[] hash2;

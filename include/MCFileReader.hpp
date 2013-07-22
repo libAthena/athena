@@ -34,7 +34,7 @@ namespace io
  *  all work is done using a memory buffer, and not read directly from the disk.
  *  \sa BinaryReader
  */
-class MCFileReader : public io::BinaryReader
+class MCFileReader : protected BinaryReader
 {
     BINARYREADER_BASE
 public:

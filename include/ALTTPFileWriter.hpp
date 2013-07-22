@@ -34,7 +34,7 @@ namespace io
  *  all work is done using a memory buffer, and not written directly to the disk.
  *  \sa BinaryReader
  */
-class ALTTPFileWriter : public io::BinaryWriter
+class ALTTPFileWriter : protected BinaryWriter
 {
     BINARYWRITER_BASE
 

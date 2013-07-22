@@ -50,9 +50,9 @@ HEADERS += \
     include/MCFileWriter.hpp \
     include/ZQuestFileWriter.hpp \
     include/ZQuestFileReader.hpp \
-    include/ZQuest.hpp \
     include/Compression.hpp \
-    include/WiiImage.hpp
+    include/WiiImage.hpp \
+    include/ZQuestFile.hpp
 
 SOURCES += \
     src/utility.cpp \
@@ -79,9 +79,9 @@ SOURCES += \
     src/MCFileWriter.cpp \
     src/ZQuestFileWriter.cpp \
     src/ZQuestFileReader.cpp \
-    src/ZQuest.cpp \
     src/Compression.cpp \
-    src/WiiImage.cpp
+    src/WiiImage.cpp \
+    src/ZQuestFile.cpp
 
 system("exec doxygen libzelda.conf")
 #system("cd doc/latex && make")

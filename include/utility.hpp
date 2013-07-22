@@ -19,13 +19,19 @@
 #include <string>
 #include "Types.hpp"
 
-bool isEmpty(Int8*, size_t);
+namespace zelda
+{
+namespace utility
+{
 
-unsigned short swapU16(unsigned short val );
-short swap16 (short val );
-unsigned int   swapU32(unsigned int val);
-int   swap32 (int val );
-long long  swap64 (long long val);
+bool isEmpty(Int8*, Uint32);
+
+Uint16 swapU16(Uint16 val );
+Int16 swap16 (Int16 val );
+Uint32   swapU32(Uint32 val);
+Int32   swap32 (Int32 val );
+Uint64 swapU64(Uint64 val);
+Int64  swap64 (Int64 val);
 
 float swapFloat(float val);
 double  swapDouble(double val);
@@ -35,5 +41,9 @@ bool isSystemBigEndian();
 void fillRandom(Uint8 * rndArea, Uint8 count);
 
 void yaz0Decode(Uint8* src, Uint8* dst, Uint32 uncompressedSize);
+
+
+} // utility
+} // zelda
 
 #endif
