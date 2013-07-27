@@ -40,9 +40,6 @@ bool isSystemBigEndian();
 
 void fillRandom(Uint8 * rndArea, Uint8 count);
 
-void yaz0Decode(Uint8* src, Uint8* dst, Uint32 uncompressedSize);
-
-
 } // utility
 } // zelda
 

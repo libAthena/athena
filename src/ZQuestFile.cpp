@@ -14,6 +14,7 @@
 // along with libZelda.  If not, see <http://www.gnu.org/licenses/>
 
 #include "ZQuestFile.hpp"
+#include <string.h>
 
 namespace zelda
 {
@@ -79,7 +80,8 @@ void ZQuestFile::setData(Uint8* data, Uint32 length)
     if (!m_data || m_data != data)
     {
         delete[] m_data;
-        m_data = data;
+        m_data = new Uint8[length];
+        memcpy(m_data, data, length);
         m_length = length;
     }
 }

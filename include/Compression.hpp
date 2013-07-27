@@ -24,8 +24,14 @@ namespace io
 {
 namespace Compression
 {
+    // Zlib compression
     Int32 decompressZlib(Uint8* src, Uint32 srcLen, Uint8* dst, Uint32 dstLen);
     Int32 compressZlib(const Uint8* src, Uint32 srcLen, Uint8* dst, Uint32 dstLen);
+
+    // Yaz0 encoding
+    Uint32 yaz0Decode(Uint8* src, Uint8* dst, Uint32 uncompressedSize);
+    Uint32 yaz0Encode(Uint8* src, Uint32 srcSize, Uint8* data);
+
 }
 }
 }
