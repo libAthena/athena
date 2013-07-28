@@ -66,6 +66,7 @@ ZQuestFile *ZQuestFileReader::read()
         {
             delete[] dst;
             delete[] data;
+            // TODO: Make proper exception
             throw error::InvalidOperationException("ZQuestFileReader::read -> Error decompressing data");
         }
 

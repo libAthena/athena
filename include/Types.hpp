@@ -30,6 +30,13 @@ enum Endian
     LittleEndian, //!< Specifies that the Stream is Little Endian (LSB)
     BigEndian //!< Specifies that the Stream is Big Endian (MSB)
 };
+
+enum Region
+{
+    NTSCURegion,
+    NTSCJRegion,
+    PALRegion
+};
 } // zelda
 #endif
 

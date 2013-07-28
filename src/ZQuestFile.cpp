@@ -81,6 +81,8 @@ void ZQuestFile::setData(Uint8* data, Uint32 length)
     {
         delete[] m_data;
         m_data = new Uint8[length];
+        // Why is this memcpy needed?
+        // I get SIGABRT without it, need to research
         memcpy(m_data, data, length);
         m_length = length;
     }
@@ -107,6 +109,7 @@ std::string ZQuestFile::gameString() const
 
 void ZQuestFile::initGameStrings()
 {
+    // Populate game strings
     m_gameStrings.push_back("No Game");
     m_gameStrings.push_back("Legend Of Zelda");
     m_gameStrings.push_back("Adventure of Link");
@@ -125,7 +128,7 @@ void ZQuestFile::initGameStrings()
     m_gameStrings.push_back("Phantom Hourglass");
     m_gameStrings.push_back("Spirit Tracks");
     m_gameStrings.push_back("Skyward Sword");
-    m_gameStrings.push_back("A Link Between Worlds (Unreleased)");
+    m_gameStrings.push_back("A Link Between Worlds (Unreleased)"); // Probably should have this, but.....
 }
 
 }

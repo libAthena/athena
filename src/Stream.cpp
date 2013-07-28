@@ -180,6 +180,11 @@ Int8 Stream::readByte()
     return *(Int8*)(m_data + m_position++);
 }
 
+Uint8 *Stream::readUBytes(Int64 length)
+{
+    return (Uint8*)readBytes(length);
+}
+
 Int8* Stream::readBytes(Int64 length)
 {
     if (m_bitPosition > 0)

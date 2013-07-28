@@ -72,12 +72,12 @@ void ZQuestFileWriter::write(ZQuestFile* quest, bool compress)
 
     base::writeUInt32(quest->length());
     base::writeUInt32(quest->game());
-    base::writeUInt16(quest->endian() == BigEndian ? 0xFEFF : 0xFFFE);
+    base::writeUInt16(quest->endian() == BigEndian ? 0xFFFE : 0xFEFF);
     base::seek(0x0A);
     base::writeUBytes(questData, compLen);
 
     base::save();
-    // Delete compressed data to preven memory leaks
+    // Delete compressed data to prevent memory leaks
     if (questData != quest->data())
     {
         delete[] questData;
