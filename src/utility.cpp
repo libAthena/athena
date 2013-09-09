@@ -17,6 +17,9 @@
 #include <iostream>
 #include <string.h>
 #include <stdlib.h>
+#include <sstream>
+#include <algorithm>
+#include <cstdarg>
 
 namespace zelda
 {
@@ -110,6 +113,97 @@ double swapDouble(double val)
 
     return (double)((Uint64)retVal);
 }
+
+
+std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems)
+{
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim))
+        elems.push_back(item);
+    return elems;
+}
+
+
+std::vector<std::string> split(const std::string &s, char delim)
+{
+    std::vector<std::string> elems;
+    split(s, delim, elems);
+    return elems;
+}
+
+void tolower(std::string& str)
+{
+    std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+}
+
+void toupper(std::string& str)
+{
+    std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+}
+
+std::string sprintf(const char* fmt, ...)
+{
+    int size = 512;
+    char* buffer = 0;
+    buffer = new char[size];
+    va_list vl;
+    va_start(vl, fmt);
+    int nsize = vsnprintf(buffer, size, fmt, vl);
+    if(size<=nsize)
+    { //fail delete buffer and try again
+        delete[] buffer;
+        buffer = 0;
+        buffer = new char[nsize+1]; //+1 for /0
+        nsize = vsnprintf(buffer, size, fmt, vl);
+    }
+    std::string ret(buffer);
+    va_end(vl);
+    delete[] buffer;
+    return ret;
+}
+
+bool parseBool(const std::string& boolean, bool &valid)
+{
+    std::string val = boolean;
+    // compare must be case insensitive
+    // This is the cleanest solution since I only need to do it once
+    std::transform(val.begin(), val.end(), val.begin(), ::tolower);
+
+    // Check for true first
+    if (!val.compare("true") || !val.compare("1") || !val.compare("yes"))
+        return (valid = true);
+
+    // Now false
+    if (!val.compare("false") || !val.compare("0") || !val.compare("no"))
+    {
+        valid = true;
+        return false;
+    }
+
+    // Well that could've gone better
+
+    return (valid = false);
+}
+
+int countChar(const std::string &str, const char chr, int &lastOccur)
+{
+    int ret = 0;
+
+    int index = 0;
+    for (char c : str)
+    {
+        if (c == chr)
+        {
+            lastOccur = index;
+            ret++;
+        }
+        index++;
+    }
+
+    return ret;
+}
+
 
 } // utility
 } // zelda

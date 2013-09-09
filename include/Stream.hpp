@@ -176,19 +176,19 @@ public:
      *
      *  \return Int64 The length of the stream.
      */
-    Int64 length();
+    Int64 length() const;
 
     /*! \brief Returns the current position in the stream.
      *
      *  \return Int64 The current position in the stream.
      */
-    Int64 position();
+    Int64 position() const;
 
     /*! \brief Returns whether or not the stream is at the end.
      *
      *  \return bool True if at end; False otherwise.
      */
-    bool atEnd();
+    bool atEnd() const;
 
     /*! \brief Sets whether the Stream resizes when the at the end of the buffer.
      *

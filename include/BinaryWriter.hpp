@@ -47,11 +47,24 @@ public:
      *  \param stream The stream to write data to
      */
     BinaryWriter(const Stream& stream);
+
     /*! \brief This constructor creates an instance from a file on disk.
      *
      * \param filename The file to create the stream from
      */
     BinaryWriter(const std::string& filename);
+
+    /*! \brief Sets the target file
+     *
+     *  \sa Endian
+     *  \param filepath The path to write to.
+     */
+    void setFilepath(const std::string& filepath);
+
+    /*! \brief Returns the target file
+     *
+     */
+    std::string filepath() const;
 
     /*! \brief Saves the file to the specified file.
      *
@@ -145,6 +158,7 @@ public:
      *  \param str The string to write to the buffer
      */
     void writeString(const std::string& str);
+
 protected:
     Int8 readByte();
     Int8* readBytes(Int64);

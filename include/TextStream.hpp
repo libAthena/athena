@@ -40,11 +40,11 @@ public:
      */
     enum TextMode
     {
-        Open,                       //!< The file is opened if it exists.
-        Create,                     //!< Create the file if it does not exist.
+        Open         = 0x01,        //!< The file is opened if it exists.
+        Create       = 0x02,        //!< Create the file if it does not exist.
         OpenOrCreate = Open|Create, //!< If the file does not exist when opening the file it is created
-        Truncate,                   //!< All the data currently that is in the file is erased.
-        Append                      //!< After opening the file the current line is set to the end of the buffer
+        Truncate     = 0x04,        //!< All the data currently that is in the file is erased.
+        Append       = 0x08         //!< After opening the file the current line is set to the end of the buffer
     };
 
     /*! \enum AccessMode
@@ -57,8 +57,9 @@ public:
         ReadWrite //!< The Stream can be read from or written to.
     };
 
+    TextStream();
     /*! \brief This constructor opens the file and loads all the lines. */
-    TextStream(const std::string& filename, TextMode fileMode = Open, AccessMode accessMode = ReadWrite);
+    TextStream(const std::string& filename, Uint32 fileMode = Open, AccessMode accessMode = ReadWrite);
 
     /*! \brief Creates a new buffer and saves all lines to the specified file.
      *  \param filename The file, including path to save to.
@@ -144,14 +145,20 @@ public:
      *
      *  \return TextMode The mode to set.
      */
-    TextMode textMode() const;
+    Uint32 textMode() const;
+
+
+    /*! \brief Empties the stream.
+     *
+     */
+    void truncate();
 
     bool isOpenForReading() const;
     bool isOpenForWriting() const;
 private:
     void        loadLines();
     std::string m_filename;
-    TextMode    m_textmode;
+    Uint32      m_textmode;
     AccessMode  m_accessmode;
 
     std::vector<std::string> m_lines;

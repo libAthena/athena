@@ -52,6 +52,17 @@ public:
      */
     BinaryReader(const std::string& filename);
 
+    /*! \brief Sets the target file
+     *
+     *  \sa Endian
+     *  \param filepath The path to write to.
+     */
+    void setFilepath(const std::string& filepath);
+
+    /*! \brief Returns the target file
+     *
+     */
+    std::string filepath() const;
 
     /*! \brief Reads a Int16 and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position

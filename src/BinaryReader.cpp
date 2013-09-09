@@ -24,6 +24,10 @@
 #include <vector>
 #include <iostream>
 
+#ifdef HW_RVL
+#include <malloc.h>
+#endif // HW_RVL
+
 namespace zelda
 {
 namespace io
@@ -55,7 +59,11 @@ BinaryReader::BinaryReader(const std::string& filename)
     fseek(in, 0, SEEK_END);
     length = ftell(in);
     fseek(in, 0, SEEK_SET);
+#ifdef HW_RVL
+    m_data = (Uint8*)memalign(32, length);
+#else
     m_data = new Uint8[length];
+#endif
 
     Uint32 done = 0;
     Uint32 blocksize = BLOCKSZ;
@@ -101,7 +109,7 @@ Int16 BinaryReader::readInt16()
     if (m_position + sizeof(Int16) > m_length)
         throw error::IOException("BinaryReader::readInt16 -> Position outside stream bounds");
     Int16 ret = *(Int16*)(m_data + m_position);
-    m_position += 2;
+    m_position += sizeof(Int16);
 
     if ((!utility::isSystemBigEndian() && m_endian == BigEndian) || (utility::isSystemBigEndian() && m_endian == LittleEndian))
         ret = utility::swap16(ret);
@@ -118,7 +126,7 @@ Uint16 BinaryReader::readUInt16()
     if (m_position + sizeof(Uint16) > m_length)
         throw error::IOException("BinaryReader::readUint16 -> Position outside stream bounds");
     Uint16 ret = *(Uint16*)(m_data + m_position);
-    m_position += 2;
+    m_position += sizeof(Uint16);
 
     if ((!utility::isSystemBigEndian() && m_endian == BigEndian) || (utility::isSystemBigEndian() && m_endian == LittleEndian))
         ret = utility::swapU16(ret);

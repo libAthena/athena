@@ -25,6 +25,10 @@
 #include <vector>
 #include <iostream>
 
+#ifdef HW_RVL
+#include <malloc.h>
+#endif // HW_RVL
+
 namespace zelda
 {
 namespace io
@@ -44,10 +48,25 @@ BinaryWriter::BinaryWriter(const std::string& filename)
     m_length = 0x10;
     m_bitPosition = 0;
     m_position = 0;
+#ifdef HW_RVL
+    m_data = (Uint8*)memalign(32, m_length);
+#else
     m_data = new Uint8[m_length];
+#endif
+
     if (!m_data)
         throw error::IOException("BinaryWriter::BinaryWriter -> Could not allocate memory!");
     memset(m_data, 0, m_length);
+}
+
+void BinaryWriter::setFilepath(const std::string& filepath)
+{
+    m_filepath = filepath;
+}
+
+std::string BinaryWriter::filepath() const
+{
+    return m_filepath;
 }
 
 void BinaryWriter::save(const std::string& filename)

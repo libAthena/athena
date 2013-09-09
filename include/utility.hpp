@@ -17,6 +17,7 @@
 #define __UTILITY_H__
 
 #include <string>
+#include <vector>
 #include "Types.hpp"
 
 namespace zelda
@@ -27,9 +28,9 @@ namespace utility
 bool isEmpty(Int8*, Uint32);
 
 Uint16 swapU16(Uint16 val );
-Int16 swap16 (Int16 val );
-Uint32   swapU32(Uint32 val);
-Int32   swap32 (Int32 val );
+Int16  swap16 (Int16 val );
+Uint32 swapU32(Uint32 val);
+Int32  swap32 (Int32 val );
 Uint64 swapU64(Uint64 val);
 Int64  swap64 (Int64 val);
 
@@ -39,6 +40,14 @@ double  swapDouble(double val);
 bool isSystemBigEndian();
 
 void fillRandom(Uint8 * rndArea, Uint8 count);
+
+std::vector<std::string> split(const std::string &s, char delim);
+void tolower(std::string& str);
+void toupper(std::string& str);
+std::string sprintf(const char* fmt, ...);
+bool parseBool(const std::string& boolean, bool &valid);
+
+int countChar(const std::string& str, const char chr, int& lastOccur);
 
 } // utility
 } // zelda

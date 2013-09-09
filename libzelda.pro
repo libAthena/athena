@@ -1,6 +1,6 @@
 CONFIG += staticlib
 TEMPLATE=lib
-DESTDIR = ./
+DESTDIR = ./lib
 
 CONFIG(debug, debug|release){
     DEFINES += DEBUG
@@ -9,7 +9,7 @@ CONFIG(debug, debug|release){
 
 CONFIG(release, release|debug){
     DEFINES -= DEBUG
-    TARGET=zelda
+    unix:TARGET=zelda
 }
 
 QMAKE_CXXFLAGS += -std=c++0x

@@ -19,6 +19,10 @@
 #include <string.h>
 #include <sstream>
 
+#ifdef HW_RVL
+#include <malloc.h>
+#endif // HW_RVL
+
 namespace zelda
 {
 namespace io
@@ -49,7 +53,12 @@ Stream::Stream(const Uint8* data, Uint64 length) :
         m_data = (Uint8*)data;
     else
     {
+#ifdef HW_RVL
+        m_data = (Uint8*)memalign(32, m_length);
+#else
         m_data = new Uint8[m_length];
+#endif
+
         memset(m_data, 0, m_length);
     }
 }
@@ -59,7 +68,11 @@ Stream::Stream(Int64 length) :
     m_position(0),
     m_length(length)
 {
+#ifdef HW_RVL
+    m_data = (Uint8*)memalign(32, m_length);
+#else
     m_data = new Uint8[m_length];
+#endif
     memset(m_data, 0, m_length);
 }
 
@@ -68,6 +81,7 @@ Stream::Stream(Stream* stream)
     if (m_data)
         delete[] m_data;
 
+    m_data = NULL;
     m_data = stream->m_data;
     m_position = stream->m_position;
     m_length = stream->m_length;
@@ -76,7 +90,11 @@ Stream::Stream(Stream* stream)
 Stream::~Stream()
 {
     if (m_data)
+#ifdef HW_RVL
+        free(m_data);
+#else
         delete[] m_data;
+#endif
 
     m_data = NULL;
     m_position = 0;
@@ -196,7 +214,13 @@ Int8* Stream::readBytes(Int64 length)
     if (m_position + length > m_length)
         throw error::IOException("Stream::readBytes -> Position passed stream bounds: " + m_position);
 
-    Int8* ret = new Int8[length];
+    Int8* ret;
+#ifdef HW_RVL
+    ret = (Int8*)memalign(32, length);
+#else
+    ret = new Int8[length];
+#endif
+
     memcpy(ret, (const Int8*)(m_data + m_position), length);
     m_position += length;
     return ret;
@@ -250,13 +274,22 @@ void Stream::resize(Uint64 newSize)
         throw error::InvalidOperationException("Stream::resize() -> New size cannot be less to the old size.");
 
     // Allocate and copy new buffer
-    Uint8* newArray = new Uint8[newSize];
+#ifdef HW_RVL
+        Uint8* newArray = (Uint8*)memalign(32, newSize);
+#else
+        Uint8* newArray = new Uint8[newSize];
+#endif
+
     memset(newArray, 0, newSize);
 
     memcpy(newArray, m_data, m_length);
 
     // Delete the old one
-    delete[] m_data;
+#ifdef HW_RVL
+        free(m_data);
+#else
+        delete[] m_data;
+#endif
 
     // Swap the pointer and size out for the new ones.
     m_data = newArray;
@@ -266,7 +299,11 @@ void Stream::resize(Uint64 newSize)
 void  Stream::setData(const Uint8* data, Uint64 length)
 {
     if (m_data)
+#ifdef HW_RVL
+        free(m_data);
+#else
         delete[] m_data;
+#endif
 
     m_data = (Uint8*)data;
     m_length = length;
@@ -281,17 +318,17 @@ Uint8* Stream::data() const
     return ret;
 }
 
-Int64 Stream::length()
+Int64 Stream::length() const
 {
     return m_length;
 }
 
-Int64 Stream::position()
+Int64 Stream::position() const
 {
     return m_position;
 }
 
-bool Stream::atEnd()
+bool Stream::atEnd() const
 {
     return m_position >= m_length;
 }

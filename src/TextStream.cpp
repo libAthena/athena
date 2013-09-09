@@ -23,7 +23,7 @@ namespace zelda
 {
 namespace io
 {
-TextStream::TextStream(const std::string& filename, TextMode fileMode, AccessMode accessMode) :
+TextStream::TextStream(const std::string& filename, Uint32 fileMode, AccessMode accessMode) :
     m_filename(filename),
     m_textmode(fileMode),
     m_accessmode(accessMode),
@@ -69,6 +69,10 @@ TextStream::TextStream(const std::string& filename, TextMode fileMode, AccessMod
     loadLines();
 }
 
+TextStream::TextStream()
+    : Stream()
+{}
+
 void  TextStream::save(const std::string& filename)
 {
     if (m_accessmode != WriteOnly && m_accessmode != ReadWrite)
@@ -78,7 +82,10 @@ void  TextStream::save(const std::string& filename)
 
     // We need a new buffer to write the new lines
     if (m_data)
+    {
         delete[] m_data;
+        m_data = NULL;
+    }
 
     m_position = 0;
     m_length = 1;
@@ -89,6 +96,8 @@ void  TextStream::save(const std::string& filename)
     // Now write all the strings to the new buffer
     for (std::string s : m_lines)
         writeBytes((Int8*)s.c_str(), s.size());
+
+    writeByte('\n');
 
     FILE* out = fopen(m_filename.c_str(), "wb");
 
@@ -117,14 +126,14 @@ void  TextStream::writeLine(const std::string& str)
 {
     if (m_accessmode != WriteOnly && m_accessmode != ReadWrite)
         throw error::InvalidOperationException("TextStream::writeLine -> Stream not open for writing");
-    else if (m_currentLine > m_lines.size())
+    else if (m_currentLine >= m_lines.size())
     {
-        m_lines.push_back(str);
+        m_lines.push_back(str + "\n");
         m_currentLine++;
         return;
     }
 
-    m_lines[m_currentLine++] = str;
+    m_lines[m_currentLine++] = str + "\n";
 }
 
 void TextStream::writeLines(std::vector<std::string> strings)
@@ -211,9 +220,14 @@ void TextStream::setTextMode(TextMode mode)
     m_textmode = mode;
 }
 
-TextStream::TextMode TextStream::textMode() const
+Uint32 TextStream::textMode() const
 {
     return m_textmode;
+}
+
+void TextStream::truncate()
+{
+    m_lines.clear();
 }
 
 bool TextStream::isOpenForReading() const
@@ -229,35 +243,43 @@ bool TextStream::isOpenForWriting() const
 // PRIVATE FUNCTIONS
 void TextStream::loadLines()
 {
-    while (!atEnd())
+    try
     {
-        std::string line;
-        Uint8 c;
-        for (;;)
-        {
-            c = readByte();
 
-            if (c == '\r' || c == '\n')
+        while (!atEnd())
+        {
+            std::string line;
+            Uint8 c;
+            for (;;)
             {
-                m_currentLine++;
-                line.push_back(c);
-                if (*(Uint8*)(m_data + m_position + 1) == '\n')
+                c = readByte();
+
+                if (c == '\r' || c == '\n')
+                {
+                    m_currentLine++;
+                    line.push_back(c);
+                    if (*(Uint8*)(m_data + m_position + 1) == '\n')
+                    {
+                        line.push_back('\n');
+                        m_position++; // advance position past the new line character
+                    }
+                    break;
+                }
+
+                if (c == '\0')
                 {
                     line.push_back('\n');
-                    m_position++; // advance position past the new line character
+                    break;
                 }
-                break;
+                line.push_back(c);
             }
 
-            if (c == '\0')
-            {
-                line.push_back('\n');
-                break;
-            }
-            line.push_back(c);
+            m_lines.push_back(line);
         }
-
-        m_lines.push_back(line);
+    }
+    catch(...)
+    {
+        // The stream MAY throw an out of range error but we're not concerned with it
     }
 }
 
