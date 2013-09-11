@@ -107,6 +107,7 @@
 		<Unit filename="src/ALTTPQuest.cpp" />
 		<Unit filename="src/BinaryReader.cpp" />
 		<Unit filename="src/BinaryWriter.cpp" />
+		<Unit filename="src/Checksums.cpp" />
 		<Unit filename="src/Compression.cpp" />
 		<Unit filename="src/MCFile.cpp" />
 		<Unit filename="src/MCFileReader.cpp" />

@@ -58,7 +58,8 @@ HEADERS += \
     include/SSQuest.hpp \
     include/SSFileWriter.hpp \
     include/SSFileReader.hpp \
-    include/SSFile.hpp
+    include/SSFile.hpp \
+    include/Checksums.hpp
 
 SOURCES += \
     src/utility.cpp \
@@ -91,7 +92,8 @@ SOURCES += \
     src/SSQuest.cpp \
     src/SSFileWriter.cpp \
     src/SSFileReader.cpp \
-    src/SSFile.cpp
+    src/SSFile.cpp \
+    src/Checksums.cpp
 
 system("exec doxygen libzelda.conf")
 #system("cd doc/latex && make")
