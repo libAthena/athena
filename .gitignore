@@ -1,0 +1,18 @@
+# File types
+**/*.o
+**/*.a
+**/*.zip
+**/*.html
+**/*.tar
+**/*.gz
+**/*.bz2
+**/*.so
+**/*.dll
+**/*.dylib
+**/*.user
+**/.directory
+# Directories
+**/doc
+**/obj
+**/Makefile
+

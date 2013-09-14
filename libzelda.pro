@@ -1,15 +1,23 @@
 CONFIG += staticlib
-TEMPLATE=lib
+TEMPLATE= lib
 DESTDIR = ./lib
 
 CONFIG(debug, debug|release){
     DEFINES += DEBUG
     TARGET=zelda-d
+    # We don't want the objects,
+    # in the project directory, so tell qmake
+    # where to put them
+    OBJECTS_DIR = obj/debug
 }
 
 CONFIG(release, release|debug){
     DEFINES -= DEBUG
     unix:TARGET=zelda
+    # We don't want the objects,
+    # in the project directory, so tell qmake
+    # where to put them
+    OBJECTS_DIR = obj/release
 }
 
 QMAKE_CXXFLAGS = -std=c++0x
