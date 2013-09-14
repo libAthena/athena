@@ -1,8 +1,7 @@
 install:
   - sudo apt-get update
-  - sudo apt-get install libqt4-dev qt4-qmake
+  - sudo apt-get install qt4-qmake
 
 script:
-
   - qmake libzelda.pro
   - make
