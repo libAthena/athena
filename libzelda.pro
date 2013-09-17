@@ -13,7 +13,7 @@ CONFIG(debug, debug|release){
 
 CONFIG(release, release|debug){
     DEFINES -= DEBUG
-    unix:TARGET=zelda
+    TARGET=zelda
     # We don't want the objects,
     # in the project directory, so tell qmake
     # where to put them
