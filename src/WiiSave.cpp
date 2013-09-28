@@ -54,6 +54,29 @@ void WiiSave::addFile(const std::string& filepath, WiiFile* file)
     m_files[filepath] = file;
 }
 
+void WiiSave::setFiles(std::unordered_map<std::string, WiiFile*> files)
+{
+    if (files.size() <= 0)
+        return;
+
+    std::cout << "Setting file map...";
+    if (m_files.size() > 0)
+    {
+        std::unordered_map<std::string, WiiFile*>::iterator iter = m_files.begin();
+
+        for (;iter != m_files.end(); ++iter)
+        {
+            if (iter->second)
+                delete iter->second;
+        }
+
+        m_files.clear();
+    }
+
+    m_files = files;
+    std::cout << "done" << std::endl;
+}
+
 WiiFile* WiiSave::file(const std::string& filepath) const
 {
     std::unordered_map<std::string, WiiFile*>::const_iterator iter = m_files.begin();

@@ -139,7 +139,7 @@ void WiiSaveWriter::writeBanner(WiiBanner *banner)
     delete[] tmpIcon; // delete tmp buffer;
 
     Uint8* hash = new Uint8[0x10];
-    MD5(hash, (Uint8*)base::data(), 0xF0C0);
+    MD5Hash::MD5(hash, (Uint8*)base::data(), 0xF0C0);
     base::seek(0x0E, Stream::Beginning);
     base::writeBytes((Int8*)hash, 0x10);
 

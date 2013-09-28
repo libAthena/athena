@@ -87,13 +87,15 @@ WiiSave* WiiSaveReader::readSave()
     base::seek(2);
     base::seek(0x10);
 
-    WiiFile* file;
+    std::unordered_map<std::string, WiiFile*> files;
     for (Uint32 i = 0; i < numFiles; ++i)
     {
-        file = readFile();
+        WiiFile* file = readFile();
         if (file)
-            ret->addFile("/" + file->filename(), file);
+            files["/"+file->filename()] = file;
     }
+
+    ret->setFiles(files);
 
     readCerts(totalSize);
     return ret;
@@ -101,7 +103,7 @@ WiiSave* WiiSaveReader::readSave()
 
 WiiBanner* WiiSaveReader::readBanner()
 {
-    Uint8* dec = new Uint8[0xf0c0];
+    Uint8* dec = new Uint8[0xF0C0];
     memset(dec, 0, 0xF0C0);
     Uint8* data = (Uint8*)base::readBytes(0xF0C0);
     Uint8* oldData = base::data();
@@ -115,15 +117,17 @@ WiiBanner* WiiSaveReader::readBanner()
     Uint8  tmpIV[26];
     memcpy(tmpIV, SD_IV, 16);
 
+    std::cout << "Decrypting: banner.bin...";
     aes_set_key(SD_KEY);
     aes_decrypt(tmpIV, data, dec, 0xF0C0);
+    std::cout << "done" << std::endl;
     memset(md5, 0, 16);
     memset(md5Calc, 0, 16);
     // Read in the MD5 sum
     memcpy(md5, (dec + 0x0E), 0x10);
     // Write the blanker to the buffer
     memcpy((dec + 0x0E), MD5_BLANKER, 0x10);
-    MD5(md5Calc, dec, 0xF0C0);
+    MD5Hash::MD5(md5Calc, dec, 0xF0C0);
 
     // Compare the Calculated MD5 to the one from the file.
     // This needs to be done incase the file is corrupted.
@@ -268,12 +272,14 @@ WiiFile* WiiSaveReader::readFile()
         filedata = (Uint8*)base::readBytes(roundedLen);
 
         // Decrypt file
+        std::cout << "Decrypting: " << ret->filename() << "...";
         Uint8* decData = new Uint8[roundedLen];
         aes_set_key(SD_KEY);
         aes_decrypt(iv, filedata, decData, roundedLen);
         delete filedata;
         ret->setData(decData);
         ret->setLength(fileLen);
+        std::cout << "done" << std::endl;
     }
 
     return ret;
@@ -282,6 +288,7 @@ WiiFile* WiiSaveReader::readFile()
 
 void WiiSaveReader::readCerts(Uint32 totalSize)
 {
+    std::cout << "Reading certs..." << std::endl;
     Uint32 dataSize = totalSize - 0x340;
     Uint8* sig    = (Uint8*)base::readBytes(0x40);
     Uint8* ngCert = (Uint8*)base::readBytes(0x180);
@@ -293,7 +300,9 @@ void WiiSaveReader::readCerts(Uint32 totalSize)
     hash = getSha1(data, dataSize);
     Uint8* hash2 = getSha1(hash, 20);
 
-    check_ec(ngCert, apCert, sig, hash2);
+    std::cout << "validating..." << std::endl;
+    std::cout << (check_ec(ngCert, apCert, sig, hash2) ? "ok" : "invalid") << "...";
+    std::cout << "done" << std::endl;
 }
 
 } // io

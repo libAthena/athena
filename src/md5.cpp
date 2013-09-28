@@ -86,6 +86,8 @@
 
 #include "md5.h"
 
+namespace MD5Hash
+{
 /* -------------------------------------------------------------------------- **
  * Static Constants:
  *
@@ -547,7 +549,7 @@ unsigned char * MD5fromFile(unsigned char *dst, const char *src)
         blksize = filesize;
     else blksize = 1048576;
 
-    buffer = malloc(blksize);
+    buffer = (unsigned char*)malloc(blksize);
 
     if (buffer == NULL)
     {
@@ -606,5 +608,5 @@ unsigned char * StringToMD5(const char * hash, unsigned char * dst)
 
     return dst;
 }
-
+} // MD5Hash
 /* ========================================================================== */

@@ -3,11 +3,6 @@
 
 #ifndef __DOXYGEN_IGNORE__
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 /* ========================================================================== **
  *
  *									MD5.h
@@ -87,6 +82,9 @@ extern "C"
 /* -------------------------------------------------------------------------- **
  * Typedefs:
  */
+
+namespace MD5Hash
+{
 
 typedef struct auth_md5Ctx_
 {
@@ -237,8 +235,6 @@ unsigned char * StringToMD5(const char * hash, unsigned char * dst);
 
 /* ========================================================================== */
 
-#ifdef __cplusplus
-}
-#endif
+} // MD5Hash
 #endif // __DOXYGEN_IGNORE__
 #endif /* AUTH_MD5_H */

@@ -83,7 +83,7 @@ SOURCES += \
     src/aes.c \
     src/bn.cpp \
     src/ec.cpp \
-    src/md5.c \
+    src/md5.cpp \
     src/sha1.cpp \
     src/ALTTPQuest.cpp \
     src/ALTTPFileWriter.cpp \
@@ -102,7 +102,3 @@ SOURCES += \
     src/SSFileReader.cpp \
     src/SSFile.cpp \
     src/Checksums.cpp
-
-system("exec doxygen libzelda.conf")
-#system("cd doc/latex && make")
-system("cd ../../")

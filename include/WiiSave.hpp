@@ -57,7 +57,7 @@ public:
      * \param file
      */
     void     addFile(const std::string& filename, WiiFile* file);
-
+    void setFiles(std::unordered_map<std::string, WiiFile*> files);
     /*!
      * \brief file
      * \param filename
