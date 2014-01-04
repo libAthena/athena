@@ -87,4 +87,8 @@ typedef unsigned long long Uint64;
 #endif
 #endif // NULL
 
+#ifndef UNUSED
+#define UNUSED(x) ((void)x)
+#endif // UNUSED
+
 #endif
