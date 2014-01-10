@@ -47,7 +47,7 @@ void toupper(std::string& str);
 std::string sprintf(const char* fmt, ...);
 bool parseBool(const std::string& boolean, bool &valid);
 
-int countChar(const std::string& str, const char chr, int& lastOccur);
+int countChar(const std::string& str, const char chr, int* lastOccur = NULL);
 
 } // utility
 } // zelda

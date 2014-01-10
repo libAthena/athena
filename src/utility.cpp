@@ -171,11 +171,11 @@ bool parseBool(const std::string& boolean, bool &valid)
     std::transform(val.begin(), val.end(), val.begin(), ::tolower);
 
     // Check for true first
-    if (!val.compare("true") || !val.compare("1") || !val.compare("yes"))
+    if (!val.compare("true") || !val.compare("1") || !val.compare("yes") || !val.compare("on"))
         return (valid = true);
 
     // Now false
-    if (!val.compare("false") || !val.compare("0") || !val.compare("no"))
+    if (!val.compare("false") || !val.compare("0") || !val.compare("no") || !val.compare("off"))
     {
         valid = true;
         return false;
@@ -186,7 +186,7 @@ bool parseBool(const std::string& boolean, bool &valid)
     return (valid = false);
 }
 
-int countChar(const std::string &str, const char chr, int &lastOccur)
+int countChar(const std::string& str, const char chr, int* lastOccur)
 {
     int ret = 0;
 
@@ -195,7 +195,9 @@ int countChar(const std::string &str, const char chr, int &lastOccur)
     {
         if (c == chr)
         {
-            lastOccur = index;
+            if (lastOccur != NULL)
+                *lastOccur = index;
+
             ret++;
         }
         index++;
