@@ -45,7 +45,7 @@ std::vector<std::string> split(const std::string &s, char delim);
 void tolower(std::string& str);
 void toupper(std::string& str);
 std::string sprintf(const char* fmt, ...);
-bool parseBool(const std::string& boolean, bool &valid);
+bool parseBool(const std::string& boolean, bool* valid = NULL);
 
 int countChar(const std::string& str, const char chr, int* lastOccur = NULL);
 

@@ -163,7 +163,7 @@ std::string sprintf(const char* fmt, ...)
     return ret;
 }
 
-bool parseBool(const std::string& boolean, bool &valid)
+bool parseBool(const std::string& boolean, bool* valid)
 {
     std::string val = boolean;
     // compare must be case insensitive
@@ -172,18 +172,26 @@ bool parseBool(const std::string& boolean, bool &valid)
 
     // Check for true first
     if (!val.compare("true") || !val.compare("1") || !val.compare("yes") || !val.compare("on"))
-        return (valid = true);
+    {
+        if (valid)
+            *valid = true;
+        return true;
+    }
 
     // Now false
     if (!val.compare("false") || !val.compare("0") || !val.compare("no") || !val.compare("off"))
     {
-        valid = true;
+        if (valid)
+            *valid = true;
         return false;
     }
 
     // Well that could've gone better
 
-    return (valid = false);
+    if (valid)
+        *valid = false;
+
+    return false;
 }
 
 int countChar(const std::string& str, const char chr, int* lastOccur)
