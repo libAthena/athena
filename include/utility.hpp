@@ -1,4 +1,4 @@
-// This file is part of libZelda.
+﻿// This file is part of libZelda.
 //
 // libZelda is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ bool isSystemBigEndian();
 void fillRandom(Uint8 * rndArea, Uint8 count);
 
 std::vector<std::string> split(const std::string &s, char delim);
+std::string join(const std::vector<std::string>& elems, const std::string& delims);
 void tolower(std::string& str);
 void toupper(std::string& str);
 std::string sprintf(const char* fmt, ...);

@@ -1,4 +1,4 @@
-// This file is part of libZelda.
+﻿// This file is part of libZelda.
 //
 // libZelda is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #include <sstream>
 #include <algorithm>
 #include <cstdarg>
+#include <iterator>
 
 namespace zelda
 {
@@ -130,6 +131,14 @@ std::vector<std::string> split(const std::string &s, char delim)
     std::vector<std::string> elems;
     split(s, delim, elems);
     return elems;
+}
+
+std::string join(const std::vector<std::string>& elems, const std::string& delims)
+{
+    std::ostringstream ret;
+    std::copy(elems.begin(), elems.end(), std::ostream_iterator<std::string>(ret, delims.c_str()));
+
+    return ret.str();
 }
 
 void tolower(std::string& str)
