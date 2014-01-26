@@ -5,20 +5,20 @@
 
 namespace zelda
 {
-class SSFile;
+class SkywardSwordFile;
 
 namespace io
 {
 
-class SSFileWriter : public BinaryWriter
+class SkywardSwordFileWriter : public BinaryWriter
 {
     // Why does this fuck up my formatting in Qt Creator?
     BINARYWRITER_BASE
 public:
-    SSFileWriter(Uint8* data, Uint64 len);
-    SSFileWriter(const std::string& filename);
+    SkywardSwordFileWriter(Uint8* data, Uint64 len);
+    SkywardSwordFileWriter(const std::string& filename);
 
-    void write(SSFile* file);
+    void write(SkywardSwordFile* file);
 };
 }
 }

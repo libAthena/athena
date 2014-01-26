@@ -1,36 +1,36 @@
-#include "SSFileWriter.hpp"
-#include "SSFile.hpp"
-#include "SSQuest.hpp"
+#include "SkywardSwordFileWriter.hpp"
+#include "SkywardSwordFile.hpp"
+#include "SkywardSwordQuest.hpp"
 
 namespace zelda
 {
 namespace io
 {
 
-SSFileWriter::SSFileWriter(Uint8 *data, Uint64 len)
+SkywardSwordFileWriter::SkywardSwordFileWriter(Uint8 *data, Uint64 len)
     : base(data, len)
 {
     base::setEndianess(BigEndian);
 }
 
-SSFileWriter::SSFileWriter(const std::string &filename)
+SkywardSwordFileWriter::SkywardSwordFileWriter(const std::string &filename)
     : base(filename)
 {
     base::setEndianess(BigEndian);
 }
 
-void SSFileWriter::write(SSFile *file)
+void SkywardSwordFileWriter::write(SkywardSwordFile *file)
 {
-    Uint32 magic = (file->region() == NTSCURegion ? SSFile::USMagic :
-                   (file->region() == NTSCJRegion ? SSFile::JAMagic : SSFile::EUMagic));
+    Uint32 magic = (file->region() == NTSCURegion ? SkywardSwordFile::USMagic :
+                   (file->region() == NTSCJRegion ? SkywardSwordFile::JAMagic : SkywardSwordFile::EUMagic));
 
     base::writeUInt32(magic);
     base::seek(0x1C, base::Beginning);
     base::writeUInt32(0x1D);
 
-    std::vector<SSQuest*> quests = file->questList();
+    std::vector<SkywardSwordQuest*> quests = file->questList();
     int i = 0;
-    for (SSQuest* q : quests)
+    for (SkywardSwordQuest* q : quests)
     {
         // Write the save data
         base::writeUBytes(q->data(), q->length());

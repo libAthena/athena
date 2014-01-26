@@ -1,5 +1,5 @@
-#ifndef SSQUEST_HPP
-#define SSQUEST_HPP
+#ifndef SKYWARDSWORDQUEST_HPP
+#define SKYWARDSWORDQUEST_HPP
 
 #include "ZQuestFile.hpp"
 
@@ -7,10 +7,10 @@ namespace zelda
 {
 
 // TODO: Handle game specific data
-class SSQuest : public ZQuestFile
+class SkywardSwordQuest : public ZQuestFile
 {
 public:
-    SSQuest(Uint8* data, Uint32 len);
+    SkywardSwordQuest(Uint8* data, Uint32 len);
 
     // TODO: Is len really needed?
     void setSkipData(const Uint8* data, Uint32 len = 0x24);

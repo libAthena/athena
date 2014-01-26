@@ -8,9 +8,9 @@
 
 namespace zelda
 {
-class SSQuest;
+class SkywardSwordQuest;
 
-class SSFile
+class SkywardSwordFile
 {
 public:
     enum MagicNumbers
@@ -20,20 +20,20 @@ public:
         EUMagic = 0x534F5550
     };
 
-    SSFile();
-    SSFile(std::vector<SSQuest*> quests);
-    ~SSFile();
+    SkywardSwordFile();
+    SkywardSwordFile(std::vector<SkywardSwordQuest*> quests);
+    ~SkywardSwordFile();
 
-    void addQuest(SSQuest* q);
-    SSQuest* quest(Uint32 id);
-    std::vector<SSQuest*> questList() const;
+    void addQuest(SkywardSwordQuest* q);
+    SkywardSwordQuest* quest(Uint32 id);
+    std::vector<SkywardSwordQuest*> questList() const;
 
     void setRegion(Region region);
     Region region() const;
 private:
     Region m_region;
     // A vector is a bit overkill
-    std::vector<SSQuest*> m_quests;
+    std::vector<SkywardSwordQuest*> m_quests;
     Uint32 m_numQuests;
 };
 

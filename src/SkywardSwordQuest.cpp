@@ -1,15 +1,15 @@
-#include "SSQuest.hpp"
+#include "SkywardSwordQuest.hpp"
 
 namespace zelda
 {
-SSQuest::SSQuest(Uint8 *data, Uint32 len)
+SkywardSwordQuest::SkywardSwordQuest(Uint8 *data, Uint32 len)
     : ZQuestFile(ZQuestFile::SS, BigEndian, data, len),
       m_skipData(NULL),
       m_skipLength(0)
 {
 }
 
-void SSQuest::setSkipData(const Uint8 *data, Uint32 len)
+void SkywardSwordQuest::setSkipData(const Uint8 *data, Uint32 len)
 {
     if (m_skipData)
     {
@@ -21,12 +21,12 @@ void SSQuest::setSkipData(const Uint8 *data, Uint32 len)
     m_skipLength = len;
 }
 
-Uint8 *SSQuest::skipData() const
+Uint8 *SkywardSwordQuest::skipData() const
 {
     return m_skipData;
 }
 
-Uint32 SSQuest::skipLength() const
+Uint32 SkywardSwordQuest::skipLength() const
 {
     return m_skipLength;
 }
