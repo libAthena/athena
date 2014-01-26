@@ -63,11 +63,17 @@ HEADERS += \
     include/Compression.hpp \
     include/WiiImage.hpp \
     include/ZQuestFile.hpp \
-    include/SSQuest.hpp \
-    include/SSFileWriter.hpp \
-    include/SSFileReader.hpp \
-    include/SSFile.hpp \
-    include/Checksums.hpp
+    include/Checksums.hpp \
+    include/SkywardSwordFile.hpp \
+    include/SkywardSwordFileReader.hpp \
+    include/SkywardSwordFileWriter.hpp \
+    include/SkywardSwordQuest.hpp \
+    include/Sprite.hpp \
+    include/SpriteFile.hpp \
+    include/SpriteFileReader.hpp \
+    include/SpriteFileWriter.hpp \
+    include/SpriteFrame.hpp \
+    include/SpritePart.hpp
 
 SOURCES += \
     src/utility.cpp \
@@ -97,8 +103,14 @@ SOURCES += \
     src/Compression.cpp \
     src/WiiImage.cpp \
     src/ZQuestFile.cpp \
-    src/SSQuest.cpp \
-    src/SSFileWriter.cpp \
-    src/SSFileReader.cpp \
-    src/SSFile.cpp \
-    src/Checksums.cpp
+    src/Checksums.cpp \
+    src/SkywardSwordFile.cpp \
+    src/SkywardSwordFileReader.cpp \
+    src/SkywardSwordFileWriter.cpp \
+    src/SkywardSwordQuest.cpp \
+    src/Sprite.cpp \
+    src/SpriteFile.cpp \
+    src/SpriteFileReader.cpp \
+    src/SpriteFileWriter.cpp \
+    src/SpriteFrame.cpp \
+    src/SpritePart.cpp
