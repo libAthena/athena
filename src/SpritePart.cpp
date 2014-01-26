@@ -96,10 +96,7 @@ void SpritePart::setFrames(std::vector<SpriteFrame*> frames)
     }
 
     if (!m_currentFrame)
-    {
         m_currentFrame = frames[0];
-        updateTexture();
-    }
 
     m_frames = frames;
 }

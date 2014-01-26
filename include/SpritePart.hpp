@@ -39,7 +39,6 @@ public:
 
     void setRoot(Sprite* root);
 private:
-    void updateTexture();
     Sprite*      m_root;
     std::string   m_name;
     bool          m_hasCollision;
