@@ -61,6 +61,7 @@ HEADERS += \
     include/ZQuestFileWriter.hpp \
     include/ZQuestFileReader.hpp \
     include/Compression.hpp \
+    include/lzo.h \
     include/WiiImage.hpp \
     include/ZQuestFile.hpp \
     include/Checksums.hpp \
@@ -101,6 +102,7 @@ SOURCES += \
     src/ZQuestFileWriter.cpp \
     src/ZQuestFileReader.cpp \
     src/Compression.cpp \
+    src/lzo.c \
     src/WiiImage.cpp \
     src/ZQuestFile.cpp \
     src/Checksums.cpp \
