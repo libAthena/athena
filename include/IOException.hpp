@@ -40,7 +40,7 @@ public:
     /*! \brief The constructor for an IOException
      *  \param message The error message to throw
      */
-    IOException(const std::string& message) :
+    inline IOException(const std::string& message) :
         Exception("IOException: " + message)
     {}
 };

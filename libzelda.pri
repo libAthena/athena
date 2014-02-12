@@ -55,7 +55,8 @@ HEADERS += \
     $$PWD/include/SpriteFileReader.hpp \
     $$PWD/include/SpriteFileWriter.hpp \
     $$PWD/include/SpriteFrame.hpp \
-    $$PWD/include/SpritePart.hpp
+    $$PWD/include/SpritePart.hpp \
+    ../libzelda/include/InvalidDataException.hpp
 
 SOURCES += \
     $$PWD/src/utility.cpp \
