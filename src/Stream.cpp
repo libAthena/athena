@@ -198,6 +198,19 @@ Int8 Stream::readByte()
     return *(Int8*)(m_data + m_position++);
 }
 
+Uint8 Stream::readUByte()
+{
+    if (m_bitPosition > 0)
+    {
+        m_bitPosition = 0;
+        m_position += sizeof(Uint8);
+    }
+    if (m_position + 1 > m_length)
+        throw error::IOException("Stream::readUByte -> Position passed stream bounds");
+
+    return *(Uint8*)(m_data + m_position++);
+}
+
 Uint8 *Stream::readUBytes(Int64 length)
 {
     return (Uint8*)readBytes(length);

@@ -122,6 +122,14 @@ public:
      * \throw IOException
      */
     virtual Int8 readByte();
+
+    /*! \brief Reads a byte at the current position and advances the current position
+     *
+     * \return Uint8 The value at the current position
+     * \throw IOException
+     */
+    virtual Uint8 readUByte();
+
     /*! \brief Reads a byte at the current position and advances the current position.
      *
      * \return Uint8* The buffer at the current position from the given length.
