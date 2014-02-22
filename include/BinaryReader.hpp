@@ -18,6 +18,7 @@
 
 #include "Stream.hpp"
 #include <string>
+#include <functional>
 
 namespace zelda
 {
@@ -63,6 +64,12 @@ public:
      *
      */
     std::string filepath() const;
+
+    bool readBit();
+    Int8 readByte();
+    Uint8 readUByte();
+    Int8* readBytes(Int64 length);
+    Uint8* readUBytes(Int64 length);
 
     /*! \brief Reads a Int16 and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position
@@ -163,7 +170,9 @@ public:
      */
     std::string readString();
 
+    void setProgressCallback(std::function<void(int)> cb);
 protected:
+    void loadData();
     /*! \brief Overload of isOpenForWriting in Stream
      *
      * \return false
@@ -180,6 +189,9 @@ protected:
      */
     void writeBytes(Int8*, Int64);
     std::string m_filepath; //!< Path to the target file
+    Uint32      m_currentLength;
+    FILE*       m_file;
+    std::function<void(int)> m_progressCallback;
 };
 }
 }

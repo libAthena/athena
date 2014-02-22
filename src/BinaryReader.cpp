@@ -49,43 +49,46 @@ BinaryReader::BinaryReader(const std::string& filename)
     : m_filepath(filename)
 {
     Stream::setAutoResizing(false);
-    FILE* in;
-    Uint32 length;
-    in = fopen(filename.c_str(), "rb");
+}
 
-    if (!in)
-        throw error::FileNotFoundException(filename);
+bool BinaryReader::readBit()
+{
+    if (!m_data)
+        loadData();
 
-    fseek(in, 0, SEEK_END);
-    length = ftell(in);
-    fseek(in, 0, SEEK_SET);
-#ifdef HW_RVL
-    m_data = (Uint8*)memalign(32, length);
-#else
-    m_data = new Uint8[length];
-#endif
+    return Stream::readBit();
+}
 
-    Uint32 done = 0;
-    Uint32 blocksize = BLOCKSZ;
-    do
-    {
-        if (blocksize > length - done)
-            blocksize = length - done;
+Int8 BinaryReader::readByte()
+{
+    if (!m_data)
+        loadData();
 
-        Int32 ret = fread(m_data + done, 1, blocksize, in);
+    return Stream::readByte();
+}
 
-        if (ret < 0)
-            throw error::IOException("BinaryReader::BinaryReader -> reading data from disk");
-        else if (ret == 0)
-            break;
+Uint8 BinaryReader::readUByte()
+{
+    if (!m_data)
+        loadData();
 
-        done += blocksize;
-    } while (done < length);
+    return Stream::readUByte();
+}
 
-    fclose(in);
-    m_length = length;
-    m_position = 0;
-    m_bitPosition = 0;
+Int8* BinaryReader::readBytes(Int64 length)
+{
+    if (!m_data)
+        loadData();
+
+    return Stream::readBytes(length);
+}
+
+Uint8* BinaryReader::readUBytes(Int64 length)
+{
+    if (!m_data)
+        loadData();
+
+    return Stream::readUBytes(length);
 }
 
 void BinaryReader::writeByte(Int8)
@@ -100,6 +103,9 @@ void BinaryReader::writeBytes(Int8*, Int64)
 
 Int16 BinaryReader::readInt16()
 {
+    if (!m_data)
+        loadData();
+
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
@@ -118,6 +124,9 @@ Int16 BinaryReader::readInt16()
 
 Uint16 BinaryReader::readUInt16()
 {
+    if (!m_data)
+        loadData();
+
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
@@ -136,6 +145,9 @@ Uint16 BinaryReader::readUInt16()
 
 Int32 BinaryReader::readInt32()
 {
+    if (!m_data)
+        loadData();
+
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
@@ -153,6 +165,9 @@ Int32 BinaryReader::readInt32()
 
 Uint32 BinaryReader::readUInt32()
 {
+    if (!m_data)
+        loadData();
+
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
@@ -171,6 +186,9 @@ Uint32 BinaryReader::readUInt32()
 
 Int64 BinaryReader::readInt64()
 {
+    if (!m_data)
+        loadData();
+
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
@@ -189,6 +207,9 @@ Int64 BinaryReader::readInt64()
 
 Uint64 BinaryReader::readUInt64()
 {
+    if (!m_data)
+        loadData();
+
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
@@ -206,6 +227,9 @@ Uint64 BinaryReader::readUInt64()
 
 float BinaryReader::readFloat()
 {
+    if (!m_data)
+        loadData();
+
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
@@ -224,6 +248,9 @@ float BinaryReader::readFloat()
 
 double BinaryReader::readDouble()
 {
+    if (!m_data)
+        loadData();
+
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
@@ -243,6 +270,9 @@ double BinaryReader::readDouble()
 
 bool BinaryReader::readBool()
 {
+    if (!m_data)
+        loadData();
+
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
@@ -258,6 +288,8 @@ bool BinaryReader::readBool()
 
 std::string BinaryReader::readUnicode()
 {
+    if (!m_data)
+        loadData();
     std::string ret;
     std::vector<short> tmp;
 
@@ -286,6 +318,56 @@ std::string BinaryReader::readString()
     }
 
     return ret;
+}
+
+void BinaryReader::setProgressCallback(std::function<void (int)> cb)
+{
+    m_progressCallback = cb;
+}
+
+void BinaryReader::loadData()
+{
+    FILE* in;
+    Uint32 length;
+    in = fopen(m_filepath.c_str(), "rb");
+
+    if (!in)
+        throw error::FileNotFoundException(m_filepath);
+
+    fseek(in, 0, SEEK_END);
+    length = ftell(in);
+    fseek(in, 0, SEEK_SET);
+#ifdef HW_RVL
+    m_data = (Uint8*)memalign(32, length);
+#else
+    m_data = new Uint8[length];
+#endif
+
+    Uint32 done = 0;
+    Uint32 blocksize = BLOCKSZ;
+    do
+    {
+        if (blocksize > length - done)
+            blocksize = length - done;
+
+        Int32 ret = fread(m_data + done, 1, blocksize, in);
+
+        if (ret < 0)
+            throw error::IOException("BinaryReader::BinaryReader -> reading data from disk");
+        else if (ret == 0)
+            break;
+
+        done += ret;
+
+        if (m_progressCallback)
+            m_progressCallback((int)((float)(done* 100.f)/length));
+
+    } while (done < length);
+
+    fclose(in);
+    m_length = length;
+    m_position = 0;
+    m_bitPosition = 0;
 }
 
 bool BinaryReader::isOpenForWriting()

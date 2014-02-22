@@ -28,7 +28,7 @@ namespace zelda
 namespace io
 {
 
-const Uint32 Stream::BLOCKSZ = 512;
+const Uint32 Stream::BLOCKSZ = (32*1024);
 
 Stream::Stream() :
     m_bitPosition(0),
