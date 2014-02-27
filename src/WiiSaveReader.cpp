@@ -54,50 +54,60 @@ WiiSaveReader::WiiSaveReader(const std::string& filename)
 WiiSave* WiiSaveReader::readSave()
 {
     WiiSave* ret = new WiiSave;
-    if (length() < 0xF0C0)
-        throw error::InvalidOperationException("WiiSaveReader::readSave -> Not a valid WiiSave");
-
-    WiiBanner* banner = this->readBanner();
-    if (!banner)
-        throw error::InvalidOperationException("WiiSaveReader::readSave -> Invalid banner");
-
-    ret->setBanner(banner);
-    Uint32 bkVer = base::readUInt32();
-
-    if (bkVer != 0x00000070)
-        throw error::InvalidOperationException("WiiSaveReader::readSave -> Invalid BacKup header size");
-
-    Uint32 bkMagic = base::readUInt32();
-    bkMagic = bkMagic;
-    if (bkMagic != 0x426B0001)
-        throw error::InvalidOperationException("WiiSaveReader::readSave -> Invalid BacKup header magic");
-
-    Uint32 ngId = base::readUInt32();
-    ngId = ngId;
-
-    Uint32 numFiles = base::readUInt32();
-
-    /*int fileSize =*/ base::readUInt32();
-    base::seek(8); // skip unknown data;
-
-    Uint32 totalSize = base::readUInt32();
-    base::seek(64); // Unknown (Most likely padding)
-    base::seek(8);
-    base::seek(6);
-    base::seek(2);
-    base::seek(0x10);
-
-    std::unordered_map<std::string, WiiFile*> files;
-    for (Uint32 i = 0; i < numFiles; ++i)
+    try
     {
-        WiiFile* file = readFile();
-        if (file)
-            files["/"+file->filename()] = file;
+        if (length() < 0xF0C0)
+            throw error::InvalidOperationException("WiiSaveReader::readSave -> Not a valid WiiSave");
+
+        WiiBanner* banner = this->readBanner();
+        if (!banner)
+            throw error::InvalidOperationException("WiiSaveReader::readSave -> Invalid banner");
+
+        ret->setBanner(banner);
+        Uint32 bkVer = base::readUInt32();
+
+        if (bkVer != 0x00000070)
+            throw error::InvalidOperationException("WiiSaveReader::readSave -> Invalid BacKup header size");
+
+        Uint32 bkMagic = base::readUInt32();
+        bkMagic = bkMagic;
+        if (bkMagic != 0x426B0001)
+            throw error::InvalidOperationException("WiiSaveReader::readSave -> Invalid BacKup header magic");
+
+        Uint32 ngId = base::readUInt32();
+        ngId = ngId;
+
+        Uint32 numFiles = base::readUInt32();
+
+        /*int fileSize =*/ base::readUInt32();
+        base::seek(8); // skip unknown data;
+
+        Uint32 totalSize = base::readUInt32();
+        base::seek(64); // Unknown (Most likely padding)
+        base::seek(8);
+        base::seek(6);
+        base::seek(2);
+        base::seek(0x10);
+
+        std::unordered_map<std::string, WiiFile*> files;
+        for (Uint32 i = 0; i < numFiles; ++i)
+        {
+            WiiFile* file = readFile();
+            if (file)
+                files["/"+file->filename()] = file;
+        }
+
+        ret->setFiles(files);
+
+        readCerts(totalSize);
+    }
+    catch(...)
+    {
+        delete ret;
+        ret = NULL;
+        throw;
     }
 
-    ret->setFiles(files);
-
-    readCerts(totalSize);
     return ret;
 }
 
@@ -154,7 +164,7 @@ WiiBanner* WiiSaveReader::readBanner()
     gameId = base::readUInt64();
     bannerSize = base::readUInt32();
     permissions = base::readByte();
-/*    unk =*/ base::readByte();
+    /*    unk =*/ base::readByte();
     base::seek(0x10);
     // skip padding
     base::seek(2);

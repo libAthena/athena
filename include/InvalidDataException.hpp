@@ -2,6 +2,7 @@
 #define INVALIDDATAEXCEPTION_HPP
 
 #include "Exception.hpp"
+#include <sstream>
 
 namespace zelda
 {
@@ -20,10 +21,17 @@ class InvalidDataException : public Exception
 {
 public:
     inline InvalidDataException(const std::string& error)
-        : Exception("InvalidDataException: " + error)
+        : Exception(error)
     {
     }
 };
+
 }
 }
+
+#define THROW_INVALID_DATA(msg) \
+    do  \
+    { \
+        throw zelda::error::InvalidDataException(__LINE_STRING__ " " __FILE__ " " msg); \
+    } while(0)
 #endif // INVALIDDATAEXCEPTION_HPP

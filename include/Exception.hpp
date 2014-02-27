@@ -18,6 +18,10 @@
 
 #include <string>
 
+#define __STRX(x) #x
+#define __STR(x) __STRX(x)
+#define __LINE_STRING__ __STR(__LINE__)
+
 namespace zelda
 {
 namespace error
@@ -53,4 +57,10 @@ protected:
 
 } // error
 } // zelda
+#define THROW_EXCEPTION(msg) \
+    do  \
+    { \
+        throw zelda::error::Exception(__LINE_STRING__ " " __FILE__ " " msg); \
+    } while(0)
+
 #endif
