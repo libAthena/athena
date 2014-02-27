@@ -15,8 +15,8 @@
 
 #include "Compression.hpp"
 #include "Exception.hpp"
+#include "lzo.h"
 #include <iostream>
-
 #include <zlib.h>
 
 namespace zelda
@@ -103,6 +103,13 @@ Int32 compressZlib(const Uint8 *src, Uint32 srcLen, Uint8 *dst, Uint32 dstLen)
     return ret;
 }
 
+Int32 decompressLZO(Uint8* source, Int32 sourceSize, Uint8* dest, Int32& dstSize)
+{
+    int size = dstSize;
+    int result = lzo1x_decode(dest, &size, source, &sourceSize);
+    dstSize = size;
+    return result;
+}
 
 //src points to the yaz0 source data (to the "real" source data, not at the header!)
 //dst points to a buffer uncompressedSize bytes large (you get uncompressedSize from
@@ -316,6 +323,8 @@ Uint32 simpleEnc(Uint8* src, Int32 size, Int32 pos, Uint32 *pMatchPos)
         numBytes = 1;
     return numBytes;
 }
+
+
 
 } // Compression
 } // io

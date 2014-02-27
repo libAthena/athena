@@ -28,7 +28,7 @@ namespace zelda
 namespace io
 {
 
-const Uint32 Stream::BLOCKSZ = 512;
+const Uint32 Stream::BLOCKSZ = (32*1024);
 
 Stream::Stream() :
     m_bitPosition(0),
@@ -196,6 +196,19 @@ Int8 Stream::readByte()
         throw error::IOException("Stream::readByte -> Position passed stream bounds");
 
     return *(Int8*)(m_data + m_position++);
+}
+
+Uint8 Stream::readUByte()
+{
+    if (m_bitPosition > 0)
+    {
+        m_bitPosition = 0;
+        m_position += sizeof(Uint8);
+    }
+    if (m_position + 1 > m_length)
+        throw error::IOException("Stream::readUByte -> Position passed stream bounds");
+
+    return *(Uint8*)(m_data + m_position++);
 }
 
 Uint8 *Stream::readUBytes(Int64 length)

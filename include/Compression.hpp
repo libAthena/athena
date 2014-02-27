@@ -28,6 +28,9 @@ namespace Compression
     Int32 decompressZlib(Uint8* src, Uint32 srcLen, Uint8* dst, Uint32 dstLen);
     Int32 compressZlib(const Uint8* src, Uint32 srcLen, Uint8* dst, Uint32 dstLen);
 
+    // lzo compression
+    Int32 decompressLZO(Uint8* source, Int32 sourceSize, Uint8* dest, Int32& dstSize);
+
     // Yaz0 encoding
     Uint32 yaz0Decode(Uint8* src, Uint8* dst, Uint32 uncompressedSize);
     Uint32 yaz0Encode(Uint8* src, Uint32 srcSize, Uint8* data);
