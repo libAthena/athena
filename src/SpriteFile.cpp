@@ -1,7 +1,7 @@
 #include "SpriteFile.hpp"
 #include "Sprite.hpp"
+#include "utility.hpp"
 #include <iostream>
-
 
 namespace zelda
 {
@@ -9,7 +9,7 @@ namespace Sakura
 {
 const Uint32 SpriteFile::Major = 1;
 const Uint32 SpriteFile::Minor = 0;
-const Uint32 SpriteFile::Revision = 1;
+const Uint32 SpriteFile::Revision = 2;
 const Uint32 SpriteFile::Build = 0;
 const Uint32 SpriteFile::Version = Major | (Minor << 8) | (Revision << 16) | (Build << 24);
 
@@ -17,75 +17,141 @@ const Uint32 SpriteFile::Magic = 'S' | ('P' << 8) | ('R' << 16) | ('S' << 24);
 
 
 SpriteFile::SpriteFile()
-    : m_size(Vector2Di(1, 1))
 {
 }
 
 SpriteFile::SpriteFile(Uint32 width, Uint32 height, float originX, float originY)
-    : m_size(Vector2Di(width, height)),
-      m_origin(Vector2Df(originX, originY))
+    : m_size(width, height),
+      m_origin(originX, originY)
 {
 }
 
+#ifndef LIBZELDA_USE_QT
 SpriteFile::SpriteFile(const Vector2Di& size, const Vector2Df& origin)
+#else
+SpriteFile::SpriteFile(const QSize& size, const QPoint& origin)
+#endif
     : m_size(size),
       m_origin(origin)
 {
 }
 
+SpriteFile::~SpriteFile()
+{
+#ifndef LIBZELDA_USE_QT
+    for (std::pair<std::string, Sprite*> sprite : m_sprites)
+    {
+        delete sprite.second;
+        sprite.second = NULL;
+    }
+#endif
+    m_sprites.clear();
+}
+
 void SpriteFile::setSize(Uint32 width, Uint32 height)
 {
+#ifndef LIBZELDA_USE_QT
     setSize(Vector2Di(width, height));
+#else
+    setSize(QSize(width, height));
+#endif
 }
 
+#ifndef LIBZELDA_USE_QT
 void SpriteFile::setSize(const Vector2Di& size)
+#else
+void SpriteFile::setSize(const QSize& size)
+#endif
 {
     m_size = size;
+#ifdef LIBZELDA_USE_QT
+    emit sizeChanged(size);
+#endif
 }
 
+#ifndef LIBZELDA_USE_QT
 Vector2Di SpriteFile::size() const
+#else
+QSize SpriteFile::size() const
+#endif
 {
     return m_size;
 }
 
 Uint32 SpriteFile::width() const
 {
+#ifndef LIBZELDA_USE_QT
     return m_size.x;
+#else
+    return m_size.width();
+#endif
 }
 
 Uint32 SpriteFile::height() const
 {
+#ifndef LIBZELDA_USE_QT
     return m_size.y;
+#else
+    return m_size.height();
+#endif
 }
 
 void SpriteFile::setOrigin(const float x, const float y)
 {
+#ifndef LIBZELDA_USE_QT
     setOrigin(Vector2Df(x, y));
+#else
+    setOrigin(QPoint(x, y));
+#endif
 }
 
+#ifndef LIBZELDA_USE_QT
 void SpriteFile::setOrigin(const Vector2Df& origin)
+#else
+void SpriteFile::setOrigin(const QPoint& origin)
+#endif
 {
     m_origin = origin;
+#ifdef LIBZELDA_USE_QT
+    emit originChanged(origin);
+#endif
 }
 
+
+#ifndef LIBZELDA_USE_QT
 Vector2Df SpriteFile::origin() const
+#else
+QPoint SpriteFile::origin() const
+#endif
 {
     return m_origin;
 }
 
 float SpriteFile::originX() const
 {
+#ifndef LIBZELDA_USE_QT
     return m_origin.x;
+#else
+    return m_origin.x();
+#endif
 }
 
 float SpriteFile::originY() const
 {
+#ifndef LIBZELDA_USE_QT
     return m_origin.y;
+#else
+    return m_origin.y();
+#endif
 }
 
-void SpriteFile::addTexture(STexture* texture)
+bool SpriteFile::addTexture(STexture* texture)
 {
+    if (m_textures.size() >= 65536)
+        return false;
+
     m_textures.push_back(texture);
+    return true;
 }
 
 void SpriteFile::removeTexture(int id)
@@ -106,7 +172,11 @@ STexture* SpriteFile::texture(Uint32 id)
     return m_textures[id];
 }
 
+#ifndef LIBZELDA_USE_QT
 std::vector<STexture*> SpriteFile::textures() const
+#else
+QList<STexture*> SpriteFile::textures() const
+#endif
 {
     return m_textures;
 }
@@ -118,12 +188,42 @@ Uint32 SpriteFile::textureCount() const
 
 void SpriteFile::addSprite(Sprite* sprite)
 {
-    if (m_sprites.find(sprite->name()) != m_sprites.end())
+#ifndef LIBZELDA_USE_QT
+    std::string name(sprite->name());
+    zelda::utility::tolower(name);
+    if (m_sprites.find(name) != m_sprites.end())
         return;
+#else
+    QString name = sprite->name().toLower();
+    if (m_sprites.contains(name))
+        return;
+#endif
 
-    m_sprites[sprite->name()] = sprite;
+    m_sprites[name] = sprite;
 }
 
+#ifndef LIBZELDA_USE_QT
+void SpriteFile::removeSprite(const std::string& name)
+{
+    std::string tmpName(name);
+    zelda::utility::tolower(tmpName);
+    std::unordered_map<std::string, Sprite*>::iterator iterator = m_sprites.find(tmpName);
+    if (iterator != m_sprites.end())
+        m_sprites.erase(iterator);
+}
+#else
+void SpriteFile::removeSprite(const QString& name)
+{
+    m_sprites.remove(name.toLower());
+}
+#endif
+
+void SpriteFile::removeSprite(Sprite* sprite)
+{
+    removeSprite(sprite->name());
+}
+
+#ifndef LIBZELDA_USE_QT
 void SpriteFile::setSprites(std::unordered_map<std::string, Sprite*> sprites)
 {
     if (sprites.size() == 0)
@@ -140,16 +240,41 @@ void SpriteFile::setSprites(std::unordered_map<std::string, Sprite*> sprites)
 
     m_sprites = sprites;
 }
+#else
+void SpriteFile::setSprites(QMap<QString, Sprite *> sprites)
+{
+    if (sprites.size() == 0)
+        return;
+    m_sprites.clear();
+    m_sprites = sprites;
+}
+#endif
 
+#ifndef LIBZELDA_USE_QT
 Sprite* SpriteFile::sprite(const std::string& name)
 {
-    if (m_sprites.find(name) == m_sprites.end())
+    std::string nameLow(name);
+    zelda::utility::tolower(nameLow);
+    if (m_sprites.find(nameLow) == m_sprites.end())
         return NULL;
 
-    return m_sprites[name];
+    return m_sprites[nameLow];
 }
+#else
+Sprite* SpriteFile::sprite(const QString& name)
+{
+    if (!m_sprites.contains(name.toLower()))
+        return NULL;
 
+    return m_sprites[name.toLower()];
+}
+#endif
+
+#ifndef LIBZELDA_USE_QT
 std::unordered_map<std::string, Sprite*> SpriteFile::sprites() const
+#else
+QMap<QString, Sprite*> SpriteFile::sprites() const
+#endif
 {
     return m_sprites;
 }
@@ -159,6 +284,7 @@ Uint32 SpriteFile::spriteCount() const
     return m_sprites.size();
 }
 
+#ifndef LIBZELDA_USE_QT
 void SpriteFile::setTextures(std::vector<STexture*> textures)
 {
     if (textures.size() == 0)
@@ -176,5 +302,15 @@ void SpriteFile::setTextures(std::vector<STexture*> textures)
 
     m_textures = textures;
 }
+#else
+void SpriteFile::setTextures(QList<STexture *> textures)
+{
+    if (textures.size() == 0)
+        return;
+
+    m_textures.clear();
+    m_textures = textures;
+}
+#endif
 } // Sakura
 } // zelda

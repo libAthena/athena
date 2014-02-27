@@ -1,8 +1,17 @@
 ﻿#ifndef SSPRITEFILE_HPP
 #define SSPRITEFILE_HPP
 
+#ifndef LIBZELDA_USE_QT
 #include <vector>
 #include <unordered_map>
+#else
+#include <QObject>
+#include <QMap>
+#include <QList>
+#include <QSize>
+#include <QPoint>
+#endif
+
 #include <string>
 #include <Types.hpp>
 
@@ -17,8 +26,14 @@ struct STexture
 };
 
 class Sprite;
+#ifndef LIBZELDA_USE_QT
 class SpriteFile
 {
+#else
+class SpriteFile : public QObject
+{
+    Q_OBJECT
+#endif
 public:
     /*!
      * \brief Major
@@ -69,7 +84,19 @@ public:
      * \param size
      * \param origin
      */
+#ifndef LIBZELDA_USE_QT
     SpriteFile(const Vector2Di& size, const Vector2Df& origin);
+#else
+    SpriteFile(const QSize& size, const QPoint& origin);
+#endif
+
+    ~SpriteFile();
+
+#ifndef LIBZELDA_USE_QT
+public:
+#else
+public slots:
+#endif
 
     /*!
      * \brief setSize
@@ -82,13 +109,21 @@ public:
      * \brief setSize
      * \param size
      */
+#ifndef LIBZELDA_USE_QT
     void setSize(const Vector2Di& size);
+#else
+    void setSize(const QSize& size);
+#endif
 
     /*!
      * \brief size
      * \return
      */
+#ifndef LIBZELDA_USE_QT
     Vector2Di size() const;
+#else
+    QSize size() const;
+#endif
 
     /*!
      * \brief width
@@ -113,13 +148,22 @@ public:
      * \brief setOrigin
      * \param origin
      */
-    void setOrigin(const Vector2Df& origin);
+#ifndef LIBZELDA_USE_QT
+    void setOrigin(const Vector2Di& origin);
+#else
+    void setOrigin(const QPoint& origin);
+#endif
 
     /*!
      * \brief origin
      * \return
      */
+#ifndef LIBZELDA_USE_QT
     Vector2Df origin() const;
+#else
+    QPoint origin() const;
+#endif
+
 
     /*!
      * \brief originX
@@ -137,7 +181,7 @@ public:
      * \brief addTexture
      * \param texture
      */
-    void addTexture(STexture* texture);
+    bool addTexture(STexture* texture);
 
     /*!
      * \brief removeTexture
@@ -152,30 +196,70 @@ public:
      */
     STexture* texture(Uint32 id);
 
+#ifndef LIBZELDA_USE_QT
     std::vector<STexture*> textures() const;
+#else
+    QList<STexture*> textures() const;
+#endif
     Uint32 textureCount() const;
     /*!
      * \brief setTextures
      * \param textures
      */
+
+#ifndef LIBZELDA_USE_QT
     void setTextures(std::vector<STexture*> textures);
+#else
+    void setTextures(QList<STexture*> textures);
+#endif
 
     void addSprite(Sprite* sprite);
 
+#ifndef LIBZELDA_USE_QT
+    void removeSprite(const std::string& name);
+#else
+    void removeSprite(const QString& name);
+#endif
+    void removeSprite(Sprite* sprite);
+
+#ifndef LIBZELDA_USE_QT
     void setSprites(std::unordered_map<std::string, Sprite*> sprites);
-
+#else
+    void setSprites(QMap<QString, Sprite*> sprites);
+#endif
+#ifndef LIBZELDA_USE_QT
     Sprite* sprite(const std::string& name);
-
     std::unordered_map<std::string, Sprite*> sprites() const;
+#else
+    Sprite* sprite(const QString& name);
+    QMap<QString, Sprite*> sprites() const;
+#endif
+
     Uint32 spriteCount() const;
 
-private:
-    std::vector<STexture*> m_textures;
+#ifdef LIBZELDA_USE_QT
+signals:
+    void originChanged(QPoint);
+    void sizeChanged(QSize);
+#endif
+    private:
+    #ifndef LIBZELDA_USE_QT
+        std::vector<STexture*> m_textures;
     Vector2Di              m_size;
     Vector2Df              m_origin;
     std::unordered_map<std::string, Sprite*> m_sprites;
+#else
+    QList<STexture*>       m_textures;
+    QSize                  m_size;
+    QPoint                 m_origin;
+    QMap<QString, Sprite*> m_sprites;
+#endif
 };
 } // Sakura
 } // Zelda
 
+#ifdef LIBZELDA_USE_QT
+Q_DECLARE_METATYPE(zelda::Sakura::SpriteFile*)
+Q_DECLARE_METATYPE(zelda::Sakura::STexture*)
+#endif
 #endif // SSPRITE_HPP

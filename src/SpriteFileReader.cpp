@@ -5,6 +5,7 @@
 #include "SpriteFrame.hpp"
 #include "InvalidOperationException.hpp"
 #include "IOException.hpp"
+#include "utility.hpp"
 
 namespace zelda
 {
@@ -63,7 +64,11 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
     // it will be slow as hell, so we store them in a vector locally
     // then give that vector the the container, this bypasses the de-reference
     // for each texture
+#ifndef LIBZELDA_USE_QT
     std::vector<Sakura::STexture*> textures;
+#else
+    QList<Sakura::STexture*> textures;
+#endif
 
     for (Uint16 i = 0; i < textureCount; i++)
     {
@@ -81,13 +86,22 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
     // Normally this isn't a problem, but someone may decide to copy and paste a sprite
     // and forget to change the name, that needs to be handled, but it's outside the scope
     // of this reader.
+#ifndef LIBZELDA_USE_QT
     std::unordered_map <std::string, Sakura::Sprite*> sprites;
+#else
+    QMap<QString, Sakura::Sprite*> sprites;
+#endif
 
     for (Uint16 i = 0; i < spriteCount; i++)
     {
         Sakura::Sprite* sprite = new Sakura::Sprite(ret);
-        sprite->setName(base::readString());
-        Uint16 partCount = base::readUInt16();
+#ifndef LIBZELDA_USE_QT
+        std::string name = base::readString();
+#else
+        QString name = QString::fromStdString(base::readString());
+#endif
+        sprite->setName(name);
+        Uint16 frameCount = base::readUInt16();
         Uint16 stateCount = base::readUInt16();
 
         // Each state id corresponds to a texture held in the parent class
@@ -105,37 +119,67 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
         // and the storage footprint, while Sakura supports packs and zips
         // it's still a bad idea to have a metric ton of texture resources
         // littering the place
-        std::vector<Sakura::SpritePart*> parts;
-        for (Uint8 j = 0; j < partCount; j++)
+#ifndef LIBZELDA_USE_QT
+        std::vector<Sakura::SpriteFrame*> frames;
+#else
+        QList<Sakura::SpriteFrame*> frames;
+#endif
+
+        for (Uint32 k = 0; k < frameCount; k++)
         {
-            Sakura::SpritePart* part = new Sakura::SpritePart(sprite);
-            part->setName(base::readString());
-            part->setCollision(base::readBool());
+            Sakura::SpriteFrame* frame = new Sakura::SpriteFrame(sprite);
+            frame->setFrameTime(base::readFloat());
+            Uint16 partCount = base::readUInt16();
 
-            Uint32 frameCount = base::readUInt32();
-            std::vector<Sakura::SpriteFrame*> frames;
 
-            for (Uint32 k = 0; k < frameCount; k++)
+#ifndef LIBZELDA_USE_QT
+            std::vector<Sakura::SpritePart*> parts;
+#else
+            QList<Sakura::SpritePart*> parts;
+#endif
+            for (Uint8 j = 0; j < partCount; j++)
             {
+                Sakura::SpritePart* part = new Sakura::SpritePart(frame);
+#ifndef LIBZELDA_USE_QT
+                std::string name = base::readString();
+#else
+                QString name = QString::fromStdString(base::readString());
+#endif
+                part->setName(name);
+                part->setCollision(base::readBool());
+
                 float xOff = base::readFloat();
                 float yOff = base::readFloat();
+                part->setOffset(xOff, yOff);
                 float texXOff = base::readFloat();
                 float texYOff = base::readFloat();
+                part->setTextureOffset(texXOff, texYOff);
                 Uint32 width = base::readUInt32();
                 Uint32 height = base::readUInt32();
-                float frameTime = base::readFloat();
+                part->setSize(width, height);
                 bool flippedH = base::readBool();
+                part->setFlippedHorizontally(flippedH);
                 bool flippedV = base::readBool();
+                part->setFlippedVertically(flippedV);
 
-                frames.push_back(new Sakura::SpriteFrame(xOff, yOff, texXOff, texYOff, width, height, frameTime, flippedH, flippedV));
+                parts.push_back(part);
             }
-            part->setFrames(frames);
-            parts.push_back(part);
+            frame->setParts(parts);
+            frames.push_back(frame);
         }
 
-        sprite->setParts(parts);
+        sprite->setFrames(frames);
+#ifndef LIBZELDA_USE_QT
         if (sprite->name() != std::string())
-            sprites[sprite->name()] = sprite;
+        {
+            std::string nameLow(sprite->name());
+            zelda::utility::tolower(nameLow);
+            sprites[nameLow] = sprite;
+        }
+#else
+        if (!sprite->name().isEmpty())
+            sprites[sprite->name().toLower()] = sprite;
+#endif
         else
             throw zelda::error::IOException("SSpriteFileReader::readFile -> Sprite names cannot be empty");
     }

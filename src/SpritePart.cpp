@@ -1,40 +1,51 @@
 #include "SpritePart.hpp"
-#include "SpriteFrame.hpp"
+#include "SpritePart.hpp"
 #include "Sprite.hpp"
+#include <algorithm>
 
 namespace zelda
 {
 namespace Sakura
 {
 
-SpritePart::SpritePart(Sprite* root)
+SpritePart::SpritePart(SpriteFrame* root)
     : m_root(root),
-      m_hasCollision(false),
-      m_currentFrame(NULL),
-      m_frameIndex(0)
+      m_hasCollision(false)
 {
 }
 
-SpritePart::SpritePart(Sprite* root, const std::string& name, bool hasCollision)
+SpritePart::SpritePart(SpriteFrame* root, const std::string& name, bool hasCollision)
     : m_root(root),
-      m_name(name),
-      m_hasCollision(hasCollision),
-      m_currentFrame(NULL),
-      m_frameIndex(0)
+      m_hasCollision(hasCollision)
 {
+#ifdef LIBZELDA_USE_QT
+    m_name = QString::fromStdString(name);
+#else
+    m_name = name;
+#endif
 }
 
 SpritePart::~SpritePart()
 {
-
 }
 
+#ifndef LIBZELDA_USE_QT
 void SpritePart::setName(const std::string& name)
+#else
+void SpritePart::setName(const QString& name)
+#endif
 {
     m_name = name;
+#ifdef LIBZELDA_USE_QT
+    emit nameChanged(name);
+#endif
 }
 
+#ifndef LIBZELDA_USE_QT
 std::string SpritePart::name() const
+#else
+QString SpritePart::name() const
+#endif
 {
     return m_name;
 }
@@ -42,6 +53,9 @@ std::string SpritePart::name() const
 void SpritePart::setCollision(bool col)
 {
     m_hasCollision = col;
+#ifdef LIBZELDA_USE_QT
+    emit collisionChanged(col);
+#endif
 }
 
 bool SpritePart::hasCollision() const
@@ -49,77 +63,125 @@ bool SpritePart::hasCollision() const
     return m_hasCollision;
 }
 
-void SpritePart::addFrame(SpriteFrame* frame)
+void SpritePart::setOffset(float x, float y)
 {
-    m_frames.push_back(frame);
+#ifndef LIBZELDA_USE_QT
+    setOffset(Vector2Df(x, y));
+#else
+    setOffset(QPoint(x, y));
+#endif
 }
 
-void SpritePart::advanceFrame()
+#ifndef LIBZELDA_USE_QT
+void SpritePart::setOffset(const Vector2Df& offset)
+#else
+void SpritePart::setOffset(const QPoint& offset)
+#endif
 {
-    if (m_frameIndex < m_frames.size() - 1)
-    {
-        m_frameIndex++;
-        m_currentFrame = m_frames[m_frameIndex];
-    }
+    m_offset = offset;
+#ifdef LIBZELDA_USE_QT
+    emit offsetChanged(offset);
+#endif
 }
 
-void SpritePart::retreatFrame()
+#ifndef LIBZELDA_USE_QT
+Vector2Df SpritePart::offset() const
+#else
+QPoint SpritePart::offset() const
+#endif
 {
-    if (m_frameIndex > 0)
-    {
-        m_frameIndex--;
-        m_currentFrame = m_frames[m_frameIndex];
-    }
+    return m_offset;
 }
 
-SpriteFrame* SpritePart::frame(int id)
+void SpritePart::setTextureOffset(float x, float y)
 {
-    if (id < 0 || id >= (int)m_frames.size())
-        return NULL;
-
-    return m_frames[id];
+#ifndef LIBZELDA_USE_QT
+    setTextureOffset(Vector2Df(x, y));
+#else
+    setTextureOffset(QPoint(x, y));
+#endif
 }
 
-void SpritePart::setFrames(std::vector<SpriteFrame*> frames)
+#ifndef LIBZELDA_USE_QT
+void SpritePart::setTextureOffset(const Vector2Df& offset)
+#else
+void SpritePart::setTextureOffset(const QPoint& offset)
+#endif
 {
-    if (frames.size() == 0)
-        return;
-
-    if (m_frames.size() > 0)
-    {
-        for (SpriteFrame* frame : m_frames)
-        {
-            delete frame;
-            frame = NULL;
-        }
-        m_frames.clear();
-    }
-
-    if (!m_currentFrame)
-        m_currentFrame = frames[0];
-
-    m_frames = frames;
+    m_textureOffset = offset;
+#ifdef LIBZELDA_USE_QT
+    emit textureOffsetChanged(offset);
+#endif
 }
 
-SpriteFrame* SpritePart::currentFrame()
+#ifndef LIBZELDA_USE_QT
+Vector2Df SpritePart::textureOffset() const
+#else
+QPoint SpritePart::textureOffset() const
+#endif
 {
-    return m_currentFrame;
+    return m_textureOffset;
 }
 
-int SpritePart::currentFrameID()
+void SpritePart::setSize(Uint32 width, Uint32 height)
 {
-    return m_frameIndex;
+#ifndef LIBZELDA_USE_QT
+    setSize(Vector2Df(width, height));
+#else
+    setSize(QSize(width, height));
+#endif
 }
 
-std::vector<SpriteFrame*> SpritePart::frames() const
+#ifndef LIBZELDA_USE_QT
+void SpritePart::setSize(const Vector2Di& size)
+#else
+void SpritePart::setSize(const QSize& size)
+#endif
 {
-    return m_frames;
+    m_size = size;
+#ifdef LIBZELDA_USE_QT
+    emit sizeChanged(size);
+#endif
 }
 
-Uint32 SpritePart::frameCount() const
+#ifndef LIBZELDA_USE_QT
+Vector2Di SpritePart::size() const
+#else
+QSize SpritePart::size() const
+#endif
 {
-    return m_frames.size();
+    return m_size;
 }
 
+void SpritePart::setFlippedHorizontally(const bool val)
+{
+    m_flippedH = val;
+#ifdef LIBZELDA_USE_QT
+    emit orientationChanged(val, flippedVertically());
+#endif
+}
+
+bool SpritePart::flippedHorizontally() const
+{
+    return m_flippedH;
+}
+
+void SpritePart::setFlippedVertically(const bool val)
+{
+    m_flippedV = val;
+#ifdef LIBZELDA_USE_QT
+    emit orientationChanged(flippedHorizontally(), val);
+#endif
+}
+
+bool SpritePart::flippedVertically() const
+{
+    return m_flippedV;
+}
+
+SpriteFrame* SpritePart::root() const
+{
+    return m_root;
+}
 }
 }

@@ -42,34 +42,52 @@ void SpriteFileWriter::writeFile(Sakura::SpriteFile* file)
         base::writeBool(texture->Preload);
     }
 
+#ifndef LIBZELDA_USE_QT
     for (std::pair<std::string, Sakura::Sprite*> spritePair : file->sprites())
     {
         Sakura::Sprite* sprite = spritePair.second;
-
         base::writeString(sprite->name());
-        base::writeUInt16(sprite->partCount());
+#else
+    foreach(Sakura::Sprite* sprite, file->sprites().values())
+    {
+
+        base::writeString(sprite->name().toStdString());
+#endif
+        base::writeUInt16(sprite->frameCount());
         base::writeUInt16(sprite->stateCount());
 
         for (int id : sprite->stateIds())
             base::writeUInt16(id);
 
-        for (Sakura::SpritePart* part : sprite->parts())
+        for (Sakura::SpriteFrame* frame : sprite->frames())
         {
-            base::writeString(part->name());
-            base::writeBool(part->hasCollision());
-            base::writeUInt32(part->frameCount());
-
-            for (Sakura::SpriteFrame* frame : part->frames())
+            base::writeFloat(frame->frameTime());
+            base::writeUInt16(frame->partCount());
+            for (Sakura::SpritePart* part: frame->parts())
             {
-                base::writeFloat(frame->offset().x);
-                base::writeFloat(frame->offset().y);
-                base::writeFloat(frame->textureOffset().x);
-                base::writeFloat(frame->textureOffset().y);
-                base::writeUInt32(frame->size().x);
-                base::writeUInt32(frame->size().y);
-                base::writeFloat(frame->frameTime());
-                base::writeBool(frame->flippedHorizontally());
-                base::writeBool(frame->flippedVertically());
+#ifndef LIBZELDA_USE_QT
+                base::writeString(part->name());
+#else
+                base::writeString(part->name().toStdString());
+#endif
+                base::writeBool(part->hasCollision());
+#ifndef LIBZELDA_USE_QT
+                base::writeFloat(part->offset().x);
+                base::writeFloat(part->offset().y);
+                base::writeFloat(part->textureOffset().x);
+                base::writeFloat(part->textureOffset().y);
+                base::writeUInt32(part->size().x);
+                base::writeUInt32(part->size().y);
+#else
+                base::writeFloat(part->offset().x());
+                base::writeFloat(part->offset().y());
+                base::writeFloat(part->textureOffset().x());
+                base::writeFloat(part->textureOffset().y());
+                base::writeUInt32(part->size().width());
+                base::writeUInt32(part->size().height());
+#endif
+                base::writeBool(part->flippedHorizontally());
+                base::writeBool(part->flippedVertically());
             }
         }
     }
