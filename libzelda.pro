@@ -3,7 +3,7 @@ TEMPLATE= lib
 DESTDIR = ./lib
 
 # Uncomment this if you wish to use Qt with libZelda
-DEFINES += LIBZELDA_USE_QT
+#DEFINES += LIBZELDA_USE_QT
 
 contains(DEFINES, LIBZELDA_USE_QT){
     QT += core
