@@ -42,8 +42,8 @@ HEADERS += \
     $$PWD/include/ZQuestFileWriter.hpp \
     $$PWD/include/ZQuestFileReader.hpp \
     $$PWD/include/Compression.hpp \
-	$$PWD/include/lzo.h \    
-	$$PWD/include/WiiImage.hpp \
+    $$PWD/include/lzo.h \
+    $$PWD/include/WiiImage.hpp \
     $$PWD/include/ZQuestFile.hpp \
     $$PWD/include/Checksums.hpp \
     $$PWD/include/SkywardSwordFile.hpp \
@@ -56,7 +56,7 @@ HEADERS += \
     $$PWD/include/SpriteFileWriter.hpp \
     $$PWD/include/SpriteFrame.hpp \
     $$PWD/include/SpritePart.hpp \
-    ../libzelda/include/InvalidDataException.hpp
+    $$PWD/include/InvalidDataException.hpp
 
 SOURCES += \
     $$PWD/src/utility.cpp \
@@ -84,7 +84,7 @@ SOURCES += \
     $$PWD/src/ZQuestFileWriter.cpp \
     $$PWD/src/ZQuestFileReader.cpp \
     $$PWD/src/Compression.cpp \
-	$$PWD/src/lzo.c \
+    $$PWD/src/lzo.c \
     $$PWD/src/WiiImage.cpp \
     $$PWD/src/ZQuestFile.cpp \
     $$PWD/src/Checksums.cpp \

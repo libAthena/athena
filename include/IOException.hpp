@@ -41,10 +41,17 @@ public:
      *  \param message The error message to throw
      */
     inline IOException(const std::string& message) :
-        Exception("IOException: " + message)
+        Exception(message)
     {}
 };
 
 } // error
 } // zelda
+
+#define THROW_IO_EXCEPTION(msg) \
+    do  \
+    { \
+        throw zelda::error::IOException(__LINE_STRING__ " " __FILE__ " " msg); \
+    } while(0)
+
 #endif

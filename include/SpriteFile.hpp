@@ -149,7 +149,7 @@ public slots:
      * \param origin
      */
 #ifndef LIBZELDA_USE_QT
-    void setOrigin(const Vector2Di& origin);
+    void setOrigin(const Vector2Df& origin);
 #else
     void setOrigin(const QPoint& origin);
 #endif

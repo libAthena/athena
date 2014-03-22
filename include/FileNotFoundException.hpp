@@ -38,7 +38,7 @@ public:
      *  \param filename The path of the offending file.
      */
     inline FileNotFoundException(const std::string& filename) :
-        Exception("FileNotFoundException:\nCouldn't not find \"" + filename + "\", please check that it exists."),
+        Exception("Couldn't find \"" + filename + "\", please check that it exists."),
         m_filename(filename)
     {}
 
@@ -52,5 +52,11 @@ private:
 
 } // error
 } // zelda
+
+#define THROW_FILENOTFOUND_EXCEPTION(msg) \
+    do  \
+    { \
+        throw zelda::error::FileNotFoundException(__LINE_STRING__ " " __FILE__ " " msg); \
+    } while(0)
 
 #endif

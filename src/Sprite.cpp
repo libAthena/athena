@@ -219,7 +219,7 @@ Uint32 Sprite::frameCount() const
 }
 
 #ifndef LIBZELDA_USE_QT
-std::vector<SpritePart*> Sprite::frames() const
+std::vector<SpriteFrame*> Sprite::frames() const
 #else
 QList<SpriteFrame*> Sprite::frames() const
 #endif

@@ -126,7 +126,7 @@ QPoint SpritePart::textureOffset() const
 void SpritePart::setSize(Uint32 width, Uint32 height)
 {
 #ifndef LIBZELDA_USE_QT
-    setSize(Vector2Df(width, height));
+    setSize(Vector2Di(width, height));
 #else
     setSize(QSize(width, height));
 #endif

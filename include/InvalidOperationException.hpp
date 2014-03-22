@@ -40,12 +40,18 @@ public:
      *  \param error The error message to throw
      */
     inline InvalidOperationException(const std::string& error)
-        : Exception("InvalidOperationException:\n" + error)
+        : Exception(error)
     {
     }
 };
 
 } // error
 } // zelda
+
+#define THROW_INVALIDOPERATION_EXCEPTION(msg) \
+    do  \
+    { \
+        throw zelda::error::InvalidOperationException(__LINE_STRING__ " " __FILE__ " " msg); \
+    } while(0)
 
 #endif // __INVALID_OPERATION_EXCEPTION_HPP__
