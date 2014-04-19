@@ -20,10 +20,13 @@
 #include <string>
 #include <vector>
 
+#define ZQUEST_VERSION_CHECK(major, minor, revision) \
+    (major | (minor << 8) | (revision << 16))
+
 namespace zelda
 {
 /*!
- * \brief The ZQuest class
+ * \brief ZQuestFile is an export format for save data.
  */
 class ZQuestFile
 {
@@ -40,10 +43,6 @@ public:
      * \brief The current revision of the ZQuest format
      */
     static const Uint32 Revision;
-    /*!
-     * \brief The current build of the ZQuest format
-     */
-    static const Uint32 Build;
     /*!
      * \brief The current version of the ZQuest format
      */
@@ -97,7 +96,7 @@ public:
      * \param data
      * \param length
      */
-    ZQuestFile(Game game, Endian endian, Uint8* data, Uint32 length);
+    ZQuestFile(Game game, Endian endian, Uint8* data, Uint32 length, const std::string& gameString = std::string());
     ~ZQuestFile();
 
     /*!
@@ -143,20 +142,22 @@ public:
      */
     Uint32 length() const;
 
+    void setGameString(const std::string& gameString);
     /*!
      * \brief gameString
      * \return
      */
     std::string gameString() const;
+
+    static const std::vector<std::string> gameStringList();
 private:
-    Game   m_game;
-    Endian m_endian;
-    Uint8* m_data;
-    Uint32 m_length;
+    Game        m_game;
+    std::string m_gameString;
+    Endian      m_endian;
+    Uint8*      m_data;
+    Uint32      m_length;
 
     // Game strings support
-    std::vector<std::string> m_gameStrings;
-    void initGameStrings();
 };
 } // zelda
 

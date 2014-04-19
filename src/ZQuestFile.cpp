@@ -18,15 +18,38 @@
 
 namespace zelda
 {
+std::vector<std::string> GameStrings;
+void initGameStrings()
+{
+    // Populate game strings
+    GameStrings.push_back("No Game");
+    GameStrings.push_back("Legend Of Zelda");
+    GameStrings.push_back("Adventure of Link");
+    GameStrings.push_back("A Link to the Past");
+    GameStrings.push_back("Links Awakening");
+    GameStrings.push_back("Ocarina of Time");
+    GameStrings.push_back("Ocarina of Time 3D");
+    GameStrings.push_back("Majora's Mask");
+    GameStrings.push_back("Oracle of Seasons");
+    GameStrings.push_back("Oracle of Ages");
+    GameStrings.push_back("For Swords");
+    GameStrings.push_back("Wind Waker");
+    GameStrings.push_back("Four Swords Adventures");
+    GameStrings.push_back("Minish Cap");
+    GameStrings.push_back("Twilight Princess");
+    GameStrings.push_back("Phantom Hourglass");
+    GameStrings.push_back("Spirit Tracks");
+    GameStrings.push_back("Skyward Sword");
+    GameStrings.push_back("A Link Between Worlds");
+}
 
-const Uint32 ZQuestFile::Major = 1;
+const Uint32 ZQuestFile::Major = 2;
 const Uint32 ZQuestFile::Minor = 0;
 const Uint32 ZQuestFile::Revision = 0;
-const Uint32 ZQuestFile::Build = 0;
 
-const Uint32 ZQuestFile::Version = Major | (Minor << 8) | (Revision << 16) | (Build << 24);
+const Uint32 ZQuestFile::Version = Major | (Minor << 8) | (Revision << 16);
 
-const Uint32 ZQuestFile::Magic   = 'Z' | ('Q' << 8) | ('S' << 16) | ('1' << 24);
+const Uint32 ZQuestFile::Magic   = 'Z' | ('Q' << 8) | ('S' << 16) | (('0' + ZQuestFile::Major) << 24);
 
 ZQuestFile::ZQuestFile()
     : m_game(NoGame),
@@ -37,13 +60,16 @@ ZQuestFile::ZQuestFile()
     initGameStrings();
 }
 
-ZQuestFile::ZQuestFile(ZQuestFile::Game game, Endian endian, Uint8* data, Uint32 length)
+ZQuestFile::ZQuestFile(ZQuestFile::Game game, Endian endian, Uint8* data, Uint32 length, const std::string& gameString)
     : m_game(game),
+      m_gameString(gameString),
       m_endian(endian),
       m_data(data),
       m_length(length)
 {
     initGameStrings();
+    if (gameString.empty() && (m_game < GameStrings.size() - 1))
+        m_gameString = GameStrings[m_game];
 }
 
 ZQuestFile::~ZQuestFile()
@@ -56,6 +82,10 @@ ZQuestFile::~ZQuestFile()
 void ZQuestFile::setGame(ZQuestFile::Game game)
 {
     m_game = game;
+    if (m_game > GameStrings.size() - 1)
+        return;
+
+    m_gameString = GameStrings[m_game];
 }
 
 ZQuestFile::Game ZQuestFile::game() const
@@ -99,36 +129,20 @@ Uint32 ZQuestFile::length() const
     return m_length;
 }
 
+void ZQuestFile::setGameString(const std::string& gameString)
+{
+    m_gameString = gameString;
+}
+
 std::string ZQuestFile::gameString() const
 {
-    if (m_game > m_gameStrings.size() - 1)
-        return "Unsupported Game";
-
-    return m_gameStrings[m_game];
+    return m_gameString;
 }
 
-void ZQuestFile::initGameStrings()
+const std::vector<std::string> ZQuestFile::gameStringList()
 {
-    // Populate game strings
-    m_gameStrings.push_back("No Game");
-    m_gameStrings.push_back("Legend Of Zelda");
-    m_gameStrings.push_back("Adventure of Link");
-    m_gameStrings.push_back("A Link to the Past");
-    m_gameStrings.push_back("Links Awakening");
-    m_gameStrings.push_back("Ocarina of Time");
-    m_gameStrings.push_back("Ocarina of Time 3D");
-    m_gameStrings.push_back("Majora's Mask");
-    m_gameStrings.push_back("Oracle of Seasons");
-    m_gameStrings.push_back("Oracle of Ages");
-    m_gameStrings.push_back("For Swords");
-    m_gameStrings.push_back("Wind Waker");
-    m_gameStrings.push_back("Four Swords Adventures");
-    m_gameStrings.push_back("Minish Cap");
-    m_gameStrings.push_back("Twilight Princess");
-    m_gameStrings.push_back("Phantom Hourglass");
-    m_gameStrings.push_back("Spirit Tracks");
-    m_gameStrings.push_back("Skyward Sword");
-    m_gameStrings.push_back("A Link Between Worlds (Unreleased)"); // Probably should have this, but.....
+    if (GameStrings.size() <= 0)
+        initGameStrings();
+    return GameStrings;
 }
-
 }

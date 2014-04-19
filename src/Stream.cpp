@@ -110,7 +110,10 @@ void Stream::writeBit(bool val)
     else if (m_position > m_length)
         throw error::IOException("Stream::writeBit() -> Position outside stream bounds");
 
-    *(Uint8*)(m_data + m_position) |= ((Uint32)val << m_bitPosition);
+    if (val)
+        *(Uint8*)(m_data + m_position) |= (1 << m_bitPosition);
+    else
+        *(Uint8*)(m_data + m_position) &= ~(1 << m_bitPosition);
     m_bitPosition++;
     if (m_bitPosition > 7)
     {

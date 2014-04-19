@@ -17,6 +17,7 @@
 #include "InvalidOperationException.hpp"
 #include "ZQuestFile.hpp"
 #include "Compression.hpp"
+#include "Checksums.hpp"
 
 namespace zelda
 {
@@ -36,7 +37,7 @@ ZQuestFileWriter::ZQuestFileWriter(const std::string& filename)
 void ZQuestFileWriter::write(ZQuestFile* quest, bool compress)
 {
     if (!quest)
-        throw error::InvalidOperationException("ZQuestFileWriter::write -> quest cannot be NULL");
+        THROW_INVALIDOPERATION_EXCEPTION("quest cannot be NULL");
 
     base::writeUInt32(ZQuestFile::Magic);
     base::writeUInt32(ZQuestFile::Version);
@@ -71,9 +72,9 @@ void ZQuestFileWriter::write(ZQuestFile* quest, bool compress)
     }
 
     base::writeUInt32(quest->length());
-    base::writeUInt32(quest->game());
+    base::writeBytes((Int8*)quest->gameString().substr(0, 0x0A).c_str(), 0x0A);
     base::writeUInt16(quest->endian() == BigEndian ? 0xFFFE : 0xFEFF);
-    base::seek(0x0A);
+    base::writeUInt32(zelda::Checksums::crc32(questData, compLen));
     base::writeUBytes(questData, compLen);
 
     base::save();

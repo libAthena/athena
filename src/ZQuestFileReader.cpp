@@ -17,6 +17,11 @@
 #include "ZQuestFile.hpp"
 #include "InvalidOperationException.hpp"
 #include "Compression.hpp"
+#include "InvalidDataException.hpp"
+#include "Checksums.hpp"
+#include <iostream>
+#include <iomanip>
+#include <utility.hpp>
 
 namespace zelda
 {
@@ -36,26 +41,63 @@ ZQuestFileReader::ZQuestFileReader(const std::string &filename)
 ZQuestFile *ZQuestFileReader::read()
 {
     Uint32 magic, version, compressedLen, uncompressedLen;
-    ZQuestFile::Game game;
+    ZQuestFile::Game game = ZQuestFile::NoGame;
+    std::string gameString;
     Uint16 BOM;
+    Uint32 checksum;
     Uint8* data;
 
     magic = base::readUInt32();
 
-    if (magic != ZQuestFile::Magic)
-        throw error::InvalidOperationException("ZQuestFileReader::read -> Not a valid ZQuest file");
+    if ((magic & 0x00FFFFFF) != (ZQuestFile::Magic & 0x00FFFFFF))
+        THROW_INVALID_DATA("Not a valid ZQuest file");
 
     version = base::readUInt32();
 
-    if (version != ZQuestFile::Version)
-        throw error::InvalidOperationException("ZQuestFileReader::read -> Unsupported ZQuest version");
+    if (version > ZQuestFile::Version)
+        THROW_INVALID_DATA("Unsupported ZQuest version");
 
     compressedLen = base::readUInt32();
     uncompressedLen = base::readUInt32();
-    game = (ZQuestFile::Game)base::readUInt32();
-    BOM = base::readUInt16();
-    base::seek(0x0A);
+
+    if (version >= ZQUEST_VERSION_CHECK(2, 0, 0))
+    {
+        gameString = ((const char*)base::readBytes(0x0A), 0x0A);
+        for (size_t i = 0; i <  ZQuestFile::gameStringList().size(); i++)
+        {
+            if (!ZQuestFile::gameStringList().at(i).substr(0, 0x0A).compare(gameString))
+            {
+                gameString = ZQuestFile::gameStringList().at(i);
+                break;
+            }
+
+        }
+        BOM = base::readUInt16();
+        checksum = base::readUInt32();
+    }
+    else
+    {
+        game = (ZQuestFile::Game)base::readUInt32();
+        BOM = base::readUInt16();
+        std::cerr << "Test" << std::endl;
+        base::seek(0x0A);
+    }
+
     data = (Uint8*)base::readBytes(compressedLen); // compressedLen is always the total file size
+
+    if (version >= ZQUEST_VERSION_CHECK(2, 0, 0))
+    {
+        if (checksum != zelda::Checksums::crc32(data, compressedLen))
+        {
+            delete[] data;
+            THROW_INVALID_DATA("Checksum mismatch, data corrupt");
+        }
+    }
+    else
+    {
+        std::clog << "ZQuest version 0x" << std::uppercase << std::setw(8) << std::setfill('0') << std::hex << zelda::utility::swapU32(version);
+        std::clog << " has no checksum field" << std::endl;
+    }
 
     if (compressedLen != uncompressedLen)
     {
@@ -67,14 +109,14 @@ ZQuestFile *ZQuestFileReader::read()
             delete[] dst;
             delete[] data;
             // TODO: Make proper exception
-            throw error::InvalidOperationException("ZQuestFileReader::read -> Error decompressing data");
+            THROW_INVALID_DATA("Error decompressing data");
         }
 
         delete[] data;
         data = dst;
     }
 
-    return new ZQuestFile(game, BOM == 0xFEFF ? BigEndian : LittleEndian, data, uncompressedLen);
+    return new ZQuestFile(game, BOM == 0xFEFF ? BigEndian : LittleEndian, data, uncompressedLen, gameString);
 }
 
 } // io
