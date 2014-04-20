@@ -6,7 +6,9 @@ DESTDIR = ./lib
 #DEFINES += ATHENA_USE_QT
 
 contains(DEFINES, ATHENA_USE_QT){
-    QT += core
+    QT += qt core
+} else {
+    QT -= qt core
 }
 
 CONFIG(debug, debug|release){
@@ -29,8 +31,6 @@ CONFIG(release, release|debug){
 
 QMAKE_CXXFLAGS += -std=c++11
 INCLUDEPATH += include
-CONFIG -= qt
-
 
 SOURCES += \
     src/Athena/Utility.cpp \
