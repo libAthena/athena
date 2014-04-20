@@ -1,6 +1,7 @@
 # File types
 **/*.o
 **/*.a
+**/*.autosave
 **/*.zip
 **/*.html
 **/*.tar
