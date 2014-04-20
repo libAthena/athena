@@ -3,8 +3,7 @@
 
 #ifndef __DOXYGEN_IGNORE__
 
-#include <Types.hpp>
-
+#include "Athena/Types.hpp"
 int  bn_compare(Uint8 *a, Uint8 *b, Uint32 n);
 void bn_sub_modulus(Uint8 *a, Uint8 *N, Uint32 n);
 void bn_add(Uint8 *d, Uint8 *a, Uint8 *b, Uint8 *N, Uint32 n);

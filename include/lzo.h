@@ -20,7 +20,7 @@
 #ifndef _LZO_H
 #define LZO_H
 
-#include "Types.hpp"
+#include "Athena/Types.hpp"
 
 #define LZO_INPUT_DEPLETED 1
 #define LZO_OUTPUT_FULL 2
