@@ -16,7 +16,7 @@
 #ifndef SSPRITE_HPP
 #define SSPRITE_HPP
 
-#ifndef  LIBZELDA_USE_QT
+#ifndef  ATHENA_USE_QT
 #include <vector>
 #include <string>
 #else
@@ -34,7 +34,7 @@ namespace Sakura
 class SpriteFile;
 class SpriteFrame;
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 class Sprite
 {
 #else
@@ -52,7 +52,7 @@ public:
     virtual ~Sprite();
 
     virtual void setPosition(const float x, const float y);
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     virtual void setPosition(const Vector2Df& pos);
     virtual Vector2Df position() const;
     void setName(const std::string& name);
@@ -73,7 +73,7 @@ public:
      */
     int stateId(int index) const;
     void setStateIds(std::vector<int> ids);
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     std::vector<int> stateIds() const;
 #else
     QList<int> stateIds() const;
@@ -86,14 +86,14 @@ public:
     bool removeFrame(SpriteFrame* Frame);
     SpriteFrame* Frame(Uint32 id);
     void setFrame(Uint32 id);
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     void setFrames(std::vector<SpriteFrame*> frames);
 #else
     void setFrames(QList<SpriteFrame*> frames);
 #endif
     Uint32 frameCount() const;
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     std::vector<SpriteFrame*> frames() const;
 #else
     QList<SpriteFrame*> frames() const;
@@ -110,7 +110,7 @@ public:
 
     void setRoot(SpriteFile* root);
     SpriteFile* root() const;
-#ifdef LIBZELDA_USE_QT
+#ifdef ATHENA_USE_QT
 signals:
     void frameChanged(SpriteFrame* frame);
     void nameChanged(QString);
@@ -118,7 +118,7 @@ signals:
 #endif
 private:
     SpriteFile*               m_root;
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     std::string               m_name;
     Vector2Df                 m_position;
     std::vector<int>          m_stateIds; //!< Stores the texture id's for each state.
@@ -137,9 +137,9 @@ private:
 } // Sakura
 } // zelda
 
-#ifdef LIBZELDA_USE_QT
+#ifdef ATHENA_USE_QT
 Q_DECLARE_METATYPE(Uint32)
-Q_DECLARE_METATYPE(zelda::Sakura::Sprite*)
+Q_DECLARE_METATYPE(Athena::Sakura::Sprite*)
 #endif
 
 #endif // SSPRITE_HPP

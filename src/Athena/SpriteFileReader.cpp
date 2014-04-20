@@ -83,7 +83,7 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
         // it will be slow as hell, so we store them in a vector locally
         // then give that vector the the container, this bypasses the de-reference
         // for each texture
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
         std::vector<Sakura::STexture*> textures;
 #else
         QList<Sakura::STexture*> textures;
@@ -105,7 +105,7 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
         // Normally this isn't a problem, but someone may decide to copy and paste a sprite
         // and forget to change the name, that needs to be handled, but it's outside the scope
         // of this reader.
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
         std::unordered_map <std::string, Sakura::Sprite*> sprites;
 #else
         QMap<QString, Sakura::Sprite*> sprites;
@@ -114,7 +114,7 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
         for (Uint16 i = 0; i < spriteCount; i++)
         {
             Sakura::Sprite* sprite = new Sakura::Sprite(ret);
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
             std::string name = base::readString();
 #else
             QString name = QString::fromStdString(base::readString());
@@ -138,7 +138,7 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
             // and the storage footprint, while Sakura supports packs and zips
             // it's still a bad idea to have a metric ton of texture resources
             // littering the place
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
             std::vector<Sakura::SpriteFrame*> frames;
 #else
             QList<Sakura::SpriteFrame*> frames;
@@ -151,7 +151,7 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
                 Uint16 partCount = base::readUint16();
 
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
                 std::vector<Sakura::SpritePart*> parts;
 #else
                 QList<Sakura::SpritePart*> parts;
@@ -159,7 +159,7 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
                 for (Uint8 j = 0; j < partCount; j++)
                 {
                     Sakura::SpritePart* part = new Sakura::SpritePart(frame);
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
                     std::string name = base::readString();
 #else
                     QString name = QString::fromStdString(base::readString());
@@ -188,7 +188,7 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
             }
 
             sprite->setFrames(frames);
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
             if (sprite->name() != std::string())
             {
                 std::string nameLow(sprite->name());

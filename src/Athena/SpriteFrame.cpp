@@ -34,12 +34,12 @@ SpriteFrame::SpriteFrame(Sprite* root)
 void SpriteFrame::setFrameTime(float frameTime)
 {
     m_frameTime = frameTime;
-#ifdef LIBZELDA_USE_QT
+#ifdef ATHENA_USE_QT
     emit frameTimeChanged(frameTime);
 #endif
 }
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 void SpriteFrame::setParts(std::vector<SpritePart*> parts)
 #else
 void SpriteFrame::setParts(QList<SpritePart*> parts)
@@ -48,7 +48,7 @@ void SpriteFrame::setParts(QList<SpritePart*> parts)
     m_parts = parts;
 }
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 std::vector<SpritePart*> SpriteFrame::parts() const
 #else
 QList<SpritePart*> SpriteFrame::parts() const

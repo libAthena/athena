@@ -41,7 +41,7 @@ SpriteFile::SpriteFile(Uint32 width, Uint32 height, float originX, float originY
 {
 }
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 SpriteFile::SpriteFile(const Vector2Di& size, const Vector2Df& origin)
 #else
 SpriteFile::SpriteFile(const QSize& size, const QPoint& origin)
@@ -53,7 +53,7 @@ SpriteFile::SpriteFile(const QSize& size, const QPoint& origin)
 
 SpriteFile::~SpriteFile()
 {
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     for (std::pair<std::string, Sprite*> sprite : m_sprites)
     {
         delete sprite.second;
@@ -65,26 +65,26 @@ SpriteFile::~SpriteFile()
 
 void SpriteFile::setSize(Uint32 width, Uint32 height)
 {
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     setSize(Vector2Di(width, height));
 #else
     setSize(QSize(width, height));
 #endif
 }
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 void SpriteFile::setSize(const Vector2Di& size)
 #else
 void SpriteFile::setSize(const QSize& size)
 #endif
 {
     m_size = size;
-#ifdef LIBZELDA_USE_QT
+#ifdef ATHENA_USE_QT
     emit sizeChanged(size);
 #endif
 }
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 Vector2Di SpriteFile::size() const
 #else
 QSize SpriteFile::size() const
@@ -95,7 +95,7 @@ QSize SpriteFile::size() const
 
 Uint32 SpriteFile::width() const
 {
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     return m_size.x;
 #else
     return m_size.width();
@@ -104,7 +104,7 @@ Uint32 SpriteFile::width() const
 
 Uint32 SpriteFile::height() const
 {
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     return m_size.y;
 #else
     return m_size.height();
@@ -113,27 +113,27 @@ Uint32 SpriteFile::height() const
 
 void SpriteFile::setOrigin(const float x, const float y)
 {
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     setOrigin(Vector2Df(x, y));
 #else
     setOrigin(QPoint(x, y));
 #endif
 }
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 void SpriteFile::setOrigin(const Vector2Df& origin)
 #else
 void SpriteFile::setOrigin(const QPoint& origin)
 #endif
 {
     m_origin = origin;
-#ifdef LIBZELDA_USE_QT
+#ifdef ATHENA_USE_QT
     emit originChanged(origin);
 #endif
 }
 
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 Vector2Df SpriteFile::origin() const
 #else
 QPoint SpriteFile::origin() const
@@ -144,7 +144,7 @@ QPoint SpriteFile::origin() const
 
 float SpriteFile::originX() const
 {
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     return m_origin.x;
 #else
     return m_origin.x();
@@ -153,7 +153,7 @@ float SpriteFile::originX() const
 
 float SpriteFile::originY() const
 {
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     return m_origin.y;
 #else
     return m_origin.y();
@@ -187,7 +187,7 @@ STexture* SpriteFile::texture(Uint32 id)
     return m_textures[id];
 }
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 std::vector<STexture*> SpriteFile::textures() const
 #else
 QList<STexture*> SpriteFile::textures() const
@@ -203,7 +203,7 @@ Uint32 SpriteFile::textureCount() const
 
 void SpriteFile::addSprite(Sprite* sprite)
 {
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     std::string name(sprite->name());
     Athena::utility::tolower(name);
     if (m_sprites.find(name) != m_sprites.end())
@@ -217,7 +217,7 @@ void SpriteFile::addSprite(Sprite* sprite)
     m_sprites[name] = sprite;
 }
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 void SpriteFile::removeSprite(const std::string& name)
 {
     std::string tmpName(name);
@@ -238,7 +238,7 @@ void SpriteFile::removeSprite(Sprite* sprite)
     removeSprite(sprite->name());
 }
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 void SpriteFile::setSprites(std::unordered_map<std::string, Sprite*> sprites)
 {
     if (sprites.size() == 0)
@@ -265,7 +265,7 @@ void SpriteFile::setSprites(QMap<QString, Sprite *> sprites)
 }
 #endif
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 Sprite* SpriteFile::sprite(const std::string& name)
 {
     std::string nameLow(name);
@@ -285,7 +285,7 @@ Sprite* SpriteFile::sprite(const QString& name)
 }
 #endif
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 std::unordered_map<std::string, Sprite*> SpriteFile::sprites() const
 #else
 QMap<QString, Sprite*> SpriteFile::sprites() const
@@ -299,7 +299,7 @@ Uint32 SpriteFile::spriteCount() const
     return m_sprites.size();
 }
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 void SpriteFile::setTextures(std::vector<STexture*> textures)
 {
     if (textures.size() == 0)

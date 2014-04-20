@@ -19,7 +19,7 @@
 
 #include "Athena/Global.hpp"
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 #include <vector>
 #else
 #include <QObject>
@@ -34,7 +34,7 @@ namespace Sakura
 class Sprite;
 class SpritePart;
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 class SpriteFrame
 {
 #else
@@ -63,7 +63,7 @@ public:
      */
     float frameTime() const;
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     void setParts(std::vector<SpritePart*> parts);
     std::vector<SpritePart*> parts() const;
 #else
@@ -75,14 +75,14 @@ public:
 
     void setRoot(Sprite* root);
     Sprite* root() const;
-#ifdef LIBZELDA_USE_QT
+#ifdef ATHENA_USE_QT
 signals:
     void frameTimeChanged(float);
 #endif
 private:
     Sprite*                  m_root;
     float                    m_frameTime;
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     std::vector<SpritePart*> m_parts;
 #else
     QList<SpritePart*>       m_parts;
@@ -92,8 +92,8 @@ private:
 } // Sakura
 } // zelda
 
-#ifdef LIBZELDA_USE_QT
-Q_DECLARE_METATYPE(zelda::Sakura::SpriteFrame*);
+#ifdef ATHENA_USE_QT
+Q_DECLARE_METATYPE(Athena::Sakura::SpriteFrame*);
 #endif
 
 #endif // SSPRITEFRAME_HPP

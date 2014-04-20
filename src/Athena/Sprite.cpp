@@ -18,7 +18,7 @@
 #include "Athena/SpriteFile.hpp"
 #include <algorithm>
 
-#ifdef LIBZELDA_USE_QT
+#ifdef ATHENA_USE_QT
 #include <QVector>
 #endif
 
@@ -37,7 +37,7 @@ Sprite::Sprite(SpriteFile* root, const std::string& name)
     : m_root(root),
       m_currentState(0)
 {
-#ifdef LIBZELDA_USE_QT
+#ifdef ATHENA_USE_QT
     m_name = QString::fromStdString(name);
 #else
     m_name = name;
@@ -46,7 +46,7 @@ Sprite::Sprite(SpriteFile* root, const std::string& name)
 
 Sprite::~Sprite()
 {
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     for (SpriteFrame* frame : m_frames)
 #else
     foreach(SpriteFrame* frame, m_frames)
@@ -61,14 +61,14 @@ Sprite::~Sprite()
 
 void Sprite::setPosition(const float x, const float y)
 {
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     setPosition(Vector2Df(x, y));
 #else
     setPosition(QPoint(x, y));
 #endif
 }
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 void Sprite::setPosition(const Vector2Df& pos)
 #else
 void Sprite::setPosition(const QPoint& pos)
@@ -77,7 +77,7 @@ void Sprite::setPosition(const QPoint& pos)
     m_position = pos;
 }
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 Vector2Df Sprite::position() const
 #else
 QPoint Sprite::position() const
@@ -86,7 +86,7 @@ QPoint Sprite::position() const
     return m_position;
 }
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 void Sprite::setName(const std::string& name)
 #else
 void Sprite::setName(const QString& name)
@@ -94,12 +94,12 @@ void Sprite::setName(const QString& name)
 {
     m_name = name;
 
-#ifdef LIBZELDA_USE_QT
+#ifdef ATHENA_USE_QT
     emit nameChanged(name);
 #endif
 }
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 std::string Sprite::name() const
 #else
 QString Sprite::name() const
@@ -130,14 +130,14 @@ void Sprite::setStateIds(std::vector<int> ids)
     if (ids.size() == 0)
         return;
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     m_stateIds = ids;
 #else
     m_stateIds = QList<int>::fromVector(QVector<int>::fromStdVector(ids));
 #endif
 }
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 std::vector<int> Sprite::stateIds() const
 #else
 QList<int> Sprite::stateIds() const
@@ -157,7 +157,7 @@ void Sprite::setCurrentState(const Uint32 id)
         return;
 
     m_currentState = id;
-#ifdef LIBZELDA_USE_QT
+#ifdef ATHENA_USE_QT
     emit stateChanged(id);
 #endif
 }
@@ -183,7 +183,7 @@ bool Sprite::addFrame(SpriteFrame* part)
 
 bool Sprite::removeFrame(SpriteFrame* frame)
 {
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     std::vector<SpriteFrame*>::iterator iter = std::find(m_frames.begin(), m_frames.end(), frame);
     if (iter != m_frames.end())
     {
@@ -203,7 +203,7 @@ void Sprite::setFrame(Uint32 id)
         return;
 }
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 void Sprite::setFrames(std::vector<SpriteFrame*> frames)
 {
     if (frames.size() == 0)
@@ -233,7 +233,7 @@ Uint32 Sprite::frameCount() const
     return m_frames.size();
 }
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 std::vector<SpriteFrame*> Sprite::frames() const
 #else
 QList<SpriteFrame*> Sprite::frames() const
@@ -267,7 +267,7 @@ void Sprite::setCurrentFrame(Uint32 id)
         return;
 
     m_currentFrame = id;
-#ifdef LIBZELDA_USE_QT
+#ifdef ATHENA_USE_QT
     emit frameChanged(currentFrame());
 #endif
 }

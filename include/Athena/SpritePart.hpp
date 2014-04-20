@@ -17,7 +17,7 @@
 #define SSPRITEPART_HPP
 
 #include "Athena/Global.hpp"
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 #   include <vector>
 #else
 #   include <QObject>
@@ -34,7 +34,7 @@ namespace Sakura
 {
 class SpriteFrame;
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
 class SpritePart
 {
 #else
@@ -55,7 +55,7 @@ public:
     virtual ~SpritePart();
 
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     void setName(const std::string& name);
     std::string name() const;
 #else
@@ -77,7 +77,7 @@ public:
      * \brief setOffset
      * \param offset
      */
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     void setOffset(const Vector2Df& offset);
 #else
     void setOffset(const QPoint& offset);
@@ -87,7 +87,7 @@ public:
      * \brief offset
      * \return
      */
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     Vector2Df offset() const;
 #else
     QPoint offset() const;
@@ -104,7 +104,7 @@ public:
      * \brief setTextureOffset
      * \param texOff
      */
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     void setTextureOffset(const Vector2Df& offset);
 #else
     void setTextureOffset(const QPoint& offset);
@@ -114,7 +114,7 @@ public:
      * \brief textureOffset
      * \return
      */
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     Vector2Df textureOffset() const;
 #else
     QPoint textureOffset() const;
@@ -131,7 +131,7 @@ public:
      * \brief setSize
      * \param size
      */
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     void setSize(const Vector2Di& size);
 #else
     void setSize(const QSize& size);
@@ -141,7 +141,7 @@ public:
      * \brief size
      * \return
      */
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     Vector2Di size() const;
 #else
     QSize size() const;
@@ -174,7 +174,7 @@ public:
     void setRoot(SpriteFrame* root);
     SpriteFrame* root() const;
 
-#ifdef LIBZELDA_USE_QT
+#ifdef ATHENA_USE_QT
 signals:
     void nameChanged(QString);
     void orientationChanged(bool,bool);
@@ -186,13 +186,13 @@ signals:
 
 private:
     SpriteFrame*  m_root;
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     std::string   m_name;
 #else
     QString       m_name;
 #endif
     bool          m_hasCollision;
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     Vector2Df     m_offset;
     Vector2Df     m_textureOffset;
     Vector2Di     m_size;
@@ -208,8 +208,8 @@ private:
 
 }
 }
-#ifdef LIBZELDA_USE_QT
-Q_DECLARE_METATYPE(zelda::Sakura::SpritePart*)
+#ifdef ATHENA_USE_QT
+Q_DECLARE_METATYPE(Athena::Sakura::SpritePart*)
 #endif
 
 #endif // SSPRITEPART_HPP

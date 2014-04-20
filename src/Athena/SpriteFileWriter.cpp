@@ -58,7 +58,7 @@ void SpriteFileWriter::writeFile(Sakura::SpriteFile* file)
         base::writeBool(texture->Preload);
     }
 
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
     for (std::pair<std::string, Sakura::Sprite*> spritePair : file->sprites())
     {
         Sakura::Sprite* sprite = spritePair.second;
@@ -81,13 +81,13 @@ void SpriteFileWriter::writeFile(Sakura::SpriteFile* file)
             base::writeUint16(frame->partCount());
             for (Sakura::SpritePart* part: frame->parts())
             {
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
                 base::writeString(part->name());
 #else
                 base::writeString(part->name().toStdString());
 #endif
                 base::writeBool(part->hasCollision());
-#ifndef LIBZELDA_USE_QT
+#ifndef ATHENA_USE_QT
                 base::writeFloat(part->offset().x);
                 base::writeFloat(part->offset().y);
                 base::writeFloat(part->textureOffset().x);
