@@ -62,15 +62,15 @@ ZQuestFile *ZQuestFileReader::read()
 
     if (version >= ZQUEST_VERSION_CHECK(2, 0, 0))
     {
-        gameString = ((const char*)base::readBytes(0x0A), 0x0A);
+        gameString = std::string((const char*)base::readBytes(0x0A), 0x0A);
         for (size_t i = 0; i <  ZQuestFile::gameStringList().size(); i++)
         {
             if (!ZQuestFile::gameStringList().at(i).substr(0, 0x0A).compare(gameString))
             {
                 gameString = ZQuestFile::gameStringList().at(i);
+                game = (ZQuestFile::Game)i;
                 break;
             }
-
         }
         BOM = base::readUint16();
         checksum = base::readUint32();
