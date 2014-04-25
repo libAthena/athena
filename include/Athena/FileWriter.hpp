@@ -69,4 +69,11 @@ private:
 };
 }
 } // Athena
+
+#ifndef FILEWRITER_BASE
+#define FILEWRITER_BASE \
+private: \
+    typedef Athena::io::FileWriter base;
+
+#endif // FILEWRITER_BASE
 #endif // FILEWRITER_HPP

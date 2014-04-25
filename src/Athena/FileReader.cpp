@@ -196,8 +196,8 @@ Uint16 FileReader::readUint16()
     Uint16 val;
     fread(&val, 1, sizeof(Uint16), m_fileHandle);
 
-    if ((utility::isSystemBigEndian() && !isBigEndian()) || (!utility::isSystemBigEndian() && isBigEndian()))
-        utility::swapU16(val);
+    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
+        val = utility::swapU16(val);
 
     return val;
 }
@@ -219,8 +219,8 @@ Uint32 FileReader::readUint32()
     Uint32 val;
     fread(&val, 1, sizeof(Uint32), m_fileHandle);
 
-    if ((utility::isSystemBigEndian() && !isBigEndian()) || (!utility::isSystemBigEndian() && isBigEndian()))
-        utility::swapU64(val);
+    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
+        val = utility::swapU32(val);
 
     return val;
 }
@@ -242,8 +242,8 @@ Uint64 FileReader::readUint64()
     Uint64 val;
     fread(&val, 1, sizeof(Uint64), m_fileHandle);
 
-    if ((utility::isSystemBigEndian() && !isBigEndian()) || (!utility::isSystemBigEndian() && isBigEndian()))
-        utility::swapU64(val);
+    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
+        val = utility::swapU64(val);
 
     return val;
 }
@@ -265,8 +265,8 @@ double FileReader::readDouble()
     double val;
     fread(&val, 1, sizeof(double), m_fileHandle);
 
-    if ((utility::isSystemBigEndian() && !isBigEndian()) || (!utility::isSystemBigEndian() && isBigEndian()))
-        utility::swapDouble(val);
+    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
+        val = utility::swapDouble(val);
 
     return val;
 }
@@ -280,8 +280,8 @@ float FileReader::readFloat()
     float val;
     fread(&val, 1, sizeof(float), m_fileHandle);
 
-    if ((utility::isSystemBigEndian() && !isBigEndian()) || (!utility::isSystemBigEndian() && isBigEndian()))
-        utility::swapFloat(val);
+    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
+        val = utility::swapFloat(val);
 
     return val;
 }

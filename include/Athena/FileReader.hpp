@@ -73,4 +73,11 @@ private:
 } // io
 } // Athena
 
+#ifndef FILEREADER_BASE
+#define FILEREADER_BASE \
+private: \
+    typedef Athena::io::FileReader base;
+
+#endif // FILEREADER_BASE
+
 #endif // FILESTREAM_HPP

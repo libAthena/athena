@@ -180,8 +180,8 @@ void FileWriter::writeUint16(Uint16 val)
 
     m_bitValid = false;
 
-    if ((utility::isSystemBigEndian() && !isBigEndian()) || (!utility::isSystemBigEndian() && isBigEndian()))
-        utility::swapU16(val);
+    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
+        val = utility::swapU16(val);
 
     if (fwrite(&val, 1, sizeof(Uint16), m_fileHandle) != sizeof(Uint16))
         THROW_IO_EXCEPTION("Unable to write to stream");
@@ -199,8 +199,8 @@ void FileWriter::writeUint32(Uint32 val)
 
     m_bitValid = false;
 
-    if ((utility::isSystemBigEndian() && !isBigEndian()) || (!utility::isSystemBigEndian() && isBigEndian()))
-        utility::swapU32(val);
+    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
+        val = utility::swapU32(val);
 
     if (fwrite(&val, 1, sizeof(Uint32), m_fileHandle) != sizeof(Uint32))
         THROW_IO_EXCEPTION("Unable to write to stream");
@@ -218,8 +218,8 @@ void FileWriter::writeUint64(Uint64 val)
 
     m_bitValid = false;
 
-    if ((utility::isSystemBigEndian() && !isBigEndian()) || (!utility::isSystemBigEndian() && isBigEndian()))
-        utility::swapU32(val);
+    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
+        val = utility::swapU32(val);
 
     if (fwrite(&val, 1, sizeof(Uint64), m_fileHandle) != sizeof(Uint64))
         THROW_IO_EXCEPTION("Unable to write to stream");
@@ -237,8 +237,8 @@ void FileWriter::writeDouble(double val)
 
     m_bitValid = false;
 
-    if ((utility::isSystemBigEndian() && !isBigEndian()) || (!utility::isSystemBigEndian() && isBigEndian()))
-        utility::swapDouble(val);
+    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
+        val = utility::swapDouble(val);
 
     if (fwrite(&val, 1, sizeof(double), m_fileHandle) != sizeof(double))
         THROW_IO_EXCEPTION("Unable to write to stream");
@@ -251,8 +251,8 @@ void FileWriter::writeFloat(float val)
 
     m_bitValid = false;
 
-    if ((utility::isSystemBigEndian() && !isBigEndian()) || (!utility::isSystemBigEndian() && isBigEndian()))
-        utility::swapFloat(val);
+    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
+        val = utility::swapFloat(val);
 
     if (fwrite(&val, 1, sizeof(float), m_fileHandle) != sizeof(float))
         THROW_IO_EXCEPTION("Unable to write to stream");

@@ -97,21 +97,21 @@ void BinaryReader::seek(Int64 position, SeekOrigin origin)
 {
     switch (origin)
     {
-        case SeekOrigin::Begin:
-            if ((position < 0 || (Int64)position > (Int64)m_length))
-                THROW_IO_EXCEPTION("Position outside stream bounds");
-            m_position = position;
-        break;
-        case SeekOrigin::Current:
-            if ((((Int64)m_position + position) < 0 || (m_position + position) > m_length))
-                THROW_IO_EXCEPTION("Position outside stream bounds");
-            m_position += position;
-        break;
-        case SeekOrigin::End:
-            if ((((Int64)m_length - position < 0) || (m_length - position) > m_length))
-                THROW_IO_EXCEPTION("Position outside stream bounds");
-            m_position = m_length - position;
-        break;
+    case SeekOrigin::Begin:
+        if ((position < 0 || (Int64)position > (Int64)m_length))
+            THROW_IO_EXCEPTION("Position outside stream bounds");
+        m_position = position;
+    break;
+    case SeekOrigin::Current:
+        if ((((Int64)m_position + position) < 0 || (m_position + position) > m_length))
+            THROW_IO_EXCEPTION("Position outside stream bounds");
+        m_position += position;
+    break;
+    case SeekOrigin::End:
+        if ((((Int64)m_length - position < 0) || (m_length - position) > m_length))
+            THROW_IO_EXCEPTION("Position outside stream bounds");
+        m_position = m_length - position;
+    break;
     }
 }
 
@@ -133,11 +133,7 @@ Uint64 BinaryReader::length() const
 void BinaryReader::setData(const Uint8* data, Uint64 length)
 {
     if (m_data)
-#ifdef HW_RVL
-        free(m_data);
-#else
         delete[] m_data;
-#endif
 
     m_data = (Uint8*)data;
     m_length = length;
@@ -238,11 +234,7 @@ Uint8* BinaryReader::readUBytes(Int64 length)
         THROW_IO_EXCEPTION("Position passed stream bounds");
 
     Uint8* ret;
-#ifdef HW_RVL
-    ret = (Uint8*)memalign(32, length);
-#else
     ret = new Uint8[length];
-#endif
 
     memcpy(ret, (const Uint8*)(m_data + m_position), length);
     m_position += length;
