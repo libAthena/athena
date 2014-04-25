@@ -405,11 +405,18 @@ bool check_ec(Uint8 *ng, Uint8 *ap, Uint8 *sig, Uint8 *sig_hash)
 void make_ec_cert(Uint8 *cert, Uint8 *sig, char *signer, char *name, Uint8 *priv, Uint32 key_id )
 {
     memset(cert, 0, 0x180);
-    *(Uint32*)(cert) =  Athena::utility::swapU32(0x10002);
+    *(Uint32*)(cert) =  0x10002;
+    if (!Athena::utility::isSystemBigEndian())
+        Athena::utility::swapU32(*(Uint32*)(cert));
     memcpy((char*)cert + 4, sig, 60);
     strcpy((char*)cert + 0x80, signer);
-    *(Uint32*)(cert + 0xc0) =  Athena::utility::swapU32(2);
+    *(Uint32*)(cert + 0xc0) =  2;
+    if (!Athena::utility::isSystemBigEndian())
+        Athena::utility::swapU32(*(Uint32*)(cert + 0xc0));
     strcpy((char*)cert + 0xc4, name);
-    *(Uint32*)(cert + 0x104) =  Athena::utility::swapU32(key_id);
+    *(Uint32*)(cert + 0x104) =  key_id;
+    if (!Athena::utility::isSystemBigEndian())
+        Athena::utility::swapU32(*(Uint32*)(cert + 0x104));
+
     ec_priv_to_pub(priv, cert + 0x108);
 }

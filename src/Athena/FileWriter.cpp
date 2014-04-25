@@ -219,7 +219,7 @@ void FileWriter::writeUint64(Uint64 val)
     m_bitValid = false;
 
     if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
-        val = utility::swapU32(val);
+        val = utility::swapU64(val);
 
     if (fwrite(&val, 1, sizeof(Uint64), m_fileHandle) != sizeof(Uint64))
         THROW_IO_EXCEPTION("Unable to write to stream");

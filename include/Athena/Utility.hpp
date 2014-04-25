@@ -27,12 +27,12 @@ namespace utility
 {
 bool isEmpty(Int8*, Uint32);
 
-Uint16 swapU16(Uint16 val );
-Int16  swap16 (Int16 val );
-Uint32 swapU32(Uint32 val);
-Int32  swap32 (Int32 val );
-Uint64 swapU64(Uint64 val);
-Int64  swap64 (Int64 val);
+Uint16 swapU16(Uint16& val );
+Int16  swap16 (Int16& val );
+Uint32 swapU32(Uint32& val);
+Int32  swap32 (Int32& val );
+Uint64 swapU64(Uint64& val);
+Int64  swap64 (Int64& val);
 
 float swapFloat(float val);
 double  swapDouble(double val);
