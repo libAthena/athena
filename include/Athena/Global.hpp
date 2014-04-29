@@ -29,6 +29,12 @@
     std::cerr << __FILE__ << "(" << __LINE__ << ") " << __PRETTY_FUNCTION__ << ": "
 #endif
 
+#ifndef aPrint
+#define aPrint() std::cout
+#endif
+
+#define aEnd() '\n'
+
 #ifndef BLOCKSZ
 #define BLOCKSZ 512
 #endif

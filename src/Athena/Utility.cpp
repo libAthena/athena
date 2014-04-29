@@ -32,34 +32,34 @@ bool isEmpty(Int8* buf, Uint32 size)
     return buf[0] == 0 && !memcmp(buf, buf + 1, size - 1);
 }
 
-Uint16 swapU16(Uint16& val )
+Uint16 swapU16(Uint16 val )
 {
-    return (Uint16)swap16((Int16&)val);
+    return (Uint16)swap16(val);
 }
 
-Int16 swap16(Int16& val )
+Int16 swap16(Int16 val )
 {
     return (val = (val << 8) | ((val >> 8) & 0xFF));
 }
 
-Uint32 swapU32(Uint32& val)
+Uint32 swapU32(Uint32 val)
 {
-    return (Uint32)swap32((Int32&)val);
+    return (Uint32)swap32(val);
 }
 
-int swap32(Int32& val )
+int swap32(Int32 val )
 {
     val = (val & 0x0000FFFF) << 16 | (val & 0xFFFF0000) >> 16;
     val = (val & 0x00FF00FF) << 8 | (val & 0xFF00FF00) >> 8;
     return val;
 }
 
-Uint64 swapU64(Uint64& val)
+Uint64 swapU64(Uint64 val)
 {
-    return (Uint64)swap64((Int64&)val);
+    return (Uint64)swap64(val);
 }
 
-Int64 swap64(Int64& val)
+Int64 swap64(Int64 val)
 {
     return (val = ((Int64)((((Int64)(val) & 0xFF00000000000000ULL) >> 56) |
                     (((Int64)(val) & 0x00FF000000000000ULL) >> 40) |
