@@ -149,6 +149,16 @@ Uint8* BinaryReader::data() const
     return ret;
 }
 
+void BinaryReader::setFilepath(const std::string& filepath)
+{
+    m_filepath = filepath;
+}
+
+std::string BinaryReader::filepath() const
+{
+    return m_filepath;
+}
+
 void BinaryReader::seekBit(int bit)
 {
     if (!m_data)
