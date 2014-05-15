@@ -54,11 +54,7 @@ BinaryWriter::BinaryWriter(const std::string& filename, std::function<void(int)>
     m_length = 0x10;
     m_bitPosition = 0;
     m_position = 0;
-#ifdef HW_RVL
-    m_data = (Uint8*)memalign(32, m_length);
-#else
     m_data = new Uint8[m_length];
-#endif
 
     if (!m_data)
         THROW_IO_EXCEPTION("Could not allocate memory!");
@@ -159,11 +155,7 @@ std::string BinaryWriter::filepath() const
 void BinaryWriter::setData(const Uint8* data, Uint64 length)
 {
     if (m_data)
-#ifdef HW_RVL
-        free(m_data);
-#else
         delete[] m_data;
-#endif
 
     m_data = (Uint8*)data;
     m_length = length;

@@ -20,6 +20,10 @@
 #include "Athena/Utility.hpp"
 #include <iostream>
 
+#if !defined(__PRETTY_FUNCTION__) && defined(_WIN32)
+#define __PRETTY_FUNCTION__ __FUNCSIG__
+#endif
+
 #ifndef aDebug
 #define aDebug() \
     std::cout << __FILE__ << "(" << __LINE__ << ") " << __PRETTY_FUNCTION__ << ": "
@@ -59,7 +63,7 @@ namespace Sakura
 
 template <typename T>
 class Vector2D
-{
+{ifndef
 public:
     T x;
     T y;

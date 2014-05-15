@@ -45,6 +45,7 @@ SOURCES += \
     $$PWD/src/sha1.cpp \
     $$PWD/src/aes.c \
     $$PWD/src/lzo.c
+win32:SOURCES += $$PWD/src/win32_largefilewrapper.c
 
 HEADERS += \
     $$PWD/include/Athena/Stream.hpp \
@@ -101,6 +102,9 @@ HEADERS += \
     $$PWD/include/Athena/ZQuestFile.hpp \
     $$PWD/include/Athena/ZQuestFileReader.hpp \
     $$PWD/include/Athena/ZQuestFileWriter.hpp
+
+win32:HEADERS += \
+    $$PWD/Athena/include/win32_largefilewrapper.h
 
 OTHER_FILES += \
     .travis.yml
