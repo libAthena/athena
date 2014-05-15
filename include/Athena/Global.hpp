@@ -63,7 +63,7 @@ namespace Sakura
 
 template <typename T>
 class Vector2D
-{ifndef
+{
 public:
     T x;
     T y;

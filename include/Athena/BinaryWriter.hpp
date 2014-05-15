@@ -272,6 +272,9 @@ public:
      */
     void writeString(const std::string& str);
 
+    void fill(Uint8 val, Uint64 length);
+    void fill(Int8 val, Uint64 length);
+
     void setProgressCallback(std::function<void(int)> cb);
 protected:
     void loadData();

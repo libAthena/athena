@@ -74,6 +74,8 @@ protected:
     virtual void writeBool  (bool){THROW_NOT_IMPLEMENTED_EXCEPTION();}
     virtual void writeString(const std::string&){THROW_NOT_IMPLEMENTED_EXCEPTION();}
     virtual void writeUnicode(const std::string&){THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual void fill(Uint8, Uint64) {THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual void fill(Int8, Uint64) {THROW_NOT_IMPLEMENTED_EXCEPTION();}
 };
 }
 #endif // STREAM_HPP

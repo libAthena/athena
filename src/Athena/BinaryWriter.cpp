@@ -460,6 +460,17 @@ void BinaryWriter::writeString(const std::string& str)
     writeUByte(0);
 }
 
+void BinaryWriter::fill(Uint8 val, Uint64 length)
+{
+    while ((length--) > 0)
+        writeUByte(val);
+}
+
+void BinaryWriter::fill(Int8 val, Uint64 length)
+{
+    fill((Uint8)val, length);
+}
+
 void BinaryWriter::setProgressCallback(std::function<void (int)> cb)
 {
     m_progressCallback = cb;
