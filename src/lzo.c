@@ -74,6 +74,12 @@ static void copy(LZOContext *c, int cnt) {
         cnt = c->out_end - dst;
         c->error |= LZO_OUTPUT_FULL;
     }
+    
+    if (cnt <= 0) {
+        c->error |= LZO_ERROR;
+        return;
+    }
+    
 #if defined(INBUF_PADDED) && defined(OUTBUF_PADDED)
     dst[0] = src[0];
     dst[1] = src[1];
