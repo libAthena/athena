@@ -17,6 +17,7 @@
 #define __INVALID_OPERATION_EXCEPTION_HPP__
 
 #include <string>
+#include <stdarg.h>
 #include "Exception.hpp"
 
 namespace Athena
@@ -46,7 +47,9 @@ public:
 } // error
 } // Athena
 
-#define THROW_INVALID_OPERATION_EXCEPTION(msg) \
-    do  { throw Athena::error::InvalidOperationException("InvalidOperationException: " msg, __FILE__, __PRETTY_FUNCTION__, __LINE__); } while(0)
-
+#define THROW_INVALID_OPERATION_EXCEPTION(args...) \
+    do  { \
+        std::string msg = Athena::utility::sprintf(args); \
+        throw Athena::error::InvalidOperationException(std::string("InvalidOperationException: ")+msg, __FILE__, __PRETTY_FUNCTION__, __LINE__); \
+    } while(0)
 #endif // __INVALID_OPERATION_EXCEPTION_HPP__

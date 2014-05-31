@@ -86,6 +86,11 @@ bool FileWriter::isOpen() const
     return m_fileHandle != NULL;
 }
 
+bool FileWriter::save()
+{
+    return true;
+}
+
 void FileWriter::seek(Int64 pos, SeekOrigin origin)
 {
     if (fseeko64(m_fileHandle, pos, (int)origin) != 0)

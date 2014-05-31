@@ -17,6 +17,8 @@
 #define __EXCEPTION_HPP__
 
 #include <string>
+#include <stdarg.h>
+#include "Athena/Utility.hpp"
 
 #define __STRX(x) #x
 #define __STR(x) __STRX(x)
@@ -76,7 +78,10 @@ protected:
 };
 } // error
 } // Athena
-#define THROW_EXCEPTION(msg) \
-    do  { throw Athena::error::Exception("Exception: " msg, __FILE__, __PRETTY_FUNCTION__, __LINE__); } while(0)
+#define THROW_EXCEPTION(args...) \
+    do  { \
+        std::string msg = Athena::utility::sprintf(args); \
+        throw Athena::error::Exception(std::string("Exception: ")+msg, __FILE__, __PRETTY_FUNCTION__, __LINE__); \
+    } while(0)
 
 #endif

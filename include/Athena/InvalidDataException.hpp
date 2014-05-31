@@ -43,7 +43,10 @@ public:
 } // error
 } // Athena
 
-#define THROW_INVALID_DATA_EXCEPTION(msg) \
-    do  { throw Athena::error::InvalidDataException("InvalidDataException: " msg, __FILE__, __PRETTY_FUNCTION__, __LINE__); } while(0)
+#define THROW_INVALID_DATA_EXCEPTION(args...) \
+    do  { \
+        std::string msg = Athena::utility::sprintf(args); \
+        throw Athena::error::InvalidDataException(std::string("InvalidDataException: ")+msg, __FILE__, __PRETTY_FUNCTION__, __LINE__); \
+    } while(0)
 
 #endif // INVALIDDATAEXCEPTION_HPP

@@ -47,7 +47,9 @@ public:
 } // error
 } // Athena
 
-#define THROW_IO_EXCEPTION(msg) \
-    do  { throw Athena::error::IOException("IOException: " msg, __FILE__, __PRETTY_FUNCTION__, __LINE__); } while(0)
-
+#define THROW_IO_EXCEPTION(args...) \
+    do  { \
+        std::string msg = Athena::utility::sprintf(args); \
+        throw Athena::error::IOException(std::string("IOException: ")+msg, __FILE__, __PRETTY_FUNCTION__, __LINE__); \
+    } while(0)
 #endif

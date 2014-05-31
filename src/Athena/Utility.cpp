@@ -151,24 +151,29 @@ void toupper(std::string& str)
     std::transform(str.begin(), str.end(), str.begin(), ::toupper);
 }
 
-std::string sprintf(const char* fmt, ...)
+std::string vsprintf(const char* fmt, va_list list)
 {
     int size = 512;
     char* buffer = 0;
     buffer = new char[size];
-    va_list vl;
-    va_start(vl, fmt);
-    int nsize = vsnprintf(buffer, size, fmt, vl);
-    if(size<=nsize)
+    int nsize = vsnprintf(buffer, size, fmt, list);
+    while(size<=nsize)
     { //fail delete buffer and try again
         delete[] buffer;
         buffer = 0;
         buffer = new char[nsize+1]; //+1 for /0
-        nsize = vsnprintf(buffer, size, fmt, vl);
+        nsize = vsnprintf(buffer, size, fmt, list);
     }
     std::string ret(buffer);
-    va_end(vl);
     delete[] buffer;
+    return ret;
+}
+std::string sprintf(const char* fmt, ...)
+{
+    va_list vl;
+    va_start(vl, fmt);
+    std::string ret = vsprintf(fmt, vl);
+    va_end(vl);
     return ret;
 }
 

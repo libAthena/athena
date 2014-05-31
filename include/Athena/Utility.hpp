@@ -19,6 +19,7 @@
 
 #include <string>
 #include <vector>
+#include <stdarg.h>
 #include "Types.hpp"
 
 namespace Athena
@@ -45,7 +46,8 @@ std::vector<std::string> split(const std::string &s, char delim);
 std::string join(const std::vector<std::string>& elems, const std::string& delims);
 void tolower(std::string& str);
 void toupper(std::string& str);
-std::string stdsprintf(const char* fmt, ...);
+std::string vsprintf(const char* fmt, va_list list);
+std::string sprintf(const char* fmt, ...);
 bool parseBool(const std::string& boolean, bool* valid = NULL);
 
 int countChar(const std::string& str, const char chr, int* lastOccur = NULL);
