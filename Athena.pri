@@ -104,7 +104,7 @@ HEADERS += \
     $$PWD/include/Athena/ZQuestFileWriter.hpp
 
 win32:HEADERS += \
-    $$PWD/Athena/include/win32_largefilewrapper.h
+    $$PWD/include/win32_largefilewrapper.h
 
 OTHER_FILES += \
     .travis.yml

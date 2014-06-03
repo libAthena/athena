@@ -292,9 +292,9 @@ protected:
 } // Athena
 
 #ifndef BINARYREADER_BASE
-#define BINARYREADER_BASE \
+#define BINARYREADER_BASE() \
 private: \
-    typedef Athena::io::BinaryReader base;
+    typedef Athena::io::BinaryReader base
 
 #endif // BINARYREADER_BASE
 

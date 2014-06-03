@@ -30,7 +30,7 @@ namespace io
  */
 class ZQuestFileReader : protected BinaryReader
 {
-    BINARYREADER_BASE
+    BINARYREADER_BASE();
 
 public:    
     /*!

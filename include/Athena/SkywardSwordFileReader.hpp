@@ -25,7 +25,7 @@ namespace io
 {
 class SkywardSwordFileReader : public BinaryReader
 {
-    BINARYREADER_BASE
+    BINARYREADER_BASE();
 public:
 
     SkywardSwordFileReader(Uint8* data, Uint64 length);

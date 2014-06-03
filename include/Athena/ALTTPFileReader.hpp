@@ -36,7 +36,7 @@ namespace io
  */
 class ALTTPFileReader : protected BinaryReader
 {
-    BINARYREADER_BASE
+    BINARYREADER_BASE();
 
 public:
     /*! \brief This constructor takes an existing buffer to read from.

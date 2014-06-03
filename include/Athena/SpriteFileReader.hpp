@@ -30,7 +30,7 @@ namespace io
 
 class SpriteFileReader : public BinaryReader
 {
-    BINARYREADER_BASE;
+    BINARYREADER_BASE();
 public:
     SpriteFileReader(Uint8* data, Uint64 length);
     SpriteFileReader(const std::string& filepath);

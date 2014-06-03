@@ -20,8 +20,18 @@
 #include "Athena/Utility.hpp"
 #include <iostream>
 
-#if !defined(__PRETTY_FUNCTION__) && defined(_WIN32)
-#define __PRETTY_FUNCTION__ __FUNCSIG__
+#ifndef __PRETTY_FUNCTION__
+#   ifdef __FUNCSIG__
+#       define __PRETTY_FUNCTION__ __FUNCSIG__
+#   elif defined(__FUNCTION__)
+#       define __PRETTY_FUNCTION__ __FUNCTION__
+#   elif defined(__FUNC__)
+#       define __PRETTY_FUNCTION__ __FUNCTION__
+#   elif defined(__func__)
+#       define __PRETTY_FUNCTION__ __FUNCTION__
+#   else
+#       define __PRETTY_FUNCTION__ "<unkown>"
+#   endif
 #endif
 
 #ifndef aDebug
