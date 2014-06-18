@@ -34,24 +34,24 @@ public:
     virtual bool isBigEndian()   const= 0;
     virtual bool isLittleEndian()const= 0;
     virtual bool isOpen()        const= 0;
-    virtual void seek(Int64, SeekOrigin)=0;
+    virtual void seek(atInt64, SeekOrigin)=0;
     virtual bool atEnd()         const= 0;
-    virtual Uint64 position()    const= 0;
-    virtual Uint64 length()      const= 0;
+    virtual atUint64 position()    const= 0;
+    virtual atUint64 length()      const= 0;
 protected:
     virtual void seekBit    (int){THROW_NOT_IMPLEMENTED_EXCEPTION();}
     // Reading
     virtual bool   readBit()         {THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual Uint8  readUByte()       {THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual Int8   readByte()        {THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual Uint8* readUBytes(Uint64){THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual Int8*  readBytes(Uint64) {THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual Uint16 readUint16()      {THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual Int16  readInt16()       {THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual Uint32 readUint32()      {THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual Int32  readInt32()       {THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual Uint64 readUint64()      {THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual Int64  readInt64()       {THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual atUint8  readUByte()       {THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual atInt8   readByte()        {THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual atUint8* readUBytes(atUint64){THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual atInt8*  readBytes(atUint64) {THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual atUint16 readUint16()      {THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual atInt16  readInt16()       {THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual atUint32 readUint32()      {THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual atInt32  readInt32()       {THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual atUint64 readUint64()      {THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual atInt64  readInt64()       {THROW_NOT_IMPLEMENTED_EXCEPTION();}
     virtual double readDouble()      {THROW_NOT_IMPLEMENTED_EXCEPTION();}
     virtual float  readFloat()       {THROW_NOT_IMPLEMENTED_EXCEPTION();}
     virtual bool   readBool()        {THROW_NOT_IMPLEMENTED_EXCEPTION();}
@@ -59,23 +59,23 @@ protected:
     virtual std::string readString() {THROW_NOT_IMPLEMENTED_EXCEPTION();}
     // Writing
     virtual void writeBit   (bool){THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual void writeUByte (Uint8){THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual void writeByte  (Int8){THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual void writeUBytes(Uint8*, Uint64){THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual void writeBytes (Int8*, Uint64){THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual void writeUint16(Uint16){THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual void writeInt16 (Int16){THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual void writeUint32(Uint32){THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual void writeInt32 (Int32){THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual void writeUint64(Uint64){THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual void writeInt64 (Int64){THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual void writeUByte (atUint8){THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual void writeByte  (atInt8){THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual void writeUBytes(atUint8*, atUint64){THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual void writeBytes (atInt8*, atUint64){THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual void writeUint16(atUint16){THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual void writeInt16 (atInt16){THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual void writeUint32(atUint32){THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual void writeInt32 (atInt32){THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual void writeUint64(atUint64){THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual void writeInt64 (atInt64){THROW_NOT_IMPLEMENTED_EXCEPTION();}
     virtual void writeDouble(double){THROW_NOT_IMPLEMENTED_EXCEPTION();}
     virtual void writeFloat (float){THROW_NOT_IMPLEMENTED_EXCEPTION();}
     virtual void writeBool  (bool){THROW_NOT_IMPLEMENTED_EXCEPTION();}
     virtual void writeString(const std::string&){THROW_NOT_IMPLEMENTED_EXCEPTION();}
     virtual void writeUnicode(const std::string&){THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual void fill(Uint8, Uint64) {THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual void fill(Int8, Uint64) {THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual void fill(atUint8, atUint64) {THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual void fill(atInt8, atUint64) {THROW_NOT_IMPLEMENTED_EXCEPTION();}
 };
 }
 #endif // STREAM_HPP

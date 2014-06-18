@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -24,7 +25,7 @@ namespace Athena
 namespace io
 {
 
-SkywardSwordFileWriter::SkywardSwordFileWriter(Uint8 *data, Uint64 len)
+SkywardSwordFileWriter::SkywardSwordFileWriter(atUint8 *data, atUint64 len)
     : base(data, len)
 {
     base::setEndian(Endian::BigEndian);
@@ -41,7 +42,7 @@ void SkywardSwordFileWriter::write(SkywardSwordFile *file)
     if (!file)
         THROW_INVALID_OPERATION_EXCEPTION("file cannot be NULL");
 
-    Uint32 magic = (file->region() == Region::NTSC ? SkywardSwordFile::USMagic :
+    atUint32 magic = (file->region() == Region::NTSC ? SkywardSwordFile::USMagic :
                    (file->region() == Region::NTSCJ ? SkywardSwordFile::JAMagic : SkywardSwordFile::EUMagic));
 
     base::writeUint32(magic);
@@ -58,7 +59,7 @@ void SkywardSwordFileWriter::write(SkywardSwordFile *file)
             THROW_INVALID_DATA_EXCEPTION("q->skipData() not 0x24 bytes in length");
         // Write the save data
         base::writeUBytes(q->data(), q->length());
-        Uint64 pos = base::position();
+        atUint64 pos = base::position();
         // Write the slots skip data
         base::seek(0xFB60 + (i * 0x24), SeekOrigin::Begin);
         base::writeUBytes(q->skipData(), q->skipLength());
@@ -73,3 +74,4 @@ void SkywardSwordFileWriter::write(SkywardSwordFile *file)
 
 } // io
 } // zelda
+#endif // ATHENA_NO_SAVES

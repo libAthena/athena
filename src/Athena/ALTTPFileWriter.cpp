@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -24,7 +25,7 @@ namespace Athena
 namespace io
 {
 
-ALTTPFileWriter::ALTTPFileWriter(Uint8* data, Uint64 length)
+ALTTPFileWriter::ALTTPFileWriter(atUint8* data, atUint64 length)
     : base(data, length)
 {
 }
@@ -37,7 +38,7 @@ ALTTPFileWriter::ALTTPFileWriter(const std::string& filename)
 void ALTTPFileWriter::writeFile(ALTTPFile* file)
 {
     ALTTPQuest* quest = NULL;
-    for (Uint32 i = 0; i < 6; i++)
+    for (atUint32 i = 0; i < 6; i++)
     {
         if (i < 3)
             quest = file->quest(i);
@@ -54,7 +55,7 @@ void ALTTPFileWriter::writeFile(ALTTPFile* file)
             writeOverworldEvent(quest->overworldEvent(j));
         }
 
-        base::writeBytes((Int8*)quest->inventory(), sizeof(ALTTPInventory));
+        base::writeBytes((atInt8*)quest->inventory(), sizeof(ALTTPInventory));
         base::writeUint16(quest->rupeeMax());
         base::writeUint16(quest->rupeeCurrent());
         writeDungeonItems(quest->compasses());
@@ -87,23 +88,23 @@ void ALTTPFileWriter::writeFile(ALTTPFile* file)
         base::writeBit(abilities.Read);
         base::writeBit(abilities.Unknown2);
         ALTTPCrystals crystals = quest->crystals();
-        base::writeBytes((Int8*)&crystals, sizeof(ALTTPCrystals));
+        base::writeBytes((atInt8*)&crystals, sizeof(ALTTPCrystals));
         ALTTPMagicUsage magicUsage = quest->magicUsage();
-        base::writeBytes((Int8*)&magicUsage, sizeof(ALTTPMagicUsage));
+        base::writeBytes((atInt8*)&magicUsage, sizeof(ALTTPMagicUsage));
 
         for (int j = 0; j < 0x010; j++)
             base::writeByte(quest->dungeonKeys(j));
 
         base::seek(0x039);
-        base::writeByte((Int8)quest->progressIndicator());
+        base::writeByte((atInt8)quest->progressIndicator());
         ALTTPProgressFlags1 progress1 = quest->progressFlags1();
-        base::writeBytes((Int8*)&progress1, sizeof(ALTTPProgressFlags1));
+        base::writeBytes((atInt8*)&progress1, sizeof(ALTTPProgressFlags1));
         base::writeByte(quest->mapIcon());
         base::writeByte(quest->startLocation());
         ALTTPProgressFlags2 progress2 = quest->progressFlags2();
-        base::writeBytes((Int8*)&progress2, sizeof(ALTTPProgressFlags2));
+        base::writeBytes((atInt8*)&progress2, sizeof(ALTTPProgressFlags2));
         ALTTPLightDarkWorldIndicator indicator = quest->lightDarkWorldIndicator();
-        base::writeBytes((Int8*)&indicator, 1);
+        base::writeBytes((atInt8*)&indicator, 1);
         base::seek(1);
         base::writeByte(quest->tagAlong());
 
@@ -184,7 +185,7 @@ void ALTTPFileWriter::writeDungeonItems(ALTTPDungeonItemFlags flags)
     base::writeBit(flags.SewerPassage);
 }
 
-Uint16 ALTTPFileWriter::calculateChecksum(Uint32 game)
+atUint16 ALTTPFileWriter::calculateChecksum(atUint32 game)
 {
     /*
      * ALTTP's checksum is very basic
@@ -202,10 +203,10 @@ Uint16 ALTTPFileWriter::calculateChecksum(Uint32 game)
      */
 
     // First we start at 0
-    Uint16 sum = 0;
-    for (Uint32 i = 0; i < 0x4FE; i += 2)
+    atUint16 sum = 0;
+    for (atUint32 i = 0; i < 0x4FE; i += 2)
         // Add each word one by one
-        sum += *(Uint16*)(m_data + (i + (0x500 * game)));
+        sum += *(atUint16*)(m_data + (i + (0x500 * game)));
 
     // Subtract it from 0x5a5a to get our true checksum
     return (0x5a5a - sum);
@@ -220,3 +221,4 @@ Uint16 ALTTPFileWriter::calculateChecksum(Uint32 game)
 
 } // io
 } // zelda
+#endif // ATHENA_NO_SAVES

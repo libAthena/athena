@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -41,13 +42,13 @@ WiiFile::WiiFile(const std::string& filename) :
 {
 }
 
-WiiFile::WiiFile(const std::string& filename, Uint8 permissions, const Uint8* data, Uint32 length) :
+WiiFile::WiiFile(const std::string& filename, atUint8 permissions, const atUint8* data, atUint32 length) :
     m_permissions(permissions),
     m_attributes(0),
     m_type(WiiFile::File),
     m_filename(filename),
     m_fileLen(length),
-    m_fileData((Uint8*)data)
+    m_fileData((atUint8*)data)
 {
 }
 
@@ -68,27 +69,27 @@ std::string WiiFile::filename() const
     return m_filename;
 }
 
-void WiiFile::setPermissions(const Uint8 permissions)
+void WiiFile::setPermissions(const atUint8 permissions)
 {
-    m_permissions = (Uint8)permissions;
+    m_permissions = (atUint8)permissions;
 }
 
-Uint8 WiiFile::permissions() const
+atUint8 WiiFile::permissions() const
 {
     return m_permissions;
 }
 
-void WiiFile::setData(const Uint8* data)
+void WiiFile::setData(const atUint8* data)
 {
     if (m_fileData)
     {
         delete[] m_fileData;
         m_fileData = NULL;
     }
-    m_fileData = (Uint8*)data;
+    m_fileData = (atUint8*)data;
 }
 
-Uint8* WiiFile::data() const
+atUint8* WiiFile::data() const
 {
     return m_fileData;
 }
@@ -103,12 +104,12 @@ int WiiFile::length() const
     return m_fileLen;
 }
 
-void WiiFile::setAttributes(const Uint8 attr)
+void WiiFile::setAttributes(const atUint8 attr)
 {
     m_attributes = attr;
 }
 
-Uint8 WiiFile::attributes() const
+atUint8 WiiFile::attributes() const
 {
     return m_attributes;
 }
@@ -134,3 +135,4 @@ bool WiiFile::isFile() const
 }
 
 } // zelda
+#endif // ATHENA_NO_SAVES

@@ -40,7 +40,7 @@ public:
      *   \param data The existing buffer
      *   \param length The length of the existing buffer
      */
-    BinaryReader(const Uint8* data, Uint64 length);
+    BinaryReader(const atUint8* data, atUint64 length);
 
     /*! \brief This constructor creates an instance from a file on disk.
      *
@@ -85,7 +85,7 @@ public:
      *  \param position where in the buffer to seek
      *  \param origin The Origin to seek \sa SeekOrigin
      */
-    void seek(Int64 pos, SeekOrigin origin = SeekOrigin::Current);
+    void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
 
 
     /*! \brief Returns whether or not the stream is at the end.
@@ -98,13 +98,13 @@ public:
      *
      *  \return Int64 The current position in the stream.
      */
-    Uint64 position() const;
+    atUint64 position() const;
 
     /*! \brief Returns whether or not the stream is at the end.
      *
      *  \return bool True if at end; False otherwise.
      */
-    Uint64 length() const;
+    atUint64 length() const;
 
     /*! \brief Sets the buffer to the given one, deleting the current one.<br />
      *         <b>BEWARE:</b> As this deletes the current buffer it WILL cause a loss of data
@@ -115,7 +115,7 @@ public:
      *  \param length The length of the new buffer.
      *  \throw IOException
      */
-    void  setData(const Uint8* data, Uint64 length);
+    void  setData(const atUint8* data, atUint64 length);
 
 
     /*! \brief Returns a copy of the current buffer.<br />
@@ -125,7 +125,7 @@ public:
      *         as Stream now owns the address, this is done to keep memory usage down.
      *  \return Uint8* The copy of the buffer.
      */
-    Uint8* data() const;
+    atUint8* data() const;
 
     /*! \brief Sets the target file
      *
@@ -155,25 +155,25 @@ public:
      *
      * \return Int8 The value at the current position
      */
-    Int8 readByte();
+    atInt8 readByte();
 
     /*! \brief Reads a byte at the current position and advances the current position
      *
      * \return Uint8 The value at the current position
      */
-    Uint8 readUByte();
+    atUint8 readUByte();
 
     /*! \brief Reads a byte at the current position and advances the current position.
      *
      * \return Uint8* The buffer at the current position from the given length.
      */
-    Int8* readBytes(Int64 length);
+    atInt8* readBytes(atInt64 length);
 
     /*! \brief Reads a byte at the current position and advances the current position.
      *
      * \return Int8* The buffer at the current position from the given length.
      */
-    Uint8* readUBytes(Int64 length);
+    atUint8* readUBytes(atInt64 length);
 
     /*! \brief Reads a Int16 and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position
@@ -183,7 +183,7 @@ public:
      *  \return Int16 The value at the current address
      *  \throw IOException when address is out of range
      */
-    Int16 readInt16();
+    atInt16 readInt16();
 
     /*! \brief Reads a Uint16 and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position
@@ -193,7 +193,7 @@ public:
      *  \return Uint16 The value at the current address
      *  \throw IOException when address is out of range
      */
-    Uint16 readUint16();
+    atUint16 readUint16();
 
     /*! \brief Reads a Int32 and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position
@@ -203,7 +203,7 @@ public:
      *  \return Int32 The value at the current address
      *  \throw IOException when address is out of range
      */
-    Int32 readInt32();
+    atInt32 readInt32();
 
     /*! \brief Reads a Uint32 and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position
@@ -213,7 +213,7 @@ public:
      *  \return Uint32 The value at the current address
      *  \throw IOException when address is out of range
      */
-    Uint32 readUint32();
+    atUint32 readUint32();
 
     /*! \brief Reads a Int64 and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position
@@ -223,7 +223,7 @@ public:
      *  \return Int64 The value at the current address
      *  \throw IOException when address is out of range
      */
-    Int64 readInt64();
+    atInt64 readInt64();
 
     /*! \brief Reads a Uint64 and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position
@@ -233,7 +233,7 @@ public:
      *  \return Uint64 The value at the current address
      *  \throw IOException when address is out of range
      */
-    Uint64 readUint64();
+    atUint64 readUint64();
 
     /*! \brief Reads a float and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position
@@ -279,11 +279,11 @@ public:
     void setProgressCallback(std::function<void(int)> cb);
 protected:
     void loadData();
-    Uint8*      m_data;
-    Uint64      m_length;
+    atUint8*      m_data;
+    atUint64      m_length;
     std::string m_filepath; //!< Path to the target file
-    Uint64      m_position;
-    Uint64      m_bitPosition;
+    atUint64      m_position;
+    atUint64      m_bitPosition;
     Endian      m_endian;
     std::function<void(int)> m_progressCallback;
 };

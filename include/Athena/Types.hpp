@@ -19,42 +19,42 @@
 
 // 8 bits integer types
 #if UCHAR_MAX == 0xFF
-    typedef signed   char Int8;
-    typedef unsigned char Uint8;
+    typedef signed   char atInt8;
+    typedef unsigned char atUint8;
 #else
     #error No 8 bits integer type for this platform
 #endif
 
 // 16 bits integer types
 #if USHRT_MAX == 0xFFFF
-    typedef signed   short Int16;
-    typedef unsigned short Uint16;
+    typedef signed   short atInt16;
+    typedef unsigned short atUint16;
 #elif UINT_MAX == 0xFFFF
-    typedef signed   int Int16;
-    typedef unsigned int Uint16;
+    typedef signed   int atInt16;
+    typedef unsigned int atUint16;
 #elif ULONG_MAX == 0xFFFF
-    typedef signed   long Int16;
-    typedef unsigned long Uint16;
+    typedef signed   long atInt16;
+    typedef unsigned long atUint16;
 #else
     #error No 16 bits integer type for this platform
 #endif
 
 // 32 bits integer types
 #if USHRT_MAX == 0xFFFFFFFF
-    typedef signed   short Int32;
-    typedef unsigned short Uint32;
+    typedef signed   short atInt32;
+    typedef unsigned short atUint32;
 #elif UINT_MAX == 0xFFFFFFFF
-    typedef signed   int Int32;
-    typedef unsigned int Uint32;
+    typedef signed   int atInt32;
+    typedef unsigned int atUint32;
 #elif ULONG_MAX == 0xFFFFFFFF
-    typedef signed   long Int32;
-    typedef unsigned long Uint32;
+    typedef signed   long atInt32;
+    typedef unsigned long atUint32;
 #else
     #error No 32 bits integer type for this platform
 #endif
 
-typedef signed   long long Int64;
-typedef unsigned long long Uint64;
+typedef signed   long long atInt64;
+typedef unsigned long long atUint64;
 
 #ifndef NULL
 #ifdef __cplusplus

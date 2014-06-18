@@ -78,20 +78,20 @@ public:
 #else
     QList<int> stateIds() const;
 #endif
-    Uint32 stateCount() const;
-    void setCurrentState(Uint32 id);
-    Uint32 currentState() const;
+    atUint32 stateCount() const;
+    void setCurrentState(atUint32 id);
+    atUint32 currentState() const;
 
     bool addFrame(SpriteFrame* Frame);
     bool removeFrame(SpriteFrame* Frame);
-    SpriteFrame* Frame(Uint32 id);
-    void setFrame(Uint32 id);
+    SpriteFrame* Frame(atUint32 id);
+    void setFrame(atUint32 id);
 #ifndef ATHENA_USE_QT
     void setFrames(std::vector<SpriteFrame*> frames);
 #else
     void setFrames(QList<SpriteFrame*> frames);
 #endif
-    Uint32 frameCount() const;
+    atUint32 frameCount() const;
 
 #ifndef ATHENA_USE_QT
     std::vector<SpriteFrame*> frames() const;
@@ -102,7 +102,7 @@ public:
     SpriteFile* container() const;
 
     void setCurrentFrame(SpriteFrame* frame);
-    void setCurrentFrame(Uint32 id);
+    void setCurrentFrame(atUint32 id);
     SpriteFrame* currentFrame() const;
 
     void advanceFrame();
@@ -129,8 +129,8 @@ private:
     QList<int>                m_stateIds;
     QList<SpriteFrame*>       m_frames;
 #endif
-    Uint32                    m_currentState;
-    Uint32                    m_currentFrame;
+    atUint32                    m_currentState;
+    atUint32                    m_currentFrame;
 };
 
 

@@ -25,15 +25,15 @@ namespace io
 namespace Compression
 {
     // Zlib compression
-    Int32 decompressZlib(Uint8* src, Uint32 srcLen, Uint8* dst, Uint32 dstLen);
-    Int32 compressZlib(const Uint8* src, Uint32 srcLen, Uint8* dst, Uint32 dstLen);
+    atInt32 decompressZlib(atUint8* src, atUint32 srcLen, atUint8* dst, atUint32 dstLen);
+    atInt32 compressZlib(const atUint8* src, atUint32 srcLen, atUint8* dst, atUint32 dstLen);
 
     // lzo compression
-    Int32 decompressLZO(Uint8* source, Int32 sourceSize, Uint8* dest, Int32& dstSize);
+    atInt32 decompressLZO(atUint8* source, atInt32 sourceSize, atUint8* dest, atInt32& dstSize);
 
     // Yaz0 encoding
-    Uint32 yaz0Decode(Uint8* src, Uint8* dst, Uint32 uncompressedSize);
-    Uint32 yaz0Encode(Uint8* src, Uint32 srcSize, Uint8* data);
+    atUint32 yaz0Decode(atUint8* src, atUint8* dst, atUint32 uncompressedSize);
+    atUint32 yaz0Encode(atUint8* src, atUint32 srcSize, atUint8* data);
 
 }
 }

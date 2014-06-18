@@ -26,21 +26,21 @@ namespace Athena
 {
 namespace utility
 {
-bool isEmpty(Int8*, Uint32);
+bool isEmpty(atInt8*, atUint32);
 
-Uint16 swapU16(Uint16 val );
-Int16  swap16 (Int16 val );
-Uint32 swapU32(Uint32 val);
-Int32  swap32 (Int32 val );
-Uint64 swapU64(Uint64 val);
-Int64  swap64 (Int64 val);
+atUint16 swapU16(atUint16 val );
+atInt16  swap16 (atInt16 val );
+atUint32 swapU32(atUint32 val);
+atInt32  swap32 (atInt32 val );
+atUint64 swapU64(atUint64 val);
+atInt64  swap64 (atInt64 val);
 
 float swapFloat(float val);
 double  swapDouble(double val);
 
 bool isSystemBigEndian();
 
-void fillRandom(Uint8 * rndArea, Uint8 count);
+void fillRandom(atUint8 * rndArea, atUint8 count);
 
 std::vector<std::string> split(const std::string &s, char delim);
 std::string join(const std::vector<std::string>& elems, const std::string& delims);
@@ -52,7 +52,7 @@ bool parseBool(const std::string& boolean, bool* valid = NULL);
 
 int countChar(const std::string& str, const char chr, int* lastOccur = NULL);
 
-Uint64 fileSize(FILE* f);
+atUint64 fileSize(FILE* f);
 } // utility
 } // Athena
 #endif

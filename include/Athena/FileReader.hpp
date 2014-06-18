@@ -39,24 +39,24 @@ public:
     void close();
     bool isOpen() const;
     bool save();
-    void seek(Int64 pos, SeekOrigin origin = SeekOrigin::Current);
+    void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
     bool atEnd() const;
-    Uint64 position() const;
-    Uint64 length() const;
+    atUint64 position() const;
+    atUint64 length() const;
 
 
     void   seekBit(int);
     bool   readBit();
-    Uint8  readUByte();
-    Int8   readByte();
-    Uint8* readUBytes(Uint64 len);
-    Int8*  readBytes(Uint64 len);
-    Uint16 readUint16();
-    Int16  readInt16();
-    Uint32 readUint32();
-    Int32  readInt32();
-    Uint64 readUint64();
-    Int64  readInt64();
+    atUint8  readUByte();
+    atInt8   readByte();
+    atUint8* readUBytes(atUint64 len);
+    atInt8*  readBytes(atUint64 len);
+    atUint16 readUint16();
+    atInt16  readInt16();
+    atUint32 readUint32();
+    atInt32  readInt32();
+    atUint64 readUint64();
+    atInt64  readInt64();
     double readDouble();
     float  readFloat();
     bool   readBool();
@@ -66,8 +66,8 @@ private:
     std::string  m_filename;
     FILE*        m_fileHandle;
     Endian       m_endian;
-    Uint8        m_currentByte;
-    Uint8        m_bitShift;
+    atUint8        m_currentByte;
+    atUint8        m_bitShift;
     bool         m_bitValid;
 };
 } // io

@@ -71,7 +71,7 @@ public:
     QList<SpritePart*> parts() const;
 #endif
 
-    Uint32 partCount() const;
+    atUint32 partCount() const;
 
     void setRoot(Sprite* root);
     Sprite* root() const;

@@ -28,8 +28,8 @@
 //! define if we may read up to 4 bytes beyond the input buffer
 //#define INBUF_PADDED 1
 typedef struct LZOContext {
-    Uint8 *in, *in_end;
-    Uint8 *out_start, *out, *out_end;
+    atUint8 *in, *in_end;
+    atUint8 *out_start, *out, *out_end;
     int error;
 } LZOContext;
 
@@ -166,9 +166,9 @@ static void copy_backptr(LZOContext *c, int back, int cnt) {
  * make sure all buffers are appropriately padded, in must provide
  * LZO_INPUT_PADDING, out must provide LZO_OUTPUT_PADDING additional bytes
  */
-int lzo1x_decode(Uint8 *out, Int32 *outlen, Uint8 *in, Int32 *inlen) {
+int lzo1x_decode(atUint8 *out, atInt32 *outlen, atUint8 *in, atInt32 *inlen) {
     enum {COPY, BACKPTR} state = COPY;
-    Int32 x;
+    atInt32 x;
     LZOContext c;
     c.in = in;
     c.in_end = in + *inlen;

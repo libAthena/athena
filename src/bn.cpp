@@ -7,19 +7,19 @@
 
 #include "bn.h"
 
-static void bn_zero(Uint8 *d, Uint32 n)
+static void bn_zero(atUint8 *d, atUint32 n)
 {
     memset(d, 0, n);
 }
 
-static void bn_copy(Uint8 *d, Uint8 *a, Uint32 n)
+static void bn_copy(atUint8 *d, atUint8 *a, atUint32 n)
 {
     memcpy(d, a, n);
 }
 
-int bn_compare(Uint8 *a, Uint8 *b, Uint32 n)
+int bn_compare(atUint8 *a, atUint8 *b, atUint32 n)
 {
-    Uint32 i;
+    atUint32 i;
 
     for (i = 0; i < n; i++) {
         if (a[i] < b[i])
@@ -31,11 +31,11 @@ int bn_compare(Uint8 *a, Uint8 *b, Uint32 n)
     return 0;
 }
 
-void bn_sub_modulus(Uint8 *a, Uint8 *N, Uint32 n)
+void bn_sub_modulus(atUint8 *a, atUint8 *N, atUint32 n)
 {
-    Uint32 i;
-    Uint32 dig;
-    Uint8 c;
+    atUint32 i;
+    atUint32 dig;
+    atUint8 c;
 
     c = 0;
     for (i = n - 1; i < n; i--) {
@@ -45,11 +45,11 @@ void bn_sub_modulus(Uint8 *a, Uint8 *N, Uint32 n)
     }
 }
 
-void bn_add(Uint8 *d, Uint8 *a, Uint8 *b, Uint8 *N, Uint32 n)
+void bn_add(atUint8 *d, atUint8 *a, atUint8 *b, atUint8 *N, atUint32 n)
 {
-    Uint32 i;
-    Uint32 dig;
-    Uint8 c;
+    atUint32 i;
+    atUint32 dig;
+    atUint8 c;
 
     c = 0;
     for (i = n - 1; i < n; i--) {
@@ -65,10 +65,10 @@ void bn_add(Uint8 *d, Uint8 *a, Uint8 *b, Uint8 *N, Uint32 n)
         bn_sub_modulus(d, N, n);
 }
 
-void bn_mul(Uint8 *d, Uint8 *a, Uint8 *b, Uint8 *N, Uint32 n)
+void bn_mul(atUint8 *d, atUint8 *a, atUint8 *b, atUint8 *N, atUint32 n)
 {
-    Uint32 i;
-    Uint8 mask;
+    atUint32 i;
+    atUint8 mask;
 
     bn_zero(d, n);
 
@@ -80,11 +80,11 @@ void bn_mul(Uint8 *d, Uint8 *a, Uint8 *b, Uint8 *N, Uint32 n)
         }
 }
 
-void bn_exp(Uint8 *d, Uint8 *a, Uint8 *N, Uint32 n, Uint8 *e, Uint32 en)
+void bn_exp(atUint8 *d, atUint8 *a, atUint8 *N, atUint32 n, atUint8 *e, atUint32 en)
 {
-    Uint8 t[512];
-    Uint32 i;
-    Uint8 mask;
+    atUint8 t[512];
+    atUint32 i;
+    atUint8 mask;
 
     bn_zero(d, n);
     d[n-1] = 1;
@@ -99,9 +99,9 @@ void bn_exp(Uint8 *d, Uint8 *a, Uint8 *N, Uint32 n, Uint8 *e, Uint32 en)
 }
 
 // only for prime N -- stupid but lazy, see if I care
-void bn_inv(Uint8 *d, Uint8 *a, Uint8 *N, Uint32 n)
+void bn_inv(atUint8 *d, atUint8 *a, atUint8 *N, atUint32 n)
 {
-    Uint8 t[512], s[512];
+    atUint8 t[512], s[512];
 
     bn_copy(t, N, n);
     bn_zero(s, n);

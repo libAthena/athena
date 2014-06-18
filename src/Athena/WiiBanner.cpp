@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -32,7 +33,7 @@ WiiBanner::WiiBanner() :
 {
 }
 
-WiiBanner::WiiBanner(Uint32 gameId, const std::string& title,
+WiiBanner::WiiBanner(atUint32 gameId, const std::string& title,
                      const std::string& subtitle, WiiImage* banner, std::vector<WiiImage*> icons) :
     m_gameId(gameId),
     m_banner(banner),
@@ -50,12 +51,12 @@ WiiBanner::~WiiBanner()
     m_icons.clear();
 }
 
-void WiiBanner::setGameID(Uint64 id)
+void WiiBanner::setGameID(atUint64 id)
 {
     m_gameId = id;
 }
 
-Uint64 WiiBanner::gameID() const
+atUint64 WiiBanner::gameID() const
 {
     return m_gameId;
 }
@@ -84,7 +85,7 @@ void WiiBanner::addIcon(WiiImage* icon)
     m_icons.push_back(icon);
 }
 
-void WiiBanner::setIcon(Uint32 id, WiiImage* icon)
+void WiiBanner::setIcon(atUint32 id, WiiImage* icon)
 {
     if (m_icons[id] != NULL)
     {
@@ -93,7 +94,7 @@ void WiiBanner::setIcon(Uint32 id, WiiImage* icon)
     }
 }
 
-WiiImage* WiiBanner::getIcon(Uint32 id) const
+WiiImage* WiiBanner::getIcon(atUint32 id) const
 {
     if (!m_icons[id])
         return NULL;
@@ -115,44 +116,45 @@ WiiImage* WiiBanner::bannerImage() const
     return m_banner;
 }
 
-void WiiBanner::setAnimationSpeed(Uint16 animSpeed)
+void WiiBanner::setAnimationSpeed(atUint16 animSpeed)
 {
     m_animSpeed = animSpeed;
 }
 
-Uint16 WiiBanner::animationSpeed() const
+atUint16 WiiBanner::animationSpeed() const
 {
     return m_animSpeed;
 }
 
-void WiiBanner::setPermissions(Uint8 permissions)
+void WiiBanner::setPermissions(atUint8 permissions)
 {
     m_permissions = permissions;
 }
 
-Uint8 WiiBanner::permissions() const
+atUint8 WiiBanner::permissions() const
 {
     return m_permissions;
 }
 
-void WiiBanner::setBannerSize(Uint32 size)
+void WiiBanner::setBannerSize(atUint32 size)
 {
     m_bannerSize = size;
 }
 
-Uint32 WiiBanner::bannerSize() const
+atUint32 WiiBanner::bannerSize() const
 {
     return m_bannerSize;
 }
 
-void WiiBanner::setFlags(Uint32 flags)
+void WiiBanner::setFlags(atUint32 flags)
 {
     m_flags = flags;
 }
 
-Uint32 WiiBanner::flags() const
+atUint32 WiiBanner::flags() const
 {
     return m_flags;
 }
 
 } // zelda
+#endif // ATHENA_NO_SAVES

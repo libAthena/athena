@@ -53,32 +53,32 @@ public:
     /*!
      * \brief Major
      */
-    static const Uint32 Major;
+    static const atUint32 Major;
 
     /*!
      * \brief Minor
      */
-    static const Uint32 Minor;
+    static const atUint32 Minor;
 
     /*!
      * \brief Revision
      */
-    static const Uint32 Revision;
+    static const atUint32 Revision;
 
     /*!
      * \brief Patch
      */
-    static const Uint32 Build;
+    static const atUint32 Build;
 
     /*!
      * \brief Version
      */
-    static const Uint32 Version;
+    static const atUint32 Version;
 
     /*!
      * \brief Magic
      */
-    static const Uint32 Magic;
+    static const atUint32 Magic;
 
     /*!
      * \brief SSprite
@@ -92,7 +92,7 @@ public:
      * \param originX
      * \param originY
      */
-    SpriteFile(Uint32 width, Uint32 height, float originX, float originY);
+    SpriteFile(atUint32 width, atUint32 height, float originX, float originY);
 
     /*!
      * \brief SSpriteFile
@@ -118,7 +118,7 @@ public slots:
      * \param width
      * \param height
      */
-    void setSize(Uint32 width, Uint32 height);
+    void setSize(atUint32 width, atUint32 height);
 
     /*!
      * \brief setSize
@@ -144,13 +144,13 @@ public slots:
      * \brief width
      * \return
      */
-    Uint32 width() const;
+    atUint32 width() const;
 
     /*!
      * \brief height
      * \return
      */
-    Uint32 height() const;
+    atUint32 height() const;
 
     /*!
      * \brief setOrigin
@@ -209,14 +209,14 @@ public slots:
      * \param id
      * \return
      */
-    STexture* texture(Uint32 id);
+    STexture* texture(atUint32 id);
 
 #ifndef ATHENA_USE_QT
     std::vector<STexture*> textures() const;
 #else
     QList<STexture*> textures() const;
 #endif
-    Uint32 textureCount() const;
+    atUint32 textureCount() const;
     /*!
      * \brief setTextures
      * \param textures
@@ -250,7 +250,7 @@ public slots:
     QMap<QString, Sprite*> sprites() const;
 #endif
 
-    Uint32 spriteCount() const;
+    atUint32 spriteCount() const;
 
 #ifdef ATHENA_USE_QT
 signals:

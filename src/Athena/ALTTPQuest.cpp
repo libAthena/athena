@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -38,7 +39,7 @@ void ALTTPQuest::setRoomFlags(std::vector<ALTTPRoomFlags*> rf)
     m_roomFlags = rf;
 }
 
-void ALTTPQuest::setRoomFlags(ALTTPRoomFlags* rf, Uint32 id)
+void ALTTPQuest::setRoomFlags(ALTTPRoomFlags* rf, atUint32 id)
 {
     m_roomFlags[id] = rf;
 }
@@ -48,7 +49,7 @@ std::vector<ALTTPRoomFlags*> ALTTPQuest::roomFlags()
     return m_roomFlags;
 }
 
-ALTTPRoomFlags* ALTTPQuest::roomFlags(Uint32 id)
+ALTTPRoomFlags* ALTTPQuest::roomFlags(atUint32 id)
 {
     return m_roomFlags[id];
 }
@@ -58,7 +59,7 @@ void ALTTPQuest::setOverworldEvents(std::vector<ALTTPOverworldEvent*> ow)
     m_overworldEvents = ow;
 }
 
-void ALTTPQuest::setOverworldEvents(ALTTPOverworldEvent* ow, Uint32 id)
+void ALTTPQuest::setOverworldEvents(ALTTPOverworldEvent* ow, atUint32 id)
 {
     m_overworldEvents[id] = ow;
 }
@@ -68,7 +69,7 @@ std::vector<ALTTPOverworldEvent*> ALTTPQuest::overworldEvents() const
     return m_overworldEvents;
 }
 
-ALTTPOverworldEvent* ALTTPQuest::overworldEvent(Uint32 id) const
+ALTTPOverworldEvent* ALTTPQuest::overworldEvent(atUint32 id) const
 {
     if (id > m_overworldEvents.size() - 1)
         THROW_INVALID_OPERATION_EXCEPTION("index out of range");
@@ -85,22 +86,22 @@ ALTTPInventory* ALTTPQuest::inventory() const
     return m_inventory;
 }
 
-void ALTTPQuest::setRupeeMax(Uint16 val)
+void ALTTPQuest::setRupeeMax(atUint16 val)
 {
     m_rupeeMax = val;
 }
 
-Uint16 ALTTPQuest::rupeeMax() const
+atUint16 ALTTPQuest::rupeeMax() const
 {
     return m_rupeeMax;
 }
 
-void ALTTPQuest::setRupeeCurrent(Uint16 val)
+void ALTTPQuest::setRupeeCurrent(atUint16 val)
 {
     m_rupeeCurrent = val;
 }
 
-Uint16 ALTTPQuest::rupeeCurrent() const
+atUint16 ALTTPQuest::rupeeCurrent() const
 {
     return m_rupeeCurrent;
 }
@@ -135,91 +136,91 @@ ALTTPDungeonItemFlags ALTTPQuest::dungeonMaps() const
     return m_dungeonMaps;
 }
 
-void ALTTPQuest::setWishingPond(Uint16 val)
+void ALTTPQuest::setWishingPond(atUint16 val)
 {
     m_wishingPond = val;
 }
 
-Uint16 ALTTPQuest::wishingPond() const
+atUint16 ALTTPQuest::wishingPond() const
 {
     return m_wishingPond;
 }
 
-void ALTTPQuest::setHealthMax(Uint8 val)
+void ALTTPQuest::setHealthMax(atUint8 val)
 {
     m_healthMax = val;
 }
 
-Uint8 ALTTPQuest::healthMax() const
+atUint8 ALTTPQuest::healthMax() const
 {
     return m_healthMax;
 }
 
-void ALTTPQuest::setHealth(Uint8 val)
+void ALTTPQuest::setHealth(atUint8 val)
 {
     m_health = val;
 }
 
-Uint8 ALTTPQuest::health() const
+atUint8 ALTTPQuest::health() const
 {
     return m_health;
 }
 
-void ALTTPQuest::setMagicPower(Uint8 val)
+void ALTTPQuest::setMagicPower(atUint8 val)
 {
     m_magicPower = val;
 }
 
-Uint8 ALTTPQuest::magicPower() const
+atUint8 ALTTPQuest::magicPower() const
 {
     return m_magicPower;
 }
 
-void ALTTPQuest::setKeys(Uint8 val)
+void ALTTPQuest::setKeys(atUint8 val)
 {
     m_keys = val;
 }
 
-Uint8 ALTTPQuest::keys() const
+atUint8 ALTTPQuest::keys() const
 {
     return m_keys;
 }
 
-void ALTTPQuest::setBombUpgrades(Uint8 val)
+void ALTTPQuest::setBombUpgrades(atUint8 val)
 {
     m_bombUpgrades = val;
 }
 
-Uint8 ALTTPQuest::bombUpgrades() const
+atUint8 ALTTPQuest::bombUpgrades() const
 {
     return m_bombUpgrades;
 }
 
-void ALTTPQuest::setArrowUpgrades(Uint8 val)
+void ALTTPQuest::setArrowUpgrades(atUint8 val)
 {
     m_arrowUpgrades = val;
 }
 
-Uint8 ALTTPQuest::arrowUpgrades() const
+atUint8 ALTTPQuest::arrowUpgrades() const
 {
     return m_arrowUpgrades;
 }
 
-void ALTTPQuest::setHealthFiller(Uint8 val)
+void ALTTPQuest::setHealthFiller(atUint8 val)
 {
     m_heartFiller = val;
 }
 
-Uint8 ALTTPQuest::healthFiller() const
+atUint8 ALTTPQuest::healthFiller() const
 {
     return m_heartFiller;
 }
-void ALTTPQuest::setMagicFiller(Uint8 val)
+void ALTTPQuest::setMagicFiller(atUint8 val)
 {
     m_heartFiller = val;
 }
 
-Uint8 ALTTPQuest::magicFiller() const
+atUint8 ALTTPQuest::magicFiller() const
 {
     return m_heartFiller;
 }
@@ -234,31 +235,31 @@ ALTTPPendants ALTTPQuest::pendants() const
     return m_pendants;
 }
 
-void ALTTPQuest::setBombFiller(Uint8 val)
+void ALTTPQuest::setBombFiller(atUint8 val)
 {
     m_bombFiller = val;
 }
 
-Uint8 ALTTPQuest::bombFiller() const
+atUint8 ALTTPQuest::bombFiller() const
 {
     return m_bombFiller;
 }
 
-void ALTTPQuest::setArrowFiller(Uint8 val)
+void ALTTPQuest::setArrowFiller(atUint8 val)
 {
     m_arrowFiller = val;
 }
 
-Uint8 ALTTPQuest::arrowFiller() const
+atUint8 ALTTPQuest::arrowFiller() const
 {
     return m_arrowFiller;
 }
-void ALTTPQuest::setArrows(Uint8 val)
+void ALTTPQuest::setArrows(atUint8 val)
 {
     m_arrows = val;
 }
 
-Uint8 ALTTPQuest::arrows() const
+atUint8 ALTTPQuest::arrows() const
 {
     return m_arrows;
 }
@@ -293,12 +294,12 @@ ALTTPMagicUsage ALTTPQuest::magicUsage() const
     return m_magicUsage;
 }
 
-void ALTTPQuest::setDungeonKeys(std::vector<Uint8> val)
+void ALTTPQuest::setDungeonKeys(std::vector<atUint8> val)
 {
     m_dungeonKeys = val;
 }
 
-void ALTTPQuest::setDungeonKeys(Uint32 id, Uint8 val)
+void ALTTPQuest::setDungeonKeys(atUint32 id, atUint8 val)
 {
     if (id > m_dungeonKeys.size() - 1)
         THROW_INVALID_OPERATION_EXCEPTION("index out of range");
@@ -306,7 +307,7 @@ void ALTTPQuest::setDungeonKeys(Uint32 id, Uint8 val)
     m_dungeonKeys[id] = val;
 }
 
-Uint8 ALTTPQuest::dungeonKeys(Uint32 id) const
+atUint8 ALTTPQuest::dungeonKeys(atUint32 id) const
 {
     if (id > m_dungeonKeys.size() - 1)
         THROW_INVALID_OPERATION_EXCEPTION("index out of range");
@@ -314,7 +315,7 @@ Uint8 ALTTPQuest::dungeonKeys(Uint32 id) const
     return m_dungeonKeys[id];
 }
 
-Uint32 ALTTPQuest::dungeonCount() const
+atUint32 ALTTPQuest::dungeonCount() const
 {
     return m_dungeonKeys.size();
 }
@@ -390,12 +391,12 @@ ALTTPTagAlong ALTTPQuest::tagAlong() const
     return m_tagAlong;
 }
 
-void ALTTPQuest::setOldManFlags(std::vector<Uint8> flags)
+void ALTTPQuest::setOldManFlags(std::vector<atUint8> flags)
 {
     m_oldManFlags = flags;
 }
 
-void ALTTPQuest::setOldManFlag(Uint32 id, Uint8 val)
+void ALTTPQuest::setOldManFlag(atUint32 id, atUint8 val)
 {
     if (id > m_oldManFlags.size() - 1)
         THROW_INVALID_OPERATION_EXCEPTION("index out of range");
@@ -403,7 +404,7 @@ void ALTTPQuest::setOldManFlag(Uint32 id, Uint8 val)
     m_oldManFlags[id] = val;
 }
 
-Uint8 ALTTPQuest::oldManFlag(Uint32 id)
+atUint8 ALTTPQuest::oldManFlag(atUint32 id)
 {
     if (id > m_oldManFlags.size() - 1)
         THROW_INVALID_OPERATION_EXCEPTION("index out of range");
@@ -411,27 +412,27 @@ Uint8 ALTTPQuest::oldManFlag(Uint32 id)
     return m_oldManFlags[id];
 }
 
-Uint32 ALTTPQuest::oldManFlagCount() const
+atUint32 ALTTPQuest::oldManFlagCount() const
 {
     return m_oldManFlags.size();
 }
 
-void ALTTPQuest::setBombFlag(Uint8 flag)
+void ALTTPQuest::setBombFlag(atUint8 flag)
 {
     m_bombFlag = flag;
 }
 
-Uint8 ALTTPQuest::bombFlag() const
+atUint8 ALTTPQuest::bombFlag() const
 {
     return m_bombFlag;
 }
 
-void ALTTPQuest::setUnknown1(std::vector<Uint8> flags)
+void ALTTPQuest::setUnknown1(std::vector<atUint8> flags)
 {
     m_unknown1 = flags;
 }
 
-void ALTTPQuest::setUnknown1(Uint32 id, Uint8 val)
+void ALTTPQuest::setUnknown1(atUint32 id, atUint8 val)
 {
     if (id > m_unknown1.size())
         THROW_INVALID_OPERATION_EXCEPTION("index out of range");
@@ -439,7 +440,7 @@ void ALTTPQuest::setUnknown1(Uint32 id, Uint8 val)
     m_unknown1[id] = val;
 }
 
-Uint8 ALTTPQuest::unknown1(Uint32 id)
+atUint8 ALTTPQuest::unknown1(atUint32 id)
 {
     if (id > m_unknown1.size())
         THROW_INVALID_OPERATION_EXCEPTION("index out of range");
@@ -447,12 +448,12 @@ Uint8 ALTTPQuest::unknown1(Uint32 id)
     return m_unknown1[id];
 }
 
-Uint32 ALTTPQuest::unknown1Count() const
+atUint32 ALTTPQuest::unknown1Count() const
 {
     return m_unknown1.size();
 }
 
-void ALTTPQuest::setPlayerName(std::vector<Uint16> playerName)
+void ALTTPQuest::setPlayerName(std::vector<atUint16> playerName)
 {
     m_playerName = playerName;
 }
@@ -464,30 +465,30 @@ void ALTTPQuest::setPlayerName(const std::string& playerName)
 
     m_playerName.clear();
 
-    for (Uint32 i = 0; i < 6; i++)
+    for (atUint32 i = 0; i < 6; i++)
     {
         if (i > playerName.size() - 1)
         {
-            m_playerName.push_back((Uint16)0xA9);
+            m_playerName.push_back((atUint16)0xA9);
             continue;
         }
         char c = playerName[i];
         if (c >= 'A' && c <= 'P' && c != 'I')
         {
 
-            m_playerName.push_back((Uint16)(c - 'A'));
+            m_playerName.push_back((atUint16)(c - 'A'));
             continue;
         }
         if (c >= 'Q' && c <= 'Z')
         {
-            std::cout << std::hex << (Uint16)((c - 'Q') + 0x20) << std::endl;
-            m_playerName.push_back((Uint16)((c - 'Q') + 0x20));
+            std::cout << std::hex << (atUint16)((c - 'Q') + 0x20) << std::endl;
+            m_playerName.push_back((atUint16)((c - 'Q') + 0x20));
             continue;
         }
         if (c >= 'a' && c <= 'f')
         {
-            std::cout << std::hex << (Uint16)((c - 'a') + 0x2A) << std::endl;
-            m_playerName.push_back((Uint16)((c - 'a') + 0x2A));
+            std::cout << std::hex << (atUint16)((c - 'a') + 0x2A) << std::endl;
+            m_playerName.push_back((atUint16)((c - 'a') + 0x2A));
             continue;
         }
         if (c >= 'g' && c <= 'v')
@@ -502,22 +503,22 @@ void ALTTPQuest::setPlayerName(const std::string& playerName)
                 m_playerName.push_back(0x44);
                 continue;
             }
-            m_playerName.push_back((Uint16)((c - 'g') + 0x40));
+            m_playerName.push_back((atUint16)((c - 'g') + 0x40));
             continue;
         }
         if (c >= 'w' && c <= 'z')
         {
-            m_playerName.push_back((Uint16)((c - 'w') + 0x60));
+            m_playerName.push_back((atUint16)((c - 'w') + 0x60));
             continue;
         }
         if (c >= '0' && c <= '9')
         {
-            m_playerName.push_back((Uint16)((c - '0') + 0x64));
+            m_playerName.push_back((atUint16)((c - '0') + 0x64));
             continue;
         }
         if (c == '-' || c == '.')
         {
-            m_playerName.push_back((Uint16)(c - '-') + 0x80);
+            m_playerName.push_back((atUint16)(c - '-') + 0x80);
             continue;
         }
 
@@ -533,7 +534,7 @@ void ALTTPQuest::setPlayerName(const std::string& playerName)
     }
 }
 
-std::vector<Uint16> ALTTPQuest::playerName() const
+std::vector<atUint16> ALTTPQuest::playerName() const
 {
     return m_playerName;
 }
@@ -541,11 +542,11 @@ std::vector<Uint16> ALTTPQuest::playerName() const
 std::string ALTTPQuest::playerNameToString() const
 {
     std::string ret;
-    std::vector<Uint16>::const_iterator iter = m_playerName.begin();
+    std::vector<atUint16>::const_iterator iter = m_playerName.begin();
 
     for (; iter != m_playerName.end(); ++iter)
     {
-        Int16 c = *iter;
+        atInt16 c = *iter;
 
         if (c >= 0x00 && c <= 0x0F)
         {
@@ -615,12 +616,12 @@ bool ALTTPQuest::valid()
     return m_valid;
 }
 
-void ALTTPQuest::setDungeonDeathTotals(std::vector<Uint16> val)
+void ALTTPQuest::setDungeonDeathTotals(std::vector<atUint16> val)
 {
     m_dungeonDeathTotals = val;
 }
 
-void ALTTPQuest::setDungeonDeathTotal(Uint32 id, Uint16 val)
+void ALTTPQuest::setDungeonDeathTotal(atUint32 id, atUint16 val)
 {
     if (id > m_dungeonDeathTotals.size())
         THROW_INVALID_OPERATION_EXCEPTION("index out of range");
@@ -628,7 +629,7 @@ void ALTTPQuest::setDungeonDeathTotal(Uint32 id, Uint16 val)
     m_dungeonDeathTotals[id] = val;
 }
 
-Uint16 ALTTPQuest::dungeonDeathTotal(Uint32 id) const
+atUint16 ALTTPQuest::dungeonDeathTotal(atUint32 id) const
 {
     if (id > m_dungeonDeathTotals.size())
         THROW_INVALID_OPERATION_EXCEPTION("index out of range");
@@ -636,48 +637,49 @@ Uint16 ALTTPQuest::dungeonDeathTotal(Uint32 id) const
     return m_dungeonDeathTotals[id];
 }
 
-Uint16 ALTTPQuest::dungeonDeathTotalCount() const
+atUint16 ALTTPQuest::dungeonDeathTotalCount() const
 {
     return m_dungeonDeathTotals.size();
 }
 
-void ALTTPQuest::setUnknown2(Uint16 val)
+void ALTTPQuest::setUnknown2(atUint16 val)
 {
     m_unknown2 = val;
 }
 
-Uint16 ALTTPQuest::unknown2() const
+atUint16 ALTTPQuest::unknown2() const
 {
     return m_unknown2;
 }
 
-void ALTTPQuest::setDeathSaveCount(Uint16 val)
+void ALTTPQuest::setDeathSaveCount(atUint16 val)
 {
     m_deathSaveCount = val;
 }
-Uint16 ALTTPQuest::deathSaveCount() const
+atUint16 ALTTPQuest::deathSaveCount() const
 {
     return m_deathSaveCount;
 }
 
-void ALTTPQuest::setPostGameDeathCounter(Int16 val)
+void ALTTPQuest::setPostGameDeathCounter(atInt16 val)
 {
     m_postGameDeathCounter = val;
 }
 
-Int16 ALTTPQuest::postGameDeathCounter() const
+atInt16 ALTTPQuest::postGameDeathCounter() const
 {
     return m_postGameDeathCounter;
 }
 
-void ALTTPQuest::setChecksum(Uint16 checksum)
+void ALTTPQuest::setChecksum(atUint16 checksum)
 {
     m_checksum = checksum;
 }
 
-Uint16 ALTTPQuest::checksum() const
+atUint16 ALTTPQuest::checksum() const
 {
     return m_checksum;
 }
 
 } // zelda
+#endif // ATHENA_NO_SAVES

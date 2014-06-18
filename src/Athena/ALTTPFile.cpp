@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -29,7 +30,7 @@ ALTTPFile::ALTTPFile(std::vector<ALTTPQuest*> quests, std::vector<ALTTPQuest*> b
 {
 }
 
-void ALTTPFile::setQuest(Uint32 id, ALTTPQuest* val)
+void ALTTPFile::setQuest(atUint32 id, ALTTPQuest* val)
 {
     if (id > m_quests.size())
         THROW_INVALID_OPERATION_EXCEPTION("index out of range");
@@ -41,7 +42,7 @@ std::vector<ALTTPQuest*> ALTTPFile::questList() const
 {
     return m_quests;
 }
-ALTTPQuest* ALTTPFile::quest(Uint32 id) const
+ALTTPQuest* ALTTPFile::quest(atUint32 id) const
 {
     if (id > m_quests.size())
         THROW_INVALID_OPERATION_EXCEPTION("index out of range");
@@ -49,8 +50,10 @@ ALTTPQuest* ALTTPFile::quest(Uint32 id) const
     return m_quests[id];
 }
 
-Uint32 ALTTPFile::questCount() const
+atUint32 ALTTPFile::questCount() const
 {
     return m_quests.size();
 }
 } // zelda
+
+#endif // ATHENA_NO_SAVES

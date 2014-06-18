@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -21,7 +22,7 @@ namespace Athena
 namespace io
 {
 
-MCFileReader::MCFileReader(Uint8* data, Uint64 length)
+MCFileReader::MCFileReader(atUint8* data, atUint64 length)
     : base(data, length)
 {
 }
@@ -33,3 +34,4 @@ MCFileReader::MCFileReader(const std::string& filename)
 
 } // io
 } // zelda
+#endif // ATHENA_NO_SAVES

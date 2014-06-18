@@ -7,9 +7,9 @@
 extern "C" {
 #endif
 
-void aes_encrypt(Uint8 *iv, const Uint8 *inbuf, Uint8 *outbuf, Uint64 len);
-void aes_decrypt(Uint8 *iv, const Uint8 *inbuf, Uint8 *outbuf, Uint64 len);
-void aes_set_key(const Uint8 *key );
+void aes_encrypt(atUint8 *iv, const atUint8 *inbuf, atUint8 *outbuf, atUint64 len);
+void aes_decrypt(atUint8 *iv, const atUint8 *inbuf, atUint8 *outbuf, atUint64 len);
+void aes_set_key(const atUint8 *key );
 
 #ifdef __cplusplus
 }

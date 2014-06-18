@@ -41,7 +41,7 @@ public:
      *   \param data The existing buffer
      *   \param length The length of the existing buffer
      */
-    BinaryWriter(Uint8* data, Uint64 length);
+    BinaryWriter(atUint8* data, atUint64 length);
 
     /*! \brief This constructor creates an instance from a file on disk.
      *
@@ -86,7 +86,7 @@ public:
      *  \param position where in the buffer to seek
      *  \param origin The Origin to seek \sa SeekOrigin
      */
-    void seek(Int64 pos, SeekOrigin origin = SeekOrigin::Current);
+    void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
 
 
     /*! \brief Returns whether or not the stream is at the end.
@@ -100,13 +100,13 @@ public:
      *
      *  \return Int64 The current position in the stream.
      */
-    Uint64 position()    const;
+    atUint64 position()    const;
 
     /*! \brief Returns whether or not the stream is at the end.
      *
      *  \return bool True if at end; False otherwise.
      */
-    Uint64 length()      const;
+    atUint64 length()      const;
 
     /*! \brief Sets the buffer to the given one, deleting the current one.<br />
      *         <b>BEWARE:</b> As this deletes the current buffer it WILL cause a loss of data
@@ -117,7 +117,7 @@ public:
      *  \param length The length of the new buffer.
      *  \throw IOException
      */
-    void  setData(const Uint8* data, Uint64 length);
+    void  setData(const atUint8* data, atUint64 length);
 
 
     /*! \brief Returns a copy of the current buffer.<br />
@@ -127,7 +127,7 @@ public:
      *         as Stream now owns the address, this is done to keep memory usage down.
      *  \return Uint8* The copy of the buffer.
      */
-    Uint8* data() const;
+    atUint8* data() const;
 
     /*! \brief Sets the target file
      *
@@ -161,13 +161,13 @@ public:
     /*! \brief Writes a byte at the current position and advances the position by one byte.
      * \param byte The value to write
      */
-    void writeUByte(Uint8 val);
+    void writeUByte(atUint8 val);
 
     /*! \brief Writes a byte at the current position and advances the position by one byte.
      * \param byte The value to write
      * \throw IOException
      */
-    void writeByte(Int8 val);
+    void writeByte(atInt8 val);
 
     /*! \brief Writes the given buffer with the specified length, buffers can be bigger than the length
      *  however it's undefined behavior to try and write a buffer which is smaller than the given length.
@@ -175,7 +175,7 @@ public:
      * \param data The buffer to write
      * \param length The amount to write
      */
-    void writeUBytes(Uint8* data, Uint64 len);
+    void writeUBytes(atUint8* data, atUint64 len);
 
     /*! \brief Writes the given buffer with the specified length, buffers can be bigger than the length
      *  however it's undefined behavior to try and write a buffer which is smaller than the given length.
@@ -183,7 +183,7 @@ public:
      * \param data The buffer to write
      * \param length The amount to write
      */
-    void writeBytes(Int8* data, Uint64 len);
+    void writeBytes(atInt8* data, atUint64 len);
 
     /*! \brief Writes an Int16 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -191,7 +191,7 @@ public:
      *  \sa Endian
      *  \param val The value to write to the buffer
      */
-    void writeInt16(Int16 val);
+    void writeInt16(atInt16 val);
 
     /*! \brief Writes an Uint16 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings
@@ -199,7 +199,7 @@ public:
      *  \sa Endian
      *  \param val The value to write to the buffer
      */
-    void writeUint16(Uint16);
+    void writeUint16(atUint16);
 
     /*! \brief Writes an Int32 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -207,7 +207,7 @@ public:
      *  \sa Endian
      *  \param val The value to write to the buffer
      */
-    void writeInt32(Int32);
+    void writeInt32(atInt32);
 
     /*! \brief Writes an Uint32 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -215,7 +215,7 @@ public:
      *  \sa Endian
      *  \param val The value to write to the buffer
      */
-    void writeUint32(Uint32);
+    void writeUint32(atUint32);
 
     /*! \brief Writes an Int64 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -223,7 +223,7 @@ public:
      *  \sa Endian
      *  \param val The value to write to the buffer
      */
-    void writeInt64(Int64);
+    void writeInt64(atInt64);
 
     /*! \brief Writes an Uint64 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -231,7 +231,7 @@ public:
      *  \sa Endian
      *  \param val The value to write to the buffer
      */
-    void writeUint64(Uint64);
+    void writeUint64(atUint64);
 
     /*! \brief Writes an float to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -272,21 +272,21 @@ public:
      */
     void writeString(const std::string& str);
 
-    void fill(Uint8 val, Uint64 length);
-    void fill(Int8 val, Uint64 length);
+    void fill(atUint8 val, atUint64 length);
+    void fill(atInt8 val, atUint64 length);
 
     void setProgressCallback(std::function<void(int)> cb);
 protected:
     void loadData();
-    Uint8*      m_data;
-    Uint64      m_length;
+    atUint8*      m_data;
+    atUint64      m_length;
     std::string m_filepath; //!< Path to the target file
-    Uint64      m_position;
-    Uint64      m_bitPosition;
+    atUint64      m_position;
+    atUint64      m_bitPosition;
     Endian      m_endian;
     std::function<void(int)> m_progressCallback;
 private:
-    void resize(Uint64 newSize);
+    void resize(atUint64 newSize);
 };
 }
 }

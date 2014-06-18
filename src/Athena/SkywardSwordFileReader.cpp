@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -25,7 +26,7 @@ namespace Athena
 namespace io
 {
 
-SkywardSwordFileReader::SkywardSwordFileReader(Uint8* data, Uint64 length)
+SkywardSwordFileReader::SkywardSwordFileReader(atUint8* data, atUint64 length)
     : base(data, length)
 {
     base::setEndian(Endian::BigEndian);
@@ -45,13 +46,13 @@ SkywardSwordFile* SkywardSwordFileReader::read()
         if (base::length() != 0xFBE0)
             THROW_INVALID_DATA_EXCEPTION("File not the expected size of 0xFBE0");
 
-        Uint32 magic = base::readUint32();
+        atUint32 magic = base::readUint32();
 
         if (magic != SkywardSwordFile::USMagic && magic != SkywardSwordFile::JAMagic && magic != SkywardSwordFile::EUMagic)
             THROW_INVALID_DATA_EXCEPTION("Not a valid Skyward Sword save file");
 
         base::seek(0x01C, SeekOrigin::Begin);
-        Uint32 headerSize = base::readUint32(); // Seems to be (headerSize - 1)
+        atUint32 headerSize = base::readUint32(); // Seems to be (headerSize - 1)
 
         if (headerSize != 0x1D)
             THROW_INVALID_DATA_EXCEPTION("Invalid header size, Corrupted data?");
@@ -61,8 +62,8 @@ SkywardSwordFile* SkywardSwordFileReader::read()
         file->setRegion((magic == SkywardSwordFile::USMagic ? Region::NTSC: (magic == SkywardSwordFile::JAMagic ? Region::NTSCJ: Region::PAL)));
         for (int i = 0; i < 3; i++)
         {
-            SkywardSwordQuest* q = new SkywardSwordQuest((Uint8*)base::readBytes(0x53C0), 0x53C0);
-            Uint64 pos = base::position();
+            SkywardSwordQuest* q = new SkywardSwordQuest((atUint8*)base::readBytes(0x53C0), 0x53C0);
+            atUint64 pos = base::position();
             // seek to the skip data for this particular quest
             base::seek(0xFB60 + (i * 0x24), SeekOrigin::Begin);
             q->setSkipData(base::readUBytes(0x24));
@@ -82,3 +83,4 @@ SkywardSwordFile* SkywardSwordFileReader::read()
 
 } // io
 } // zelda
+#endif // ATHENA_NO_SAVES

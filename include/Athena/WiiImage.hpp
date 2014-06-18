@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -37,7 +38,7 @@ public:
      * \param height
      * \param data
      */
-    WiiImage(Uint32 width, Uint32 height, Uint8* data);
+    WiiImage(atUint32 width, atUint32 height, atUint8* data);
 
     /*!
      * \brief ~WiiImage
@@ -48,50 +49,51 @@ public:
      * \brief setWidth
      * \param width
      */
-    void setWidth(const Uint32 width);
+    void setWidth(const atUint32 width);
 
     /*!
      * \brief width
      * \return
      */
-    Uint32  width() const;
+    atUint32  width() const;
 
     /*!
      * \brief setHeight
      * \param height
      */
-    void  setHeight(const Uint32 height);
+    void  setHeight(const atUint32 height);
 
     /*!
      * \brief height
      * \return
      */
-    Uint32   height() const;
+    atUint32   height() const;
 
     /*!
      * \brief setData
      * \param data
      */
-    void  setData(const Uint8* data);
+    void  setData(const atUint8* data);
 
     /*!
      * \brief data
      * \return
      */
-    Uint8*   data();
+    atUint8*   data();
 
     /*!
      * \brief toRGBA
      * \return
      */
-    Uint8* toRGBA();
+    atUint8* toRGBA();
 
 private:
-    Uint32 m_width;
-    Uint32 m_height;
-    Uint8* m_data;
+    atUint32 m_width;
+    atUint32 m_height;
+    atUint8* m_data;
 };
 
 } // zelda
 
 #endif // WIIIMAGE_HPP
+#endif // ATHENA_NO_SAVES

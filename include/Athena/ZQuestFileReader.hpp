@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_ZQUEST
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -38,7 +39,7 @@ public:
      * \param data
      * \param length
      */
-    ZQuestFileReader(Uint8* data, Uint64 length);
+    ZQuestFileReader(atUint8* data, atUint64 length);
 
     /*!
      * \brief ZQuestFileReader
@@ -57,3 +58,5 @@ public:
 } // zelda
 
 #endif // __ZQUESTFILEREADER_HPP__
+
+#endif // ATHENA_NO_ZQUEST

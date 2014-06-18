@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_ZQUEST
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -14,6 +15,7 @@
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
 #include "Athena/ZQuestFile.hpp"
+
 #include <string.h>
 
 namespace Athena
@@ -43,13 +45,13 @@ void initGameStrings()
     GameStrings.push_back("A Link Between Worlds");
 }
 
-const Uint32 ZQuestFile::Major = 2;
-const Uint32 ZQuestFile::Minor = 0;
-const Uint32 ZQuestFile::Revision = 0;
+const atUint32 ZQuestFile::Major = 2;
+const atUint32 ZQuestFile::Minor = 0;
+const atUint32 ZQuestFile::Revision = 0;
 
-const Uint32 ZQuestFile::Version = Major | (Minor << 8) | (Revision << 16);
+const atUint32 ZQuestFile::Version = Major | (Minor << 8) | (Revision << 16);
 
-const Uint32 ZQuestFile::Magic   = 'Z' | ('Q' << 8) | ('S' << 16) | (('0' + ZQuestFile::Major) << 24);
+const atUint32 ZQuestFile::Magic   = 'Z' | ('Q' << 8) | ('S' << 16) | (('0' + ZQuestFile::Major) << 24);
 
 ZQuestFile::ZQuestFile()
     : m_game(NoGame),
@@ -60,7 +62,7 @@ ZQuestFile::ZQuestFile()
     initGameStrings();
 }
 
-ZQuestFile::ZQuestFile(ZQuestFile::Game game, Endian endian, Uint8* data, Uint32 length, const std::string& gameString)
+ZQuestFile::ZQuestFile(ZQuestFile::Game game, Endian endian, atUint8* data, atUint32 length, const std::string& gameString)
     : m_game(game),
       m_gameString(gameString),
       m_endian(endian),
@@ -103,14 +105,14 @@ Endian ZQuestFile::endian() const
     return m_endian;
 }
 
-void ZQuestFile::setData(Uint8* data, Uint32 length)
+void ZQuestFile::setData(atUint8* data, atUint32 length)
 {
     // ensure we're not overwritting our data without freeing first
     // or assigning unnecessisarily
     if (!m_data || m_data != data)
     {
         delete[] m_data;
-        m_data = new Uint8[length];
+        m_data = new atUint8[length];
         // Why is this memcpy needed?
         // I get SIGABRT without it, need to research
         memcpy(m_data, data, length);
@@ -118,13 +120,13 @@ void ZQuestFile::setData(Uint8* data, Uint32 length)
     }
 }
 
-Uint8* ZQuestFile::data() const
+atUint8* ZQuestFile::data() const
 {
     return m_data;
 }
 
 
-Uint32 ZQuestFile::length() const
+atUint32 ZQuestFile::length() const
 {
     return m_length;
 }
@@ -146,3 +148,5 @@ const std::vector<std::string> ZQuestFile::gameStringList()
     return GameStrings;
 }
 }
+
+#endif // ATHENA_NO_ZQUEST

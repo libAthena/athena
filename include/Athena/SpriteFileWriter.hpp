@@ -32,7 +32,7 @@ class SpriteFileWriter : public BinaryWriter
 {
     BINARYWRITER_BASE;
 public:
-    SpriteFileWriter(Uint8* data, Uint64 length);
+    SpriteFileWriter(atUint8* data, atUint64 length);
 
     SpriteFileWriter(const std::string& filepath);
 

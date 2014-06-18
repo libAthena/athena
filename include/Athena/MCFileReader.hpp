@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -43,7 +44,7 @@ public:
      *  \param data The existing buffer
      *  \param length The length of the existing buffer
      */
-    MCFileReader(Uint8*, Uint64);
+    MCFileReader(atUint8*, atUint64);
 
     /*!
      *  \brief This constructor creates an instance from a file on disk.
@@ -64,3 +65,4 @@ public:
 } // zelda
 
 #endif // __MCFILEREADER_HPP__
+#endif // ATHENA_NO_SAVES

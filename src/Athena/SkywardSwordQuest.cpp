@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -17,14 +18,14 @@
 
 namespace Athena
 {
-SkywardSwordQuest::SkywardSwordQuest(Uint8 *data, Uint32 len)
+SkywardSwordQuest::SkywardSwordQuest(atUint8 *data, atUint32 len)
     : ZQuestFile(ZQuestFile::SS, Endian::BigEndian, data, len),
       m_skipData(nullptr),
       m_skipLength(0)
 {
 }
 
-void SkywardSwordQuest::setSkipData(const Uint8 *data, Uint32 len)
+void SkywardSwordQuest::setSkipData(const atUint8 *data, atUint32 len)
 {
     if (m_skipData)
     {
@@ -32,18 +33,19 @@ void SkywardSwordQuest::setSkipData(const Uint8 *data, Uint32 len)
         m_skipData = nullptr;
     }
 
-    m_skipData = (Uint8*)data;
+    m_skipData = (atUint8*)data;
     m_skipLength = len;
 }
 
-Uint8 *SkywardSwordQuest::skipData() const
+atUint8 *SkywardSwordQuest::skipData() const
 {
     return m_skipData;
 }
 
-Uint32 SkywardSwordQuest::skipLength() const
+atUint32 SkywardSwordQuest::skipLength() const
 {
     return m_skipLength;
 }
 
 } // zelda
+#endif // ATHENA_NO_SAVES

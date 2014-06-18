@@ -34,7 +34,7 @@ namespace Athena
 {
 namespace io
 {
-BinaryReader::BinaryReader(const Uint8* data, Uint64 length)
+BinaryReader::BinaryReader(const atUint8* data, atUint64 length)
     : m_length(length),
       m_position(0),
       m_bitPosition(0),
@@ -46,7 +46,7 @@ BinaryReader::BinaryReader(const Uint8* data, Uint64 length)
     if (length == 0)
         THROW_INVALID_OPERATION_EXCEPTION("length cannot be 0");
 
-    m_data = new Uint8[m_length];
+    m_data = new atUint8[m_length];
     memcpy(m_data, data, m_length);
 }
 
@@ -93,22 +93,22 @@ bool BinaryReader::isOpen() const
     return m_data != nullptr;
 }
 
-void BinaryReader::seek(Int64 position, SeekOrigin origin)
+void BinaryReader::seek(atInt64 position, SeekOrigin origin)
 {
     switch (origin)
     {
     case SeekOrigin::Begin:
-        if ((position < 0 || (Int64)position > (Int64)m_length))
+        if ((position < 0 || (atInt64)position > (atInt64)m_length))
             THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", position);
         m_position = position;
     break;
     case SeekOrigin::Current:
-        if ((((Int64)m_position + position) < 0 || (m_position + position) > m_length))
+        if ((((atInt64)m_position + position) < 0 || (m_position + position) > m_length))
             THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", position);
         m_position += position;
     break;
     case SeekOrigin::End:
-        if ((((Int64)m_length - position < 0) || (m_length - position) > m_length))
+        if ((((atInt64)m_length - position < 0) || (m_length - position) > m_length))
             THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", position);
         m_position = m_length - position;
     break;
@@ -120,30 +120,30 @@ bool BinaryReader::atEnd() const
     return m_position >= m_length;
 }
 
-Uint64 BinaryReader::position() const
+atUint64 BinaryReader::position() const
 {
     return m_position;
 }
 
-Uint64 BinaryReader::length() const
+atUint64 BinaryReader::length() const
 {
     return m_length;
 }
 
-void BinaryReader::setData(const Uint8* data, Uint64 length)
+void BinaryReader::setData(const atUint8* data, atUint64 length)
 {
     if (m_data)
         delete[] m_data;
 
-    m_data = (Uint8*)data;
+    m_data = (atUint8*)data;
     m_length = length;
     m_position = 0;
     m_bitPosition = 0;
 }
 
-Uint8* BinaryReader::data() const
+atUint8* BinaryReader::data() const
 {
-    Uint8* ret = new Uint8[m_length];
+    atUint8* ret = new atUint8[m_length];
     memset(ret, 0, m_length);
     memcpy(ret, m_data, m_length);
     return ret;
@@ -177,19 +177,19 @@ bool BinaryReader::readBit()
     if (m_position > m_length)
         THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", m_position);
 
-    bool ret = (*(Uint8*)(m_data + m_position) & (1 << m_bitPosition));
+    bool ret = (*(atUint8*)(m_data + m_position) & (1 << m_bitPosition));
 
     m_bitPosition++;
     if (m_bitPosition > 7)
     {
         m_bitPosition = 0;
-        m_position += sizeof(Uint8);
+        m_position += sizeof(atUint8);
     }
 
     return ret;
 }
 
-Int8 BinaryReader::readByte()
+atInt8 BinaryReader::readByte()
 {
     if (!m_data)
         loadData();
@@ -197,15 +197,15 @@ Int8 BinaryReader::readByte()
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
-        m_position += sizeof(Uint8);
+        m_position += sizeof(atUint8);
     }
     if (m_position + 1 > m_length)
         THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", m_position);
 
-    return *(Int8*)(m_data + m_position++);
+    return *(atInt8*)(m_data + m_position++);
 }
 
-Uint8 BinaryReader::readUByte()
+atUint8 BinaryReader::readUByte()
 {
     if (!m_data)
         loadData();
@@ -216,20 +216,20 @@ Uint8 BinaryReader::readUByte()
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
-        m_position += sizeof(Uint8);
+        m_position += sizeof(atUint8);
     }
     if (m_position + 1 > m_length)
         THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", m_position);
 
-    return *(Uint8*)(m_data + m_position++);
+    return *(atUint8*)(m_data + m_position++);
 }
 
-Int8* BinaryReader::readBytes(Int64 length)
+atInt8* BinaryReader::readBytes(atInt64 length)
 {
-    return (Int8*)readUBytes(length);
+    return (atInt8*)readUBytes(length);
 }
 
-Uint8* BinaryReader::readUBytes(Int64 length)
+atUint8* BinaryReader::readUBytes(atInt64 length)
 {
     if (!m_data)
         loadData();
@@ -237,21 +237,21 @@ Uint8* BinaryReader::readUBytes(Int64 length)
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
-        m_position += sizeof(Uint8);
+        m_position += sizeof(atUint8);
     }
 
     if (m_position + length > m_length)
         THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", m_position);
 
-    Uint8* ret;
-    ret = new Uint8[length];
+    atUint8* ret;
+    ret = new atUint8[length];
 
-    memcpy(ret, (const Uint8*)(m_data + m_position), length);
+    memcpy(ret, (const atUint8*)(m_data + m_position), length);
     m_position += length;
     return ret;
 }
 
-Int16 BinaryReader::readInt16()
+atInt16 BinaryReader::readInt16()
 {
     if (!m_data)
         loadData();
@@ -259,25 +259,25 @@ Int16 BinaryReader::readInt16()
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
-        m_position += sizeof(Uint8);
+        m_position += sizeof(atUint8);
     }
 
-    if (m_position + sizeof(Int16) > m_length)
+    if (m_position + sizeof(atInt16) > m_length)
         THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", m_position);
-    Int16 ret = *(Int16*)(m_data + m_position);
-    m_position += sizeof(Int16);
+    atInt16 ret = *(atInt16*)(m_data + m_position);
+    m_position += sizeof(atInt16);
 
     if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
         ret = utility::swap16(ret);
     return ret;
 }
 
-Uint16 BinaryReader::readUint16()
+atUint16 BinaryReader::readUint16()
 {
     return readInt16();
 }
 
-Int32 BinaryReader::readInt32()
+atInt32 BinaryReader::readInt32()
 {
     if (!m_data)
         loadData();
@@ -285,12 +285,12 @@ Int32 BinaryReader::readInt32()
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
-        m_position += sizeof(Uint8);
+        m_position += sizeof(atUint8);
     }
 
-    if (m_position + sizeof(Int32) > m_length)
+    if (m_position + sizeof(atInt32) > m_length)
         THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", m_position);
-    Int32 ret = *(Int32*)(m_data + m_position);
+    atInt32 ret = *(atInt32*)(m_data + m_position);
     m_position += 4;
 
     if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
@@ -298,12 +298,12 @@ Int32 BinaryReader::readInt32()
     return ret;
 }
 
-Uint32 BinaryReader::readUint32()
+atUint32 BinaryReader::readUint32()
 {
     return readInt32();
 }
 
-Int64 BinaryReader::readInt64()
+atInt64 BinaryReader::readInt64()
 {
     if (!m_data)
         loadData();
@@ -311,12 +311,12 @@ Int64 BinaryReader::readInt64()
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
-        m_position += sizeof(Uint8);
+        m_position += sizeof(atUint8);
     }
-    if (m_position + sizeof(Int64) > m_length)
+    if (m_position + sizeof(atInt64) > m_length)
         THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", m_position);
 
-    Int64 ret = *(Int64*)(m_data + m_position);
+    atInt64 ret = *(atInt64*)(m_data + m_position);
     m_position += 8;
 
     if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
@@ -324,7 +324,7 @@ Int64 BinaryReader::readInt64()
     return ret;
 }
 
-Uint64 BinaryReader::readUint64()
+atUint64 BinaryReader::readUint64()
 {
     return readUint64();
 }
@@ -337,7 +337,7 @@ float BinaryReader::readFloat()
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
-        m_position += sizeof(Uint8);
+        m_position += sizeof(atUint8);
     }
     if (m_position + sizeof(float) > m_length)
         THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", m_position);
@@ -358,7 +358,7 @@ double BinaryReader::readDouble()
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
-        m_position += sizeof(Uint8);
+        m_position += sizeof(atUint8);
     }
     if (m_position + sizeof(double) > m_length)
         THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", m_position);
@@ -380,7 +380,7 @@ bool BinaryReader::readBool()
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
-        m_position += sizeof(Uint8);
+        m_position += sizeof(atUint8);
     }
     if (m_position + sizeof(bool) > m_length)
         THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", m_position);
@@ -396,7 +396,7 @@ std::string BinaryReader::readUnicode()
         loadData();
     std::string ret;
     std::vector<short> tmp;
-    Uint16 chr = readUint16();
+    atUint16 chr = readUint16();
     for(;;)
     {
         if (!chr)
@@ -412,7 +412,7 @@ std::string BinaryReader::readUnicode()
 std::string BinaryReader::readString()
 {
     std::string ret = "";
-    Uint8 chr = readByte();
+    atUint8 chr = readByte();
 
     while (chr != 0)
     {
@@ -431,7 +431,7 @@ void BinaryReader::setProgressCallback(std::function<void (int)> cb)
 void BinaryReader::loadData()
 {
     FILE* in;
-    Uint32 length;
+    atUint32 length;
     in = fopen(m_filepath.c_str(), "rb");
 
     if (!in)
@@ -443,17 +443,17 @@ void BinaryReader::loadData()
 #ifdef HW_RVL
     m_data = (Uint8*)memalign(32, length);
 #else
-    m_data = new Uint8[length];
+    m_data = new atUint8[length];
 #endif
 
-    Uint32 done = 0;
-    Uint32 blocksize = BLOCKSZ;
+    atUint32 done = 0;
+    atUint32 blocksize = BLOCKSZ;
     do
     {
         if (blocksize > length - done)
             blocksize = length - done;
 
-        Int32 ret = fread(m_data + done, 1, blocksize, in);
+        atInt32 ret = fread(m_data + done, 1, blocksize, in);
 
         if (ret < 0)
             THROW_IO_EXCEPTION("Error reading data from disk");

@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -20,7 +21,7 @@ namespace Athena
 namespace io
 {
 
-MCFileWriter::MCFileWriter(Uint8* data, Uint64 length)
+MCFileWriter::MCFileWriter(atUint8* data, atUint64 length)
     : base(data, length)
 {
 }
@@ -33,13 +34,13 @@ MCFileWriter::MCFileWriter(const std::string& filename)
 // TODO: Check the implementation, it seems to work fine, however it's not exactly correct,
 // looking at the disassembly, MC seems to do some weird checking that isn't being done with this solution
 // need to figure out what it's doing and whether it's relevant to the checksum.
-Uint16 MCFileWriter::calculateSlotChecksum(Uint32 game)
+atUint16 MCFileWriter::calculateSlotChecksum(atUint32 game)
 {
-    Uint16 first = calculateChecksum((m_data + 0x34 + (0x10 * game)), 4);
-    Uint16 second = calculateChecksum((m_data + 0x80 + (0x500 * game)), 0x500);
+    atUint16 first = calculateChecksum((m_data + 0x34 + (0x10 * game)), 4);
+    atUint16 second = calculateChecksum((m_data + 0x80 + (0x500 * game)), 0x500);
 
     first = (first + second) & 0xFFFF;
-    Uint16 result = first << 16;
+    atUint16 result = first << 16;
     second = ~first&0xFFFF;
     second += 1;
     result += second;
@@ -47,14 +48,14 @@ Uint16 MCFileWriter::calculateSlotChecksum(Uint32 game)
     return result;
 }
 
-Uint16 MCFileWriter::calculateChecksum(Uint8 *data, Uint32 length)
+atUint16 MCFileWriter::calculateChecksum(atUint8 *data, atUint32 length)
 {
-    Uint16 sum = 0;
+    atUint16 sum = 0;
     int i = length;
 
-    for (Uint32 j = 0; j < length; j += 2)
+    for (atUint32 j = 0; j < length; j += 2)
     {
-        sum += *(Uint16*)(data + j) ^ i;
+        sum += *(atUint16*)(data + j) ^ i;
         i -= 2;
     }
 
@@ -64,10 +65,10 @@ Uint16 MCFileWriter::calculateChecksum(Uint8 *data, Uint32 length)
 }
 
 // TODO: Rewrite this to be more optimized, the current solution takes quite a few cycles
-Uint8* MCFileWriter::reverse(Uint8* data, Uint32 length)
+atUint8* MCFileWriter::reverse(atUint8* data, atUint32 length)
 {
-    Uint32 a = 0;
-    Uint32 swap;
+    atUint32 a = 0;
+    atUint32 swap;
 
     for (;a<--length; a++)
     {
@@ -86,14 +87,15 @@ void MCFileWriter::unscramble()
     if (!m_data)
         return;
 
-    for (Uint32 i = 0; i < m_length; i += 4)
+    for (atUint32 i = 0; i < m_length; i += 4)
     {
-        Uint32 block1 = *(Uint32*)reverse((m_data + i), 4);
-        Uint32 block2 = *(Uint32*)reverse((m_data + i + 4), 4);
-        *(Uint32*)(m_data + i) = block2;
-        *(Uint32*)(m_data + i + 4) = block1;
+        atUint32 block1 = *(atUint32*)reverse((m_data + i), 4);
+        atUint32 block2 = *(atUint32*)reverse((m_data + i + 4), 4);
+        *(atUint32*)(m_data + i) = block2;
+        *(atUint32*)(m_data + i + 4) = block1;
     }
 }
 
 } // io
 } // zelda
+#endif // ATHENA_NO_SAVES

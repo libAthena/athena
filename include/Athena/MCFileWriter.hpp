@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -44,7 +45,7 @@ public:
      * \param data The existing buffer
      * \param length The length of the existing buffer
      */
-    MCFileWriter(Uint8*, Uint64);
+    MCFileWriter(atUint8*, atUint64);
 
     /*!
      * \brief This constructor creates an instance from a file on disk.
@@ -61,9 +62,9 @@ public:
     void writeFile(MCFile* file);
 
 private:
-    Uint16 calculateSlotChecksum(Uint32 game);
-    Uint16 calculateChecksum(Uint8* data, Uint32 length);
-    Uint8* reverse(Uint8* data, Uint32 length);
+    atUint16 calculateSlotChecksum(atUint32 game);
+    atUint16 calculateChecksum(atUint8* data, atUint32 length);
+    atUint8* reverse(atUint8* data, atUint32 length);
     void unscramble();
 };
 
@@ -71,3 +72,4 @@ private:
 } // zelda
 
 #endif // __MCFILEWRITER_HPP__
+#endif // ATHENA_NO_SAVES

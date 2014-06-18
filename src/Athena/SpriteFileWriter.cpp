@@ -25,7 +25,7 @@ namespace Athena
 {
 namespace io
 {
-SpriteFileWriter::SpriteFileWriter(Uint8 *data, Uint64 length)
+SpriteFileWriter::SpriteFileWriter(atUint8 *data, atUint64 length)
     : base(data, length)
 {
 }

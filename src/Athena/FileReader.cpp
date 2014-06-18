@@ -92,7 +92,7 @@ bool FileReader::isOpen() const
     return m_fileHandle != NULL;
 }
 
-void FileReader::seek(Int64 pos, SeekOrigin origin)
+void FileReader::seek(atInt64 pos, SeekOrigin origin)
 {
     if (fseeko64(m_fileHandle, pos, (int)origin) != 0)
         THROW_INVALID_OPERATION_EXCEPTION("Unable to seek in file");
@@ -106,7 +106,7 @@ bool FileReader::atEnd() const
     return feof(m_fileHandle) != 0;
 }
 
-Uint64 FileReader::position() const
+atUint64 FileReader::position() const
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open");
@@ -114,7 +114,7 @@ Uint64 FileReader::position() const
     return ftello64(m_fileHandle);
 }
 
-Uint64 FileReader::length() const
+atUint64 FileReader::length() const
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open");
@@ -141,14 +141,14 @@ bool FileReader::readBit()
     if (!m_bitValid)
     {
         int size = fread(&m_currentByte, 1, 1, m_fileHandle);
-        if (size != sizeof(Uint8))
+        if (size != sizeof(atUint8))
             THROW_IO_EXCEPTION("Error reading from file.");
 
         m_bitShift = 0;
         m_bitValid = true;
     }
 
-    Uint8 flag = (1 << m_bitShift);
+    atUint8 flag = (1 << m_bitShift);
     m_bitShift++;
     if (m_bitShift > 7)
         m_bitValid = false;
@@ -156,49 +156,49 @@ bool FileReader::readBit()
     return ((m_currentByte & flag) == flag);
 }
 
-Uint8 FileReader::readUByte()
+atUint8 FileReader::readUByte()
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
 
     m_bitValid = false;
-    Uint8 val = 0;
+    atUint8 val = 0;
     fread(&val, 1, 1, m_fileHandle);
     return val;
 }
 
-Int8 FileReader::readByte()
+atInt8 FileReader::readByte()
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
-    return (Int8)readUByte();
+    return (atInt8)readUByte();
 }
 
-Uint8* FileReader::readUBytes(Uint64 len)
+atUint8* FileReader::readUBytes(atUint64 len)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
     m_bitValid = false;
-    Uint8* val = new Uint8[len];
+    atUint8* val = new atUint8[len];
     fread(val, 1, len, m_fileHandle);
     return val;
 }
 
-Int8* FileReader::readBytes(Uint64 len)
+atInt8* FileReader::readBytes(atUint64 len)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
-    return (Int8*)readUBytes(len);
+    return (atInt8*)readUBytes(len);
 }
 
-Uint16 FileReader::readUint16()
+atUint16 FileReader::readUint16()
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
 
     m_bitValid = false;
-    Uint16 val;
-    fread(&val, 1, sizeof(Uint16), m_fileHandle);
+    atUint16 val;
+    fread(&val, 1, sizeof(atUint16), m_fileHandle);
 
     if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
         val = utility::swapU16(val);
@@ -206,22 +206,22 @@ Uint16 FileReader::readUint16()
     return val;
 }
 
-Int16 FileReader::readInt16()
+atInt16 FileReader::readInt16()
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
 
-    return (Int16)readUint16();
+    return (atInt16)readUint16();
 }
 
-Uint32 FileReader::readUint32()
+atUint32 FileReader::readUint32()
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
 
     m_bitValid = false;
-    Uint32 val;
-    fread(&val, 1, sizeof(Uint32), m_fileHandle);
+    atUint32 val;
+    fread(&val, 1, sizeof(atUint32), m_fileHandle);
 
     if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
         val = utility::swapU32(val);
@@ -229,22 +229,22 @@ Uint32 FileReader::readUint32()
     return val;
 }
 
-Int32 FileReader::readInt32()
+atInt32 FileReader::readInt32()
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
 
-    return (Int32)readUint32();
+    return (atInt32)readUint32();
 }
 
-Uint64 FileReader::readUint64()
+atUint64 FileReader::readUint64()
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
 
     m_bitValid = false;
-    Uint64 val;
-    fread(&val, 1, sizeof(Uint64), m_fileHandle);
+    atUint64 val;
+    fread(&val, 1, sizeof(atUint64), m_fileHandle);
 
     if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
         val = utility::swapU64(val);
@@ -252,12 +252,12 @@ Uint64 FileReader::readUint64()
     return val;
 }
 
-Int64 FileReader::readInt64()
+atInt64 FileReader::readInt64()
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
 
-    return (Int64)readUint64();
+    return (atInt64)readUint64();
 }
 
 double FileReader::readDouble()
@@ -301,7 +301,7 @@ bool FileReader::readBool()
 std::string FileReader::readString()
 {
     std::string ret = "";
-    Uint8 chr = readByte();
+    atUint8 chr = readByte();
 
     while (chr != 0)
     {

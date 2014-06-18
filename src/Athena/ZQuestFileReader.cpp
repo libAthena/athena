@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_ZQUEST
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -20,6 +21,7 @@
 #include "Athena/InvalidDataException.hpp"
 #include "Athena/Checksums.hpp"
 #include "Athena/Utility.hpp"
+
 #include <iostream>
 #include <iomanip>
 
@@ -28,7 +30,7 @@ namespace Athena
 namespace io
 {
 
-ZQuestFileReader::ZQuestFileReader(Uint8 *data, Uint64 length)
+ZQuestFileReader::ZQuestFileReader(atUint8 *data, atUint64 length)
     : base(data, length)
 {
 }
@@ -40,12 +42,12 @@ ZQuestFileReader::ZQuestFileReader(const std::string &filename)
 
 ZQuestFile *ZQuestFileReader::read()
 {
-    Uint32 magic, version, compressedLen, uncompressedLen;
+    atUint32 magic, version, compressedLen, uncompressedLen;
     ZQuestFile::Game game = ZQuestFile::NoGame;
     std::string gameString;
-    Uint16 BOM;
-    Uint32 checksum;
-    Uint8* data;
+    atUint16 BOM;
+    atUint32 checksum;
+    atUint8* data;
 
     magic = base::readUint32();
 
@@ -83,7 +85,7 @@ ZQuestFile *ZQuestFileReader::read()
         base::seek(0x0A);
     }
 
-    data = (Uint8*)base::readBytes(compressedLen); // compressedLen is always the total file size
+    data = (atUint8*)base::readBytes(compressedLen); // compressedLen is always the total file size
 
     if (version >= ZQUEST_VERSION_CHECK(2, 0, 0))
     {
@@ -101,8 +103,8 @@ ZQuestFile *ZQuestFileReader::read()
 
     if (compressedLen != uncompressedLen)
     {
-        Uint8* dst = new Uint8[uncompressedLen];
-        Uint32 dstLen = io::Compression::decompressZlib(data, compressedLen, dst, uncompressedLen);
+        atUint8* dst = new atUint8[uncompressedLen];
+        atUint32 dstLen = io::Compression::decompressZlib(data, compressedLen, dst, uncompressedLen);
 
         if (dstLen != uncompressedLen)
         {
@@ -121,3 +123,5 @@ ZQuestFile *ZQuestFileReader::read()
 
 } // io
 } // zelda
+
+#endif

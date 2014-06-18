@@ -91,7 +91,7 @@ bool FileWriter::save()
     return true;
 }
 
-void FileWriter::seek(Int64 pos, SeekOrigin origin)
+void FileWriter::seek(atInt64 pos, SeekOrigin origin)
 {
     if (fseeko64(m_fileHandle, pos, (int)origin) != 0)
         THROW_IO_EXCEPTION("Unable to seek in file");
@@ -102,12 +102,12 @@ bool FileWriter::atEnd() const
     return feof(m_fileHandle) != 0;
 }
 
-Uint64 FileWriter::position() const
+atUint64 FileWriter::position() const
 {
     return ftello64(m_fileHandle);
 }
 
-Uint64 FileWriter::length() const
+atUint64 FileWriter::length() const
 {
     return utility::fileSize(m_fileHandle);
 }
@@ -134,7 +134,7 @@ void FileWriter::writeBit(bool val)
         m_bitValid = false;
 
     fseeko64(m_fileHandle, m_bytePosition, (int)SeekOrigin::Begin);
-    if (fwrite(&m_currentByte, 1, 1, m_fileHandle) != sizeof(Int8))
+    if (fwrite(&m_currentByte, 1, 1, m_fileHandle) != sizeof(atInt8))
         THROW_IO_EXCEPTION("Unable to data to file");
 }
 
@@ -146,23 +146,23 @@ void FileWriter::seekBit(int bit)
     m_bitValid = true;
 }
 
-void FileWriter::writeUByte(Uint8 val)
+void FileWriter::writeUByte(atUint8 val)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
 
     m_bitValid = false;
 
-    if (fwrite(&val, 1, sizeof(Uint8), m_fileHandle) != sizeof(Uint8))
+    if (fwrite(&val, 1, sizeof(atUint8), m_fileHandle) != sizeof(atUint8))
         THROW_IO_EXCEPTION("Unable to write to stream");
 }
 
-void FileWriter::writeByte(Int8 val)
+void FileWriter::writeByte(atInt8 val)
 {
     writeUByte(val);
 }
 
-void FileWriter::writeUBytes(Uint8* data, Uint64 len)
+void FileWriter::writeUBytes(atUint8* data, atUint64 len)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
@@ -173,12 +173,12 @@ void FileWriter::writeUBytes(Uint8* data, Uint64 len)
         THROW_IO_EXCEPTION("Unable to write to stream");
 }
 
-void FileWriter::writeBytes(Int8* data, Uint64 len)
+void FileWriter::writeBytes(atInt8* data, atUint64 len)
 {
-    writeUBytes((Uint8*)data, len);
+    writeUBytes((atUint8*)data, len);
 }
 
-void FileWriter::writeUint16(Uint16 val)
+void FileWriter::writeUint16(atUint16 val)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
@@ -188,16 +188,16 @@ void FileWriter::writeUint16(Uint16 val)
     if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
         val = utility::swapU16(val);
 
-    if (fwrite(&val, 1, sizeof(Uint16), m_fileHandle) != sizeof(Uint16))
+    if (fwrite(&val, 1, sizeof(atUint16), m_fileHandle) != sizeof(atUint16))
         THROW_IO_EXCEPTION("Unable to write to stream");
 }
 
-void FileWriter::writeInt16(Int16 val)
+void FileWriter::writeInt16(atInt16 val)
 {
     writeUint16(val);
 }
 
-void FileWriter::writeUint32(Uint32 val)
+void FileWriter::writeUint32(atUint32 val)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
@@ -207,16 +207,16 @@ void FileWriter::writeUint32(Uint32 val)
     if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
         val = utility::swapU32(val);
 
-    if (fwrite(&val, 1, sizeof(Uint32), m_fileHandle) != sizeof(Uint32))
+    if (fwrite(&val, 1, sizeof(atUint32), m_fileHandle) != sizeof(atUint32))
         THROW_IO_EXCEPTION("Unable to write to stream");
 }
 
-void FileWriter::writeInt32(Int32 val)
+void FileWriter::writeInt32(atInt32 val)
 {
     writeUint32(val);
 }
 
-void FileWriter::writeUint64(Uint64 val)
+void FileWriter::writeUint64(atUint64 val)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
@@ -226,11 +226,11 @@ void FileWriter::writeUint64(Uint64 val)
     if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
         val = utility::swapU64(val);
 
-    if (fwrite(&val, 1, sizeof(Uint64), m_fileHandle) != sizeof(Uint64))
+    if (fwrite(&val, 1, sizeof(atUint64), m_fileHandle) != sizeof(atUint64))
         THROW_IO_EXCEPTION("Unable to write to stream");
 }
 
-void FileWriter::writeInt64(Int64 val)
+void FileWriter::writeInt64(atInt64 val)
 {
     writeUint64(val);
 }
@@ -293,7 +293,7 @@ void FileWriter::writeUnicode(const std::string& str)
 
     utf8::utf8to16(tmpStr.begin(), tmpStr.end(), back_inserter(tmp));
 
-    for (Uint16 chr : tmp)
+    for (atUint16 chr : tmp)
     {
         if (chr != 0xFEFF)
             writeInt16(chr);

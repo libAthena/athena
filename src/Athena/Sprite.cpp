@@ -146,12 +146,12 @@ QList<int> Sprite::stateIds() const
     return m_stateIds;
 }
 
-Uint32 Sprite::stateCount() const
+atUint32 Sprite::stateCount() const
 {
     return m_stateIds.size();
 }
 
-void Sprite::setCurrentState(const Uint32 id)
+void Sprite::setCurrentState(const atUint32 id)
 {
     if (id >= m_stateIds.size())
         return;
@@ -162,7 +162,7 @@ void Sprite::setCurrentState(const Uint32 id)
 #endif
 }
 
-Uint32 Sprite::currentState() const
+atUint32 Sprite::currentState() const
 {
     return m_currentState;
 }
@@ -197,7 +197,7 @@ bool Sprite::removeFrame(SpriteFrame* frame)
     return false;
 }
 
-void Sprite::setFrame(Uint32 id)
+void Sprite::setFrame(atUint32 id)
 {
     if (id > m_frames.size())
         return;
@@ -228,7 +228,7 @@ void Sprite::setFrames(QList<SpriteFrame*> frames)
 #endif
 
 
-Uint32 Sprite::frameCount() const
+atUint32 Sprite::frameCount() const
 {
     return m_frames.size();
 }
@@ -249,7 +249,7 @@ SpriteFile* Sprite::container() const
 
 void Sprite::setCurrentFrame(SpriteFrame* frame)
 {
-    Uint32 id = 0;
+    atUint32 id = 0;
     for (SpriteFrame* tmpFrame : m_frames)
     {
         if (tmpFrame == frame)
@@ -261,7 +261,7 @@ void Sprite::setCurrentFrame(SpriteFrame* frame)
     }
 }
 
-void Sprite::setCurrentFrame(Uint32 id)
+void Sprite::setCurrentFrame(atUint32 id)
 {
     if (id >= m_frames.size())
         return;

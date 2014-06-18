@@ -36,7 +36,7 @@ typedef unsigned char uint8_t;
 extern "C" {
 #endif
 
-int lzo1x_decode(Uint8 *out, Int32 *outlen, Uint8 *in, Int32 *inlen);
+int lzo1x_decode(atUint8 *out, atInt32 *outlen, atUint8 *in, atInt32 *inlen);
 
 #ifdef __cplusplus
 }

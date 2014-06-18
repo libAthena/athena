@@ -27,59 +27,59 @@ namespace Athena
 {
 namespace utility
 {
-bool isEmpty(Int8* buf, Uint32 size)
+bool isEmpty(atInt8* buf, atUint32 size)
 {
     return buf[0] == 0 && !memcmp(buf, buf + 1, size - 1);
 }
 
-Uint16 swapU16(Uint16 val )
+atUint16 swapU16(atUint16 val )
 {
-    return (Uint16)swap16(val);
+    return (atUint16)swap16(val);
 }
 
-Int16 swap16(Int16 val )
+atInt16 swap16(atInt16 val )
 {
     return (val = (val << 8) | ((val >> 8) & 0xFF));
 }
 
-Uint32 swapU32(Uint32 val)
+atUint32 swapU32(atUint32 val)
 {
-    return (Uint32)swap32(val);
+    return (atUint32)swap32(val);
 }
 
-int swap32(Int32 val )
+int swap32(atInt32 val )
 {
     val = (val & 0x0000FFFF) << 16 | (val & 0xFFFF0000) >> 16;
     val = (val & 0x00FF00FF) << 8 | (val & 0xFF00FF00) >> 8;
     return val;
 }
 
-Uint64 swapU64(Uint64 val)
+atUint64 swapU64(atUint64 val)
 {
-    return (Uint64)swap64(val);
+    return (atUint64)swap64(val);
 }
 
-Int64 swap64(Int64 val)
+atInt64 swap64(atInt64 val)
 {
-    return (val = ((Int64)((((Int64)(val) & 0xFF00000000000000ULL) >> 56) |
-                    (((Int64)(val) & 0x00FF000000000000ULL) >> 40) |
-                    (((Int64)(val) & 0x0000FF0000000000ULL) >> 24) |
-                    (((Int64)(val) & 0x000000FF00000000ULL) >>  8) |
-                    (((Int64)(val) & 0x00000000FF000000ULL) <<  8) |
-                    (((Int64)(val) & 0x0000000000FF0000ULL) << 24) |
-                    (((Int64)(val) & 0x000000000000FF00ULL) << 40) |
-                    (((Int64)(val) & 0x00000000000000FFULL) << 56))));
+    return (val = ((atInt64)((((atInt64)(val) & 0xFF00000000000000ULL) >> 56) |
+                    (((atInt64)(val) & 0x00FF000000000000ULL) >> 40) |
+                    (((atInt64)(val) & 0x0000FF0000000000ULL) >> 24) |
+                    (((atInt64)(val) & 0x000000FF00000000ULL) >>  8) |
+                    (((atInt64)(val) & 0x00000000FF000000ULL) <<  8) |
+                    (((atInt64)(val) & 0x0000000000FF0000ULL) << 24) |
+                    (((atInt64)(val) & 0x000000000000FF00ULL) << 40) |
+                    (((atInt64)(val) & 0x00000000000000FFULL) << 56))));
 }
 
 bool isSystemBigEndian()
 {
-    Uint8* test = (Uint8*)"\xFE\xFF";
-    return (*(Uint16*)test == 0xFEFF);
+    atUint8* test = (atUint8*)"\xFE\xFF";
+    return (*(atUint16*)test == 0xFEFF);
 }
 
-void fillRandom(Uint8 * rndArea, Uint8 count)
+void fillRandom(atUint8 * rndArea, atUint8 count)
 {
-    for(Uint16 i = 0; i < count; i++)
+    for(atUint16 i = 0; i < count; i++)
         rndArea[i]=rand();
 }
 
@@ -112,7 +112,7 @@ double swapDouble(double val)
     retFloat[6] = convFloat[1];
     retFloat[7] = convFloat[0];
 
-    return (double)((Uint64)retVal);
+    return (double)((atUint64)retVal);
 }
 
 
@@ -228,11 +228,11 @@ int countChar(const std::string& str, const char chr, int* lastOccur)
     return ret;
 }
 
-Uint64 fileSize(FILE* f)
+atUint64 fileSize(FILE* f)
 {
-    Uint64 oldPos = ftello64(f);
+    atUint64 oldPos = ftello64(f);
     fseeko64(f, 0, SEEK_END);
-    Uint64 size = ftello64(f);
+    atUint64 size = ftello64(f);
     fseeko64(f, oldPos, SEEK_SET);
     return size;
 }

@@ -32,7 +32,7 @@ class SpriteFileReader : public BinaryReader
 {
     BINARYREADER_BASE();
 public:
-    SpriteFileReader(Uint8* data, Uint64 length);
+    SpriteFileReader(atUint8* data, atUint64 length);
     SpriteFileReader(const std::string& filepath);
 
     Sakura::SpriteFile* readFile();

@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -23,9 +24,9 @@
 namespace Athena
 {
 
-const Uint8 SD_KEY     [16] = {0xab, 0x01, 0xb9, 0xd8, 0xe1, 0x62, 0x2b, 0x08, 0xaf, 0xba, 0xd8, 0x4d, 0xbf, 0xc2, 0xa5, 0x5d};
-const Uint8 SD_IV      [16] = {0x21, 0x67, 0x12, 0xe6, 0xaa, 0x1f, 0x68, 0x9f, 0x95, 0xc5, 0xa2, 0x23, 0x24, 0xdc, 0x6a, 0x98};
-const Uint8 MD5_BLANKER[16] = {0x0e, 0x65, 0x37, 0x81, 0x99, 0xbe, 0x45, 0x17, 0xab, 0x06, 0xec, 0x22, 0x45, 0x1a, 0x57, 0x93};
+const atUint8 SD_KEY     [16] = {0xab, 0x01, 0xb9, 0xd8, 0xe1, 0x62, 0x2b, 0x08, 0xaf, 0xba, 0xd8, 0x4d, 0xbf, 0xc2, 0xa5, 0x5d};
+const atUint8 SD_IV      [16] = {0x21, 0x67, 0x12, 0xe6, 0xaa, 0x1f, 0x68, 0x9f, 0x95, 0xc5, 0xa2, 0x23, 0x24, 0xdc, 0x6a, 0x98};
+const atUint8 MD5_BLANKER[16] = {0x0e, 0x65, 0x37, 0x81, 0x99, 0xbe, 0x45, 0x17, 0xab, 0x06, 0xec, 0x22, 0x45, 0x1a, 0x57, 0x93};
 
 /*! \class WiiFile
  *  \brief Wii file container class
@@ -79,7 +80,7 @@ public:
      * \param data
      * \param length
      */
-    WiiFile(const std::string& filename, Uint8 permissions, const Uint8* data, Uint32 length);
+    WiiFile(const std::string& filename, atUint8 permissions, const atUint8* data, atUint32 length);
     virtual ~WiiFile();
 
     /*!
@@ -98,12 +99,12 @@ public:
      * \brief setData
      * \param data
      */
-    void setData(const Uint8* data);
+    void setData(const atUint8* data);
     /*!
      * \brief data
      * \return
      */
-    Uint8* data() const;
+    atUint8* data() const;
 
     /*!
      * \brief setLength
@@ -121,25 +122,25 @@ public:
      * \brief setPermissions
      * \param permissions
      */
-    void setPermissions(const Uint8 permissions);
+    void setPermissions(const atUint8 permissions);
 
     /*!
      * \brief permissions
      * \return
      */
-    Uint8   permissions() const;
+    atUint8   permissions() const;
 
     /*!
      * \brief setAttributes
      * \param attr
      */
-    void setAttributes(const Uint8 attr);
+    void setAttributes(const atUint8 attr);
 
     /*!
      * \brief attributes
      * \return
      */
-    Uint8   attributes() const;
+    atUint8   attributes() const;
 
     /*!
      * \brief setType
@@ -167,13 +168,14 @@ public:
 
 protected:
 private:
-    Uint8       m_permissions;
-    Uint8       m_attributes;
+    atUint8       m_permissions;
+    atUint8       m_attributes;
     Type        m_type;
     std::string m_filename;
     int         m_fileLen;
-    Uint8*      m_fileData;
+    atUint8*      m_fileData;
 };
 
 } // zelda
 #endif // WIIFILE_H
+#endif // ATHENA_NO_SAVES

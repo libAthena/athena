@@ -125,7 +125,7 @@ public:
      * \param width
      * \param height
      */
-    void setSize(Uint32 width, Uint32 height);
+    void setSize(atUint32 width, atUint32 height);
 
     /*!
      * \brief setSize
@@ -203,7 +203,7 @@ private:
 #endif
     bool          m_flippedH;
     bool          m_flippedV;
-    Uint32        m_frameIndex;
+    atUint32        m_frameIndex;
 };
 
 }

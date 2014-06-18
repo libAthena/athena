@@ -138,7 +138,7 @@ QPoint SpritePart::textureOffset() const
     return m_textureOffset;
 }
 
-void SpritePart::setSize(Uint32 width, Uint32 height)
+void SpritePart::setSize(atUint32 width, atUint32 height)
 {
 #ifndef ATHENA_USE_QT
     setSize(Vector2Di(width, height));

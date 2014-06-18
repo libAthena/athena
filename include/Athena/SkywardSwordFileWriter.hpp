@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -30,7 +31,7 @@ class SkywardSwordFileWriter : public BinaryWriter
     // Why does this fuck up my formatting in Qt Creator?
     BINARYWRITER_BASE
 public:
-    SkywardSwordFileWriter(Uint8* data, Uint64 len);
+    SkywardSwordFileWriter(atUint8* data, atUint64 len);
     SkywardSwordFileWriter(const std::string& filename);
 
     void write(SkywardSwordFile* file);
@@ -38,3 +39,4 @@ public:
 }
 }
 #endif // __SSFILEWRITER_HPP__
+#endif // ATHENA_NO_SAVES

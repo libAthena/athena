@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -28,7 +29,7 @@ class SkywardSwordFileReader : public BinaryReader
     BINARYREADER_BASE();
 public:
 
-    SkywardSwordFileReader(Uint8* data, Uint64 length);
+    SkywardSwordFileReader(atUint8* data, atUint64 length);
     SkywardSwordFileReader(const std::string& filename);
 
     SkywardSwordFile* read();
@@ -37,3 +38,4 @@ public:
 } // zelda
 
 #endif // __SSFILEREADER_HPP__
+#endif // ATHENA_NO_SAVES

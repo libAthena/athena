@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_ZQUEST
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -15,6 +16,7 @@
 
 #ifndef ZQUEST_HPP
 #define ZQUEST_HPP
+
 
 #include "Athena/Global.hpp"
 #include <string>
@@ -34,24 +36,24 @@ public:
     /*!
      * \brief The current major version of the ZQuest format
      */
-    static const Uint32 Major;
+    static const atUint32 Major;
     /*!
      * \brief The current minor version of the ZQuest format
      */
-    static const Uint32 Minor;
+    static const atUint32 Minor;
     /*!
      * \brief The current revision of the ZQuest format
      */
-    static const Uint32 Revision;
+    static const atUint32 Revision;
     /*!
      * \brief The current version of the ZQuest format
      */
-    static const Uint32 Version;
+    static const atUint32 Version;
 
     /*!
      * \brief The magic number used to identify the file e.g. "ZQS1"
      */
-    static const Uint32 Magic;
+    static const atUint32 Magic;
 
     /*!
      * \enum Game
@@ -96,7 +98,7 @@ public:
      * \param data
      * \param length
      */
-    ZQuestFile(Game game, Endian endian, Uint8* data, Uint32 length, const std::string& gameString = std::string());
+    ZQuestFile(Game game, Endian endian, atUint8* data, atUint32 length, const std::string& gameString = std::string());
     ~ZQuestFile();
 
     /*!
@@ -128,19 +130,19 @@ public:
      * \param data   The data to assign
      * \param length The length of the data
      */
-    void setData(Uint8* data, Uint32 length);
+    void setData(atUint8* data, atUint32 length);
 
     /*!
      * \brief data
      * \return
      */
-    Uint8* data() const;
+    atUint8* data() const;
 
     /*!
      * \brief length
      * \return
      */
-    Uint32 length() const;
+    atUint32 length() const;
 
     void setGameString(const std::string& gameString);
     /*!
@@ -154,11 +156,12 @@ private:
     Game        m_game;
     std::string m_gameString;
     Endian      m_endian;
-    Uint8*      m_data;
-    Uint32      m_length;
+    atUint8*      m_data;
+    atUint32      m_length;
 
     // Game strings support
 };
 } // zelda
 
 #endif // ZQUEST_HPP
+#endif // ATHENA_NO_ZQUEST

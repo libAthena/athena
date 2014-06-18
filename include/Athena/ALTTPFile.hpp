@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -59,7 +60,7 @@ public:
      * \param val The new quest to assign to the given index
      * \throw InvalidOperationException on index out of range
      */
-    void setQuest(Uint32 id, ALTTPQuest* val);
+    void setQuest(atUint32 id, ALTTPQuest* val);
     /*! \brief Returns the primary quest list
      *
      * \return The primary quest list
@@ -73,13 +74,13 @@ public:
      * \return ALTTPQuest*
      * \throw InvalidOperationException on index out of range
      */
-    ALTTPQuest* quest(Uint32 id) const;
+    ALTTPQuest* quest(atUint32 id) const;
 
     /*! \brief Returns the number of primary quests
      *
      * \return The number of quests
      */
-    Uint32 questCount() const;
+    atUint32 questCount() const;
 
 private:
 
@@ -89,3 +90,4 @@ private:
 
 } // zelda
 #endif // __ALTTP_FILE_HPP__
+#endif // ATHENA_NO_SAVES

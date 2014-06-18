@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -47,7 +48,7 @@ public:
     ~SkywardSwordFile();
 
     void addQuest(SkywardSwordQuest* q);
-    SkywardSwordQuest* quest(Uint32 id);
+    SkywardSwordQuest* quest(atUint32 id);
     std::vector<SkywardSwordQuest*> questList() const;
 
     void setRegion(Region region);
@@ -56,8 +57,9 @@ private:
     Region m_region;
     // A vector is a bit overkill
     std::vector<SkywardSwordQuest*> m_quests;
-    Uint32 m_numQuests;
+    atUint32 m_numQuests;
 };
 
 }
 #endif // __SSFILE_HPP__
+#endif // ATHENA_NO_SAVES

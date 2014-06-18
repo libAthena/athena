@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_ZQUEST
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -24,7 +25,7 @@ namespace Athena
 namespace io
 {
 
-ZQuestFileWriter::ZQuestFileWriter(Uint8* data, Uint64 length)
+ZQuestFileWriter::ZQuestFileWriter(atUint8* data, atUint64 length)
     : base(data, length)
 {
 }
@@ -41,11 +42,11 @@ void ZQuestFileWriter::write(ZQuestFile* quest, bool compress)
 
     base::writeUint32(ZQuestFile::Magic);
     base::writeUint32(ZQuestFile::Version);
-    Uint8* questData = quest->data();
-    Uint32 compLen;
+    atUint8* questData = quest->data();
+    atUint32 compLen;
     if (compress)
     {
-        Uint8* compData = new Uint8[quest->length() + 0x40]; // add 20 bytes because sometimes the file grows with compression
+        atUint8* compData = new atUint8[quest->length() + 0x40]; // add 20 bytes because sometimes the file grows with compression
         compLen = quest->length() + 0x40;
         compLen = io::Compression::compressZlib(questData, quest->length(), compData, compLen);
 
@@ -72,7 +73,7 @@ void ZQuestFileWriter::write(ZQuestFile* quest, bool compress)
     }
 
     base::writeUint32(quest->length());
-    base::writeBytes((Int8*)quest->gameString().substr(0, 0x0A).c_str(), 0x0A);
+    base::writeBytes((atInt8*)quest->gameString().substr(0, 0x0A).c_str(), 0x0A);
     base::writeUint16(quest->endian() == Endian::BigEndian ? 0xFFFE : 0xFEFF);
     base::writeUint32(Athena::Checksums::crc32(questData, compLen));
     base::writeUBytes(questData, compLen);
@@ -88,3 +89,5 @@ void ZQuestFileWriter::write(ZQuestFile* quest, bool compress)
 
 } // io
 } // zelda
+
+#endif // ATHENA_NO_ZQUEST

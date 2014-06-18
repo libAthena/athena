@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -21,7 +22,7 @@
 namespace Athena
 {
 
-WiiImage::WiiImage(Uint32 width, Uint32 height, Uint8* data) :
+WiiImage::WiiImage(atUint32 width, atUint32 height, atUint8* data) :
     m_width(width),
     m_height(height),
     m_data(data)
@@ -35,29 +36,29 @@ WiiImage::~WiiImage()
     m_data = NULL;
 }
 
-Uint8* WiiImage::data()
+atUint8* WiiImage::data()
 {
     return m_data;
 }
 
-Uint32 WiiImage::width() const
+atUint32 WiiImage::width() const
 {
     return m_width;
 }
 
-Uint32 WiiImage::height() const
+atUint32 WiiImage::height() const
 {
     return m_height;
 }
 
-Uint8 *WiiImage::toRGBA()
+atUint8 *WiiImage::toRGBA()
 {
-    Uint32 x, y;
-    Uint32 x1, y1;
-    Uint32 iv;
-    Uint8* bitmapdata = NULL;
+    atUint32 x, y;
+    atUint32 x1, y1;
+    atUint32 iv;
+    atUint8* bitmapdata = NULL;
 
-    bitmapdata = new Uint8[m_width * m_height * 4];
+    bitmapdata = new atUint8[m_width * m_height * 4];
     if(bitmapdata == NULL)
             return NULL;
 
@@ -69,29 +70,29 @@ Uint8 *WiiImage::toRGBA()
             {
                 for(x = x1; x < (x1 + 4); x++)
                 {
-                    Uint16 oldpixel = *(Uint16*)(m_data + ((iv++) * 2));
+                    atUint16 oldpixel = *(atUint16*)(m_data + ((iv++) * 2));
                     //if((x >= m_width) || (y >= m_height))
                     //        continue;
                     oldpixel = utility::swapU16(oldpixel);
                     if(oldpixel & (1 << 15))
                     {
                         // RGB5
-                        Uint8 b = (((oldpixel >> 10) & 0x1F) * 255) / 31;
-                        Uint8 g = (((oldpixel >> 5)  & 0x1F) * 255) / 31;
-                        Uint8 r = (((oldpixel >> 0)  & 0x1F) * 255) / 31;
-                        Uint8 a = 255;
-                        Uint8 rgba = (r << 0) | (g << 8) | (b << 16) | (a << 24);
-                        (*(Uint32**)&bitmapdata)[x + (y * m_width)] = rgba;
+                        atUint8 b = (((oldpixel >> 10) & 0x1F) * 255) / 31;
+                        atUint8 g = (((oldpixel >> 5)  & 0x1F) * 255) / 31;
+                        atUint8 r = (((oldpixel >> 0)  & 0x1F) * 255) / 31;
+                        atUint8 a = 255;
+                        atUint8 rgba = (r << 0) | (g << 8) | (b << 16) | (a << 24);
+                        (*(atUint32**)&bitmapdata)[x + (y * m_width)] = rgba;
                     }
                     else
                     {
                         // RGB4A3
-                        Uint8 a = (((oldpixel >> 12) & 0x7) * 255) / 7;
-                        Uint8 b = (((oldpixel >> 8)  & 0xF) * 255) / 15;
-                        Uint8 g = (((oldpixel >> 4)  & 0xF) * 255) / 15;
-                        Uint8 r = (((oldpixel >> 0)  & 0xF) * 255) / 15;
-                        Uint32 rgba = (r << 0) | (g << 8) | (b << 16) | (a << 24);
-                        (*(Uint32**)&bitmapdata)[x + (y * m_width)] = rgba;
+                        atUint8 a = (((oldpixel >> 12) & 0x7) * 255) / 7;
+                        atUint8 b = (((oldpixel >> 8)  & 0xF) * 255) / 15;
+                        atUint8 g = (((oldpixel >> 4)  & 0xF) * 255) / 15;
+                        atUint8 r = (((oldpixel >> 0)  & 0xF) * 255) / 15;
+                        atUint32 rgba = (r << 0) | (g << 8) | (b << 16) | (a << 24);
+                        (*(atUint32**)&bitmapdata)[x + (y * m_width)] = rgba;
                     }
                 }
             }
@@ -101,3 +102,4 @@ Uint8 *WiiImage::toRGBA()
 }
 
 } // zelda
+#endif // ATHENA_NO_SAVES

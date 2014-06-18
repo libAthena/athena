@@ -57,7 +57,7 @@ QList<SpritePart*> SpriteFrame::parts() const
     return m_parts;
 }
 
-Uint32 SpriteFrame::partCount() const
+atUint32 SpriteFrame::partCount() const
 {
     return m_parts.size();
 }

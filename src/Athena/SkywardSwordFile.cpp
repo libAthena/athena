@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -44,7 +45,7 @@ void SkywardSwordFile::addQuest(Athena::SkywardSwordQuest *q)
     m_quests.push_back(q);
 }
 
-SkywardSwordQuest *SkywardSwordFile::quest(Uint32 id)
+SkywardSwordQuest *SkywardSwordFile::quest(atUint32 id)
 {
     if (id > m_quests.size() - 1)
         THROW_INVALID_OPERATION_EXCEPTION("index out of range");
@@ -69,3 +70,4 @@ Region SkywardSwordFile::region() const
 
 
 } // zelda
+#endif // ATHENA_NO_SAVES

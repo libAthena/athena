@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -26,19 +27,20 @@ namespace Athena
 class SkywardSwordQuest : public ZQuestFile
 {
 public:
-    SkywardSwordQuest(Uint8* data, Uint32 len);
+    SkywardSwordQuest(atUint8* data, atUint32 len);
 
     // TODO: Is len really needed?
-    void setSkipData(const Uint8* data, Uint32 len = 0x24);
-    Uint8* skipData() const;
+    void setSkipData(const atUint8* data, atUint32 len = 0x24);
+    atUint8* skipData() const;
 
-    Uint32 skipLength() const;
+    atUint32 skipLength() const;
 
 private:
-    Uint8* m_skipData;
-    Uint32 m_skipLength;
+    atUint8* m_skipData;
+    atUint32 m_skipLength;
 };
 
 
 } // zelda
 #endif // SSQUEST_HPP
+#endif // ATHENA_NO_SAVES

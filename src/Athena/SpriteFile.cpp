@@ -22,20 +22,20 @@ namespace Athena
 {
 namespace Sakura
 {
-const Uint32 SpriteFile::Major = 1;
-const Uint32 SpriteFile::Minor = 0;
-const Uint32 SpriteFile::Revision = 2;
-const Uint32 SpriteFile::Build = 0;
-const Uint32 SpriteFile::Version = Major | (Minor << 8) | (Revision << 16) | (Build << 24);
+const atUint32 SpriteFile::Major = 1;
+const atUint32 SpriteFile::Minor = 0;
+const atUint32 SpriteFile::Revision = 2;
+const atUint32 SpriteFile::Build = 0;
+const atUint32 SpriteFile::Version = Major | (Minor << 8) | (Revision << 16) | (Build << 24);
 
-const Uint32 SpriteFile::Magic = 'S' | ('P' << 8) | ('R' << 16) | ('S' << 24);
+const atUint32 SpriteFile::Magic = 'S' | ('P' << 8) | ('R' << 16) | ('S' << 24);
 
 
 SpriteFile::SpriteFile()
 {
 }
 
-SpriteFile::SpriteFile(Uint32 width, Uint32 height, float originX, float originY)
+SpriteFile::SpriteFile(atUint32 width, atUint32 height, float originX, float originY)
     : m_size(width, height),
       m_origin(originX, originY)
 {
@@ -63,7 +63,7 @@ SpriteFile::~SpriteFile()
     m_sprites.clear();
 }
 
-void SpriteFile::setSize(Uint32 width, Uint32 height)
+void SpriteFile::setSize(atUint32 width, atUint32 height)
 {
 #ifndef ATHENA_USE_QT
     setSize(Vector2Di(width, height));
@@ -93,7 +93,7 @@ QSize SpriteFile::size() const
     return m_size;
 }
 
-Uint32 SpriteFile::width() const
+atUint32 SpriteFile::width() const
 {
 #ifndef ATHENA_USE_QT
     return m_size.x;
@@ -102,7 +102,7 @@ Uint32 SpriteFile::width() const
 #endif
 }
 
-Uint32 SpriteFile::height() const
+atUint32 SpriteFile::height() const
 {
 #ifndef ATHENA_USE_QT
     return m_size.y;
@@ -179,7 +179,7 @@ void SpriteFile::removeTexture(int id)
     delete tex;
 }
 
-STexture* SpriteFile::texture(Uint32 id)
+STexture* SpriteFile::texture(atUint32 id)
 {
     if (id >= m_textures.size())
         return NULL;
@@ -196,7 +196,7 @@ QList<STexture*> SpriteFile::textures() const
     return m_textures;
 }
 
-Uint32 SpriteFile::textureCount() const
+atUint32 SpriteFile::textureCount() const
 {
     return m_textures.size();
 }
@@ -294,7 +294,7 @@ QMap<QString, Sprite*> SpriteFile::sprites() const
     return m_sprites;
 }
 
-Uint32 SpriteFile::spriteCount() const
+atUint32 SpriteFile::spriteCount() const
 {
     return m_sprites.size();
 }

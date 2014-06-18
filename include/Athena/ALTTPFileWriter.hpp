@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -43,7 +44,7 @@ public:
      *   \param data The existing buffer
      *   \param length The length of the existing buffer
      */
-    ALTTPFileWriter(Uint8*, Uint64);
+    ALTTPFileWriter(atUint8*, atUint64);
 
     /*! \brief This constructor creates an instance from a file on disk.
      *
@@ -61,10 +62,11 @@ private:
     void writeRoomFlags(ALTTPRoomFlags*);
     void writeOverworldEvent(ALTTPOverworldEvent*);
     void writeDungeonItems(ALTTPDungeonItemFlags);
-    Uint16 calculateChecksum(Uint32 game);
+    atUint16 calculateChecksum(atUint32 game);
 };
 
 } // io
 } // zelda
 
 #endif // __ALTTP_FILE_WRITER_HPP__
+#endif // ATHENA_NO_SAVES

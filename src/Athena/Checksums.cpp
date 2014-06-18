@@ -23,9 +23,9 @@ namespace Athena
 namespace Checksums
 {
 
-Uint32 crc32(const Uint8* data, Uint64 length, Uint32 seed)
+atUint32 crc32(const atUint8* data, atUint64 length, atUint32 seed)
 {
-    static const Uint32 crc32Table[256] =
+    static const atUint32 crc32Table[256] =
     {
         0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F, 0xE963A535, 0x9E6495A3,
         0x0EDB8832, 0x79DCB8A4, 0xE0D5E91E, 0x97D2D988, 0x09B64C2B, 0x7EB17CBD, 0xE7B82D07, 0x90BF1D91,
@@ -64,7 +64,7 @@ Uint32 crc32(const Uint8* data, Uint64 length, Uint32 seed)
     if (!data)
         return 0;
 
-    Uint32 checksum = seed;
+    atUint32 checksum = seed;
     int pos = 0;
 
     while (length--)
@@ -73,9 +73,9 @@ Uint32 crc32(const Uint8* data, Uint64 length, Uint32 seed)
     return checksum ^ seed;
 }
 
-Uint16 crc16CCITT(const Uint8* data, Uint64 length, Uint16 seed, Uint16 final)
+atUint16 crc16CCITT(const atUint8* data, atUint64 length, atUint16 seed, atUint16 final)
 {
-    static const Uint16 crc16CCITTTable [256] =
+    static const atUint16 crc16CCITTTable [256] =
     {
         0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7, 0x8108,
         0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef, 0x1231, 0x0210,
@@ -108,7 +108,7 @@ Uint16 crc16CCITT(const Uint8* data, Uint64 length, Uint16 seed, Uint16 final)
         0x2e93, 0x3eb2, 0x0ed1, 0x1ef0
     };
 
-    Uint16 checksum = seed;
+    atUint16 checksum = seed;
     int pos = 0;
 
     while (length--)
@@ -117,9 +117,9 @@ Uint16 crc16CCITT(const Uint8* data, Uint64 length, Uint16 seed, Uint16 final)
     return checksum ^ final;
 }
 
-Uint16 crc16(const Uint8* data, Uint64 length)
+atUint16 crc16(const atUint8* data, atUint64 length)
 {
-    static const Uint16 crc16Table[256] =
+    static const atUint16 crc16Table[256] =
     {
         0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241,
         0xC601, 0x06C0, 0x0780, 0xC741, 0x0500, 0xC5C1, 0xC481, 0x0440,
@@ -155,8 +155,8 @@ Uint16 crc16(const Uint8* data, Uint64 length)
         0x8201, 0x42C0, 0x4380, 0x8341, 0x4100, 0x81C1, 0x8081, 0x4040
     };
 
-    Int32 pos = 0;
-    Uint16 checksum = 0;
+    atInt32 pos = 0;
+    atUint16 checksum = 0;
     while (length--)
         checksum = (crc16Table[(checksum ^ data[pos++]) & 0xFF] ^ (checksum >> 8));
     return checksum;

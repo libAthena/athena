@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -51,20 +52,20 @@ public:
      * \param m_banner
      * \param icons
      */
-    WiiBanner(Uint32 gameId, const std::string& title, const std::string& subtitle, WiiImage* m_banner, std::vector<WiiImage*> icons);
+    WiiBanner(atUint32 gameId, const std::string& title, const std::string& subtitle, WiiImage* m_banner, std::vector<WiiImage*> icons);
     virtual ~WiiBanner();
 
     /*!
      * \brief setGameID
      * \param id
      */
-    void setGameID(Uint64 id);
+    void setGameID(atUint64 id);
 
     /*!
      * \brief gameID
      * \return
      */
-    Uint64  gameID() const;
+    atUint64  gameID() const;
 
     /*!
      * \brief setBannerImage
@@ -82,13 +83,13 @@ public:
      * \brief setBannerSize
      * \param size
      */
-    void setBannerSize(Uint32 size);
+    void setBannerSize(atUint32 size);
 
     /*!
      * \brief bannerSize
      * \return
      */
-    Uint32  bannerSize() const;
+    atUint32  bannerSize() const;
 
     /*!
      * \brief setTitle
@@ -125,14 +126,14 @@ public:
      * \param id
      * \param icon
      */
-    void      setIcon(Uint32 id, WiiImage* icon);
+    void      setIcon(atUint32 id, WiiImage* icon);
 
     /*!
      * \brief getIcon
      * \param id
      * \return
      */
-    WiiImage* getIcon(Uint32 id) const;
+    WiiImage* getIcon(atUint32 id) const;
 
     /*!
      * \brief icons
@@ -144,45 +145,45 @@ public:
      * \brief setAnimationSpeed
      * \param animSpeed
      */
-    void setAnimationSpeed(Uint16 animSpeed);
+    void setAnimationSpeed(atUint16 animSpeed);
 
     /*!
      * \brief animationSpeed
      * \return
      */
-    Uint16  animationSpeed() const;
+    atUint16  animationSpeed() const;
 
     /*!
      * \brief setPermissions
      * \param permissions
      */
-    void setPermissions(Uint8 permissions);
+    void setPermissions(atUint8 permissions);
 
     /*!
      * \brief permissions
      * \return
      */
-    Uint8   permissions() const;
+    atUint8   permissions() const;
 
     /*!
      * \brief setFlags
      * \param flags
      */
-    void setFlags(Uint32 flags);
+    void setFlags(atUint32 flags);
 
     /*!
      * \brief flags
      * \return
      */
-    Uint32  flags() const;
+    atUint32  flags() const;
 protected:
 private:
-    Uint64                 m_gameId;
+    atUint64                 m_gameId;
     WiiImage*              m_banner;
-    Uint32                 m_animSpeed;
-    Uint8                  m_permissions;
-    Uint32                 m_flags;
-    Uint32                 m_bannerSize;
+    atUint32                 m_animSpeed;
+    atUint8                  m_permissions;
+    atUint32                 m_flags;
+    atUint32                 m_bannerSize;
     std::vector<WiiImage*> m_icons;
     std::string            m_title;
     std::string            m_subtitle;
@@ -190,3 +191,4 @@ private:
 } // zelda
 
 #endif // WIIBANNER_H
+#endif // ATHENA_NO_SAVES

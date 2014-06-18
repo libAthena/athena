@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -23,7 +24,7 @@ namespace Athena
 namespace io
 {
 
-ALTTPFileReader::ALTTPFileReader(Uint8* data, Uint64 length)
+ALTTPFileReader::ALTTPFileReader(atUint8* data, atUint64 length)
     : base(data, length)
 {
 }
@@ -38,17 +39,17 @@ ALTTPFile* ALTTPFileReader::readFile()
     std::vector<ALTTPQuest*> quests;
     std::vector<ALTTPQuest*> backup;
 
-    for (Uint32 i = 0; i < 6; i++)
+    for (atUint32 i = 0; i < 6; i++)
     {
         // Temporary values to use for each save
         ALTTPQuest* quest = new ALTTPQuest();
         std::vector<ALTTPRoomFlags*>        roomFlags;
         std::vector<ALTTPOverworldEvent*>   owEvents;
-        std::vector<Uint8>                  dungeonKeys;
-        std::vector<Uint8>                  oldmanFlags;
-        std::vector<Uint8>                  unknown1;
-        std::vector<Uint16>                 playerName;
-        std::vector<Uint16>                 dungeonDeaths;
+        std::vector<atUint8>                  dungeonKeys;
+        std::vector<atUint8>                  oldmanFlags;
+        std::vector<atUint8>                  unknown1;
+        std::vector<atUint16>                 playerName;
+        std::vector<atUint16>                 dungeonDeaths;
 
         int j = 0x140;
         while ((j--) > 0)
@@ -233,3 +234,5 @@ ALTTPDungeonItemFlags ALTTPFileReader::readDungeonFlags()
 
 } // io
 } // zelda
+
+#endif // ATHENA_NO_SAVES

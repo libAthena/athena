@@ -22,9 +22,9 @@ namespace Athena
 {
 namespace Checksums
 {
-Uint32 crc32(const Uint8* data, Uint64 length, Uint32 seed = 0xFFFFFFFF);
-Uint16 crc16CCITT(const Uint8* data, Uint64 length, Uint16 seed = 0xFFFF, Uint16 final = 0);
-Uint16 crc16(const Uint8* data, Uint64 length);
+atUint32 crc32(const atUint8* data, atUint64 length, atUint32 seed = 0xFFFFFFFF);
+atUint16 crc16CCITT(const atUint8* data, atUint64 length, atUint16 seed = 0xFFFF, atUint16 final = 0);
+atUint16 crc16(const atUint8* data, atUint64 length);
 }
 }
 #endif // CHECKSUMS_HPP

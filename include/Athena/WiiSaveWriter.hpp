@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -56,15 +57,16 @@ public:
      * \param filepath
      * \return
      */
-    bool writeSave(WiiSave* save, Uint8* macAddress, Uint32 ngId, Uint8* ngPriv, Uint8* ngSig, Uint32 ngKeyId, const std::string& filepath = "");
+    bool writeSave(WiiSave* save, atUint8* macAddress, atUint32 ngId, atUint8* ngPriv, atUint8* ngSig, atUint32 ngKeyId, const std::string& filepath = "");
 
 private:
     void writeBanner(WiiBanner* banner);
-    Uint32 writeFile(WiiFile* file);
+    atUint32 writeFile(WiiFile* file);
     void writeImage(WiiImage* image);
-    void writeCerts(Uint32 filesSize, Uint32 ngId, Uint8* ngPriv, Uint8* ngSig, Uint32 ngKeyId);
+    void writeCerts(atUint32 filesSize, atUint32 ngId, atUint8* ngPriv, atUint8* ngSig, atUint32 ngKeyId);
 };
 
 } // io
 } // zelda
 #endif // __WII_SAVE_WRITER_HPP__
+#endif // ATHENA_NO_SAVES
