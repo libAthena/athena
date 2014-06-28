@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAVES
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -93,3 +94,5 @@ private:
 
 } // zelda
 #endif // __WII__SAVE_HPP__
+#endif // ATHENA_NO_SAVES
+
