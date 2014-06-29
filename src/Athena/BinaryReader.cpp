@@ -326,7 +326,7 @@ atInt64 BinaryReader::readInt64()
 
 atUint64 BinaryReader::readUint64()
 {
-    return readUint64();
+    return readInt64();
 }
 
 float BinaryReader::readFloat()
