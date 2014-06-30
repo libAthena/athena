@@ -40,7 +40,7 @@ double  swapDouble(double val);
 
 bool isSystemBigEndian();
 
-void fillRandom(atUint8 * rndArea, atUint8 count);
+void fillRandom(atUint8 * rndArea, atUint64 count);
 
 std::vector<std::string> split(const std::string &s, char delim);
 std::string join(const std::vector<std::string>& elems, const std::string& delims);

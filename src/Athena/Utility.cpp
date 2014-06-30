@@ -77,9 +77,9 @@ bool isSystemBigEndian()
     return (*(atUint16*)test == 0xFEFF);
 }
 
-void fillRandom(atUint8 * rndArea, atUint8 count)
+void fillRandom(atUint8 * rndArea, atUint64 count)
 {
-    for(atUint16 i = 0; i < count; i++)
+    for(atUint64 i = 0; i < count; i++)
         rndArea[i]=rand();
 }
 

@@ -64,8 +64,6 @@ BinaryWriter::BinaryWriter(const std::string& filename, std::function<void(int)>
 
 BinaryWriter::~BinaryWriter()
 {
-    if (isOpen())
-        save();
     delete[] m_data;
     m_data = nullptr;
 }
