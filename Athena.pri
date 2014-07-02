@@ -44,7 +44,8 @@ SOURCES += \
     $$PWD/src/md5.cpp \
     $$PWD/src/sha1.cpp \
     $$PWD/src/aes.c \
-    $$PWD/src/lzo.c
+    $$PWD/src/lzo.c \
+    Athena/src/Athena/PHYSFSFileReader.cpp
 win32:SOURCES += $$PWD/src/win32_largefilewrapper.c
 
 HEADERS += \
@@ -101,7 +102,8 @@ HEADERS += \
     $$PWD/include/Athena/WiiSaveWriter.hpp \
     $$PWD/include/Athena/ZQuestFile.hpp \
     $$PWD/include/Athena/ZQuestFileReader.hpp \
-    $$PWD/include/Athena/ZQuestFileWriter.hpp
+    $$PWD/include/Athena/ZQuestFileWriter.hpp \
+    Athena/include/Athena/PHYSFSFileReader.hpp
 
 win32:HEADERS += \
     $$PWD/include/win32_largefilewrapper.h

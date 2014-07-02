@@ -21,7 +21,8 @@
 
 namespace Athena
 {
-
+namespace io
+{
 std::ostream& operator<<(std::ostream& os, Endian& endian);
 
 class Stream
@@ -77,5 +78,6 @@ protected:
     virtual void fill(atUint8, atUint64) {THROW_NOT_IMPLEMENTED_EXCEPTION();}
     virtual void fill(atInt8, atUint64) {THROW_NOT_IMPLEMENTED_EXCEPTION();}
 };
+}
 }
 #endif // STREAM_HPP
