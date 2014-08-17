@@ -29,7 +29,7 @@ namespace utility
 {
 bool isEmpty(atInt8* buf, atUint32 size)
 {
-    return buf[0] == 0 && !memcmp(buf, buf + 1, size - 1);
+    return !memcmp(buf, buf + 1, size - 1);
 }
 
 atUint16 swapU16(atUint16 val )
@@ -73,7 +73,7 @@ atInt64 swap64(atInt64 val)
 
 bool isSystemBigEndian()
 {
-    atUint8* test = (atUint8*)"\xFE\xFF";
+    static atUint8* test = (atUint8*)"\xFE\xFF";
     return (*(atUint16*)test == 0xFEFF);
 }
 

@@ -45,7 +45,7 @@ SOURCES += \
     $$PWD/src/sha1.cpp \
     $$PWD/src/aes.c \
     $$PWD/src/lzo.c \
-    Athena/src/Athena/PHYSFSFileReader.cpp
+    $$PWD/src/Athena/PHYSFSFileReader.cpp
 win32:SOURCES += $$PWD/src/win32_largefilewrapper.c
 
 HEADERS += \

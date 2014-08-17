@@ -46,7 +46,7 @@ ZQuestFile *ZQuestFileReader::read()
     ZQuestFile::Game game = ZQuestFile::NoGame;
     std::string gameString;
     atUint16 BOM;
-    atUint32 checksum;
+    atUint32 checksum = 0;
     atUint8* data;
 
     magic = base::readUint32();
@@ -81,7 +81,6 @@ ZQuestFile *ZQuestFileReader::read()
     {
         game = (ZQuestFile::Game)base::readUint32();
         BOM = base::readUint16();
-        std::cerr << "Test" << std::endl;
         base::seek(0x0A);
     }
 
@@ -110,7 +109,6 @@ ZQuestFile *ZQuestFileReader::read()
         {
             delete[] dst;
             delete[] data;
-            // TODO: Make proper exception
             THROW_INVALID_DATA_EXCEPTION("Error decompressing data");
         }
 
