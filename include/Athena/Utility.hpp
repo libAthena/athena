@@ -39,13 +39,7 @@ float swapFloat(float val);
 double  swapDouble(double val);
 
 bool isSystemBigEndian();
-
-<<<<<<< Updated upstream
 void fillRandom(atUint8 * rndArea, atUint64 count);
-=======
-void fillRandom(atUint8 * rndArea, atUint8 count);
->>>>>>> Stashed changes
-
 std::vector<std::string> split(const std::string &s, char delim);
 std::string join(const std::vector<std::string>& elems, const std::string& delims);
 void tolower(std::string& str);
