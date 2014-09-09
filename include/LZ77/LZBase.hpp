@@ -10,8 +10,8 @@ public:
     explicit LZBase(atInt32 minimumOffset=1,atInt32 slidingWindow=4096, atInt32 minimumMatch=3, atInt32 blockSize=8);
     virtual ~LZBase() {}
 
-    virtual atUint32 compress(const atUint8* src, atUint8*& dest, atUint32 srcLength)=0;
-    virtual atUint32 decompress(const atUint8* src, atUint8*& dest, atUint32 srcLength)=0;
+    virtual atUint32 compress(const atUint8* src, atUint8** dest, atUint32 srcLength)=0;
+    virtual atUint32 decompress(const atUint8* src, atUint8** dest, atUint32 srcLength)=0;
 	
     void setSlidingWindow(atInt32 SlidingWindow);
     atInt32 slidingWindow();

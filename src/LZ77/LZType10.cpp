@@ -11,7 +11,7 @@ LZType10::LZType10(atInt32 MinimumOffset, atInt32 SlidingWindow, atInt32 Minimum
     m_readAheadBuffer = m_minMatch + 0xF;
 }
 
-atUint32 LZType10::compress(const atUint8* src, atUint8*& dstBuf, atUint32 srcLength)
+atUint32 LZType10::compress(const atUint8* src, atUint8** dstBuf, atUint32 srcLength)
 {
     atUint32 encodeSize=(srcLength<<8)|(0x10);
     encodeSize = Athena::utility::LittleUint32(encodeSize); //File size needs to be written as little endian always
@@ -65,12 +65,12 @@ atUint32 LZType10::compress(const atUint8* src, atUint8*& dstBuf, atUint32 srcLe
     while ((outbuf.position()%4) !=0 )
         outbuf.writeByte(0);
 
-    dstBuf = outbuf.data();
+    *dstBuf = outbuf.data();
     outbuf.save();
     return outbuf.length();
 }
 
-atUint32 LZType10::decompress(const atUint8* src, atUint8*& dst, atUint32 srcLength)
+atUint32 LZType10::decompress(const atUint8* src, atUint8** dst, atUint32 srcLength)
 {
     if (*(atUint8*)(src) != 0x10)
         return 0;
@@ -128,7 +128,7 @@ atUint32 LZType10::decompress(const atUint8* src, atUint8*& dst, atUint32 srcLen
         }
     }
 
-    dst = uncompressedData;
+    *dst = uncompressedData;
 
     return uncompressedSize;
 }

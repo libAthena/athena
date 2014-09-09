@@ -11,7 +11,7 @@ LZType11::LZType11(atInt32 minimumOffset, atInt32 slidingWindow, atInt32 minimum
     m_lookupTable.setLookAheadWindow(m_readAheadBuffer);
 }
 
-atUint32 LZType11::compress(const atUint8* src, atUint8*& dst, atUint32 srcLength)
+atUint32 LZType11::compress(const atUint8* src, atUint8** dst, atUint32 srcLength)
 {
     Athena::io::BinaryWriter outbuff("tmp");
     if (srcLength>0xFFFFFF){// If length is greater than 24 bits or 16 Megs
@@ -113,11 +113,11 @@ atUint32 LZType11::compress(const atUint8* src, atUint8*& dst, atUint32 srcLengt
     while((outbuff.position()%4) !=0 )
         outbuff.writeByte(0);
 
-    dst = outbuff.data();
+    *dst = outbuff.data();
     return outbuff.length();
 }
 
-atUint32 LZType11::decompress(const atUint8* src, atUint8*& dst, atUint32 srcLength)
+atUint32 LZType11::decompress(const atUint8* src, atUint8** dst, atUint32 srcLength)
 {
     if(*(atUint8*)(src) != 0x11)
         return 0;
@@ -207,7 +207,7 @@ atUint32 LZType11::decompress(const atUint8* src, atUint8*& dst, atUint32 srcLen
         }
     }
 
-    dst = uncompressedData;
+    *dst = uncompressedData;
     return uncompressedLen;
 }
 
