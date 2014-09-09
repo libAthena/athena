@@ -45,7 +45,11 @@ SOURCES += \
     $$PWD/src/sha1.cpp \
     $$PWD/src/aes.c \
     $$PWD/src/lzo.c \
-    $$PWD/src/Athena/PHYSFSFileReader.cpp
+    $$PWD/src/Athena/PHYSFSFileReader.cpp \
+    $$PWD/src/LZ77/LZLookupTable.cpp \
+    $$PWD/src/LZ77/LZType10.cpp \
+    $$PWD/src/LZ77/LZType11.cpp \
+    $$PWD/src/LZ77/LZBase.cpp
 win32:SOURCES += $$PWD/src/win32_largefilewrapper.c
 
 HEADERS += \
@@ -103,7 +107,11 @@ HEADERS += \
     $$PWD/include/Athena/ZQuestFile.hpp \
     $$PWD/include/Athena/ZQuestFileReader.hpp \
     $$PWD/include/Athena/ZQuestFileWriter.hpp \
-    Athena/include/Athena/PHYSFSFileReader.hpp
+    $$PWD/include/Athena/PHYSFSFileReader.hpp \
+    $$PWD/include/LZ77/LZBase.hpp \
+    $$PWD/include/LZ77/LZLookupTable.hpp \
+    $$PWD/include/LZ77/LZType10.hpp \
+    $$PWD/include/LZ77/LZType11.hpp
 
 win32:HEADERS += \
     $$PWD/include/win32_largefilewrapper.h

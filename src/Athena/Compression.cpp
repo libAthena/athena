@@ -18,6 +18,8 @@
 #include "lzo.h"
 #include <iostream>
 #include <zlib.h>
+#include "LZ77/LZType10.hpp"
+#include "LZ77/LZType11.hpp"
 
 namespace Athena
 {
@@ -26,7 +28,7 @@ namespace io
 namespace Compression
 {
 
-atInt32 decompressZlib(const atUint8* src, atUint32 srcLen, atUint8* dst, atUint32 dstLen)
+atInt32 decompressZlib(const atUint8* src, atUint32 srcLen, atUint8*& dst, atUint32 dstLen)
 {
     z_stream strm = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     strm.total_in  = strm.avail_in  = srcLen;
@@ -64,7 +66,7 @@ atInt32 decompressZlib(const atUint8* src, atUint32 srcLen, atUint8* dst, atUint
     return ret;
 }
 
-atInt32 compressZlib(const atUint8 *src, atUint32 srcLen, atUint8 *dst, atUint32 dstLen)
+atInt32 compressZlib(const atUint8 *src, atUint32 srcLen, atUint8*& dst, atUint32 dstLen)
 {
     z_stream strm = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     strm.total_in  = strm.avail_in  = srcLen;
@@ -103,10 +105,10 @@ atInt32 compressZlib(const atUint8 *src, atUint32 srcLen, atUint8 *dst, atUint32
     return ret;
 }
 
-atInt32 decompressLZO(const atUint8* source, atInt32 sourceSize, atUint8* dest, atInt32& dstSize)
+atInt32 decompressLZO(const atUint8* source, atInt32 sourceSize, atUint8*& dst, atInt32& dstSize)
 {
     int size = dstSize;
-    int result = lzo1x_decode(dest, &size, source, &sourceSize);
+    int result = lzo1x_decode(dst, &size, source, &sourceSize);
     dstSize = size;
     return result;
 }
@@ -114,7 +116,7 @@ atInt32 decompressLZO(const atUint8* source, atInt32 sourceSize, atUint8* dest, 
 //src points to the yaz0 source data (to the "real" source data, not at the header!)
 //dst points to a buffer uncompressedSize bytes large (you get uncompressedSize from
 //the second 4 bytes in the Yaz0 header).
-atUint32 yaz0Decode(const atUint8* src, atUint8* dst, atUint32 uncompressedSize)
+atUint32 yaz0Decode(const atUint8* src, atUint8*& dst, atUint32 uncompressedSize)
 {
     atUint32 srcPlace = 0, dstPlace = 0; //current read/write positions
 
@@ -322,6 +324,34 @@ atUint32 simpleEnc(const atUint8* src, atInt32 size, atInt32 pos, atUint32 *pMat
     if (numBytes == 2)
         numBytes = 1;
     return numBytes;
+}
+
+atUint32 decompressLZ77(const atUint8* src, atUint32 srcLen, atUint8*& dst)
+{
+    LZBase* lzCodec;
+    if (*(atUint8*)src == 0x11)
+        lzCodec = new LZType11;
+    else
+        lzCodec = new LZType10;
+
+    atUint32 retLength = lzCodec->decompress(src, dst, srcLen);
+    delete lzCodec;
+
+    return retLength;
+}
+
+atUint32 compressLZ77(const atUint8* src, atUint32 srcLen, atUint8*& dst, bool extended)
+{
+    LZBase* lzCodec;
+    if (extended)
+        lzCodec = new LZType11;
+    else
+        lzCodec = new LZType10(2);
+
+    atUint32 retLength = lzCodec->compress(src, dst, srcLen);
+    delete lzCodec;
+
+    return retLength;
 }
 
 
