@@ -26,7 +26,7 @@ namespace io
 namespace Compression
 {
 
-atInt32 decompressZlib(atUint8 *src, atUint32 srcLen, atUint8* dst, atUint32 dstLen)
+atInt32 decompressZlib(const atUint8* src, atUint32 srcLen, atUint8* dst, atUint32 dstLen)
 {
     z_stream strm = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     strm.total_in  = strm.avail_in  = srcLen;
@@ -103,7 +103,7 @@ atInt32 compressZlib(const atUint8 *src, atUint32 srcLen, atUint8 *dst, atUint32
     return ret;
 }
 
-atInt32 decompressLZO(atUint8* source, atInt32 sourceSize, atUint8* dest, atInt32& dstSize)
+atInt32 decompressLZO(const atUint8* source, atInt32 sourceSize, atUint8* dest, atInt32& dstSize)
 {
     int size = dstSize;
     int result = lzo1x_decode(dest, &size, source, &sourceSize);
@@ -114,7 +114,7 @@ atInt32 decompressLZO(atUint8* source, atInt32 sourceSize, atUint8* dest, atInt3
 //src points to the yaz0 source data (to the "real" source data, not at the header!)
 //dst points to a buffer uncompressedSize bytes large (you get uncompressedSize from
 //the second 4 bytes in the Yaz0 header).
-atUint32 yaz0Decode(atUint8* src, atUint8* dst, atUint32 uncompressedSize)
+atUint32 yaz0Decode(const atUint8* src, atUint8* dst, atUint32 uncompressedSize)
 {
     atUint32 srcPlace = 0, dstPlace = 0; //current read/write positions
 
@@ -179,10 +179,10 @@ typedef struct
     atUint32 srcPos, dstPos;
 } yaz0_Ret;
 
-atUint32 simpleEnc(atUint8* src, atInt32 size, atInt32 pos, atUint32 *pMatchPos);
-atUint32 nintendoEnc(atUint8* src, atInt32 size, atInt32 pos, atUint32 *pMatchPos);
+atUint32 simpleEnc(const atUint8* src, atInt32 size, atInt32 pos, atUint32 *pMatchPos);
+atUint32 nintendoEnc(const atUint8* src, atInt32 size, atInt32 pos, atUint32 *pMatchPos);
 
-atUint32 yaz0Encode(atUint8* src, atUint32 srcSize, atUint8* data)
+atUint32 yaz0Encode(const atUint8* src, atUint32 srcSize, atUint8* data)
 {
     yaz0_Ret r = { 0, 0 };
     atInt32 pos = 0;
@@ -265,7 +265,7 @@ atUint32 yaz0Encode(atUint8* src, atUint32 srcSize, atUint8* data)
 }
 
 // a lookahead encoding scheme for ngc Yaz0
-atUint32 nintendoEnc(atUint8* src, atInt32 size, atInt32 pos, atUint32 *pMatchPos)
+atUint32 nintendoEnc(const atUint8* src, atInt32 size, atInt32 pos, atUint32 *pMatchPos)
 {
     atUint32 numBytes = 1;
     static atUint32 numBytes1;
@@ -297,7 +297,7 @@ atUint32 nintendoEnc(atUint8* src, atInt32 size, atInt32 pos, atUint32 *pMatchPo
 }
 
 // simple and straight encoding scheme for Yaz0
-atUint32 simpleEnc(atUint8* src, atInt32 size, atInt32 pos, atUint32 *pMatchPos)
+atUint32 simpleEnc(const atUint8* src, atInt32 size, atInt32 pos, atUint32 *pMatchPos)
 {
     int startPos = pos - 0x1000, j, i;
     atUint32 numBytes = 1;

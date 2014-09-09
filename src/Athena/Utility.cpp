@@ -77,6 +77,143 @@ bool isSystemBigEndian()
     return (*(atUint16*)test == 0xFEFF);
 }
 
+
+atInt16 LittleInt16(atInt16& val)
+{
+    if (Athena::utility::isSystemBigEndian())
+        val = Athena::utility::swap16(val);
+
+    return val;
+}
+
+atUint16 LittleUint16(atUint16& val)
+{
+    atInt16 ret = val;
+    LittleInt16(ret);
+    val = ret;
+
+    return val;
+}
+
+atInt16 BigInt16(atInt16& val)
+{
+    if (!Athena::utility::isSystemBigEndian())
+        val = Athena::utility::swap16(val);
+
+    return val;
+}
+
+atUint16 BigUint16(atUint16& val)
+{
+    atInt16 ret = val;
+    BigInt16(ret);
+    val = ret;
+
+    return val;
+}
+
+atInt32 LittleInt32(atInt32& val)
+{
+    if (Athena::utility::isSystemBigEndian())
+        val = Athena::utility::swap32(val);
+
+    return val;
+}
+
+atUint32 LittleUint32(atUint32& val)
+{
+    atInt32 ret = val;
+    LittleInt32(ret);
+    val = ret;
+
+    return val;
+}
+
+
+atInt32 BigInt32(atInt32& val)
+{
+    if (!Athena::utility::isSystemBigEndian())
+        val = Athena::utility::swap32(val);
+
+    return val;
+}
+
+atUint32 BigUint32(atUint32& val)
+{
+    atInt32 ret = val;
+    BigInt32(ret);
+    val = ret;
+
+    return val;
+}
+
+atInt64 LittleInt64(atInt64& val)
+{
+    if (Athena::utility::isSystemBigEndian())
+        val = Athena::utility::swap64(val);
+
+    return val;
+}
+
+atUint64 LittleUint64(atUint64& val)
+{
+    atInt64 ret = val;
+    LittleInt64(ret);
+    val = ret;
+
+    return val;
+}
+
+atInt64 BigInt64(atInt64& val)
+{
+    if (!Athena::utility::isSystemBigEndian())
+        val = Athena::utility::swap64(val);
+
+    return val;
+}
+
+atUint64 BigUint64(atUint64& val)
+{
+    atInt64 ret = val;
+    BigInt64(ret);
+    val = ret;
+
+    return val;
+}
+
+float LittleFloat(float& val)
+{
+    if (Athena::utility::isSystemBigEndian())
+        val = Athena::utility::swapFloat(val);
+
+    return val;
+}
+
+float BigFloat(float& val)
+{
+    if (!Athena::utility::isSystemBigEndian())
+        val = Athena::utility::swapFloat(val);
+
+    return val;
+}
+
+double LittleDouble(double& val)
+{
+    if (Athena::utility::isSystemBigEndian())
+        val = Athena::utility::swapDouble(val);
+
+    return val;
+}
+
+double BigDouble(double& val)
+{
+    if (!Athena::utility::isSystemBigEndian())
+        val = Athena::utility::swapDouble(val);
+
+    return val;
+}
+
+
 void fillRandom(atUint8 * rndArea, atUint64 count)
 {
     for(atUint64 i = 0; i < count; i++)

@@ -267,8 +267,11 @@ atInt16 BinaryReader::readInt16()
     atInt16 ret = *(atInt16*)(m_data + m_position);
     m_position += sizeof(atInt16);
 
-    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
-        ret = utility::swap16(ret);
+    if (isBigEndian())
+        utility::BigInt16(ret);
+    else
+        utility::LittleInt16(ret);
+
     return ret;
 }
 
@@ -293,8 +296,11 @@ atInt32 BinaryReader::readInt32()
     atInt32 ret = *(atInt32*)(m_data + m_position);
     m_position += 4;
 
-    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
-        ret = utility::swap32(ret);
+    if (isBigEndian())
+        utility::BigInt32(ret);
+    else
+        utility::LittleInt32(ret);
+
     return ret;
 }
 
@@ -319,8 +325,11 @@ atInt64 BinaryReader::readInt64()
     atInt64 ret = *(atInt64*)(m_data + m_position);
     m_position += 8;
 
-    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
-        ret = utility::swap64(ret);
+    if (isBigEndian())
+        utility::BigInt64(ret);
+    else
+        utility::LittleInt64(ret);
+
     return ret;
 }
 
@@ -345,8 +354,11 @@ float BinaryReader::readFloat()
     float ret = *(float*)(m_data + m_position);
     m_position += 4;
 
-    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
-        ret = utility::swapFloat(ret);
+    if (isBigEndian())
+        utility::BigFloat(ret);
+    else
+        utility::LittleFloat(ret);
+
     return ret;
 }
 
@@ -366,9 +378,10 @@ double BinaryReader::readDouble()
     double ret = *(double*)(m_data + m_position);
     m_position += 8;
 
-    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
-        ret = utility::swapDouble(ret);
-
+    if (isBigEndian())
+        utility::BigDouble(ret);
+    else
+        utility::LittleDouble(ret);
     return ret;
 }
 

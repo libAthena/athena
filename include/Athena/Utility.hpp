@@ -34,9 +34,25 @@ atUint32 swapU32(atUint32 val);
 atInt32  swap32 (atInt32 val );
 atUint64 swapU64(atUint64 val);
 atInt64  swap64 (atInt64 val);
-
 float swapFloat(float val);
 double  swapDouble(double val);
+atInt16 LittleInt16(atInt16& val);
+atUint16 LittleUint16(atUint16& val);
+atInt16 BigInt16(atInt16& val);
+atUint16 BigUint16(atUint16& val);
+atInt32 LittleInt32(atInt32& val);
+atUint32 LittleUint32(atUint32& val);
+atInt32 BigInt32(atInt32& val);
+atUint32 BigUint32(atUint32& val);
+atInt64 LittleInt64(atInt64& val);
+atUint64 LittleUint64(atUint64& val);
+atInt64 BigInt64(atInt64& val);
+atUint16 BigUint64(atUint16& val);
+
+float LittleFloat(float& val);
+float BigFloat(float& val);
+double LittleDouble(double& val);
+double BigDouble(double& val);
 
 bool isSystemBigEndian();
 void fillRandom(atUint8 * rndArea, atUint64 count);

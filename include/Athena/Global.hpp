@@ -26,9 +26,9 @@
 #   elif defined(__FUNCTION__)
 #       define __PRETTY_FUNCTION__ __FUNCTION__
 #   elif defined(__FUNC__)
-#       define __PRETTY_FUNCTION__ __FUNCTION__
+#       define __PRETTY_FUNCTION__ __FUNC__
 #   elif defined(__func__)
-#       define __PRETTY_FUNCTION__ __FUNCTION__
+#       define __PRETTY_FUNCTION__ __func__
 #   else
 #       define __PRETTY_FUNCTION__ "<unkown>"
 #   endif
