@@ -59,18 +59,20 @@ public:
      * \param file
      */
     void     addFile(const std::string& filename, WiiFile* file);
-    void setFiles(std::unordered_map<std::string, WiiFile*> files);
+    void setRoot(WiiFile* root);
     /*!
      * \brief file
      * \param filename
      * \return
      */
-    WiiFile* file(const std::string& filename) const;
+    WiiFile* file(const std::string& filename);
+
+    atUint32 fileCount() const;
     /*!
      * \brief fileList
      * \return
      */
-    std::unordered_map<std::string, WiiFile*>& fileList();
+    WiiFile* root();
 
     /*!
      * \brief setBanner
@@ -84,10 +86,12 @@ public:
      */
     WiiBanner* banner() const;
 
+    std::vector<WiiFile*> allFiles() const;
+
 protected:
 private:
 
-    std::unordered_map<std::string, WiiFile*> m_files;
+    WiiFile*   m_root;
     WiiBanner* m_banner;
 
 };

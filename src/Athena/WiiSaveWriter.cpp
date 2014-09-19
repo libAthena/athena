@@ -64,7 +64,7 @@ bool WiiSaveWriter::writeSave(WiiSave *save, atUint8 *macAddress, atUint32 ngId,
     base::writeUint32(0x70);
     base::writeUint32(0x426B0001);
     base::writeUint32(ngId); // NG-ID
-    base::writeUint32(save->fileList().size());
+    base::writeUint32(save->fileCount());
     base::writeUint32(0); // Size of files;
     base::seek(8);
     base::writeUint32(0); // totalSize
@@ -74,9 +74,9 @@ bool WiiSaveWriter::writeSave(WiiSave *save, atUint8 *macAddress, atUint32 ngId,
     base::seek(2); // unknown;
     base::seek(0x10); // padding;
     atUint32 totalSize = 0;
-    for (std::unordered_map<std::string, WiiFile*>::const_iterator iter = save->fileList().begin(); iter != save->fileList().end(); ++iter)
+    for (WiiFile* file : save->allFiles())
     {
-        totalSize += writeFile(iter->second);
+        totalSize += writeFile(file);
     }
     int pos = base::position();
     // Write size data
@@ -167,8 +167,8 @@ atUint32 WiiSaveWriter::writeFile(WiiFile *file)
 
     atUint8 name[0x45];
     utility::fillRandom(name, 0x45);
-    memcpy(name, file->filename().c_str(), file->filename().size());
-    name[file->filename().size()] = '\0';
+    memcpy(name, file->fullpath().c_str(), file->fullpath().size());
+    name[file->fullpath().size()] = '\0';
     base::writeBytes((atInt8*)name, 0x45);
     atUint8 iv[16];
     utility::fillRandom(iv, 0x10);

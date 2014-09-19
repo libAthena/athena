@@ -166,14 +166,30 @@ public:
      */
     bool isFile() const;
 
+    void addChild(WiiFile* file);
+    std::vector<WiiFile*> children();
+    WiiFile* child(const std::string& name);
+    void removeChild(const std::string& name);
+    void removeChild(WiiFile* file);
+
+    WiiFile* parent();
+    void setParent(WiiFile *parent);
+
+    atUint32 fileCount();
+
+    std::vector<WiiFile*> allChildren();
+
+    std::string fullpath();
 protected:
 private:
     atUint8       m_permissions;
     atUint8       m_attributes;
-    Type        m_type;
-    std::string m_filename;
-    int         m_fileLen;
+    Type          m_type;
+    std::string   m_filename;
+    int           m_fileLen;
     atUint8*      m_fileData;
+    WiiFile*     m_parent;
+    std::vector<WiiFile*> m_children;
 };
 
 } // zelda

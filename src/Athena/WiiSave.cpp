@@ -37,14 +37,15 @@ namespace Athena
 {
 
 WiiSave::WiiSave()
-    : m_banner(NULL)
+    : m_root(NULL),
+      m_banner(NULL)
+
 {
 }
 
 WiiSave::~WiiSave()
 {
-    m_files.clear();
-
+    delete m_root;
     delete m_banner;
     m_banner = NULL;
 
@@ -52,48 +53,38 @@ WiiSave::~WiiSave()
 
 void WiiSave::addFile(const std::string& filepath, WiiFile* file)
 {
-    m_files[filepath] = file;
+    m_root->addChild(file);
 }
 
-void WiiSave::setFiles(std::unordered_map<std::string, WiiFile*> files)
+void WiiSave::setRoot(WiiFile* root)
 {
-    if (files.size() <= 0)
-        return;
+    if (root != m_root)
+        delete m_root;
 
-    std::cout << "Setting file map...";
-    if (m_files.size() > 0)
-    {
-        std::unordered_map<std::string, WiiFile*>::iterator iter = m_files.begin();
-
-        for (;iter != m_files.end(); ++iter)
-        {
-            if (iter->second)
-                delete iter->second;
-        }
-
-        m_files.clear();
-    }
-
-    m_files = files;
-    std::cout << "done" << std::endl;
+    m_root = root;
 }
 
-WiiFile* WiiSave::file(const std::string& filepath) const
+WiiFile* WiiSave::file(const std::string& filepath)
 {
-    std::unordered_map<std::string, WiiFile*>::const_iterator iter = m_files.begin();
+    if (filepath.empty())
+        return nullptr;
 
-    for (;iter != m_files.end(); ++iter)
-    {
-        if (iter->first == filepath)
-            return (WiiFile*)iter->second;
-    }
+    std::string cleanPath(filepath);
 
-    return NULL;
+    while (cleanPath.at(0) == '/')
+        cleanPath.erase(cleanPath.begin());
+
+    return m_root->child(cleanPath);
 }
 
-std::unordered_map<std::string, WiiFile*>& WiiSave::fileList()
+atUint32 WiiSave::fileCount() const
 {
-    return m_files;
+    return m_root->fileCount();
+}
+
+WiiFile* WiiSave::root()
+{
+    return m_root;
 }
 
 void WiiSave::setBanner(WiiBanner* banner)
@@ -104,6 +95,11 @@ void WiiSave::setBanner(WiiBanner* banner)
 WiiBanner* WiiSave::banner() const
 {
     return m_banner;
+}
+
+std::vector<WiiFile *> WiiSave::allFiles() const
+{
+    return m_root->allChildren();
 }
 
 } // zelda

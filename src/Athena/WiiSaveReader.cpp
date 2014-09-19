@@ -87,15 +87,15 @@ WiiSave* WiiSaveReader::readSave()
         base::seek(2);
         base::seek(0x10);
 
-        std::unordered_map<std::string, WiiFile*> files;
+        std::vector<WiiFile*> files;
         for (atUint32 i = 0; i < numFiles; ++i)
         {
             WiiFile* file = readFile();
             if (file)
-                files["/"+file->filename()] = file;
+                files.push_back(file);
         }
 
-        ret->setFiles(files);
+        ret->setRoot(buildTree(files));
 
         readCerts(totalSize);
     }
@@ -311,6 +311,18 @@ void WiiSaveReader::readCerts(atUint32 totalSize)
     std::cout << "validating..." << std::endl;
     std::cout << (check_ec(ngCert, apCert, sig, hash2) ? "ok" : "invalid") << "...";
     std::cout << "done" << std::endl;
+}
+
+WiiFile* WiiSaveReader::buildTree(std::vector<WiiFile*> files)
+{
+    // This is simply a virtual root that will contain all the other nodes
+    WiiFile* root = new WiiFile("/");
+    root->setType(WiiFile::Directory);
+
+    for (WiiFile* f : files)
+        root->addChild(f);
+
+    return root;
 }
 
 } // io

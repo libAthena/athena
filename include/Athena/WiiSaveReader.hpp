@@ -64,6 +64,7 @@ private:
     WiiFile*   readFile();
     WiiImage*  readImage(atUint32 width, atUint32 height);
     void       readCerts(atUint32 totalSize);
+    WiiFile*   buildTree(std::vector<WiiFile*> files);
 };
 
 } // io

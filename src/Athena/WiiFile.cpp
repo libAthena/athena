@@ -15,7 +15,8 @@
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
 #include "Athena/WiiFile.hpp"
-
+#include "Athena/InvalidOperationException.hpp"
+#include <algorithm>
 
 namespace Athena
 {
@@ -27,7 +28,8 @@ WiiFile::WiiFile() :
     m_type(WiiFile::File),
     m_filename(""),
     m_fileLen(0),
-    m_fileData(NULL)
+    m_fileData(NULL),
+    m_parent(NULL)
 {
     //ctor
 }
@@ -38,7 +40,8 @@ WiiFile::WiiFile(const std::string& filename) :
     m_type(WiiFile::File),
     m_filename(filename),
     m_fileLen(0),
-    m_fileData(NULL)
+    m_fileData(NULL),
+    m_parent(NULL)
 {
 }
 
@@ -56,6 +59,9 @@ WiiFile::~WiiFile()
 {
     if (m_fileData)
         delete[] m_fileData;
+
+    for (WiiFile* child : m_children)
+        delete child;
 }
 
 
@@ -132,6 +138,145 @@ bool WiiFile::isDirectory() const
 bool WiiFile::isFile() const
 {
     return (m_type == WiiFile::File);
+}
+
+void WiiFile::addChild(WiiFile *file)
+{
+    if (!isDirectory())
+        THROW_INVALID_OPERATION_EXCEPTION("%s is not a directory", filename().c_str());
+
+    if (std::find(m_children.begin(), m_children.end(), file) != m_children.end())
+        return;
+
+    // Lets figure out it's place
+    std::string tmpName(file->filename());
+    // Since we only support *NIX paths this is simple
+    atUint32 depth = Athena::utility::countChar(tmpName, '/');
+    bool owned = false;
+    while ((depth--) > 0)
+    {
+        // add them from the beginning of the path up
+        tmpName = tmpName.substr(0, tmpName.find('/'));
+        for (int i = 0; i < m_children.size(); i++)
+        {
+            if (!m_children[i]->filename().compare(tmpName))
+            {
+                std::string newName = file->filename();
+                newName = newName.substr(newName.rfind("/") + 1, newName.size() - newName.rfind("/"));
+                file->setFilename(newName);
+                m_children[i]->addChild(file);
+                owned = true;
+            }
+        }
+    }
+
+    if (!owned)
+    {
+        m_children.push_back(file);
+        file->setParent(this);
+    }
+}
+
+WiiFile* WiiFile::child(const std::string &name)
+{
+    std::vector<WiiFile*>::iterator iter = std::find_if(m_children.begin(), m_children.end(),
+                                                        [&name](WiiFile* f) { return !f->filename().compare(name); });
+    if (iter != m_children.end())
+        return *iter;
+
+    std::string tmpName(name);
+    tmpName = tmpName.substr(tmpName.rfind('/')+1, tmpName.size() - tmpName.rfind('/'));
+
+    for (WiiFile* f : m_children)
+    {
+        if (f->isFile())
+            continue;
+
+        WiiFile* ret = f->child(tmpName);
+        if (ret)
+            return ret;
+    }
+
+    return nullptr;
+}
+
+void WiiFile::removeChild(WiiFile* file)
+{
+    std::vector<WiiFile*>::iterator iter = std::find(m_children.begin(), m_children.end(), file);
+
+    if (iter == m_children.end())
+        return;
+
+    m_children.erase(iter);
+}
+
+WiiFile* WiiFile::parent()
+{
+    return m_parent;
+}
+
+void WiiFile::setParent(WiiFile* parent)
+{
+    if (m_parent)
+        m_parent->removeChild(this);
+
+    m_parent = parent;
+    m_parent->addChild(this);
+}
+
+atUint32 WiiFile::fileCount()
+{
+    int ret = m_children.size();
+
+    for (WiiFile* f : m_children)
+    {
+        if (f->isFile())
+            continue;
+
+        ret += f->fileCount();
+    }
+
+    return ret;
+}
+
+std::vector<WiiFile *> WiiFile::allChildren()
+{
+    std::vector<WiiFile*> ret;
+    if (m_children.size() == 0)
+        return ret;
+    // Add our children first
+    for (WiiFile* f : m_children)
+        ret.push_back(f);
+
+    // now lets add our children's children
+    for (WiiFile* f : m_children)
+    {
+        if (f->isFile())
+            continue;
+
+        std::vector<WiiFile*> tmp = f->allChildren();
+
+        if (tmp.size() == 0)
+            continue;
+
+        ret.insert(ret.end(), tmp.begin(), tmp.end());
+    }
+
+    return ret;
+}
+
+std::string WiiFile::fullpath()
+{
+    std::string ret;
+    if (m_parent)
+        ret = m_parent->filename() + "/";
+
+    ret = ret + filename();
+
+    while (ret.at(0) == '/')
+        ret.erase(ret.begin());
+
+    return ret;
 }
 
 } // zelda
