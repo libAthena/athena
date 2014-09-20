@@ -41,7 +41,7 @@ public:
      *   \param data The existing buffer
      *   \param length The length of the existing buffer
      */
-    BinaryWriter(atUint8* data, atUint64 length);
+    explicit BinaryWriter(atUint8* data = nullptr, atUint64 length=0x10);
 
     /*! \brief This constructor creates an instance from a file on disk.
      *

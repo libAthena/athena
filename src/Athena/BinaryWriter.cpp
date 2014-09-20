@@ -41,7 +41,10 @@ BinaryWriter::BinaryWriter(atUint8* data, atUint64 length)
       m_bitPosition(0),
       m_endian(Endian::LittleEndian),
       m_progressCallback(nullptr)
-{}
+{
+    if (!m_data)
+        m_data = new atUint8[m_length];
+}
 
 BinaryWriter::BinaryWriter(const std::string& filename, std::function<void(int)> progressFun)
     : m_length(0),
