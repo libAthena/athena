@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 #include <stdarg.h>
-#include "Types.hpp"
+#include "Athena/Types.hpp"
 
 namespace Athena
 {

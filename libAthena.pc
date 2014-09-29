@@ -1,0 +1,10 @@
+prefix=/usr
+includedir=${prefix}/include
+libdir=${prefix}/lib
+
+Name: libAthena
+Description: Basic cross platform IO library
+Version: 1.0.0
+Cflags: -I${includedir}/Athena
+Libs: -L${libdir} -lAthena
+Requires: zlib

@@ -17,7 +17,7 @@
 #ifndef __WIIIMAGE_HPP__
 #define __WIIIMAGE_HPP__
 
-#include "Types.hpp"
+#include "Athena/Types.hpp"
 
 namespace Athena
 {

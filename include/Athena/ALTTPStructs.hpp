@@ -19,7 +19,7 @@
 #ifndef __DOXYGEN_IGNORE__
 
 #include <string>
-#include "Types.hpp"
+#include "Athena/Types.hpp"
 
 namespace Athena
 {

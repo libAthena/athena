@@ -17,7 +17,7 @@
 #ifndef __ZQUESTFILEREADER_HPP__
 #define __ZQUESTFILEREADER_HPP__
 
-#include "BinaryReader.hpp"
+#include "Athena/BinaryReader.hpp"
 
 namespace Athena
 {

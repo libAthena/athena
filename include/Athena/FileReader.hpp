@@ -16,7 +16,7 @@
 #ifndef FILESTREAM_HPP
 #define FILESTREAM_HPP
 
-#include "Stream.hpp"
+#include "Athena/Stream.hpp"
 #include <string>
 #include <cstdio>
 

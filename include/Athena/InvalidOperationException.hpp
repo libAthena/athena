@@ -18,7 +18,7 @@
 
 #include <string>
 #include <stdarg.h>
-#include "Exception.hpp"
+#include "Athena/Exception.hpp"
 
 namespace Athena
 {

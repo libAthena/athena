@@ -18,7 +18,7 @@
 #define SKYWARDSWORDQUEST_HPP
 
 #include "Athena/Global.hpp"
-#include "ZQuestFile.hpp"
+#include "Athena/ZQuestFile.hpp"
 
 namespace Athena
 {

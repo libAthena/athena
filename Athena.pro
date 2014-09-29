@@ -8,7 +8,7 @@ DESTDIR = ./lib
 contains(DEFINES, ATHENA_USE_QT){
     QT += qt core
 } else {
-    QT -= qt core
+    QT =
 }
 
 CONFIG(debug, debug|release){
@@ -67,6 +67,11 @@ SOURCES += \
     src/Athena/ZQuestFile.cpp \
     src/Athena/ZQuestFileReader.cpp \
     src/Athena/ZQuestFileWriter.cpp \
+    src/Athena/PHYSFSFileReader.cpp \
+    src/LZ77/LZBase.cpp \
+    src/LZ77/LZLookupTable.cpp \
+    src/LZ77/LZType10.cpp \
+    src/LZ77/LZType11.cpp \
     src/bn.cpp \
     src/ec.cpp \
     src/md5.cpp \
@@ -78,10 +83,10 @@ INCLUDEPATH += \
     include
 
 HEADERS += \
+    include/Athena/Global.hpp \
     include/Athena/Stream.hpp \
     include/Athena/Types.hpp \
     include/Athena/Utility.hpp \
-    include/Athena/Global.hpp \
     include/Athena/Exception.hpp \
     include/Athena/FileNotFoundException.hpp \
     include/Athena/IOException.hpp \
@@ -89,19 +94,9 @@ HEADERS += \
     include/Athena/InvalidOperationException.hpp \
     include/Athena/FileReader.hpp \
     include/Athena/FileWriter.hpp \
-    include/utf8.h \
-    include/utf8/checked.h \
-    include/utf8/core.h \
-    include/utf8/unchecked.h \
     include/Athena/BinaryReader.hpp \
     include/Athena/BinaryWriter.hpp \
     include/Athena/NotImplementedException.hpp \
-    include/aes.h \
-    include/bn.h \
-    include/ec.h \
-    include/lzo.h \
-    include/md5.h \
-    include/sha1.h \
     include/Athena/ALTTPEnums.hpp \
     include/Athena/ALTTPFile.hpp \
     include/Athena/ALTTPFileReader.hpp \
@@ -131,7 +126,31 @@ HEADERS += \
     include/Athena/WiiSaveWriter.hpp \
     include/Athena/ZQuestFile.hpp \
     include/Athena/ZQuestFileReader.hpp \
-    include/Athena/ZQuestFileWriter.hpp
+    include/Athena/ZQuestFileWriter.hpp \
+    include/Athena/PHYSFSFileReader.hpp \
+    include/LZ77/LZBase.hpp \
+    include/LZ77/LZLookupTable.hpp \
+    include/LZ77/LZType10.hpp \
+    include/LZ77/LZType11.hpp \
+    include/utf8.h \
+    include/utf8/checked.h \
+    include/utf8/core.h \
+    include/utf8/unchecked.h \
+    include/aes.h \
+    include/bn.h \
+    include/ec.h \
+    include/lzo.h \
+    include/md5.h \
+    include/sha1.h
 
 OTHER_FILES += \
     .travis.yml
+
+unix {
+    target.path = /usr/lib
+    headerFiles.files = $$PWD/include/*
+    headerFiles.path = /usr/include/Athena
+    pkgconf.files = libAthena.pc
+    pkgconf.path = /usr/lib/pkgconfig
+    INSTALLS += target headerFiles pkgconf
+}

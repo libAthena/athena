@@ -20,8 +20,8 @@
 #include "Types.hpp"
 #include <string>
 #include <vector>
-#include "ALTTPStructs.hpp"
-#include "ALTTPEnums.hpp"
+#include "Athena/ALTTPStructs.hpp"
+#include "Athena/ALTTPEnums.hpp"
 
 namespace Athena
 {

@@ -17,7 +17,7 @@
 #ifndef __MCFILEREADER_HPP__
 #define __MCFILEREADER_HPP__
 
-#include "BinaryReader.hpp"
+#include "Athena/BinaryReader.hpp"
 
 namespace Athena
 {

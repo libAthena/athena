@@ -16,7 +16,7 @@
 #ifndef INVALIDDATAEXCEPTION_HPP
 #define INVALIDDATAEXCEPTION_HPP
 
-#include "Exception.hpp"
+#include "Athena/Exception.hpp"
 #include <sstream>
 
 namespace Athena

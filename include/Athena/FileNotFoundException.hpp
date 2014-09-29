@@ -16,7 +16,7 @@
 #ifndef __FILENOTFOUNDEXCEPTION_HPP__
 #define __FILENOTFOUNDEXCEPTION_HPP__
 
-#include "Exception.hpp"
+#include "Athena/Exception.hpp"
 
 namespace Athena
 {

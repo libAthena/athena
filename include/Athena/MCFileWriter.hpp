@@ -17,8 +17,8 @@
 #ifndef __MCFILEWRITER_HPP__
 #define __MCFILEWRITER_HPP__
 
-#include "Types.hpp"
-#include "BinaryWriter.hpp"
+#include "Athena/Types.hpp"
+#include "Athena/BinaryWriter.hpp"
 
 namespace Athena
 {

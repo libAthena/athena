@@ -16,7 +16,7 @@
 #ifndef __BINARYWRITER_HPP__
 #define __BINARYWRITER_HPP__
 
-#include "Stream.hpp"
+#include "Athena/Stream.hpp"
 #include <string>
 #include <functional>
 

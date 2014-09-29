@@ -17,7 +17,7 @@
 #ifndef __SSFILEWRITER_HPP__
 #define __SSFILEWRITER_HPP__
 
-#include "BinaryWriter.hpp"
+#include "Athena/BinaryWriter.hpp"
 
 namespace Athena
 {

@@ -16,7 +16,7 @@
 #ifndef __IOEXCEPTION_HPP__
 #define __IOEXCEPTION_HPP__
 
-#include "Exception.hpp"
+#include "Athena/Exception.hpp"
 
 
 namespace Athena

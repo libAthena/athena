@@ -17,7 +17,7 @@
 #ifndef __WII_SAVE_WRITER_HPP__
 #define __WII_SAVE_WRITER_HPP__
 
-#include "BinaryWriter.hpp"
+#include "Athena/BinaryWriter.hpp"
 
 namespace Athena
 {

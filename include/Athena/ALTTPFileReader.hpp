@@ -18,9 +18,9 @@
 #define __ALTTP_FILE_READER_HPP__
 
 #include <string>
-#include "Types.hpp"
-#include "BinaryReader.hpp"
-#include "ALTTPQuest.hpp"
+#include "Athena/Types.hpp"
+#include "Athena/BinaryReader.hpp"
+#include "Athena/ALTTPQuest.hpp"
 
 namespace Athena
 {

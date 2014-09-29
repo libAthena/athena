@@ -16,7 +16,7 @@
 #ifndef __BINARYREADER_HPP__
 #define __BINARYREADER_HPP__
 
-#include "Stream.hpp"
+#include "Athena/Stream.hpp"
 #include <string>
 #include <functional>
 

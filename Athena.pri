@@ -118,4 +118,3 @@ win32:HEADERS += \
 
 OTHER_FILES += \
     .travis.yml
-

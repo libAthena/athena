@@ -17,7 +17,7 @@
 #ifndef __SSFILEREADER_HPP__
 #define __SSFILEREADER_HPP__
 
-#include "BinaryReader.hpp"
+#include "Athena/BinaryReader.hpp"
 
 namespace Athena
 {
