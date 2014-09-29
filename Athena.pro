@@ -151,11 +151,11 @@ isEmpty(PREFIX) {
 }
 
 unix {
-    target.path = $$PREFIX/lib
-    target.files = $$PWD/lib/*.a
+    libFiles.path = $$PREFIX/lib
+    libFiles.files = $$PWD/lib/*.a
     headerFiles.files = $$PWD/include/*
     headerFiles.path = $$PREFIX/include/Athena
     pkgconf.files = libAthena.pc
     pkgconf.path = $$PREFIX/lib/pkgconfig
-    INSTALLS += target headerFiles pkgconf
+    INSTALLS += libFiles headerFiles pkgconf
 }
