@@ -78,6 +78,7 @@ SOURCES += \
     src/sha1.cpp \
     src/aes.c \
     src/lzo.c
+win32:SOURCES += src/win32_largefilewrapper.c
 
 INCLUDEPATH += \
     include
@@ -142,18 +143,30 @@ HEADERS += \
     include/lzo.h \
     include/md5.h \
     include/sha1.h
+win32:HEADERS += include/win32_largefilewrapper.h
 
 OTHER_FILES += \
     .travis.yml
 
-isEmpty(PREFIX) {
-    PREFIX = /usr/local
-}
-
 unix {
+    isEmpty(PREFIX) {
+        PREFIX = /usr/local
+    }
     libFiles.path = $$PREFIX/lib
     libFiles.files = $$PWD/lib/*
     headerFiles.files = $$PWD/include/*
     headerFiles.path = $$PREFIX/include/Athena
     INSTALLS += libFiles headerFiles
+}
+
+win32 {
+   isEmpty(PREFIX) {
+        PREFIX = $$PWD/pkg
+   }
+
+   libFiles.path = $$PREFIX/lib
+   libFiles.files = $$PWD/lib/*
+   headerFiles.path = $$PREFIX/include/Athena
+   headerFiles.files = $$PWD/include/*
+   INSTALLS += libFiles headerFiles
 }
