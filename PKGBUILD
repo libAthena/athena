@@ -1,5 +1,5 @@
 # PKGBUILD for libAthena
-_pkgname=Athena
+_pkgname=libathena
 pkgname=$_pkgname-git
 pkgver=v1.0.0
 pkgrel=1
