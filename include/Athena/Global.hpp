@@ -68,6 +68,7 @@ enum class Endian
     BigEndian
 };
 
+#ifndef ATHENA_NO_SAKURA
 namespace Sakura
 {
 
@@ -94,6 +95,7 @@ public:
 typedef Vector2D<int> Vector2Di;
 typedef Vector2D<float> Vector2Df;
 } // Sakura
+#endif // ATHENA_NO_SAKURA
 } // Athena
 
 std::ostream& operator<<(std::ostream& os, const Athena::SeekOrigin& origin);

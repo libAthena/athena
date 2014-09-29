@@ -1,4 +1,5 @@
-﻿// This file is part of libAthena.
+﻿#ifndef ATHENA_NO_SAKURA
+// This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -278,3 +279,6 @@ Q_DECLARE_METATYPE(Athena::Sakura::SpriteFile*)
 Q_DECLARE_METATYPE(Athena::Sakura::STexture*)
 #endif
 #endif // SSPRITE_HPP
+
+#endif // ATHENA_NO_SAKURA
+

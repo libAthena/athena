@@ -1,3 +1,4 @@
+#ifndef ATHENA_NO_SAKURA
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -200,3 +201,4 @@ SpriteFrame* SpritePart::root() const
 }
 }
 }
+#endif // ATHENA_NO_SAKURA
