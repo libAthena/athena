@@ -152,7 +152,7 @@ isEmpty(PREFIX) {
 
 unix {
     libFiles.path = $$PREFIX/lib
-    libFiles.files = $$PWD/lib/*
+    libFiles.files = $$PWD/lib/libAthena.a $$PWD/lib/*
     headerFiles.files = $$PWD/include/*
     headerFiles.path = $$PREFIX/include/Athena
     INSTALLS += headerFiles pkgconf libFiles
