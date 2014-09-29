@@ -146,11 +146,15 @@ HEADERS += \
 OTHER_FILES += \
     .travis.yml
 
+isEmpty(PREFIX) {
+    PREFIX = /usr/local
+}
+
 unix {
-    target.path = /usr/lib
+    target.path = $$PREFIX/lib
     headerFiles.files = $$PWD/include/*
-    headerFiles.path = /usr/include/Athena
+    headerFiles.path = $$PREFIX/include/Athena
     pkgconf.files = libAthena.pc
-    pkgconf.path = /usr/lib/pkgconfig
+    pkgconf.path = $$PREFIX/lib/pkgconfig
     INSTALLS += target headerFiles pkgconf
 }
