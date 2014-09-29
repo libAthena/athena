@@ -157,5 +157,5 @@ unix {
     headerFiles.path = $$PREFIX/include/Athena
     pkgconf.files = libAthena.pc
     pkgconf.path = $$PREFIX/lib/pkgconfig
-    INSTALLS += libFiles headerFiles pkgconf
+    INSTALLS += headerFiles pkgconf libFiles
 }
