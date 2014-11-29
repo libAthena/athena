@@ -53,6 +53,7 @@ public:
 
     void setRegion(Region region);
     Region region() const;
+
 private:
     Region m_region;
     // A vector is a bit overkill

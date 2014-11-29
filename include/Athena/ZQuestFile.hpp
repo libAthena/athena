@@ -152,12 +152,12 @@ public:
     std::string gameString() const;
 
     static const std::vector<std::string> gameStringList();
-private:
+protected:
     Game        m_game;
     std::string m_gameString;
     Endian      m_endian;
-    atUint8*      m_data;
-    atUint32      m_length;
+    atUint8*    m_data;
+    atUint32    m_length;
 
     // Game strings support
 };

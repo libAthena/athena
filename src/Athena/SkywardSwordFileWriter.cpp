@@ -55,14 +55,14 @@ void SkywardSwordFileWriter::write(SkywardSwordFile *file)
     {
         if (q->length() != 0x53C0)
             THROW_INVALID_DATA_EXCEPTION("q->data() not 0x53C0 bytes in length");
-        if (q->skipLength() != 0x24)
-            THROW_INVALID_DATA_EXCEPTION("q->skipData() not 0x24 bytes in length");
+        // Update the checksums
+        q->fixChecksums();
         // Write the save data
         base::writeUBytes(q->data(), q->length());
         atUint64 pos = base::position();
         // Write the slots skip data
         base::seek(0xFB60 + (i * 0x24), SeekOrigin::Begin);
-        base::writeUBytes(q->skipData(), q->skipLength());
+        base::writeUBytes(q->skipData(), 0x24);
         base::seek(pos, SeekOrigin::Begin);
         i++;
     }

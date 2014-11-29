@@ -542,12 +542,9 @@ std::vector<atUint16> ALTTPQuest::playerName() const
 std::string ALTTPQuest::playerNameToString() const
 {
     std::string ret;
-    std::vector<atUint16>::const_iterator iter = m_playerName.begin();
 
-    for (; iter != m_playerName.end(); ++iter)
+    for (atInt16 c : m_playerName)
     {
-        atInt16 c = *iter;
-
         if (c >= 0x00 && c <= 0x0F)
         {
             ret.push_back((char)('A' + c));

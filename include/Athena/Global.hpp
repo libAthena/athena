@@ -30,7 +30,7 @@
 #   elif defined(__func__)
 #       define __PRETTY_FUNCTION__ __func__
 #   else
-#       define __PRETTY_FUNCTION__ "<unkown>"
+#       define __PRETTY_FUNCTION__ "<unknown>"
 #   endif
 #endif
 

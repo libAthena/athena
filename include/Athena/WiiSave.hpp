@@ -58,7 +58,7 @@ public:
      * \param filename
      * \param file
      */
-    void     addFile(const std::string& filename, WiiFile* file);
+    void     addFile(WiiFile* file);
     void setRoot(WiiFile* root);
     /*!
      * \brief file

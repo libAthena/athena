@@ -49,7 +49,8 @@ SOURCES += \
     $$PWD/src/LZ77/LZLookupTable.cpp \
     $$PWD/src/LZ77/LZType10.cpp \
     $$PWD/src/LZ77/LZType11.cpp \
-    $$PWD/src/LZ77/LZBase.cpp
+    $$PWD/src/LZ77/LZBase.cpp \
+    $$PWD/src/Athena/MCSlot.cpp
 win32:SOURCES += $$PWD/src/win32_largefilewrapper.c
 
 HEADERS += \
@@ -111,7 +112,8 @@ HEADERS += \
     $$PWD/include/LZ77/LZBase.hpp \
     $$PWD/include/LZ77/LZLookupTable.hpp \
     $$PWD/include/LZ77/LZType10.hpp \
-    $$PWD/include/LZ77/LZType11.hpp
+    $$PWD/include/LZ77/LZType11.hpp \
+    $$PWD/src/Athena/MCSlot.hpp
 
 win32:HEADERS += \
     $$PWD/include/win32_largefilewrapper.h

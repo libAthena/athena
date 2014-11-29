@@ -64,38 +64,6 @@ atUint16 MCFileWriter::calculateChecksum(atUint8 *data, atUint32 length)
     return sum;
 }
 
-// TODO: Rewrite this to be more optimized, the current solution takes quite a few cycles
-atUint8* MCFileWriter::reverse(atUint8* data, atUint32 length)
-{
-    atUint32 a = 0;
-    atUint32 swap;
-
-    for (;a<--length; a++)
-    {
-        swap = data[a];
-        data[a] = data[length];
-        data[length] = swap;
-    }
-
-    return data;
-}
-
-
-// TODO: Rewrite this to be more optimized, unroll more??
-void MCFileWriter::unscramble()
-{
-    if (!m_data)
-        return;
-
-    for (atUint32 i = 0; i < m_length; i += 4)
-    {
-        atUint32 block1 = *(atUint32*)reverse((m_data + i), 4);
-        atUint32 block2 = *(atUint32*)reverse((m_data + i + 4), 4);
-        *(atUint32*)(m_data + i) = block2;
-        *(atUint32*)(m_data + i + 4) = block1;
-    }
-}
-
 } // io
 } // zelda
 #endif // ATHENA_NO_SAVES

@@ -302,8 +302,10 @@ void BinaryWriter::writeInt16(atInt16 val)
     if (m_position + sizeof(atInt16) > m_length)
         resize(m_position + sizeof(atInt16));
 
-    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
-        val = utility::swap16(val);
+    if (isBigEndian())
+        utility::BigInt16(val);
+    else
+        utility::LittleInt16(val);
 
     *(atInt16*)(m_data + m_position) = val;
     m_position += sizeof(atInt16);
@@ -331,8 +333,10 @@ void BinaryWriter::writeInt32(atInt32 val)
     if (m_position + sizeof(atInt32) > m_length)
         resize(m_position + sizeof(atInt32));
 
-    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
-        val = utility::swap32(val);
+    if (isBigEndian())
+        utility::BigInt32(val);
+    else
+        utility::LittleInt32(val);
 
     *(atInt32*)(m_data + m_position) = val;
     m_position += sizeof(atInt32);
@@ -358,8 +362,10 @@ void BinaryWriter::writeInt64(atInt64 val)
         resize(m_position + sizeof(atInt64));
 
 
-    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
-        val = utility::swap64(val);
+    if (isBigEndian())
+        utility::BigInt64(val);
+    else
+        utility::LittleInt64(val);
 
     *(atInt64*)(m_data + m_position) = val;
     m_position += sizeof(atInt64);
@@ -376,8 +382,11 @@ void BinaryWriter::writeUint64(atUint64 val)
     if (m_position + sizeof(atUint64) > m_length)
         resize(m_position + sizeof(atUint64));
 
-    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
-        val = utility::swapU64(val);
+    if (isBigEndian())
+        utility::BigUint64(val);
+    else
+        utility::LittleUint64(val);
+
 
     *(atUint64*)(m_data + m_position) = val;
     m_position += sizeof(atUint64);
@@ -394,8 +403,11 @@ void BinaryWriter::writeFloat(float val)
     if (m_position + sizeof(float) > m_length)
         resize(m_position + sizeof(float));
 
-    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
-        val = utility::swapFloat(val);
+    if (isBigEndian())
+        utility::BigFloat(val);
+    else
+        utility::LittleFloat(val);
+
 
     *(float*)(m_data + m_position) = val;
     m_position += sizeof(float);
@@ -412,8 +424,10 @@ void BinaryWriter::writeDouble(double val)
     if (m_position + sizeof(double) > m_length)
         resize(m_position + sizeof(double));
 
-    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
-        val = utility::swapDouble(val);
+    if (isBigEndian())
+        utility::BigDouble(val);
+    else
+        utility::LittleDouble(val);
 
     *(double*)(m_data + m_position)= val;
     m_position += sizeof(double);

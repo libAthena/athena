@@ -61,11 +61,9 @@ public:
      */
     void writeFile(MCFile* file);
 
+    static atUint16 calculateChecksum(atUint8* data, atUint32 length);
 private:
     atUint16 calculateSlotChecksum(atUint32 game);
-    atUint16 calculateChecksum(atUint8* data, atUint32 length);
-    atUint8* reverse(atUint8* data, atUint32 length);
-    void unscramble();
 };
 
 } // io

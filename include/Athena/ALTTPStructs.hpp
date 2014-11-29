@@ -106,22 +106,37 @@ struct ALTTPLightDarkWorldIndicator
 
 struct ALTTPDungeonItemFlags
 {
-    bool Unused1:1;
-    bool Unused2:1;
-    bool GanonsTower:1;
-    bool TurtleRock:1;
-    bool GargoylesDomain:1;
-    bool TowerOfHera:1;
-    bool IcePalace:1;
-    bool SkullWoods:1;
-    bool MiseryMire:1;
-    bool DarkPalace:1;
-    bool SwampPalace:1;
-    bool HyruleCastle2:1; // Doesn't exists in orignal game
-    bool DesertPalace:1;
-    bool EasternPalace:1;
-    bool HyruleCastle:1; // Doesn't exist in original game
-    bool SewerPassage:1; // Doesn't exist in original game
+    union
+    {
+        struct
+        {
+            bool Unused1:1;
+            bool Unused2:1;
+            bool GanonsTower:1;
+            bool TurtleRock:1;
+            bool GargoylesDomain:1;
+            bool TowerOfHera:1;
+            bool IcePalace:1;
+            bool SkullWoods:1;
+        };
+        atUint8 flags1;
+    };
+
+    union
+    {
+        struct
+        {
+            bool MiseryMire:1;
+            bool DarkPalace:1;
+            bool SwampPalace:1;
+            bool HyruleCastle2:1; // unused in orignal game
+            bool DesertPalace:1;
+            bool EasternPalace:1;
+            bool HyruleCastle:1; // unused exist in original game
+            bool SewerPassage:1; // unused exist in original game
+        };
+        atUint8 flags2;
+    };
 };
 
 struct ALTTPPendants

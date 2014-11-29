@@ -16,9 +16,12 @@
 #ifndef __MCFILE_HPP__
 #define __MCFILE_HPP__
 
+#include "Athena/Global.hpp"
+
 namespace Athena
 {
 
+class MCSlot;
 /*! \class MCFile
  *  \brief The Minish Cap data container class class
  *
@@ -28,8 +31,20 @@ namespace Athena
 class MCFile
 {
 public:
+    static constexpr char* VERSION_EU_JP = (char*)"AGBZELDA:THE MINISH CAP:ZELDA 3\0";
+    static constexpr char* VERSION_US    = (char*)"AGBZELDA:THE MINISH CAP:ZELDA 5\0";
+    enum SlotType
+    {
+        New     = 0x54494E49,
+        Valid   = 0x4D435A33,
+        Deleted = 0x466C6544
+    };
+
     MCFile();
+
+    static atUint8* unscramble(atUint8* data, atUint32 length);
 private:
+    MCSlot* m_slots[3];
 };
 
 } // zelda

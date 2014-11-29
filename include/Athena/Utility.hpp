@@ -47,7 +47,7 @@ atUint32 BigUint32(atUint32& val);
 atInt64 LittleInt64(atInt64& val);
 atUint64 LittleUint64(atUint64& val);
 atInt64 BigInt64(atInt64& val);
-atUint16 BigUint64(atUint16& val);
+atUint64 BigUint64(atUint64& val);
 
 float LittleFloat(float& val);
 float BigFloat(float& val);
@@ -66,6 +66,14 @@ bool parseBool(const std::string& boolean, bool* valid = NULL);
 
 int countChar(const std::string& str, const char chr, int* lastOccur = NULL);
 
+// trim from start
+std::string &ltrim(std::string &s);
+
+// trim from end
+std::string &rtrim(std::string &s);
+
+// trim from both ends
+std::string &trim(std::string &s);
 atUint64 fileSize(FILE* f);
 } // utility
 } // Athena

@@ -51,7 +51,7 @@ WiiSave::~WiiSave()
 
 }
 
-void WiiSave::addFile(const std::string& filepath, WiiFile* file)
+void WiiSave::addFile( WiiFile* file)
 {
     m_root->addChild(file);
 }

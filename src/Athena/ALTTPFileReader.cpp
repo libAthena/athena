@@ -18,6 +18,7 @@
 #include "Athena/ALTTPFile.hpp"
 #include "Athena/ALTTPQuest.hpp"
 #include <iostream>
+#include "Athena/Global.hpp"
 
 namespace Athena
 {
@@ -80,9 +81,9 @@ ALTTPFile* ALTTPFileReader::readFile()
         quest->setHealthFiller(base::readByte());
         quest->setMagicFiller(base::readByte());
         ALTTPPendants pendants;
-        pendants.Courage = readBit();
-        pendants.Wisdom = readBit();
-        pendants.Power = readBit();
+        pendants.Courage = base::readBit();
+        pendants.Wisdom  = base::readBit();
+        pendants.Power   = base::readBit();
         pendants.Unused1 = false;
         pendants.Unused2 = false;
         pendants.Unused3 = false;
@@ -214,6 +215,7 @@ ALTTPDungeonItemFlags ALTTPFileReader::readDungeonFlags()
 {
     ALTTPDungeonItemFlags flags;
     flags.Unused1         = base::readBit();
+    flags.Unused2         = base::readBit();
     flags.GanonsTower     = base::readBit();
     flags.TurtleRock      = base::readBit();
     flags.GargoylesDomain = base::readBit();
@@ -229,6 +231,7 @@ ALTTPDungeonItemFlags ALTTPFileReader::readDungeonFlags()
     flags.HyruleCastle    = base::readBit();
     flags.SewerPassage    = base::readBit();
 
+    aDebug() << std::hex << flags.flags1 << " " << flags.flags2 << std::dec << std::endl;
     return flags;
 }
 
