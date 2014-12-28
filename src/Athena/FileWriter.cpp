@@ -109,7 +109,7 @@ atUint64 FileWriter::position() const
 
 atUint64 FileWriter::length() const
 {
-    return utility::fileSize(m_fileHandle);
+    return utility::fileSize(m_filename);
 }
 
 void FileWriter::writeBit(bool val)

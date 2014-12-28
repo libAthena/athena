@@ -119,7 +119,7 @@ atUint64 FileReader::length() const
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open");
 
-    return utility::fileSize(m_fileHandle);
+    return utility::fileSize(m_filename);
 }
 
 void FileReader::seekBit(int bit)

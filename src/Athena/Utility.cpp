@@ -22,6 +22,7 @@
 #include <cstdarg>
 #include <iterator>
 #include <cstdio>
+#include <sys/stat.h>
 
 namespace Athena
 {
@@ -365,13 +366,11 @@ int countChar(const std::string& str, const char chr, int* lastOccur)
     return ret;
 }
 
-atUint64 fileSize(FILE* f)
+atUint64 fileSize(const std::string& filename)
 {
-    atUint64 oldPos = ftello64(f);
-    fseeko64(f, 0, SEEK_END);
-    atUint64 size = ftello64(f);
-    fseeko64(f, oldPos, SEEK_SET);
-    return size;
+    struct stat64 st;
+    stat64(filename.c_str(), &st);
+    return st.st_size;
 }
 
 std::string& ltrim(std::string& s)

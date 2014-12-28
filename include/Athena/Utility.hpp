@@ -74,7 +74,7 @@ std::string &rtrim(std::string &s);
 
 // trim from both ends
 std::string &trim(std::string &s);
-atUint64 fileSize(FILE* f);
+atUint64 fileSize(const std::string& filename);
 } // utility
 } // Athena
 #endif
