@@ -153,14 +153,14 @@ struct ALTTPPendants
 
 struct ALTTPAbilities
 {
-    char Nothing:1; //?
-    char Swim:1;
-    char Dash:1;
-    char Pull:1;
-    char Unknown1:1; //---
-    char Talk:1;
-    char Read:1;
-    char Unknown2:1; //---
+    bool Nothing:1; //?
+    bool Swim:1;
+    bool Dash:1;
+    bool Pull:1;
+    bool Unknown1:1; //---
+    bool Talk:1;
+    bool Read:1;
+    bool Unknown2:1; //---
 };
 
 struct ALTTPCrystals

@@ -52,7 +52,7 @@ ALTTPQuest* ALTTPFile::quest(atUint32 id) const
 
 atUint32 ALTTPFile::questCount() const
 {
-    return m_quests.size();
+    return (atUint32)m_quests.size();
 }
 } // zelda
 

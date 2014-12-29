@@ -1,4 +1,4 @@
-CONFIG += staticlib
+CONFIG += staticlib c++11 c11
 TEMPLATE= lib
 DESTDIR = ./lib
 
@@ -29,7 +29,6 @@ CONFIG(release, release|debug){
     OBJECTS_DIR = obj/release
 }
 
-QMAKE_CXXFLAGS += -std=c++11
 INCLUDEPATH += include
 
 SOURCES += \

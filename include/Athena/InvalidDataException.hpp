@@ -43,10 +43,17 @@ public:
 } // error
 } // Athena
 
+#ifdef _MSC_VER
+#define THROW_INVALID_DATA_EXCEPTION(args, ...) \
+    do  { \
+        std::string msg = Athena::utility::sprintf(args, __VA_ARGS__); \
+        throw Athena::error::InvalidDataException(std::string("InvalidDataException: ")+msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__); \
+    } while(0)
+#elif defined(__GNUC__)
 #define THROW_INVALID_DATA_EXCEPTION(args...) \
     do  { \
         std::string msg = Athena::utility::sprintf(args); \
-        throw Athena::error::InvalidDataException(std::string("InvalidDataException: ")+msg, __FILE__, __PRETTY_FUNCTION__, __LINE__); \
+        throw Athena::error::InvalidDataException(std::string("InvalidDataException: ")+msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__); \
     } while(0)
-
+#endif
 #endif // INVALIDDATAEXCEPTION_HPP

@@ -19,6 +19,7 @@
 #include <string>
 #include <stdarg.h>
 #include "Athena/Utility.hpp"
+#include "Athena/Global.hpp"
 
 #define __STRX(x) #x
 #define __STR(x) __STRX(x)
@@ -78,10 +79,18 @@ protected:
 };
 } // error
 } // Athena
+#ifdef _MSC_VER
+#define THROW_EXCEPTION(args,...) \
+    do  { \
+        std::string msg = Athena::utility::sprintf(args, __VA_ARGS__); \
+        throw Athena::error::Exception(std::string("Exception: ")+msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__); \
+    } while(0)
+#elif defined(__GNUC__)
 #define THROW_EXCEPTION(args...) \
     do  { \
         std::string msg = Athena::utility::sprintf(args); \
-        throw Athena::error::Exception(std::string("Exception: ")+msg, __FILE__, __PRETTY_FUNCTION__, __LINE__); \
+        throw Athena::error::Exception(std::string("Exception: ")+msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__); \
     } while(0)
+#endif
 
 #endif

@@ -317,7 +317,7 @@ atUint8 ALTTPQuest::dungeonKeys(atUint32 id) const
 
 atUint32 ALTTPQuest::dungeonCount() const
 {
-    return m_dungeonKeys.size();
+    return (atUint32)m_dungeonKeys.size();
 }
 
 
@@ -414,7 +414,7 @@ atUint8 ALTTPQuest::oldManFlag(atUint32 id)
 
 atUint32 ALTTPQuest::oldManFlagCount() const
 {
-    return m_oldManFlags.size();
+    return (atUint32)m_oldManFlags.size();
 }
 
 void ALTTPQuest::setBombFlag(atUint8 flag)
@@ -450,7 +450,7 @@ atUint8 ALTTPQuest::unknown1(atUint32 id)
 
 atUint32 ALTTPQuest::unknown1Count() const
 {
-    return m_unknown1.size();
+    return (atUint32)m_unknown1.size();
 }
 
 void ALTTPQuest::setPlayerName(std::vector<atUint16> playerName)
@@ -636,7 +636,7 @@ atUint16 ALTTPQuest::dungeonDeathTotal(atUint32 id) const
 
 atUint16 ALTTPQuest::dungeonDeathTotalCount() const
 {
-    return m_dungeonDeathTotals.size();
+    return (atUint16)m_dungeonDeathTotals.size();
 }
 
 void ALTTPQuest::setUnknown2(atUint16 val)

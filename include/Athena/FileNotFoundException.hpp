@@ -52,6 +52,6 @@ private:
 } // Athena
 
 #define THROW_FILE_NOT_FOUND_EXCEPTION(msg) \
-    do  { throw Athena::error::FileNotFoundException(msg, __FILE__, __PRETTY_FUNCTION__, __LINE__); } while(0)
+    do  { throw Athena::error::FileNotFoundException(msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__); } while(0)
 
 #endif

@@ -114,7 +114,7 @@ atUint32 LZType11::compress(const atUint8* src, atUint8** dst, atUint32 srcLengt
         outbuff.writeByte(0);
 
     *dst = outbuff.data();
-    return outbuff.length();
+    return (atUint32)outbuff.length();
 }
 
 atUint32 LZType11::decompress(const atUint8* src, atUint8** dst, atUint32 srcLength)

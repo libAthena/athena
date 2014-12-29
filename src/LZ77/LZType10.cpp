@@ -67,7 +67,7 @@ atUint32 LZType10::compress(const atUint8* src, atUint8** dstBuf, atUint32 srcLe
 
     *dstBuf = outbuf.data();
     outbuf.save();
-    return outbuf.length();
+    return (atUint32)outbuf.length();
 }
 
 atUint32 LZType10::decompress(const atUint8* src, atUint8** dst, atUint32 srcLength)

@@ -24,6 +24,12 @@
 #include <cstdio>
 #include <sys/stat.h>
 
+#ifdef _MSC_VER
+#include <functional>
+#include <locale>
+#define stat64 __stat64
+#endif
+
 namespace Athena
 {
 namespace utility
@@ -63,13 +69,13 @@ atUint64 swapU64(atUint64 val)
 atInt64 swap64(atInt64 val)
 {
     return (val = ((atInt64)((((atInt64)(val) & 0xFF00000000000000ULL) >> 56) |
-                    (((atInt64)(val) & 0x00FF000000000000ULL) >> 40) |
-                    (((atInt64)(val) & 0x0000FF0000000000ULL) >> 24) |
-                    (((atInt64)(val) & 0x000000FF00000000ULL) >>  8) |
-                    (((atInt64)(val) & 0x00000000FF000000ULL) <<  8) |
-                    (((atInt64)(val) & 0x0000000000FF0000ULL) << 24) |
-                    (((atInt64)(val) & 0x000000000000FF00ULL) << 40) |
-                    (((atInt64)(val) & 0x00000000000000FFULL) << 56))));
+                             (((atInt64)(val) & 0x00FF000000000000ULL) >> 40) |
+                             (((atInt64)(val) & 0x0000FF0000000000ULL) >> 24) |
+                             (((atInt64)(val) & 0x000000FF00000000ULL) >>  8) |
+                             (((atInt64)(val) & 0x00000000FF000000ULL) <<  8) |
+                             (((atInt64)(val) & 0x0000000000FF0000ULL) << 24) |
+                             (((atInt64)(val) & 0x000000000000FF00ULL) << 40) |
+                             (((atInt64)(val) & 0x00000000000000FFULL) << 56))));
 }
 
 bool isSystemBigEndian()
@@ -294,13 +300,13 @@ std::string vsprintf(const char* fmt, va_list list)
     int size = 512;
     char* buffer = 0;
     buffer = new char[size];
-    int nsize = vsnprintf(buffer, size, fmt, list);
+    int nsize = ::vsnprintf(buffer, size, fmt, list);
     while(size<=nsize)
     { //fail delete buffer and try again
         delete[] buffer;
         buffer = 0;
         buffer = new char[nsize+1]; //+1 for /0
-        nsize = vsnprintf(buffer, size, fmt, list);
+        nsize = ::vsnprintf(buffer, size, fmt, list);
     }
     std::string ret(buffer);
     delete[] buffer;
@@ -373,21 +379,29 @@ atUint64 fileSize(const std::string& filename)
     return st.st_size;
 }
 
-std::string& ltrim(std::string& s)
+// trim from both ends
+std::string &trim(std::string &s)
 {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
-    return s;
-}
+    // Find first non whitespace char in StrToTrim
+    std::string::size_type first = s.find_first_not_of( ' ' );
+    // Check whether something went wrong?
+    if( first == std::string::npos )
+    {
+      first = 0;
+    }
 
-std::string& rtrim(std::string& s)
-{
-    s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
-    return s;
-}
+    // Find last non whitespace char from StrToTrim
+    std::string::size_type last = s.find_last_not_of( ' ' );
+    // If something didn't go wrong, Last will be recomputed to get real length of substring
+    if( last != std::string::npos )
+    {
+      last = ( last + 1 ) - first;
+    }
 
-std::string& trim(std::string& s)
-{
-    return ltrim(rtrim(s));
+    // Copy such a string to TrimmedString
+    s = s.substr( first, last );
+
+    return s;
 }
 
 } // utility

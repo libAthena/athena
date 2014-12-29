@@ -140,7 +140,7 @@ bool FileReader::readBit()
 
     if (!m_bitValid)
     {
-        int size = fread(&m_currentByte, 1, 1, m_fileHandle);
+        size_t size = fread(&m_currentByte, 1, 1, m_fileHandle);
         if (size != sizeof(atUint8))
             THROW_IO_EXCEPTION("Error reading from file.");
 

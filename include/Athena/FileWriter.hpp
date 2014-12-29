@@ -62,9 +62,9 @@ private:
     std::string  m_filename;
     FILE*        m_fileHandle;
     Endian       m_endian;
-    atUint8        m_currentByte;
-    atUint8        m_bytePosition;
-    atUint8        m_bitShift;
+    atUint8      m_currentByte;
+    atUint64     m_bytePosition;
+    atUint8      m_bitShift;
     bool         m_bitValid;
 };
 }

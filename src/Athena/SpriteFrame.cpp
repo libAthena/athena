@@ -60,7 +60,7 @@ QList<SpritePart*> SpriteFrame::parts() const
 
 atUint32 SpriteFrame::partCount() const
 {
-    return m_parts.size();
+    return (atUint32)m_parts.size();
 }
 
 float SpriteFrame::frameTime() const

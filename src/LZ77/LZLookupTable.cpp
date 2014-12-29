@@ -1,5 +1,5 @@
 #include "LZ77/LZLookupTable.hpp"
-
+#include <algorithm>
 
 LZLookupTable::LZLookupTable()
 {

@@ -67,11 +67,11 @@ static void copy(LZOContext *c, int cnt) {
     register uint8_t *src = c->in;
     register uint8_t *dst = c->out;
     if (src + cnt > c->in_end) {
-        cnt = c->in_end - src;
+        cnt = (int)(c->in_end - src);
         c->error |= LZO_INPUT_DEPLETED;
     }
     if (dst + cnt > c->out_end) {
-        cnt = c->out_end - dst;
+        cnt = (int)(c->out_end - dst);
         c->error |= LZO_OUTPUT_FULL;
     }
     
@@ -111,7 +111,7 @@ static void copy_backptr(LZOContext *c, int back, int cnt) {
         return;
     }
     if (dst + cnt > c->out_end) {
-        cnt = c->out_end - dst;
+        cnt = (int)(c->out_end - dst);
         c->error |= LZO_OUTPUT_FULL;
     }
     if (back == 1) {
@@ -166,7 +166,7 @@ static void copy_backptr(LZOContext *c, int back, int cnt) {
  * make sure all buffers are appropriately padded, in must provide
  * LZO_INPUT_PADDING, out must provide LZO_OUTPUT_PADDING additional bytes
  */
-int lzo1x_decode(atUint8 *out, atInt32 *outlen, const atUint8 *in, atInt32 *inlen) {
+int lzo1x_decode(atUint8 *out, atInt32 *outlen, atUint8 *in, atInt32 *inlen) {
     enum {COPY, BACKPTR} state = COPY;
     atInt32 x;
     LZOContext c;
@@ -225,7 +225,7 @@ int lzo1x_decode(atUint8 *out, atInt32 *outlen, const atUint8 *in, atInt32 *inle
             copy(&c, cnt);
         x = get_byte(&c);
     }
-    *inlen = c.in_end - c.in;
-    *outlen = c.out_end - c.out;
+    *inlen = (atInt32)(c.in_end - c.in);
+    *outlen = (atInt32)(c.out_end - c.out);
     return c.error;
 }

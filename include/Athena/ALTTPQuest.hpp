@@ -674,7 +674,7 @@ private:
     atUint8                           m_bombFlag;
     std::vector<atUint8>              m_unknown1;
     std::vector<atUint16>             m_playerName;
-    atUint16                          m_valid;
+    bool                              m_valid;
     std::vector<atUint16>             m_dungeonDeathTotals;
     atUint16                          m_unknown2;
     atUint16                          m_deathSaveCount;

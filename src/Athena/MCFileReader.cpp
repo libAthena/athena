@@ -40,6 +40,8 @@ MCFile* MCFileReader::readFile()
 
     if (isScrambled)
         MCFile::unscramble(base::m_data, base::m_length);
+
+    return nullptr;
 }
 
 

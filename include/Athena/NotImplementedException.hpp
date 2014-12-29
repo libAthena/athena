@@ -33,6 +33,6 @@ public:
 } // Athena
 
 #define THROW_NOT_IMPLEMENTED_EXCEPTION() \
-    do { throw Athena::error::NotImplementedException("NotImplementedException", __FILE__, __PRETTY_FUNCTION__, __LINE__); } while(0)
+    do { throw Athena::error::NotImplementedException("NotImplementedException", __FILE__, AT_PRETTY_FUNCTION, __LINE__); } while(0)
 
 #endif // NOTIMPLEMENTEDEXCEPTION_HPP

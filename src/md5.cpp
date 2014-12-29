@@ -84,6 +84,10 @@
 #include <malloc.h>
 #include <ctype.h>
 
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#endif
+
 #include "md5.h"
 
 namespace MD5Hash
@@ -560,7 +564,7 @@ unsigned char * MD5fromFile(unsigned char *dst, const char *src)
 
     do
     {
-        read = fread(buffer, 1, blksize, file);
+        read = (int)fread(buffer, 1, blksize, file);
         (void) auth_md5SumCtx(ctx, buffer, read); /* Pass only one block. */
 
     } while (read > 0);

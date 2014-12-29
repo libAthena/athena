@@ -149,7 +149,7 @@ QList<int> Sprite::stateIds() const
 
 atUint32 Sprite::stateCount() const
 {
-    return m_stateIds.size();
+    return (atUint32)m_stateIds.size();
 }
 
 void Sprite::setCurrentState(const atUint32 id)
@@ -231,7 +231,7 @@ void Sprite::setFrames(QList<SpriteFrame*> frames)
 
 atUint32 Sprite::frameCount() const
 {
-    return m_frames.size();
+    return (atUint32)m_frames.size();
 }
 
 #ifndef ATHENA_USE_QT
@@ -282,7 +282,7 @@ void Sprite::advanceFrame()
 {
     m_currentFrame++;
     if (m_currentFrame >= m_frames.size())
-        m_currentFrame = m_frames.size() - 1;
+        m_currentFrame = (atUint32)m_frames.size() - 1;
 }
 
 void Sprite::retreatFrame()

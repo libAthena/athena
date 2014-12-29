@@ -157,7 +157,7 @@ void WiiFile::addChild(WiiFile *file)
     {
         // add them from the beginning of the path up
         tmpName = tmpName.substr(0, tmpName.find('/'));
-        for (int i = 0; i < m_children.size(); i++)
+        for (atUint32 i = 0; i < m_children.size(); i++)
         {
             if (!m_children[i]->filename().compare(tmpName))
             {
@@ -226,7 +226,7 @@ void WiiFile::setParent(WiiFile* parent)
 
 atUint32 WiiFile::fileCount()
 {
-    int ret = m_children.size();
+    size_t ret = m_children.size();
 
     for (WiiFile* f : m_children)
     {
@@ -236,7 +236,7 @@ atUint32 WiiFile::fileCount()
         ret += f->fileCount();
     }
 
-    return ret;
+    return (atUint32)ret;
 }
 
 std::vector<WiiFile *> WiiFile::allChildren()

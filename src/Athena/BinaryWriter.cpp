@@ -185,14 +185,14 @@ void BinaryWriter::save(const std::string& filename)
     if (!out)
         THROW_FILE_NOT_FOUND_EXCEPTION(m_filepath);
 
-    atUint32 done = 0;
-    atUint32 blocksize = BLOCKSZ;
+    atUint64 done = 0;
+    atUint64 blocksize = BLOCKSZ;
     do
     {
         if (blocksize > m_length - done)
             blocksize = m_length - done;
 
-        atInt32 ret = fwrite(m_data + done, 1, blocksize, out);
+        atInt64 ret = fwrite(m_data + done, 1, blocksize, out);
 
         if (ret < 0)
             THROW_IO_EXCEPTION("Error writing data to disk");

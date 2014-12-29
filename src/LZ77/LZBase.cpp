@@ -112,8 +112,8 @@ Normally a search for one byte is matched, then two, then three, all the way up
 */
 LZLengthOffset LZBase::windowSearch(atUint8* beginSearchPtr, atUint8* searchPosPtr, atUint8* endLABufferPtr, atUint8* startLBPtr)
 {
-    atInt32 size=endLABufferPtr-beginSearchPtr;//Size of the entire sliding window
-    atInt32 n=endLABufferPtr-searchPosPtr;
+    atInt32 size=(atUint32)(endLABufferPtr-beginSearchPtr);//Size of the entire sliding window
+    atInt32 n=(atUint32)(endLABufferPtr-searchPosPtr);
     LZLengthOffset result={0,0};
     atInt32 temp=0;
     if(n > size)//If the string that is being looked for is bigger than the string that is being searched

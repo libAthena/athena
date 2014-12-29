@@ -199,7 +199,7 @@ QList<STexture*> SpriteFile::textures() const
 
 atUint32 SpriteFile::textureCount() const
 {
-    return m_textures.size();
+    return (atUint32)m_textures.size();
 }
 
 void SpriteFile::addSprite(Sprite* sprite)
@@ -297,7 +297,7 @@ QMap<QString, Sprite*> SpriteFile::sprites() const
 
 atUint32 SpriteFile::spriteCount() const
 {
-    return m_sprites.size();
+    return (atUint32)m_sprites.size();
 }
 
 #ifndef ATHENA_USE_QT

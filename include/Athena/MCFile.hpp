@@ -31,8 +31,8 @@ class MCSlot;
 class MCFile
 {
 public:
-    static constexpr char* VERSION_EU_JP = (char*)"AGBZELDA:THE MINISH CAP:ZELDA 3\0";
-    static constexpr char* VERSION_US    = (char*)"AGBZELDA:THE MINISH CAP:ZELDA 5\0";
+    static const char VERSION_EU_JP[33];
+    static const char VERSION_US[33];
     enum SlotType
     {
         New     = 0x54494E49,
@@ -42,7 +42,7 @@ public:
 
     MCFile();
 
-    static atUint8* unscramble(atUint8* data, atUint32 length);
+    static atUint8* unscramble(atUint8* data, atUint64 length);
 private:
     MCSlot* m_slots[3];
 };

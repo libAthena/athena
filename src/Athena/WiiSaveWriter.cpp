@@ -78,7 +78,7 @@ bool WiiSaveWriter::writeSave(WiiSave *save, atUint8 *macAddress, atUint32 ngId,
     {
         totalSize += writeFile(file);
     }
-    int pos = base::position();
+    atUint64 pos = base::position();
     // Write size data
     base::seek(0xF0C0 + 0x10, SeekOrigin::Begin);
     base::writeUint32(totalSize);
@@ -97,7 +97,7 @@ void WiiSaveWriter::writeBanner(WiiBanner *banner)
 {
     base::setEndian(Endian::BigEndian);
     base::writeInt64(banner->gameID());
-    base::writeInt32((0x60a0+0x1200)*banner->icons().size());
+    base::writeInt32((0x60a0+0x1200)*(atUint32)banner->icons().size());
     base::writeByte((atInt8)banner->permissions());
     base::seek(1);
     base::writeBytes((atInt8*)MD5_BLANKER, 16);

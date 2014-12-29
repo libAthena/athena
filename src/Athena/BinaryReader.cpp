@@ -177,7 +177,7 @@ bool BinaryReader::readBit()
     if (m_position > m_length)
         THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", m_position);
 
-    bool ret = (*(atUint8*)(m_data + m_position) & (1 << m_bitPosition));
+    bool ret = (*(atUint8*)(m_data + m_position) & (1 << m_bitPosition)) != 0;
 
     m_bitPosition++;
     if (m_bitPosition > 7)
@@ -444,29 +444,28 @@ void BinaryReader::setProgressCallback(std::function<void (int)> cb)
 void BinaryReader::loadData()
 {
     FILE* in;
-    atUint32 length;
+    atUint64 length;
     in = fopen(m_filepath.c_str(), "rb");
 
     if (!in)
         THROW_FILE_NOT_FOUND_EXCEPTION(m_filepath);
+    rewind(in);
 
-    fseek(in, 0, SEEK_END);
-    length = ftell(in);
-    fseek(in, 0, SEEK_SET);
+    length = utility::fileSize(m_filepath);
 #ifdef HW_RVL
     m_data = (Uint8*)memalign(32, length);
 #else
     m_data = new atUint8[length];
 #endif
 
-    atUint32 done = 0;
-    atUint32 blocksize = BLOCKSZ;
+    atUint64 done = 0;
+    atUint64 blocksize = BLOCKSZ;
     do
     {
         if (blocksize > length - done)
             blocksize = length - done;
 
-        atInt32 ret = fread(m_data + done, 1, blocksize, in);
+        atInt64 ret = fread(m_data + done, 1, blocksize, in);
 
         if (ret < 0)
             THROW_IO_EXCEPTION("Error reading data from disk");

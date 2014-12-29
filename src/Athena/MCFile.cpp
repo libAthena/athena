@@ -18,6 +18,8 @@
 namespace Athena
 {
 
+const char MCFile::VERSION_EU_JP[33] = "AGBZELDA:THE MINISH CAP:ZELDA 3\0";
+const char MCFile::VERSION_US[33]    = "AGBZELDA:THE MINISH CAP:ZELDA 5\0";
 MCFile::MCFile()
 {
 }
@@ -38,7 +40,7 @@ atUint8* reverse(atUint8* data, atUint32 length)
     return data;
 }
 
-atUint8* MCFile::unscramble(atUint8* data, atUint32 length)
+atUint8* MCFile::unscramble(atUint8* data, atUint64 length)
 {
     if (!data)
         return nullptr;

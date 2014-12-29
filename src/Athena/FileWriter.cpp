@@ -18,6 +18,11 @@
 #include "Athena/InvalidDataException.hpp"
 #include "Athena/InvalidOperationException.hpp"
 #include "Athena/IOException.hpp"
+
+#ifdef _MSC_VER
+#include "win32_largefilewrapper.h"
+#endif
+
 #include "utf8.h"
 
 namespace Athena

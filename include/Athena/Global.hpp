@@ -20,27 +20,33 @@
 #include "Athena/Utility.hpp"
 #include <iostream>
 
-#ifndef __PRETTY_FUNCTION__
-#   ifdef __FUNCSIG__
-#       define __PRETTY_FUNCTION__ __FUNCSIG__
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#endif
+
+#ifndef AT_PRETTY_FUNCTION
+#   ifdef __PRETTY_FUNCTION__
+#       define AT_PRETTY_FUNCTION __PRETTY_FUNCTION__
+#   elif defined(__FUNCSIG__)
+#       define AT_PRETTY_FUNCTION __FUNCSIG__
 #   elif defined(__FUNCTION__)
-#       define __PRETTY_FUNCTION__ __FUNCTION__
+#       define AT_PRETTY_FUNCTION __FUNCTION__
 #   elif defined(__FUNC__)
-#       define __PRETTY_FUNCTION__ __FUNC__
+#       define AT_PRETTY_FUNCTION __FUNC__
 #   elif defined(__func__)
-#       define __PRETTY_FUNCTION__ __func__
+#       define AT_PRETTY_FUNCTION __func__
 #   else
-#       define __PRETTY_FUNCTION__ "<unknown>"
+#       define AT_PRETTY_FUNCTION "<unknown>"
 #   endif
 #endif
 
 #ifndef aDebug
 #define aDebug() \
-    std::cout << __FILE__ << "(" << __LINE__ << ") " << __PRETTY_FUNCTION__ << ": "
+    std::cout << __FILE__ << "(" << __LINE__ << ") " << AT_PRETTY_FUNCTION << ": "
 #endif
 #ifndef aError
 #define aError() \
-    std::cerr << __FILE__ << "(" << __LINE__ << ") " << __PRETTY_FUNCTION__ << ": "
+    std::cerr << __FILE__ << "(" << __LINE__ << ") " << AT_PRETTY_FUNCTION << ": "
 #endif
 
 #ifndef aPrint
