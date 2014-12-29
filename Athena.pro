@@ -1,6 +1,7 @@
 CONFIG += staticlib c++11 c11
 TEMPLATE= lib
 DESTDIR = ./lib
+unix:QMAKE_CXXFLAGS += c++11 c11
 
 # Uncomment this if you wish to use Qt with libAthena
 #DEFINES += ATHENA_USE_QT
