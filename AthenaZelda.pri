@@ -1,5 +1,6 @@
-!contains($$INCLUDEPATH, $$PWD/include): {
-	include(AthenaCore.pri)
+!contains(ATHENA_CORE, true): {
+    message("including core")
+    include(AthenaCore.pri)
 }
 
 SOURCES += \
@@ -32,13 +33,4 @@ HEADERS += \
     $$PWD/include/Athena/SkywardSwordFile.hpp \
     $$PWD/include/Athena/SkywardSwordFileReader.hpp \
     $$PWD/include/Athena/SkywardSwordFileWriter.hpp \
-    $$PWD/include/Athena/SkywardSwordQuest.hpp \
-    $$PWD/include/Athena/Sprite.hpp \
-    $$PWD/include/Athena/SpriteFile.hpp \
-    $$PWD/include/Athena/SpriteFileReader.hpp \
-    $$PWD/include/Athena/SpriteFileWriter.hpp \
-    $$PWD/include/Athena/SpriteFrame.hpp \
-    $$PWD/include/Athena/SpritePart.hpp \
-    $$PWD/include/Athena/ZQuestFile.hpp \
-    $$PWD/include/Athena/ZQuestFileReader.hpp \
-    $$PWD/include/Athena/ZQuestFileWriter.hpp
+    $$PWD/include/Athena/SkywardSwordQuest.hpp

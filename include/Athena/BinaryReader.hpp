@@ -167,13 +167,13 @@ public:
      *
      * \return Uint8* The buffer at the current position from the given length.
      */
-    atInt8* readBytes(atInt64 length);
+    atInt8* readBytes(atUint64 length);
 
     /*! \brief Reads a byte at the current position and advances the current position.
      *
      * \return Int8* The buffer at the current position from the given length.
      */
-    atUint8* readUBytes(atInt64 length);
+    atUint8* readUBytes(atUint64 length);
 
     /*! \brief Reads a Int16 and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position

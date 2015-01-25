@@ -38,7 +38,7 @@ namespace io
  */
 class WiiSaveWriter : protected BinaryWriter
 {
-    BINARYWRITER_BASE
+    BINARYWRITER_BASE();
 public:
     /*! \brief This constructor creates an instance from a file on disk.
      *

@@ -36,7 +36,7 @@ namespace io
  */
 class ALTTPFileWriter : protected BinaryWriter
 {
-    BINARYWRITER_BASE
+    BINARYWRITER_BASE();
 
 public:
     /*! \brief This constructor takes an existing buffer to write to.

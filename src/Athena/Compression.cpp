@@ -15,7 +15,7 @@
 
 #include "Athena/Compression.hpp"
 #include "Athena/Exception.hpp"
-#include "lzo.h"
+#include <lzo/lzo1x.h>
 #include <iostream>
 #include <zlib.h>
 #include "LZ77/LZType10.hpp"
@@ -105,11 +105,13 @@ atInt32 compressZlib(const atUint8 *src, atUint32 srcLen, atUint8* dst, atUint32
     return ret;
 }
 
-atInt32 decompressLZO(const atUint8* source, atInt32 sourceSize, atUint8* dst, atInt32& dstSize)
+atInt32 decompressLZO(const atUint8* source, const atInt32 sourceSize, atUint8* dst, atInt32& dstSize)
 {
+    int srcSize = sourceSize;
     int size = dstSize;
-    int result = lzo1x_decode(dst, &size, (atUint8*)source, &sourceSize);
-    dstSize = size;
+    int result = lzo1x_decompress(source, srcSize, dst, (lzo_uintp)&size, NULL);
+    dstSize -= size;
+
     return result;
 }
 
@@ -353,8 +355,6 @@ atUint32 compressLZ77(const atUint8* src, atUint32 srcLen, atUint8** dst, bool e
 
     return retLength;
 }
-
-
 
 } // Compression
 } // io

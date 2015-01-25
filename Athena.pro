@@ -1,6 +1,7 @@
 CONFIG += staticlib c++11
 TEMPLATE= lib
 DESTDIR = ./lib
+INCLUDEPATH += $$PWD/include
 
 # Uncomment this if you wish to use Qt with libAthena
 #DEFINES += ATHENA_USE_QT
@@ -28,6 +29,8 @@ CONFIG(release, release|debug): {
     # where to put them
     OBJECTS_DIR = obj/release
 }
+
+ATHENA_PRO=true
 
 include(Athena.pri)
 

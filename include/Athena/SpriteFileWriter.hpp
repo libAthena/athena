@@ -31,7 +31,7 @@ namespace io
 
 class SpriteFileWriter : public BinaryWriter
 {
-    BINARYWRITER_BASE;
+    BINARYWRITER_BASE();
 public:
     SpriteFileWriter(atUint8* data, atUint64 length);
 

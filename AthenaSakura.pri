@@ -1,5 +1,6 @@
-!contains($$INCLUDEPATH, $$PWD/include): {
-	include(AthenaCore.pri)
+!contains(ATHENA_CORE, true): {
+    message("including core")
+    include(AthenaCore.pri)
 }
 
 SOURCES += \

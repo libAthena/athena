@@ -28,8 +28,7 @@ namespace io
 
 class SkywardSwordFileWriter : public BinaryWriter
 {
-    // Why does this fuck up my formatting in Qt Creator?
-    BINARYWRITER_BASE
+    BINARYWRITER_BASE();
 public:
     SkywardSwordFileWriter(atUint8* data, atUint64 len);
     SkywardSwordFileWriter(const std::string& filename);

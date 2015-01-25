@@ -31,7 +31,7 @@ namespace io
  */
 class ZQuestFileWriter : protected BinaryWriter
 {
-    BINARYWRITER_BASE
+    BINARYWRITER_BASE();
 
 public:
     /*!

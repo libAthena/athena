@@ -224,12 +224,12 @@ atUint8 BinaryReader::readUByte()
     return *(atUint8*)(m_data + m_position++);
 }
 
-atInt8* BinaryReader::readBytes(atInt64 length)
+atInt8* BinaryReader::readBytes(atUint64 length)
 {
     return (atInt8*)readUBytes(length);
 }
 
-atUint8* BinaryReader::readUBytes(atInt64 length)
+atUint8* BinaryReader::readUBytes(atUint64 length)
 {
     if (!m_data)
         loadData();

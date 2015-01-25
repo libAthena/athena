@@ -292,8 +292,8 @@ private:
 }
 
 #ifndef BINARYWRITER_BASE
-#define BINARYWRITER_BASE \
+#define BINARYWRITER_BASE() \
     private: \
-        typedef Athena::io::BinaryWriter base;
+        typedef Athena::io::BinaryWriter base
 #endif // BINARYWRITER_BASE
 #endif // __BINARY_WRITER_HPP__
