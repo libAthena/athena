@@ -48,7 +48,7 @@ public:
      */
     BinaryReader(const std::string& filename, std::function<void(int)> progressFun = nullptr);
 
-    ~BinaryReader();
+    virtual ~BinaryReader();
 
     /*! \brief Sets the Endianss of the stream
      *

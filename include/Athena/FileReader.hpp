@@ -28,7 +28,7 @@ class FileReader : public Stream
 {
 public:
     FileReader(const std::string& filename);
-    ~FileReader();
+    virtual ~FileReader();
     std::string filename() const;
 
     void setEndian(Endian endian);

@@ -49,7 +49,7 @@ public:
      */
     BinaryWriter(const std::string& filename, std::function<void(int)> progressFun = nullptr);
 
-    ~BinaryWriter();
+    virtual ~BinaryWriter();
 
     /*! \brief Sets the Endianss of the stream
      *

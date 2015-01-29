@@ -26,7 +26,7 @@ class FileWriter : public Stream
 {
 public:
     FileWriter(const std::string& filename);
-    ~FileWriter();
+    virtual ~FileWriter();
 
     void setEndian(Endian endian);
     Endian endian() const;
