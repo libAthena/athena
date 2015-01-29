@@ -60,9 +60,9 @@ public:
     double readDouble();
     float  readFloat();
     bool   readBool();
-    std::string readString();
-    std::string readUnicode();
-private:
+    std::string readString(atInt32 maxlen = -1);
+    std::string readUnicode(atInt32 maxlen = -1);
+protected:
     std::string  m_filename;
     FILE*        m_fileHandle;
     Endian       m_endian;
@@ -74,9 +74,9 @@ private:
 } // Athena
 
 #ifndef FILEREADER_BASE
-#define FILEREADER_BASE \
+#define FILEREADER_BASE() \
 private: \
-    typedef Athena::io::FileReader base;
+    typedef Athena::io::FileReader base
 
 #endif // FILEREADER_BASE
 

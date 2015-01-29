@@ -298,21 +298,26 @@ bool FileReader::readBool()
     return (readByte() != 0);
 }
 
-std::string FileReader::readString()
+std::string FileReader::readString(atInt32 maxlen)
 {
     std::string ret = "";
     atUint8 chr = readByte();
 
+    atInt32 i = 0;
     while (chr != 0)
     {
+        if (maxlen >= 0 && i >= maxlen - 1)
+            break;
+
         ret += chr;
         chr = readByte();
+        i++;
     }
 
     return ret;
 }
 
-std::string FileReader::readUnicode()
+std::string FileReader::readUnicode(atInt32 maxlen)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
@@ -320,13 +325,18 @@ std::string FileReader::readUnicode()
     std::string ret;
     std::vector<short> tmp;
 
+    atInt32 i = 0;
     for(;;)
     {
+        if (maxlen >= 0 && i >= maxlen - 1)
+            break;
+
         short chr = readUint16();
         if (chr)
             tmp.push_back(chr);
         else
             break;
+        i++;
     };
 
     utf8::utf16to8(tmp.begin(), tmp.end(), back_inserter(ret));

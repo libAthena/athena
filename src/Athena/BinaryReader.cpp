@@ -403,34 +403,45 @@ bool BinaryReader::readBool()
     return ret;
 }
 
-std::string BinaryReader::readUnicode()
+std::string BinaryReader::readUnicode(atInt32 maxlen)
 {
     if (!m_data)
         loadData();
     std::string ret;
     std::vector<short> tmp;
     atUint16 chr = readUint16();
+
+    atInt32 i = 0;
     for(;;)
     {
+        if (maxlen >= 0 && i >= maxlen - 1)
+            break;
+
         if (!chr)
             break;
         tmp.push_back(chr);
         chr = readUint16();
+        i++;
     }
 
     utf8::utf16to8(tmp.begin(), tmp.end(), back_inserter(ret));
     return ret;
 }
 
-std::string BinaryReader::readString()
+std::string BinaryReader::readString(atInt32 maxlen)
 {
     std::string ret = "";
     atUint8 chr = readByte();
 
+    atInt32 i = 0;
     while (chr != 0)
     {
+        if (maxlen >= 0 && i >= maxlen - 1)
+            break;
+
         ret += chr;
         chr = readByte();
+        i++;
     }
 
     return ret;

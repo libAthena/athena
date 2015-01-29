@@ -56,8 +56,8 @@ protected:
     virtual double readDouble()      {THROW_NOT_IMPLEMENTED_EXCEPTION();}
     virtual float  readFloat()       {THROW_NOT_IMPLEMENTED_EXCEPTION();}
     virtual bool   readBool()        {THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual std::string readUnicode(){THROW_NOT_IMPLEMENTED_EXCEPTION();}
-    virtual std::string readString() {THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual std::string readUnicode(atInt32){THROW_NOT_IMPLEMENTED_EXCEPTION();}
+    virtual std::string readString(atInt32) {THROW_NOT_IMPLEMENTED_EXCEPTION();}
     // Writing
     virtual void writeBit   (bool){THROW_NOT_IMPLEMENTED_EXCEPTION();}
     virtual void writeUByte (atUint8){THROW_NOT_IMPLEMENTED_EXCEPTION();}

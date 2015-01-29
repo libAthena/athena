@@ -267,14 +267,14 @@ public:
      *  \return std::string The value at the current address
      *  \throw IOException when address is out of range
      */
-    std::string readUnicode();
+    std::string readUnicode(atInt32 maxlen = -1);
 
     /*! \brief Reads a string and advances the position in the file
      *
      *  \return std::string The value at the current address
      *  \throw IOException when address is out of range
      */
-    std::string readString();
+    std::string readString(atInt32 maxlen = -1);
 
     void setProgressCallback(std::function<void(int)> cb);
 protected:
