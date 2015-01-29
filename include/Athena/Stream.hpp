@@ -28,7 +28,7 @@ std::ostream& operator<<(std::ostream& os, Endian& endian);
 class Stream
 {
 public:
-    virtual Stream() {}
+    virtual ~Stream() {}
 
     virtual void setEndian(Endian)    = 0;
     virtual Endian endian()      const= 0;
