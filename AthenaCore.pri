@@ -1,7 +1,7 @@
 !contains(ATHENA_PRO, true): {
     INCLUDEPATH += $$PWD/include
     unix:LIBS += -lz -llzo2
-    win32:LIBS += -lzlib -llzo2
+    win32:LIBS += -lz -llzo2
     QMAKE_CXXFLAGS += -std=c++11
 }
 
