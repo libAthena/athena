@@ -39,7 +39,7 @@ public:
     virtual bool atEnd()         const= 0;
     virtual atUint64 position()    const= 0;
     virtual atUint64 length()      const= 0;
-protected:
+public:
     virtual void seekBit    (int){THROW_NOT_IMPLEMENTED_EXCEPTION();}
     // Reading
     virtual bool   readBit()         {THROW_NOT_IMPLEMENTED_EXCEPTION();}
