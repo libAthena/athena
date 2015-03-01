@@ -16,7 +16,7 @@
 #ifndef MEMORYWRITER_HPP
 #define MEMORYWRITER_HPP
 
-#include "Athena/IStream.hpp"
+#include "Athena/IStreamWriter.hpp"
 #include <string>
 #include <functional>
 
@@ -33,7 +33,7 @@ namespace io
  *  this allows for fast, flexible code as well as the ability to quickly modify data
  *  \sa Stream
  */
-class MemoryWriter : public IStream
+class MemoryWriter : public IStreamWriter
 {
 public:
     /*! \brief This constructor takes an existing buffer to write to.

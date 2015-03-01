@@ -10,7 +10,7 @@ namespace io
 class IStreamWriter : public IStream
 {
 public:
-    virtual ~IStreamWriter();
+    virtual ~IStreamWriter() {}
     virtual void setEndian(Endian)    = 0;
     virtual Endian endian()      const= 0;
     virtual bool isBigEndian()   const= 0;
