@@ -1,6 +1,6 @@
 #include "LZ77/LZLookupTable.hpp"
 #include "LZ77/LZType10.hpp"
-#include <Athena/BinaryWriter.hpp>
+#include <Athena/MemoryWriter.hpp>
 #include <memory.h>
 
 LZType10::LZType10(atInt32 MinimumOffset, atInt32 SlidingWindow, atInt32 MinimumMatch, atInt32 BlockSize)
@@ -16,7 +16,7 @@ atUint32 LZType10::compress(const atUint8* src, atUint8** dstBuf, atUint32 srcLe
     atUint32 encodeSize=(srcLength<<8)|(0x10);
     encodeSize = Athena::utility::LittleUint32(encodeSize); //File size needs to be written as little endian always
 
-    Athena::io::BinaryWriter outbuf("tmp");
+    Athena::io::MemoryWriter outbuf("tmp");
     outbuf.writeUint32(encodeSize);
 
     atUint8* ptrStart=(atUint8*)src;

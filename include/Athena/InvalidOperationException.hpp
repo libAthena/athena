@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __INVALID_OPERATION_EXCEPTION_HPP__
-#define __INVALID_OPERATION_EXCEPTION_HPP__
+#ifndef INVALID_OPERATION_EXCEPTION_HPP
+#define INVALID_OPERATION_EXCEPTION_HPP
 
 #include <string>
 #include <stdarg.h>
@@ -60,4 +60,4 @@ public:
         throw Athena::error::InvalidOperationException(std::string("InvalidOperationException: ")+msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__); \
     } while(0)
 #endif
-#endif // __INVALID_OPERATION_EXCEPTION_HPP__
+#endif // INVALID_OPERATION_EXCEPTION_HPP

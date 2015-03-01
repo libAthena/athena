@@ -13,10 +13,10 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __BINARYREADER_HPP__
-#define __BINARYREADER_HPP__
+#ifndef MEMORYREADER_HPP
+#define MEMORYREADER_HPP
 
-#include "Athena/Stream.hpp"
+#include "Athena/IStreamReader.hpp"
 #include <string>
 #include <functional>
 
@@ -32,7 +32,7 @@ namespace io
  *  this allows for fast, flexible code as well as the ability to quickly modify data
  *  \sa Stream
  */
-class BinaryReader : public Stream
+class MemoryReader : public IStreamReader
 {
 public:
     /*! \brief This constructor takes an existing buffer to read from.
@@ -40,15 +40,15 @@ public:
      *   \param data The existing buffer
      *   \param length The length of the existing buffer
      */
-    BinaryReader(const atUint8* data, atUint64 length);
+    MemoryReader(const atUint8* data, atUint64 length);
 
     /*! \brief This constructor creates an instance from a file on disk.
      *
      * \param filename The file to create the stream from
      */
-    BinaryReader(const std::string& filename, std::function<void(int)> progressFun = nullptr);
+    MemoryReader(const std::string& filename, std::function<void(int)> progressFun = nullptr);
 
-    virtual ~BinaryReader();
+    virtual ~MemoryReader();
 
     /*! \brief Sets the Endianss of the stream
      *
@@ -291,11 +291,11 @@ protected:
 } // io
 } // Athena
 
-#ifndef BINARYREADER_BASE
-#define BINARYREADER_BASE() \
+#ifndef MEMORYREADER_BASE
+#define MEMORYREADER_BASE() \
 private: \
-    typedef Athena::io::BinaryReader base
+    typedef Athena::io::MemoryReader base
 
-#endif // BINARYREADER_BASE
+#endif // MEMORYREADER_BASE
 
-#endif // __BINARYREADER_HPP__
+#endif // MEMORYREADER_HPP

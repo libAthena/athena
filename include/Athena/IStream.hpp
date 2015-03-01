@@ -1,4 +1,3 @@
-#ifndef ATHENA_NO_SAKURA
 // This file is part of libAthena.
 //
 // libAthena is free software: you can redistribute it and/or modify
@@ -14,33 +13,34 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef SSPRITEFILEREADER_HPP
-#define SSPRITEFILEREADER_HPP
+#ifndef STREAM_HPP
+#define STREAM_HPP
 
-#include "Athena/MemoryReader.hpp"
+#include "Global.hpp"
+#include "Athena/NotImplementedException.hpp"
 
 namespace Athena
 {
-namespace Sakura
-{
-class SpriteFile;
-} // Sakura
-
 namespace io
 {
+std::ostream& operator<<(std::ostream& os, Endian& endian);
 
-class SpriteFileReader : public MemoryReader
+class IStream
 {
-    MEMORYREADER_BASE();
 public:
-    SpriteFileReader(atUint8* data, atUint64 length);
-    SpriteFileReader(const std::string& filepath);
+    virtual ~IStream() {}
 
-    Sakura::SpriteFile* readFile();
+    virtual void setEndian(Endian)    = 0;
+    virtual Endian endian()      const= 0;
+    virtual bool isBigEndian()   const= 0;
+    virtual bool isLittleEndian()const= 0;
+    virtual bool isOpen()        const= 0;
+    virtual void seek(atInt64, SeekOrigin)=0;
+    virtual bool atEnd()         const= 0;
+    virtual atUint64 position()    const= 0;
+    virtual atUint64 length()      const= 0;
+    virtual void seekBit    (int)=0;
 };
-} // io
-} // zelda
-
-
-#endif // SSPRITEFILEREADER_HPP
-#endif // ATHENA_NO_SAKURA
+}
+}
+#endif // STREAM_HPP

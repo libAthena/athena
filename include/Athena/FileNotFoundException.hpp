@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __FILENOTFOUNDEXCEPTION_HPP__
-#define __FILENOTFOUNDEXCEPTION_HPP__
+#ifndef FILENOTFOUNDEXCEPTION_HPP
+#define FILENOTFOUNDEXCEPTION_HPP
 
 #include "Athena/Exception.hpp"
 
@@ -54,4 +54,4 @@ private:
 #define THROW_FILE_NOT_FOUND_EXCEPTION(msg) \
     do  { throw Athena::error::FileNotFoundException(msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__); } while(0)
 
-#endif
+#endif // FILENOTFOUNDEXCEPTION_HPP

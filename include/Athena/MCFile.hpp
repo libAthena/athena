@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __MCFILE_HPP__
-#define __MCFILE_HPP__
+#ifndef MCFILE_HPP
+#define MCFILE_HPP
 
 #include "Athena/Global.hpp"
 
@@ -48,4 +48,4 @@ private:
 };
 
 } // zelda
-#endif // __MCFILE_HPP__
+#endif // MCFILE_HPP

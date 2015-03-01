@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __WII_SAVE_READER_HPP__
-#define __WII_SAVE_READER_HPP__
+#ifndef WIISAVEREADER_HPP
+#define WIISAVEREADER_HPP
 
 #include "Athena/Global.hpp"
-#include "Athena/BinaryReader.hpp"
+#include "Athena/MemoryReader.hpp"
 
 namespace Athena
 {
@@ -37,9 +37,9 @@ namespace io
  *  all work is done using a memory buffer, and not read directly from the disk.
  *  \sa BinaryReader
  */
-class WiiSaveReader : protected BinaryReader
+class WiiSaveReader : protected MemoryReader
 {
-    BINARYREADER_BASE();
+    MEMORYREADER_BASE();
 public:
     /*! \brief This constructor takes an existing buffer to read from.
      *
@@ -69,5 +69,5 @@ private:
 
 } // io
 } // zelda
-#endif // __WII_SAVE_READER_HPP__
+#endif // WIISAVEREADER_HPP
 #endif // ATHENA_NO_SAVES

@@ -16,7 +16,7 @@
 #ifndef FILESTREAM_HPP
 #define FILESTREAM_HPP
 
-#include "Athena/Stream.hpp"
+#include "Athena/IStreamReader.hpp"
 #include <string>
 #include <cstdio>
 
@@ -24,7 +24,7 @@ namespace Athena
 {
 namespace io
 {
-class FileReader : public Stream
+class FileReader : public IStreamReader
 {
 public:
     FileReader(const std::string& filename);

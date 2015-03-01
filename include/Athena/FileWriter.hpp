@@ -16,13 +16,13 @@
 #ifndef FILEWRITER_HPP
 #define FILEWRITER_HPP
 
-#include "Athena/Stream.hpp"
+#include "Athena/IStreamWriter.hpp"
 
 namespace Athena
 {
 namespace io
 {
-class FileWriter : public Stream
+class FileWriter : public IStreamWriter
 {
 public:
     FileWriter(const std::string& filename);
@@ -71,7 +71,7 @@ private:
 } // Athena
 
 #ifndef FILEWRITER_BASE
-#define FILEWRITER_BASE \
+#define FILEWRITER_BASE() \
 private: \
     typedef Athena::io::FileWriter base;
 

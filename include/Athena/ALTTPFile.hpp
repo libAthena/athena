@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __ALTTP_FILE_HPP__
-#define __ALTTP_FILE_HPP__
+#ifndef ALTTP_FILE_HPP
+#define ALTTP_FILE_HPP
 
 #include "Athena/Types.hpp"
 #include <vector>
@@ -89,5 +89,5 @@ private:
 };
 
 } // zelda
-#endif // __ALTTP_FILE_HPP__
+#endif // ALTTP_FILE_HPP
 #endif // ATHENA_NO_SAVES

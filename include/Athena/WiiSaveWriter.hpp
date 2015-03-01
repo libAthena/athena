@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __WII_SAVE_WRITER_HPP__
-#define __WII_SAVE_WRITER_HPP__
+#ifndef WIISAVEWRITER_HPP
+#define WIISAVEWRITER_HPP
 
-#include "Athena/BinaryWriter.hpp"
+#include "Athena/MemoryWriter.hpp"
 
 namespace Athena
 {
@@ -36,9 +36,9 @@ namespace io
  *  all work is done using a memory buffer, and not written directly to the disk.
  *  \sa BinaryReader
  */
-class WiiSaveWriter : protected BinaryWriter
+class WiiSaveWriter : protected MemoryWriter
 {
-    BINARYWRITER_BASE();
+    MEMORYWRITER_BASE();
 public:
     /*! \brief This constructor creates an instance from a file on disk.
      *
@@ -68,5 +68,5 @@ private:
 
 } // io
 } // zelda
-#endif // __WII_SAVE_WRITER_HPP__
+#endif // WIISAVEWRITER_HPP
 #endif // ATHENA_NO_SAVES

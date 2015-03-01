@@ -17,7 +17,7 @@
 #ifndef SSPRITEFILEWRITER_HPP
 #define SSPRITEFILEWRITER_HPP
 
-#include "Athena/BinaryWriter.hpp"
+#include "Athena/MemoryWriter.hpp"
 
 namespace Athena
 {
@@ -29,9 +29,9 @@ class SpriteFile;
 namespace io
 {
 
-class SpriteFileWriter : public BinaryWriter
+class SpriteFileWriter : public MemoryWriter
 {
-    BINARYWRITER_BASE();
+    MEMORYWRITER_BASE();
 public:
     SpriteFileWriter(atUint8* data, atUint64 length);
 

@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#include "Athena/BinaryWriter.hpp"
+#include "Athena/MemoryWriter.hpp"
 #include "Athena/IOException.hpp"
 #include "Athena/InvalidOperationException.hpp"
 #include "Athena/InvalidDataException.hpp"
@@ -34,7 +34,7 @@ namespace Athena
 namespace io
 {
 
-BinaryWriter::BinaryWriter(atUint8* data, atUint64 length)
+MemoryWriter::MemoryWriter(atUint8* data, atUint64 length)
     : m_data((atUint8*)data),
       m_length(length),
       m_position(0),
@@ -46,7 +46,7 @@ BinaryWriter::BinaryWriter(atUint8* data, atUint64 length)
         m_data = new atUint8[m_length];
 }
 
-BinaryWriter::BinaryWriter(const std::string& filename, std::function<void(int)> progressFun)
+MemoryWriter::MemoryWriter(const std::string& filename, std::function<void(int)> progressFun)
     : m_length(0),
       m_filepath(filename),
       m_position(0),
@@ -65,38 +65,38 @@ BinaryWriter::BinaryWriter(const std::string& filename, std::function<void(int)>
     memset(m_data, 0, m_length);
 }
 
-BinaryWriter::~BinaryWriter()
+MemoryWriter::~MemoryWriter()
 {
     delete[] m_data;
     m_data = nullptr;
 }
 
-void BinaryWriter::setEndian(Endian endian)
+void MemoryWriter::setEndian(Endian endian)
 {
     m_endian = endian;
 }
 
-Endian BinaryWriter::endian() const
+Endian MemoryWriter::endian() const
 {
     return m_endian;
 }
 
-bool BinaryWriter::isBigEndian() const
+bool MemoryWriter::isBigEndian() const
 {
     return (m_endian == Endian::BigEndian);
 }
 
-bool BinaryWriter::isLittleEndian() const
+bool MemoryWriter::isLittleEndian() const
 {
     return (m_endian == Endian::LittleEndian);
 }
 
-bool BinaryWriter::isOpen() const
+bool MemoryWriter::isOpen() const
 {
     return m_data != nullptr;
 }
 
-void BinaryWriter::seek(atInt64 position, SeekOrigin origin)
+void MemoryWriter::seek(atInt64 position, SeekOrigin origin)
 {
     switch (origin)
     {
@@ -128,32 +128,32 @@ void BinaryWriter::seek(atInt64 position, SeekOrigin origin)
     }
 }
 
-bool BinaryWriter::atEnd() const
+bool MemoryWriter::atEnd() const
 {
     return m_position >= m_length;
 }
 
-atUint64 BinaryWriter::position() const
+atUint64 MemoryWriter::position() const
 {
     return m_position;
 }
 
-atUint64 BinaryWriter::length() const
+atUint64 MemoryWriter::length() const
 {
     return m_length;
 }
 
-void BinaryWriter::setFilepath(const std::string& filepath)
+void MemoryWriter::setFilepath(const std::string& filepath)
 {
     m_filepath = filepath;
 }
 
-std::string BinaryWriter::filepath() const
+std::string MemoryWriter::filepath() const
 {
     return m_filepath;
 }
 
-void BinaryWriter::setData(const atUint8* data, atUint64 length)
+void MemoryWriter::setData(const atUint8* data, atUint64 length)
 {
     if (m_data)
         delete[] m_data;
@@ -164,7 +164,7 @@ void BinaryWriter::setData(const atUint8* data, atUint64 length)
     m_bitPosition = 0;
 }
 
-atUint8* BinaryWriter::data() const
+atUint8* MemoryWriter::data() const
 {
     atUint8* ret = new atUint8[m_length];
     memset(ret, 0, m_length);
@@ -173,7 +173,7 @@ atUint8* BinaryWriter::data() const
 }
 
 
-void BinaryWriter::save(const std::string& filename)
+void MemoryWriter::save(const std::string& filename)
 {
     if (filename.empty() && m_filepath.empty())
         THROW_INVALID_OPERATION_EXCEPTION("No file specified, cannot save.");
@@ -205,7 +205,7 @@ void BinaryWriter::save(const std::string& filename)
     fclose(out);
 }
 
-void BinaryWriter::seekBit(int bit)
+void MemoryWriter::seekBit(int bit)
 {
     if (bit < 0 || bit > 7)
         THROW_INVALID_OPERATION_EXCEPTION("bit out of range");
@@ -213,7 +213,7 @@ void BinaryWriter::seekBit(int bit)
     m_bitPosition = bit;
 }
 
-void BinaryWriter::writeBit(bool val)
+void MemoryWriter::writeBit(bool val)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
@@ -233,7 +233,7 @@ void BinaryWriter::writeBit(bool val)
     }
 }
 
-void BinaryWriter::writeUByte(atUint8 val)
+void MemoryWriter::writeUByte(atUint8 val)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
@@ -251,7 +251,7 @@ void BinaryWriter::writeUByte(atUint8 val)
     m_position++;
 }
 
-void BinaryWriter::writeByte(atInt8 val)
+void MemoryWriter::writeByte(atInt8 val)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
@@ -259,7 +259,7 @@ void BinaryWriter::writeByte(atInt8 val)
     writeUByte(val);
 }
 
-void BinaryWriter::writeUBytes(atUint8* data, atUint64 length)
+void MemoryWriter::writeUBytes(atUint8* data, atUint64 length)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
@@ -280,7 +280,7 @@ void BinaryWriter::writeUBytes(atUint8* data, atUint64 length)
     m_position += length;
 }
 
-void BinaryWriter::writeBytes(atInt8* data, atUint64 length)
+void MemoryWriter::writeBytes(atInt8* data, atUint64 length)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
@@ -288,7 +288,7 @@ void BinaryWriter::writeBytes(atInt8* data, atUint64 length)
     writeUBytes((atUint8*)data, length);
 }
 
-void BinaryWriter::writeInt16(atInt16 val)
+void MemoryWriter::writeInt16(atInt16 val)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
@@ -311,7 +311,7 @@ void BinaryWriter::writeInt16(atInt16 val)
     m_position += sizeof(atInt16);
 }
 
-void BinaryWriter::writeUint16(atUint16 val)
+void MemoryWriter::writeUint16(atUint16 val)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
@@ -319,7 +319,7 @@ void BinaryWriter::writeUint16(atUint16 val)
     writeInt16(val);
 }
 
-void BinaryWriter::writeInt32(atInt32 val)
+void MemoryWriter::writeInt32(atInt32 val)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
@@ -342,7 +342,7 @@ void BinaryWriter::writeInt32(atInt32 val)
     m_position += sizeof(atInt32);
 }
 
-void BinaryWriter::writeUint32(atUint32 val)
+void MemoryWriter::writeUint32(atUint32 val)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
@@ -350,7 +350,7 @@ void BinaryWriter::writeUint32(atUint32 val)
     writeInt32(val);
 }
 
-void BinaryWriter::writeInt64(atInt64 val)
+void MemoryWriter::writeInt64(atInt64 val)
 {
     if (m_bitPosition > 0)
     {
@@ -371,7 +371,7 @@ void BinaryWriter::writeInt64(atInt64 val)
     m_position += sizeof(atInt64);
 }
 
-void BinaryWriter::writeUint64(atUint64 val)
+void MemoryWriter::writeUint64(atUint64 val)
 {
     if (m_bitPosition > 0)
     {
@@ -392,7 +392,7 @@ void BinaryWriter::writeUint64(atUint64 val)
     m_position += sizeof(atUint64);
 }
 
-void BinaryWriter::writeFloat(float val)
+void MemoryWriter::writeFloat(float val)
 {
     if (m_bitPosition > 0)
     {
@@ -413,7 +413,7 @@ void BinaryWriter::writeFloat(float val)
     m_position += sizeof(float);
 }
 
-void BinaryWriter::writeDouble(double val)
+void MemoryWriter::writeDouble(double val)
 {
     if (m_bitPosition > 0)
     {
@@ -433,7 +433,7 @@ void BinaryWriter::writeDouble(double val)
     m_position += sizeof(double);
 }
 
-void BinaryWriter::writeBool(bool val)
+void MemoryWriter::writeBool(bool val)
 {
     if (m_bitPosition > 0)
     {
@@ -448,7 +448,7 @@ void BinaryWriter::writeBool(bool val)
     m_position += sizeof(bool);
 }
 
-void BinaryWriter::writeUnicode(const std::string& str)
+void MemoryWriter::writeUnicode(const std::string& str)
 {
     std::string tmpStr = "\xEF\xBB\xBF" + str;
 
@@ -464,7 +464,7 @@ void BinaryWriter::writeUnicode(const std::string& str)
     writeInt16(0);
 }
 
-void BinaryWriter::writeString(const std::string& str)
+void MemoryWriter::writeString(const std::string& str)
 {
     for (atUint8 c : str)
     {
@@ -475,23 +475,23 @@ void BinaryWriter::writeString(const std::string& str)
     writeUByte(0);
 }
 
-void BinaryWriter::fill(atUint8 val, atUint64 length)
+void MemoryWriter::fill(atUint8 val, atUint64 length)
 {
     while ((length--) > 0)
         writeUByte(val);
 }
 
-void BinaryWriter::fill(atInt8 val, atUint64 length)
+void MemoryWriter::fill(atInt8 val, atUint64 length)
 {
     fill((atUint8)val, length);
 }
 
-void BinaryWriter::setProgressCallback(std::function<void (int)> cb)
+void MemoryWriter::setProgressCallback(std::function<void (int)> cb)
 {
     m_progressCallback = cb;
 }
 
-void BinaryWriter::resize(atUint64 newSize)
+void MemoryWriter::resize(atUint64 newSize)
 {
     if (newSize < m_length)
         THROW_INVALID_OPERATION_EXCEPTION("Stream::resize() -> New size cannot be less to the old size.");

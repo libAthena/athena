@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __IOEXCEPTION_HPP__
-#define __IOEXCEPTION_HPP__
+#ifndef IOEXCEPTION_HPP
+#define IOEXCEPTION_HPP
 
 #include "Athena/Exception.hpp"
 
@@ -60,4 +60,5 @@ public:
         throw Athena::error::IOException(std::string("IOException: ")+msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__); \
     } while(0)
 #endif
-#endif
+
+#endif // IOEXCEPTION_HPP

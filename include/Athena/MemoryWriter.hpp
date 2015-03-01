@@ -13,10 +13,10 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __BINARYWRITER_HPP__
-#define __BINARYWRITER_HPP__
+#ifndef MEMORYWRITER_HPP
+#define MEMORYWRITER_HPP
 
-#include "Athena/Stream.hpp"
+#include "Athena/IStream.hpp"
 #include <string>
 #include <functional>
 
@@ -33,7 +33,7 @@ namespace io
  *  this allows for fast, flexible code as well as the ability to quickly modify data
  *  \sa Stream
  */
-class BinaryWriter : public Stream
+class MemoryWriter : public IStream
 {
 public:
     /*! \brief This constructor takes an existing buffer to write to.
@@ -41,15 +41,15 @@ public:
      *   \param data The existing buffer
      *   \param length The length of the existing buffer
      */
-    explicit BinaryWriter(atUint8* data = nullptr, atUint64 length=0x10);
+    explicit MemoryWriter(atUint8* data = nullptr, atUint64 length=0x10);
 
     /*! \brief This constructor creates an instance from a file on disk.
      *
      * \param filename The file to create the stream from
      */
-    BinaryWriter(const std::string& filename, std::function<void(int)> progressFun = nullptr);
+    MemoryWriter(const std::string& filename, std::function<void(int)> progressFun = nullptr);
 
-    virtual ~BinaryWriter();
+    virtual ~MemoryWriter();
 
     /*! \brief Sets the Endianss of the stream
      *
@@ -291,9 +291,9 @@ private:
 }
 }
 
-#ifndef BINARYWRITER_BASE
-#define BINARYWRITER_BASE() \
+#ifndef MEMORYWRITER_BASE
+#define MEMORYWRITER_BASE() \
     private: \
-        typedef Athena::io::BinaryWriter base
+        typedef Athena::io::MemoryWriter base
 #endif // BINARYWRITER_BASE
-#endif // __BINARY_WRITER_HPP__
+#endif // MEMORYWRITER_HPP

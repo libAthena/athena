@@ -68,13 +68,10 @@ WiiSave* WiiSaveReader::readSave()
             THROW_INVALID_DATA_EXCEPTION("Invalid BacKup header size");
 
         atUint32 bkMagic = base::readUint32();
-        bkMagic = bkMagic;
         if (bkMagic != 0x426B0001)
             THROW_INVALID_DATA_EXCEPTION("Invalid BacKup header magic");
 
         atUint32 ngId = base::readUint32();
-        ngId = ngId;
-
         atUint32 numFiles = base::readUint32();
 
         /*int fileSize =*/ base::readUint32();

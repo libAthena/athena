@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __ALTTP_FILE_READER_HPP__
-#define __ALTTP_FILE_READER_HPP__
+#ifndef ALTTP_FILE_READER_HPP
+#define ALTTP_FILE_READER_HPP
 
 #include <string>
 #include "Athena/Types.hpp"
-#include "Athena/BinaryReader.hpp"
+#include "Athena/MemoryReader.hpp"
 #include "Athena/ALTTPQuest.hpp"
 
 namespace Athena
@@ -35,9 +35,9 @@ namespace io
  *  all work is done using a memory buffer, and not read directly from the disk.
  *  \sa BinaryReader
  */
-class ALTTPFileReader : protected BinaryReader
+class ALTTPFileReader : protected MemoryReader
 {
-    BINARYREADER_BASE();
+    MEMORYREADER_BASE();
 
 public:
     /*! \brief This constructor takes an existing buffer to read from.
@@ -66,5 +66,5 @@ private:
 
 } // io
 } // zelda
-#endif // __ALTTP_FILE_READER_HPP__
+#endif // ALTTP_FILE_READER_HPP
 #endif // ATHENA_NO_SAVES

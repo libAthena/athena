@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __MCFILEWRITER_HPP__
-#define __MCFILEWRITER_HPP__
+#ifndef MCFILEWRITER_HPP
+#define MCFILEWRITER_HPP
 
 #include "Athena/Types.hpp"
-#include "Athena/BinaryWriter.hpp"
+#include "Athena/MemoryWriter.hpp"
 
 namespace Athena
 {
@@ -35,9 +35,9 @@ namespace io
  *  all work is done using a memory buffer, and not written directly from the disk.
  *  \sa BinaryWriter
  */
-class MCFileWriter : protected BinaryWriter
+class MCFileWriter : protected MemoryWriter
 {
-    BINARYWRITER_BASE();
+    MEMORYWRITER_BASE();
 public:
     /*!
      * \brief This constructor takes an existing buffer to write to.
@@ -69,5 +69,5 @@ private:
 } // io
 } // zelda
 
-#endif // __MCFILEWRITER_HPP__
+#endif // MCFILEWRITER_HPP
 #endif // ATHENA_NO_SAVES

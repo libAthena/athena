@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __MCFILEREADER_HPP__
-#define __MCFILEREADER_HPP__
+#ifndef MCFILEREADER_HPP
+#define MCFILEREADER_HPP
 
-#include "Athena/BinaryReader.hpp"
+#include "Athena/MemoryReader.hpp"
 
 namespace Athena
 {
@@ -34,9 +34,9 @@ namespace io
  *  all work is done using a memory buffer, and not read directly from the disk.
  *  \sa BinaryReader
  */
-class MCFileReader : public BinaryReader
+class MCFileReader : public MemoryReader
 {
-    BINARYREADER_BASE();
+    MEMORYREADER_BASE();
 public:
     /*!
      *  \brief This constructor takes an existing buffer to read from.
@@ -64,5 +64,5 @@ public:
 } // io
 } // zelda
 
-#endif // __MCFILEREADER_HPP__
+#endif // MCFILEREADER_HPP
 #endif // ATHENA_NO_SAVES

@@ -22,7 +22,7 @@
 #include "Athena/WiiSave.hpp"
 #include "Athena/WiiFile.hpp"
 #include "Athena/WiiBanner.hpp"
-#include "Athena/BinaryWriter.hpp"
+#include "Athena/MemoryWriter.hpp"
 #include "Athena/Utility.hpp"
 #include "Athena/InvalidOperationException.hpp"
 #include "Athena/InvalidDataException.hpp"

@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __ALTTP_FILE_WRITER_HPP__
-#define __ALTTP_FILE_WRITER_HPP__
+#ifndef ALTTP_FILE_WRITER_HPP
+#define ALTTP_FILE_WRITER_HPP
 
 #include <string>
-#include "Athena/BinaryWriter.hpp"
+#include "Athena/MemoryWriter.hpp"
 #include "Athena/ALTTPQuest.hpp"
 
 namespace Athena
@@ -34,9 +34,9 @@ namespace io
  *  all work is done using a memory buffer, and not written directly to the disk.
  *  \sa BinaryReader
  */
-class ALTTPFileWriter : protected BinaryWriter
+class ALTTPFileWriter : protected MemoryWriter
 {
-    BINARYWRITER_BASE();
+    MEMORYWRITER_BASE();
 
 public:
     /*! \brief This constructor takes an existing buffer to write to.
@@ -68,5 +68,5 @@ private:
 } // io
 } // zelda
 
-#endif // __ALTTP_FILE_WRITER_HPP__
+#endif // ALTTP_FILE_WRITER_HPP
 #endif // ATHENA_NO_SAVES

@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __ALTTP_STRUCTS_HPP__
-#define __ALTTP_STRUCTS_HPP__
+#ifndef ALTTP_STRUCTS_HPP
+#define ALTTP_STRUCTS_HPP
 
 #ifndef __DOXYGEN_IGNORE__
 
@@ -215,4 +215,4 @@ struct ALTTPProgressFlags2
 }
 
 #endif // __DOXYGEN_IGNORE__
-#endif // __ALTTP_STRUCTS_HPP__
+#endif // ALTTP_STRUCTS_HPP

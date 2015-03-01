@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __ALTTP_QUEST_HPP__
-#define __ALTTP_QUEST_HPP__
+#ifndef ALTTP_QUEST_HPP
+#define ALTTP_QUEST_HPP
 
 #include "Types.hpp"
 #include <string>
@@ -684,5 +684,5 @@ private:
 
 } // zelda
 
-#endif // __ALTTP_QUEST_HPP__
+#endif // ALTTP_QUEST_HPP
 #endif // ATHENA_NO_SAVES

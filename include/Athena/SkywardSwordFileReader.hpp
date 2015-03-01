@@ -14,19 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __SSFILEREADER_HPP__
-#define __SSFILEREADER_HPP__
+#ifndef SSFILEREADER_HPP
+#define SSFILEREADER_HPP
 
-#include "Athena/BinaryReader.hpp"
+#include "Athena/MemoryReader.hpp"
 
 namespace Athena
 {
 class SkywardSwordFile;
 namespace io
 {
-class SkywardSwordFileReader : public BinaryReader
+class SkywardSwordFileReader : public MemoryReader
 {
-    BINARYREADER_BASE();
+    MEMORYREADER_BASE();
 public:
 
     SkywardSwordFileReader(atUint8* data, atUint64 length);
@@ -37,5 +37,5 @@ public:
 } // io
 } // zelda
 
-#endif // __SSFILEREADER_HPP__
+#endif // SSFILEREADER_HPP
 #endif // ATHENA_NO_SAVES

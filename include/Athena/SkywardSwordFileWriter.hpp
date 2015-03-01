@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __SSFILEWRITER_HPP__
-#define __SSFILEWRITER_HPP__
+#ifndef SSFILEWRITER_HPP
+#define SSFILEWRITER_HPP
 
-#include "Athena/BinaryWriter.hpp"
+#include "Athena/MemoryWriter.hpp"
 
 namespace Athena
 {
@@ -26,9 +26,9 @@ class SkywardSwordFile;
 namespace io
 {
 
-class SkywardSwordFileWriter : public BinaryWriter
+class SkywardSwordFileWriter : public MemoryWriter
 {
-    BINARYWRITER_BASE();
+    MEMORYWRITER_BASE();
 public:
     SkywardSwordFileWriter(atUint8* data, atUint64 len);
     SkywardSwordFileWriter(const std::string& filename);
@@ -37,5 +37,5 @@ public:
 };
 }
 }
-#endif // __SSFILEWRITER_HPP__
+#endif // SSFILEWRITER_HPP
 #endif // ATHENA_NO_SAVES

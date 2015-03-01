@@ -11,8 +11,8 @@ SOURCES += \
     $$PWD/src/Athena/Utility.cpp \
     $$PWD/src/Athena/FileReader.cpp \
     $$PWD/src/Athena/FileWriter.cpp \
-    $$PWD/src/Athena/BinaryReader.cpp \
-    $$PWD/src/Athena/BinaryWriter.cpp \
+    $$PWD/src/Athena/MemoryReader.cpp \
+    $$PWD/src/Athena/MemoryWriter.cpp \
     $$PWD/src/Athena/Global.cpp \
     $$PWD/src/Athena/Checksums.cpp \
     $$PWD/src/Athena/Compression.cpp \
@@ -24,7 +24,9 @@ SOURCES += \
 win32:SOURCES += $$PWD/src/win32_largefilewrapper.c
 
 HEADERS += \
-    $$PWD/include/Athena/Stream.hpp \
+    $$PWD/include/Athena/IStream.hpp \
+    $$PWD/include/Athena/IStreamReader.hpp \
+    $$PWD/include/Athena/IStreamWriter.hpp \
     $$PWD/include/Athena/Types.hpp \
     $$PWD/include/Athena/Utility.hpp \
     $$PWD/include/Athena/Global.hpp \
@@ -35,8 +37,8 @@ HEADERS += \
     $$PWD/include/Athena/InvalidOperationException.hpp \
     $$PWD/include/Athena/FileReader.hpp \
     $$PWD/include/Athena/FileWriter.hpp \
-    $$PWD/include/Athena/BinaryReader.hpp \
-    $$PWD/include/Athena/BinaryWriter.hpp \
+    $$PWD/include/Athena/MemoryReader.hpp \
+    $$PWD/include/Athena/MemoryWriter.hpp \
     $$PWD/include/Athena/NotImplementedException.hpp \
     $$PWD/include/Athena/Checksums.hpp \
     $$PWD/include/Athena/Compression.hpp \

@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __WII__SAVE_HPP__
-#define __WII__SAVE_HPP__
+#ifndef WIISAVE_HPP
+#define WIISAVE_HPP
 
 #include <unordered_map>
 #include <string>
@@ -97,6 +97,6 @@ private:
 };
 
 } // zelda
-#endif // __WII__SAVE_HPP__
+#endif // WIISAVE_HPP
 #endif // ATHENA_NO_SAVES
 

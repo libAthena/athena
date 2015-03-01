@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __EXCEPTION_HPP__
-#define __EXCEPTION_HPP__
+#ifndef EXCEPTION_HPP
+#define EXCEPTION_HPP
 
 #include <string>
 #include <stdarg.h>
@@ -93,4 +93,4 @@ protected:
     } while(0)
 #endif
 
-#endif
+#endif // EXCEPTION_HPP

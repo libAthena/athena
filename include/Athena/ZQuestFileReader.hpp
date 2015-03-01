@@ -17,7 +17,7 @@
 #ifndef __ZQUESTFILEREADER_HPP__
 #define __ZQUESTFILEREADER_HPP__
 
-#include "Athena/BinaryReader.hpp"
+#include "Athena/MemoryReader.hpp"
 
 namespace Athena
 {
@@ -29,9 +29,9 @@ namespace io
 /*!
  * \brief The ZQuestFileReader class
  */
-class ZQuestFileReader : protected BinaryReader
+class ZQuestFileReader : protected MemoryReader
 {
-    BINARYREADER_BASE();
+    MEMORYREADER_BASE();
 
 public:    
     /*!

@@ -17,7 +17,7 @@
 #ifndef __ZQUESTFILEWRITER_HPP__
 #define __ZQUESTFILEWRITER_HPP__
 
-#include "Athena/BinaryWriter.hpp"
+#include "Athena/MemoryWriter.hpp"
 
 namespace Athena
 {
@@ -29,9 +29,9 @@ namespace io
 /*!
  * \brief The ZQuestFileWriter class
  */
-class ZQuestFileWriter : protected BinaryWriter
+class ZQuestFileWriter : protected MemoryWriter
 {
-    BINARYWRITER_BASE();
+    MEMORYWRITER_BASE();
 
 public:
     /*!

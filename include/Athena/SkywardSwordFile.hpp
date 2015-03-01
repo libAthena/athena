@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __SSFILE_HPP__
-#define __SSFILE_HPP__
+#ifndef SSFILE_HPP
+#define SSFILE_HPP
 
 #include "Athena/Global.hpp"
 
@@ -62,5 +62,5 @@ private:
 };
 
 }
-#endif // __SSFILE_HPP__
+#endif // SSFILE_HPP
 #endif // ATHENA_NO_SAVES

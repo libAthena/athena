@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __ALTTP_ENUMS_HPP__
-#define __ALTTP_ENUMS_HPP__
+#ifndef ALTTP_ENUMS_HPP
+#define ALTTP_ENUMS_HPP
 
 #ifndef __DOXYGEN_IGNORE__
 
@@ -110,4 +110,4 @@ enum ALTTPTagAlong
 
 } // zelda
 #endif // __DOXYGEN_IGNORE__
-#endif // __ALTTP_ENUMS_HPP__
+#endif // ALTTP_ENUMS_HPP

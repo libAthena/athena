@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#include "Athena/BinaryReader.hpp"
+#include "Athena/MemoryReader.hpp"
 #include "Athena/IOException.hpp"
 #include "Athena/FileNotFoundException.hpp"
 #include "Athena/InvalidDataException.hpp"
@@ -34,7 +34,7 @@ namespace Athena
 {
 namespace io
 {
-BinaryReader::BinaryReader(const atUint8* data, atUint64 length)
+MemoryReader::MemoryReader(const atUint8* data, atUint64 length)
     : m_length(length),
       m_position(0),
       m_bitPosition(0),
@@ -50,7 +50,7 @@ BinaryReader::BinaryReader(const atUint8* data, atUint64 length)
     memcpy(m_data, data, m_length);
 }
 
-BinaryReader::BinaryReader(const std::string& filename, std::function<void(int)> progFun)
+MemoryReader::MemoryReader(const std::string& filename, std::function<void(int)> progFun)
     : m_data(NULL),
       m_length(0),
       m_filepath(filename),
@@ -62,38 +62,38 @@ BinaryReader::BinaryReader(const std::string& filename, std::function<void(int)>
     loadData();
 }
 
-BinaryReader::~BinaryReader()
+MemoryReader::~MemoryReader()
 {
     delete[] m_data;
     m_data = NULL;
 }
 
-void BinaryReader::setEndian(Endian endian)
+void MemoryReader::setEndian(Endian endian)
 {
     m_endian = endian;
 }
 
-Endian BinaryReader::endian() const
+Endian MemoryReader::endian() const
 {
     return m_endian;
 }
 
-bool BinaryReader::isBigEndian() const
+bool MemoryReader::isBigEndian() const
 {
     return (m_endian == Endian::BigEndian);
 }
 
-bool BinaryReader::isLittleEndian() const
+bool MemoryReader::isLittleEndian() const
 {
     return (m_endian == Endian::LittleEndian);
 }
 
-bool BinaryReader::isOpen() const
+bool MemoryReader::isOpen() const
 {
     return m_data != nullptr;
 }
 
-void BinaryReader::seek(atInt64 position, SeekOrigin origin)
+void MemoryReader::seek(atInt64 position, SeekOrigin origin)
 {
     switch (origin)
     {
@@ -115,22 +115,22 @@ void BinaryReader::seek(atInt64 position, SeekOrigin origin)
     }
 }
 
-bool BinaryReader::atEnd() const
+bool MemoryReader::atEnd() const
 {
     return m_position >= m_length;
 }
 
-atUint64 BinaryReader::position() const
+atUint64 MemoryReader::position() const
 {
     return m_position;
 }
 
-atUint64 BinaryReader::length() const
+atUint64 MemoryReader::length() const
 {
     return m_length;
 }
 
-void BinaryReader::setData(const atUint8* data, atUint64 length)
+void MemoryReader::setData(const atUint8* data, atUint64 length)
 {
     if (m_data)
         delete[] m_data;
@@ -141,7 +141,7 @@ void BinaryReader::setData(const atUint8* data, atUint64 length)
     m_bitPosition = 0;
 }
 
-atUint8* BinaryReader::data() const
+atUint8* MemoryReader::data() const
 {
     atUint8* ret = new atUint8[m_length];
     memset(ret, 0, m_length);
@@ -149,17 +149,17 @@ atUint8* BinaryReader::data() const
     return ret;
 }
 
-void BinaryReader::setFilepath(const std::string& filepath)
+void MemoryReader::setFilepath(const std::string& filepath)
 {
     m_filepath = filepath;
 }
 
-std::string BinaryReader::filepath() const
+std::string MemoryReader::filepath() const
 {
     return m_filepath;
 }
 
-void BinaryReader::seekBit(int bit)
+void MemoryReader::seekBit(int bit)
 {
     if (!m_data)
         loadData();
@@ -170,7 +170,7 @@ void BinaryReader::seekBit(int bit)
     m_bitPosition = bit;
 }
 
-bool BinaryReader::readBit()
+bool MemoryReader::readBit()
 {
     if (!m_data)
         loadData();
@@ -189,7 +189,7 @@ bool BinaryReader::readBit()
     return ret;
 }
 
-atInt8 BinaryReader::readByte()
+atInt8 MemoryReader::readByte()
 {
     if (!m_data)
         loadData();
@@ -205,7 +205,7 @@ atInt8 BinaryReader::readByte()
     return *(atInt8*)(m_data + m_position++);
 }
 
-atUint8 BinaryReader::readUByte()
+atUint8 MemoryReader::readUByte()
 {
     if (!m_data)
         loadData();
@@ -224,12 +224,12 @@ atUint8 BinaryReader::readUByte()
     return *(atUint8*)(m_data + m_position++);
 }
 
-atInt8* BinaryReader::readBytes(atUint64 length)
+atInt8* MemoryReader::readBytes(atUint64 length)
 {
     return (atInt8*)readUBytes(length);
 }
 
-atUint8* BinaryReader::readUBytes(atUint64 length)
+atUint8* MemoryReader::readUBytes(atUint64 length)
 {
     if (!m_data)
         loadData();
@@ -251,7 +251,7 @@ atUint8* BinaryReader::readUBytes(atUint64 length)
     return ret;
 }
 
-atInt16 BinaryReader::readInt16()
+atInt16 MemoryReader::readInt16()
 {
     if (!m_data)
         loadData();
@@ -275,12 +275,12 @@ atInt16 BinaryReader::readInt16()
     return ret;
 }
 
-atUint16 BinaryReader::readUint16()
+atUint16 MemoryReader::readUint16()
 {
     return readInt16();
 }
 
-atInt32 BinaryReader::readInt32()
+atInt32 MemoryReader::readInt32()
 {
     if (!m_data)
         loadData();
@@ -304,12 +304,12 @@ atInt32 BinaryReader::readInt32()
     return ret;
 }
 
-atUint32 BinaryReader::readUint32()
+atUint32 MemoryReader::readUint32()
 {
     return readInt32();
 }
 
-atInt64 BinaryReader::readInt64()
+atInt64 MemoryReader::readInt64()
 {
     if (!m_data)
         loadData();
@@ -333,12 +333,12 @@ atInt64 BinaryReader::readInt64()
     return ret;
 }
 
-atUint64 BinaryReader::readUint64()
+atUint64 MemoryReader::readUint64()
 {
     return readInt64();
 }
 
-float BinaryReader::readFloat()
+float MemoryReader::readFloat()
 {
     if (!m_data)
         loadData();
@@ -362,7 +362,7 @@ float BinaryReader::readFloat()
     return ret;
 }
 
-double BinaryReader::readDouble()
+double MemoryReader::readDouble()
 {
     if (!m_data)
         loadData();
@@ -385,7 +385,7 @@ double BinaryReader::readDouble()
     return ret;
 }
 
-bool BinaryReader::readBool()
+bool MemoryReader::readBool()
 {
     if (!m_data)
         loadData();
@@ -403,7 +403,7 @@ bool BinaryReader::readBool()
     return ret;
 }
 
-std::string BinaryReader::readUnicode(atInt32 maxlen)
+std::string MemoryReader::readUnicode(atInt32 maxlen)
 {
     if (!m_data)
         loadData();
@@ -428,7 +428,7 @@ std::string BinaryReader::readUnicode(atInt32 maxlen)
     return ret;
 }
 
-std::string BinaryReader::readString(atInt32 maxlen)
+std::string MemoryReader::readString(atInt32 maxlen)
 {
     std::string ret = "";
     atUint8 chr = readByte();
@@ -447,12 +447,12 @@ std::string BinaryReader::readString(atInt32 maxlen)
     return ret;
 }
 
-void BinaryReader::setProgressCallback(std::function<void (int)> cb)
+void MemoryReader::setProgressCallback(std::function<void (int)> cb)
 {
     m_progressCallback = cb;
 }
 
-void BinaryReader::loadData()
+void MemoryReader::loadData()
 {
     FILE* in;
     atUint64 length;

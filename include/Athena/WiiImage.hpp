@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
-#ifndef __WIIIMAGE_HPP__
-#define __WIIIMAGE_HPP__
+#ifndef WIIIMAGE_HPP
+#define WIIIMAGE_HPP
 
 #include "Athena/Types.hpp"
 
