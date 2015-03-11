@@ -42,7 +42,7 @@ MemoryWriter::MemoryWriter(atUint8* data, atUint64 length)
       m_endian(Endian::LittleEndian),
       m_progressCallback(nullptr)
 {
-    if (!m_data)
+    if (!m_data && m_length > 0)
         m_data = new atUint8[m_length];
 }
 
@@ -107,7 +107,7 @@ void MemoryWriter::seek(atInt64 position, SeekOrigin origin)
             if ((atUint64)position > m_length)
                 resize(position);
             m_position = position;
-        break;
+            break;
         case SeekOrigin::Current:
             if ((((atInt64)m_position + position) < 0))
                 THROW_IO_EXCEPTION("Position outside stream bounds");
@@ -116,7 +116,7 @@ void MemoryWriter::seek(atInt64 position, SeekOrigin origin)
                 resize(m_position + position);
 
             m_position += position;
-        break;
+            break;
         case SeekOrigin::End:
             if (((atInt64)m_length - position) < 0)
                 THROW_IO_EXCEPTION("Position outside stream bounds");
@@ -124,7 +124,7 @@ void MemoryWriter::seek(atInt64 position, SeekOrigin origin)
             if ((atUint64)position > m_length)
                 resize(position);
             m_position = m_length - position;
-        break;
+            break;
     }
 }
 
@@ -175,6 +175,9 @@ atUint8* MemoryWriter::data() const
 
 void MemoryWriter::save(const std::string& filename)
 {
+    if (!isOpen())
+        THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
+
     if (filename.empty() && m_filepath.empty())
         THROW_INVALID_OPERATION_EXCEPTION("No file specified, cannot save.");
 
@@ -216,7 +219,7 @@ void MemoryWriter::seekBit(int bit)
 void MemoryWriter::writeBit(bool val)
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
+        resize(sizeof(atUint8));
 
     if (m_position + sizeof(atUint8) > m_length)
         resize(m_position + sizeof(atUint8));
@@ -236,7 +239,7 @@ void MemoryWriter::writeBit(bool val)
 void MemoryWriter::writeUByte(atUint8 val)
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
+        resize(sizeof(atUint8));
 
     if (m_bitPosition > 0)
     {
@@ -253,16 +256,13 @@ void MemoryWriter::writeUByte(atUint8 val)
 
 void MemoryWriter::writeByte(atInt8 val)
 {
-    if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
-
     writeUByte(val);
 }
 
 void MemoryWriter::writeUBytes(atUint8* data, atUint64 length)
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
+        resize(sizeof(atUint8) * length);
 
     if (m_bitPosition > 0)
     {
@@ -282,16 +282,13 @@ void MemoryWriter::writeUBytes(atUint8* data, atUint64 length)
 
 void MemoryWriter::writeBytes(atInt8* data, atUint64 length)
 {
-    if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
-
     writeUBytes((atUint8*)data, length);
 }
 
 void MemoryWriter::writeInt16(atInt16 val)
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
+        resize(sizeof(atInt16));
 
     if (m_bitPosition > 0)
     {
@@ -313,16 +310,13 @@ void MemoryWriter::writeInt16(atInt16 val)
 
 void MemoryWriter::writeUint16(atUint16 val)
 {
-    if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
-
     writeInt16(val);
 }
 
 void MemoryWriter::writeInt32(atInt32 val)
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
+        resize(sizeof(atInt32));
 
     if (m_bitPosition > 0)
     {
@@ -344,14 +338,14 @@ void MemoryWriter::writeInt32(atInt32 val)
 
 void MemoryWriter::writeUint32(atUint32 val)
 {
-    if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
-
     writeInt32(val);
 }
 
 void MemoryWriter::writeInt64(atInt64 val)
 {
+    if (!isOpen())
+        resize(sizeof(atInt64));
+
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
@@ -373,27 +367,14 @@ void MemoryWriter::writeInt64(atInt64 val)
 
 void MemoryWriter::writeUint64(atUint64 val)
 {
-    if (m_bitPosition > 0)
-    {
-        m_bitPosition = 0;
-        m_position += sizeof(atUint8);
-    }
-
-    if (m_position + sizeof(atUint64) > m_length)
-        resize(m_position + sizeof(atUint64));
-
-    if (isBigEndian())
-        utility::BigUint64(val);
-    else
-        utility::LittleUint64(val);
-
-
-    *(atUint64*)(m_data + m_position) = val;
-    m_position += sizeof(atUint64);
+    writeInt64(val);
 }
 
 void MemoryWriter::writeFloat(float val)
 {
+    if (!isOpen())
+        resize(sizeof(float));
+
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
@@ -415,6 +396,9 @@ void MemoryWriter::writeFloat(float val)
 
 void MemoryWriter::writeDouble(double val)
 {
+    if (!isOpen())
+        resize(sizeof(double));
+
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
@@ -505,14 +489,17 @@ void MemoryWriter::resize(atUint64 newSize)
 
     memset(newArray, 0, newSize);
 
-    memcpy(newArray, m_data, m_length);
+    if (m_data)
+    {
+        memcpy(newArray, m_data, m_length);
 
-    // Delete the old one
+        // Delete the old one
 #ifdef HW_RVL
-    free(m_data);
+        free(m_data);
 #else
-    delete[] m_data;
+        delete[] m_data;
 #endif
+    }
 
     // Swap the pointer and size out for the new ones.
     m_data = newArray;
