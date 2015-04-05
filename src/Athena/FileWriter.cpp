@@ -19,8 +19,10 @@
 #include "Athena/InvalidOperationException.hpp"
 #include "Athena/IOException.hpp"
 
-#ifdef _MSC_VER
+#if _WIN32
 #include "win32_largefilewrapper.h"
+#elif __APPLE__
+#include "osx_largefilewrapper.h"
 #endif
 
 #include "utf8.h"

@@ -1,8 +1,11 @@
 !contains(ATHENA_PRO, true): {
     INCLUDEPATH += $$PWD/include
+    mac:INCLUDEPATH += /usr/local/include
     unix:LIBS += -lz -llzo2
     win32:LIBS += -lz -llzo2
+    mac:LIBS += -L/usr/local/lib -lz -llzo2
     QMAKE_CXXFLAGS += -std=c++11
+    mac:QMAKE_CXXFLAGS += -stdlib=libc++
 }
 
 ATHENA_CORE=true
@@ -21,7 +24,12 @@ SOURCES += \
     $$PWD/src/LZ77/LZType11.cpp \
     $$PWD/src/LZ77/LZBase.cpp
 
-win32:SOURCES += $$PWD/src/win32_largefilewrapper.c
+win32:SOURCES += \
+    $$PWD/src/win32_largefilewrapper.c
+
+mac:SOURCES += \
+    $$PWD/src/osx_largefilewrapper.c
+
 
 HEADERS += \
     $$PWD/include/Athena/IStream.hpp \
@@ -53,3 +61,7 @@ HEADERS += \
 
 win32:HEADERS += \
     $$PWD/include/win32_largefilewrapper.h
+
+mac:HEADERS += \
+    $$PWD/include/osx_largefilewrapper.h
+

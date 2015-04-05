@@ -20,8 +20,10 @@
 #include "Athena/IOException.hpp"
 #include "utf8.h"
 
-#ifdef _WIN32
+#if _WIN32
 #include "win32_largefilewrapper.h"
+#elif __APPLE__
+#include "osx_largefilewrapper.h"
 #endif
 
 namespace Athena
