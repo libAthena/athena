@@ -1,4 +1,5 @@
 CONFIG += staticlib c++11
+QMAKE_CXXFLAGS += -std=c++11
 TEMPLATE= lib
 DESTDIR = ./lib
 INCLUDEPATH += $$PWD/include
