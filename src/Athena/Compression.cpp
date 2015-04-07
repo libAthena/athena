@@ -108,8 +108,8 @@ atInt32 compressZlib(const atUint8 *src, atUint32 srcLen, atUint8* dst, atUint32
 atInt32 decompressLZO(const atUint8* source, const atInt32 sourceSize, atUint8* dst, atInt32& dstSize)
 {
     int srcSize = sourceSize;
-    int size = dstSize;
-    int result = lzo1x_decompress_safe(source, srcSize, dst, (lzo_uintp)&size, NULL);
+    lzo_uint size = dstSize;
+    int result = lzo1x_decompress_safe(source, srcSize, dst, &size, NULL);
     dstSize -= size;
 
     return result;
