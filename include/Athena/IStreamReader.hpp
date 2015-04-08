@@ -35,8 +35,8 @@ public:
     virtual double   readDouble()=0;
     virtual float    readFloat()=0;
     virtual bool     readBool()=0;
-    virtual std::string readUnicode(atInt32)=0;
-    virtual std::string readString(atInt32)=0;
+    virtual std::string readUnicode(atInt32=-1)=0;
+    virtual std::string readString(atInt32=-1)=0;
 };
 }
 }
