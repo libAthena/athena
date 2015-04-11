@@ -40,6 +40,7 @@ public:
     bool isOpen() const;
     bool save();
     void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
+    inline void seekAlign32() {seek(ROUND_UP_32(position()), SeekOrigin::Begin);}
     bool atEnd() const;
     atUint64 position() const;
     atUint64 length() const;
@@ -51,6 +52,8 @@ public:
     atInt8   readByte();
     atUint8* readUBytes(atUint64 len);
     atInt8*  readBytes(atUint64 len);
+    atUint64 readBytesToBuf(void* buf, atUint64 len) {return readUBytesToBuf(buf, len);}
+    atUint64 readUBytesToBuf(void* buf, atUint64 len);
     atUint16 readUint16();
     atInt16  readInt16();
     atUint32 readUint32();

@@ -37,6 +37,7 @@ public:
     bool isOpen() const;
     bool save();
     void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
+    inline void seekAlign32() {seek(ROUND_UP_32(position()), SeekOrigin::Begin);}
     bool atEnd() const;
     atUint64 position() const;
     atUint64 length() const;
