@@ -17,6 +17,7 @@ public:
     virtual bool isLittleEndian()const= 0;
     virtual bool isOpen()        const= 0;
     virtual void seek(atInt64, SeekOrigin)=0;
+    virtual void seekAlign32()=0;
     virtual bool atEnd()         const= 0;
     virtual atUint64 position()    const= 0;
     virtual atUint64 length()      const= 0;

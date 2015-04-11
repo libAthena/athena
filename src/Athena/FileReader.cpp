@@ -185,6 +185,14 @@ atUint8* FileReader::readUBytes(atUint64 len)
     fread(val, 1, len, m_fileHandle);
     return val;
 }
+    
+atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len)
+{
+    if (!isOpen())
+        THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
+    m_bitValid = false;
+    return fread(buf, 1, len, m_fileHandle);
+}
 
 atInt8* FileReader::readBytes(atUint64 len)
 {

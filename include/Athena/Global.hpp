@@ -59,6 +59,9 @@
 #define BLOCKSZ 512
 #endif
 
+#define ROUND_UP_32(val) (((val) + 31) & ~31)
+#define ROUND_UP_16(val) (((val) + 15) & ~15)
+
 namespace Athena
 {
 enum class SeekOrigin

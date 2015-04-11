@@ -87,6 +87,9 @@ public:
      */
     void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
 
+    /*! \brief Sets the buffers position relative to the next 32-byte aligned position.<br />
+     */
+    inline void seekAlign32() {seek(ROUND_UP_32(m_position), SeekOrigin::Begin);}
 
     /*! \brief Returns whether or not the stream is at the end.
      *
@@ -167,13 +170,16 @@ public:
      *
      * \return Uint8* The buffer at the current position from the given length.
      */
-    atInt8* readBytes(atUint64 length);
+    inline atInt8* readBytes(atUint64 length) {return (atInt8*)readUBytes(length);}
 
     /*! \brief Reads a byte at the current position and advances the current position.
      *
      * \return Int8* The buffer at the current position from the given length.
      */
     atUint8* readUBytes(atUint64 length);
+    
+    atUint64 readBytesToBuf(void* buf, atUint64 len) {return readUBytesToBuf(buf, len);}
+    atUint64 readUBytesToBuf(void* buf, atUint64 len);
 
     /*! \brief Reads a Int16 and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position

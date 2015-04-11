@@ -224,11 +224,6 @@ atUint8 MemoryReader::readUByte()
     return *(atUint8*)(m_data + m_position++);
 }
 
-atInt8* MemoryReader::readBytes(atUint64 length)
-{
-    return (atInt8*)readUBytes(length);
-}
-
 atUint8* MemoryReader::readUBytes(atUint64 length)
 {
     if (!m_data)
@@ -250,7 +245,26 @@ atUint8* MemoryReader::readUBytes(atUint64 length)
     m_position += length;
     return ret;
 }
-
+    
+atUint64 MemoryReader::readUBytesToBuf(void* buf, atUint64 length)
+{
+    if (!m_data)
+        loadData();
+    
+    if (m_bitPosition > 0)
+    {
+        m_bitPosition = 0;
+        m_position += sizeof(atUint8);
+    }
+    
+    if (m_position + length > m_length)
+        THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", m_position);
+    
+    memcpy(buf, (const atUint8*)(m_data + m_position), length);
+    m_position += length;
+    return length;
+}
+    
 atInt16 MemoryReader::readInt16()
 {
     if (!m_data)

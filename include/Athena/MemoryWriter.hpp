@@ -87,6 +87,10 @@ public:
      *  \param origin The Origin to seek \sa SeekOrigin
      */
     void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
+    
+    /*! \brief Sets the buffers position relative to the next 32-byte aligned position.<br />
+     */
+    inline void seekAlign32() {seek(ROUND_UP_32(m_position), SeekOrigin::Begin);}
 
 
     /*! \brief Returns whether or not the stream is at the end.
