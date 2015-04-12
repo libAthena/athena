@@ -1,9 +1,8 @@
 !contains(ATHENA_PRO, true): {
     INCLUDEPATH += $$PWD/include
     mac:INCLUDEPATH += /usr/local/include
-    unix:LIBS += -lz
-    mac:LIBS += -L/usr/local/lib -lz
-    QMAKE_CXXFLAGS += -std=c++11
+    mac:LIBS += -L/usr/local/lib
+    !contains(CONFIG, -std=c++11):CONFIG += -std=c++11
     mac:QMAKE_CXXFLAGS += -stdlib=libc++
 }
 
