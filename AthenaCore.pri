@@ -1,10 +1,11 @@
 !contains(ATHENA_PRO, true): {
     INCLUDEPATH += $$PWD/include
-    !contains(CONFIG, -std=c++11):CONFIG += -std=c++11
+    !contains(CONFIG, c++11):CONFIG += c++11
     mac:QMAKE_CXXFLAGS += -stdlib=libc++
 }
 
 include(extern/lzo/lzo.pri)
+include(extern/zlib/zlib.pri)
 
 ATHENA_CORE=true
 
