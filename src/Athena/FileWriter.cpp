@@ -306,5 +306,18 @@ void FileWriter::writeUnicode(const std::string& str)
             writeInt16(chr);
     }
 }
+
+void FileWriter::fill(atInt8 byte, atUint64 len)
+{
+    if (!isOpen())
+        THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
+    fwrite(&byte, 1, len, m_fileHandle);
+}
+
+void FileWriter::fill(atUint8 byte, atUint64 len)
+{
+    fill((atInt8)byte, len);
+}
+
 }
 } // Athena

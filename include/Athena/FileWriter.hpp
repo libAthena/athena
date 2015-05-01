@@ -59,6 +59,8 @@ public:
     void writeBool  (bool val);
     void writeString(const std::string& val);
     void writeUnicode(const std::string& str);
+    void fill(atInt8 byte, atUint64 len);
+    void fill(atUint8 byte, atUint64 len);
 private:
     std::string  m_filename;
     FILE*        m_fileHandle;

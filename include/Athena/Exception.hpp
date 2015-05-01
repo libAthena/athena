@@ -71,6 +71,11 @@ public:
     {
         return m_line;
     }
+
+    inline std::string formattedMessage() const
+    {
+        return Athena::utility::sprintf("%s : %s (%i) %s", m_file.c_str(), m_function.c_str(), m_line, m_message.c_str());
+    }
 protected:
     std::string m_message; //!< The error message string
     std::string m_file;
