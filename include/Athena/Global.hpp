@@ -25,7 +25,7 @@
 #endif
 
 #ifndef AT_PRETTY_FUNCTION
-#   ifdef __PRETTY_FUNCTION__
+#   if defined(__PRETTY_FUNCTION__) || defined(__GNUC__)
 #       define AT_PRETTY_FUNCTION __PRETTY_FUNCTION__
 #   elif defined(__FUNCSIG__)
 #       define AT_PRETTY_FUNCTION __FUNCSIG__
