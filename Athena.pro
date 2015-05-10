@@ -39,3 +39,25 @@ include(Athena.pri)
 OTHER_FILES += \
     .travis.yml
 
+unix {
+    isEmpty(PREFIX) {
+        PREFIX = /usr/local
+    }
+    libFiles.path = $$PREFIX/lib
+    libFiles.files = $$PWD/lib/*
+    headerFiles.files = $$PWD/include/*
+    headerFiles.path = $$PREFIX/include/Athena
+    INSTALLS += libFiles headerFiles
+}
+
+win32 {
+   isEmpty(PREFIX) {
+        PREFIX = $$PWD/pkg
+   }
+
+   libFiles.path = $$PREFIX/lib
+   libFiles.files = $$PWD/lib/*
+   headerFiles.path = $$PREFIX/include/Athena
+   headerFiles.files = $$PWD/include/*
+   INSTALLS += libFiles headerFiles
+}
