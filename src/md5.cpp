@@ -81,7 +81,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#ifndef __APPLE__
 #include <malloc.h>
+#endif
 #include <ctype.h>
 
 #ifdef _MSC_VER
