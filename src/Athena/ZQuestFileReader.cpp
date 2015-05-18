@@ -52,12 +52,12 @@ ZQuestFile *ZQuestFileReader::read()
     magic = base::readUint32();
 
     if ((magic & 0x00FFFFFF) != (ZQuestFile::Magic & 0x00FFFFFF))
-        THROW_INVALID_DATA_EXCEPTION("Not a valid ZQuest file");
+        THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr,"Not a valid ZQuest file");
 
     version = base::readUint32();
 
     if (version > ZQuestFile::Version)
-        THROW_INVALID_DATA_EXCEPTION("Unsupported ZQuest version");
+        THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr,"Unsupported ZQuest version");
 
     compressedLen = base::readUint32();
     uncompressedLen = base::readUint32();
@@ -91,7 +91,7 @@ ZQuestFile *ZQuestFileReader::read()
         if (checksum != Athena::Checksums::crc32(data, compressedLen))
         {
             delete[] data;
-            THROW_INVALID_DATA_EXCEPTION("Checksum mismatch, data corrupt");
+            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr,"Checksum mismatch, data corrupt");
         }
     }
     else
@@ -109,7 +109,7 @@ ZQuestFile *ZQuestFileReader::read()
         {
             delete[] dst;
             delete[] data;
-            THROW_INVALID_DATA_EXCEPTION("Error decompressing data");
+            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr,"Error decompressing data");
         }
 
         delete[] data;

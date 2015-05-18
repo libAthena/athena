@@ -39,7 +39,9 @@ public:
     inline FileNotFoundException(const std::string& filename, const std::string& file, const std::string& function, const int line) :
         Exception(std::string("FileNotFoundException: Could not find file \"") + filename + std::string("\", please check that it exists."), file, function, line),
         m_filename(filename)
-    {}
+    {
+        m_exceptionName = "FileNotFoundException";
+    }
 
     /*! \brief Returns the path of the offending file.
      *  \return std::string The filename of the file including the path.
@@ -51,7 +53,31 @@ private:
 } // error
 } // Athena
 
+#ifndef THROW_FILE_NOT_FOUND_EXCEPTION
 #define THROW_FILE_NOT_FOUND_EXCEPTION(msg) \
-    do  { throw Athena::error::FileNotFoundException(msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__); } while(0)
+    do  { \
+            if (atGetExceptionHandler()) \
+            { \
+                atGetExceptionHandler()(__FILE__, AT_PRETTY_FUNCTION, __LINE__, msg); \
+                return; \
+            } \
+            else \
+                throw Athena::error::FileNotFoundException(msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__); \
+} while(0)
+#endif
+
+#ifndef THROW_FILE_NOT_FOUND_EXCEPTION_RETURN
+#define THROW_FILE_NOT_FOUND_EXCEPTION_RETURN(ret, msg) \
+    do  { \
+            if (atGetExceptionHandler()) \
+            { \
+                atGetExceptionHandler()(__FILE__, AT_PRETTY_FUNCTION, __LINE__, msg); \
+                return ret; \
+            } \
+            else \
+                throw Athena::error::FileNotFoundException(msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__); \
+} while(0)
+#endif
+
 
 #endif // FILENOTFOUNDEXCEPTION_HPP

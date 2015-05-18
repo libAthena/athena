@@ -55,7 +55,7 @@ WiiSaveWriter::WiiSaveWriter(const std::string &filename)
 bool WiiSaveWriter::writeSave(WiiSave *save, atUint8 *macAddress, atUint32 ngId, atUint8 *ngPriv, atUint8 *ngSig, atUint32 ngKeyId,const std::string &filepath)
 {
     if (!save)
-        THROW_INVALID_OPERATION_EXCEPTION("save cannot be NULL");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(false, "save cannot be NULL");
     if (filepath != "")
         m_filepath = filepath;
 

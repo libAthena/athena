@@ -55,21 +55,21 @@ WiiSave* WiiSaveReader::readSave()
     try
     {
         if (length() < 0xF0C0)
-            THROW_INVALID_DATA_EXCEPTION("Not a valid WiiSave");
+            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr,"Not a valid WiiSave");
 
         WiiBanner* banner = this->readBanner();
         if (!banner)
-            THROW_INVALID_DATA_EXCEPTION("Invalid banner");
+            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr,"Invalid banner");
 
         ret->setBanner(banner);
         atUint32 bkVer = base::readUint32();
 
         if (bkVer != 0x00000070)
-            THROW_INVALID_DATA_EXCEPTION("Invalid BacKup header size");
+            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr,"Invalid BacKup header size");
 
         atUint32 bkMagic = base::readUint32();
         if (bkMagic != 0x426B0001)
-            THROW_INVALID_DATA_EXCEPTION("Invalid BacKup header magic");
+            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr,"Invalid BacKup header magic");
 
         atUint32 ngId = base::readUint32();
         atUint32 numFiles = base::readUint32();
@@ -151,7 +151,7 @@ WiiBanner* WiiSaveReader::readBanner()
         std::cerr << std::endl;
         base::setData(oldData, oldLen);
         base::seek(oldPos, SeekOrigin::Begin);
-        THROW_INVALID_DATA_EXCEPTION("MD5 Mismatch");
+        THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr,"MD5 Mismatch");
     }
     // Set the binary reader buffer;
     base::setData(dec, 0xF0C0);
@@ -178,7 +178,7 @@ WiiBanner* WiiSaveReader::readBanner()
         // Make sure to reset m_reader values back to the old ones.
         base::setData(oldData, oldLen);
         base::seek(oldPos, SeekOrigin::Begin);
-        THROW_INVALID_DATA_EXCEPTION("Invalid Header Magic");
+        THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr,"Invalid Header Magic");
     }
 
     flags = base::readUint32();
