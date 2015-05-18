@@ -18,7 +18,7 @@
 
 #include "Athena/IStreamReader.hpp"
 #include <string>
-#include <cstdio>
+#include <stdio.h>
 
 namespace Athena
 {

@@ -23,6 +23,7 @@
 #include "Athena/IOException.hpp"
 #include "Athena/InvalidOperationException.hpp"
 #include "Athena/InvalidDataException.hpp"
+#include "Athena/FileWriter.hpp"
 #include "md5.h"
 #include "aes.h"
 #include "ec.h"
@@ -71,7 +72,7 @@ WiiSave* WiiSaveReader::readSave()
         if (bkMagic != 0x426B0001)
             THROW_INVALID_DATA_EXCEPTION("Invalid BacKup header magic");
 
-        atUint32 ngId = base::readUint32();
+        /*atUint32 ngId =*/ base::readUint32();
         atUint32 numFiles = base::readUint32();
 
         /*int fileSize =*/ base::readUint32();
@@ -119,13 +120,14 @@ WiiBanner* WiiSaveReader::readBanner()
     atUint8  permissions;
     atUint8  md5[16];
     atUint8  md5Calc[16];
-    atUint8  tmpIV[26];
+    atUint8  tmpIV[16];
     memcpy(tmpIV, SD_IV, 16);
 
     std::cout << "Decrypting: banner.bin...";
     aes_set_key(SD_KEY);
     aes_decrypt(tmpIV, data, dec, 0xF0C0);
     std::cout << "done" << std::endl;
+
     memset(md5, 0, 16);
     memset(md5Calc, 0, 16);
     // Read in the MD5 sum
@@ -153,6 +155,7 @@ WiiBanner* WiiSaveReader::readBanner()
         base::seek(oldPos, SeekOrigin::Begin);
         THROW_INVALID_DATA_EXCEPTION("MD5 Mismatch");
     }
+
     // Set the binary reader buffer;
     base::setData(dec, 0xF0C0);
     // Start reading the header
@@ -313,7 +316,7 @@ void WiiSaveReader::readCerts(atUint32 totalSize)
 WiiFile* WiiSaveReader::buildTree(std::vector<WiiFile*> files)
 {
     // This is simply a virtual root that will contain all the other nodes
-    WiiFile* root = new WiiFile("/");
+    WiiFile* root = new WiiFile("");
     root->setType(WiiFile::Directory);
 
     for (WiiFile* f : files)

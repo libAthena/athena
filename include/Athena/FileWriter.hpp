@@ -17,6 +17,7 @@
 #define FILEWRITER_HPP
 
 #include "Athena/IStreamWriter.hpp"
+#include <stdio.h>
 
 namespace Athena
 {
@@ -25,17 +26,16 @@ namespace io
 class FileWriter : public IStreamWriter
 {
 public:
-    FileWriter(const std::string& filename);
+    FileWriter(const std::string& filename, bool overwrite = true);
     virtual ~FileWriter();
 
     void setEndian(Endian endian);
     Endian endian() const;
     bool isBigEndian() const;
     bool isLittleEndian() const;
-    void open();
+    void open(bool overwrite = true);
     void close();
     bool isOpen() const;
-    bool save();
     void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
     inline void seekAlign32() {seek(ROUND_UP_32(position()), SeekOrigin::Begin);}
     bool atEnd() const;

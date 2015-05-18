@@ -14,9 +14,9 @@
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
 #include "Athena/Checksums.hpp"
+#include "Athena/FileReader.hpp"
 #include <iostream>
 #include <iomanip>
-
 
 namespace Athena
 {

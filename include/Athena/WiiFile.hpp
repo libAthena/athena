@@ -166,19 +166,61 @@ public:
      */
     bool isFile() const;
 
+    /*!
+     * \brief addChild
+     * \param file
+     */
     void addChild(WiiFile* file);
+    /*!
+     * \brief children
+     * \return
+     */
     std::vector<WiiFile*> children();
+    /*!
+     * \brief child
+     * \param name
+     * \return
+     */
     WiiFile* child(const std::string& name);
+    /*!
+     * \brief removeChild
+     * \param name
+     */
     void removeChild(const std::string& name);
+    /*!
+     * \brief removeChild
+     * \param file
+     */
     void removeChild(WiiFile* file);
 
+    /*!
+     * \brief parent
+     * \return
+     */
     WiiFile* parent();
-    void setParent(WiiFile *parent);
 
+    /*!
+     * \brief setParent
+     * \param parent
+     */
+    void setParent(WiiFile* parent);
+
+    /*!
+     * \brief fileCount
+     * \return
+     */
     atUint32 fileCount();
 
+    /*!
+     * \brief allChildren
+     * \return
+     */
     std::vector<WiiFile*> allChildren();
 
+    /*!
+     * \brief fullpath
+     * \return
+     */
     std::string fullpath();
 protected:
 private:
