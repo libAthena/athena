@@ -1,4 +1,4 @@
-#include "MCSlot.hpp"
+#include "Athena/MCSlot.hpp"
 
 namespace Athena
 {
