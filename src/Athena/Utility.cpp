@@ -23,6 +23,7 @@
 #include <iterator>
 #include <cstdio>
 #include <sys/stat.h>
+#include <Athena/Exception.hpp>
 
 #ifdef _MSC_VER
 #include <functional>
@@ -37,7 +38,7 @@ namespace utility
 
 bool isSystemBigEndian()
 {
-    static atUint8* test = (atUint8*)"\xFE\xFF";
+    static const atUint8* test = (atUint8*)"\xFE\xFF";
     return (*(atUint16*)test == 0xFEFF);
 }
 
@@ -113,7 +114,7 @@ bool parseBool(const std::string& boolean, bool* valid)
     std::string val = boolean;
     // compare must be case insensitive
     // This is the cleanest solution since I only need to do it once
-    std::transform(val.begin(), val.end(), val.begin(), ::tolower);
+    tolower(val);
 
     // Check for true first
     if (!val.compare("true") || !val.compare("1") || !val.compare("yes") || !val.compare("on"))

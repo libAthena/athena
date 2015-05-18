@@ -21,7 +21,9 @@ SOURCES += \
     $$PWD/src/LZ77/LZLookupTable.cpp \
     $$PWD/src/LZ77/LZType10.cpp \
     $$PWD/src/LZ77/LZType11.cpp \
-    $$PWD/src/LZ77/LZBase.cpp
+    $$PWD/src/LZ77/LZBase.cpp \
+    $$PWD/src/Athena/FileInfo.cpp \
+    $$PWD/src/Athena/Dir.cpp
 
 win32:SOURCES += \
     $$PWD/src/win32_largefilewrapper.c
@@ -56,7 +58,9 @@ HEADERS += \
     $$PWD/include/utf8.h \
     $$PWD/include/utf8/checked.h \
     $$PWD/include/utf8/core.h \
-    $$PWD/include/utf8/unchecked.h
+    $$PWD/include/utf8/unchecked.h \
+    $$PWD/include/Athena/FileInfo.hpp \
+    $$PWD/include/Athena/Dir.hpp
 
 win32:HEADERS += \
     $$PWD/include/win32_largefilewrapper.h
