@@ -61,14 +61,19 @@ __lzo_align_gap(const lzo_voidp ptr, lzo_uint size)
 #error "__LZO_UINTPTR_T_IS_POINTER is unsupported"
 #else
     lzo_uintptr_t p, n;
+
     if (size < 2) return 0;
+
     p = __lzo_ptr_linear(ptr);
 #if 0
     n = (((p + size - 1) / size) * size) - p;
 #else
+
     if ((size & (size - 1)) != 0)
         return 0;
-    n = size; n = ((p + n - 1) & ~(n - 1)) - p;
+
+    n = size;
+    n = ((p + n - 1) & ~(n - 1)) - p;
 #endif
 #endif
     assert((long)n >= 0);

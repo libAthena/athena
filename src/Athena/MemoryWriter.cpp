@@ -106,8 +106,10 @@ void MemoryWriter::seek(atInt64 position, SeekOrigin origin)
 
             if ((atUint64)position > m_length)
                 resize(position);
+
             m_position = position;
             break;
+
         case SeekOrigin::Current:
             if ((((atInt64)m_position + position) < 0))
                 THROW_IO_EXCEPTION("Position outside stream bounds");
@@ -117,12 +119,14 @@ void MemoryWriter::seek(atInt64 position, SeekOrigin origin)
 
             m_position += position;
             break;
+
         case SeekOrigin::End:
             if (((atInt64)m_length - position) < 0)
                 THROW_IO_EXCEPTION("Position outside stream bounds");
 
             if ((atUint64)position > m_length)
                 resize(position);
+
             m_position = m_length - position;
             break;
     }
@@ -185,11 +189,13 @@ void MemoryWriter::save(const std::string& filename)
         m_filepath = filename;
 
     FILE* out = fopen(m_filepath.c_str(), "wb");
+
     if (!out)
         THROW_FILE_NOT_FOUND_EXCEPTION(m_filepath);
 
     atUint64 done = 0;
     atUint64 blocksize = BLOCKSZ;
+
     do
     {
         if (blocksize > m_length - done)
@@ -203,7 +209,8 @@ void MemoryWriter::save(const std::string& filename)
             break;
 
         done += blocksize;
-    }while (done < m_length);
+    }
+    while (done < m_length);
 
     fclose(out);
 }
@@ -228,7 +235,9 @@ void MemoryWriter::writeBit(bool val)
         *(atUint8*)(m_data + m_position) |= (1 << m_bitPosition);
     else
         *(atUint8*)(m_data + m_position) &= ~(1 << m_bitPosition);
+
     m_bitPosition++;
+
     if (m_bitPosition > 7)
     {
         m_bitPosition = 0;
@@ -246,6 +255,7 @@ void MemoryWriter::writeUByte(atUint8 val)
         m_bitPosition = 0;
         m_position += sizeof(atUint8);
     }
+
     if (m_position + 1 > m_length)
         resize(m_position + 1);
 
@@ -272,6 +282,7 @@ void MemoryWriter::writeUBytes(atUint8* data, atUint64 length)
 
     if (!data)
         THROW_INVALID_DATA_EXCEPTION("data cannnot be NULL");
+
     if (m_position + length > m_length)
         resize(m_position + length);
 
@@ -413,7 +424,7 @@ void MemoryWriter::writeDouble(double val)
     else
         utility::LittleDouble(val);
 
-    *(double*)(m_data + m_position)= val;
+    *(double*)(m_data + m_position) = val;
     m_position += sizeof(double);
 }
 
@@ -445,6 +456,7 @@ void MemoryWriter::writeUnicode(const std::string& str)
         if (chr != 0xFEFF)
             writeInt16(chr);
     }
+
     writeInt16(0);
 }
 
@@ -453,9 +465,11 @@ void MemoryWriter::writeString(const std::string& str)
     for (atUint8 c : str)
     {
         writeUByte(c);
+
         if (c == '\0')
             break;
     }
+
     writeUByte(0);
 }
 

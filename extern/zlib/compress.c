@@ -20,14 +20,14 @@
    Z_STREAM_ERROR if the level parameter is invalid.
 */
 #ifdef WIN32
-int ZEXPORT compress2 (Bytef *dest, uLongf *destLen, const Bytef *source, uLong sourceLen, int level)
+int ZEXPORT compress2(Bytef* dest, uLongf* destLen, const Bytef* source, uLong sourceLen, int level)
 #else
-int ZEXPORT compress2 (dest, destLen, source, sourceLen, level)
-    Bytef *dest;
-    uLongf *destLen;
-    const Bytef *source;
-    uLong sourceLen;
-    int level;
+int ZEXPORT compress2(dest, destLen, source, sourceLen, level)
+Bytef* dest;
+uLongf* destLen;
+const Bytef* source;
+uLong sourceLen;
+int level;
 #endif
 {
     z_stream stream;
@@ -36,11 +36,14 @@ int ZEXPORT compress2 (dest, destLen, source, sourceLen, level)
     stream.next_in = (Bytef*)source;
     stream.avail_in = (uInt)sourceLen;
 #ifdef MAXSEG_64K
+
     /* Check for source > 64K on 16-bit machine: */
     if ((uLong)stream.avail_in != sourceLen) return Z_BUF_ERROR;
+
 #endif
     stream.next_out = dest;
-    stream.avail_out = (uInt)*destLen;
+    stream.avail_out = (uInt) * destLen;
+
     if ((uLong)stream.avail_out != *destLen) return Z_BUF_ERROR;
 
     stream.zalloc = (alloc_func)0;
@@ -48,13 +51,17 @@ int ZEXPORT compress2 (dest, destLen, source, sourceLen, level)
     stream.opaque = (voidpf)0;
 
     err = deflateInit(&stream, level);
+
     if (err != Z_OK) return err;
 
     err = deflate(&stream, Z_FINISH);
-    if (err != Z_STREAM_END) {
+
+    if (err != Z_STREAM_END)
+    {
         deflateEnd(&stream);
         return err == Z_OK ? Z_BUF_ERROR : err;
     }
+
     *destLen = stream.total_out;
 
     err = deflateEnd(&stream);
@@ -64,13 +71,13 @@ int ZEXPORT compress2 (dest, destLen, source, sourceLen, level)
 /* ===========================================================================
  */
 #ifdef WIN32
-int ZEXPORT compress(Bytef *dest, uLongf *destLen, const Bytef *source, uLong sourceLen)
+int ZEXPORT compress(Bytef* dest, uLongf* destLen, const Bytef* source, uLong sourceLen)
 #else
-int ZEXPORT compress (dest, destLen, source, sourceLen)
-    Bytef *dest;
-    uLongf *destLen;
-    const Bytef *source;
-    uLong sourceLen;
+int ZEXPORT compress(dest, destLen, source, sourceLen)
+Bytef* dest;
+uLongf* destLen;
+const Bytef* source;
+uLong sourceLen;
 #endif
 {
     return compress2(dest, destLen, source, sourceLen, Z_DEFAULT_COMPRESSION);
@@ -81,10 +88,10 @@ int ZEXPORT compress (dest, destLen, source, sourceLen)
    this function needs to be updated.
  */
 #ifdef WIN32
-uLong ZEXPORT compressBound (uLong sourceLen)
+uLong ZEXPORT compressBound(uLong sourceLen)
 #else
-uLong ZEXPORT compressBound (sourceLen)
-    uLong sourceLen;
+uLong ZEXPORT compressBound(sourceLen)
+uLong sourceLen;
 #endif
 {
     return sourceLen + (sourceLen >> 12) + (sourceLen >> 14) +

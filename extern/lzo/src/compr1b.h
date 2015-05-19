@@ -57,11 +57,11 @@
 const lzo_compress_t LZO_COMPRESS_FUNC = do_compress;
 
 LZO_PUBLIC(int)
-LZO_COMPRESS ( const lzo_bytep in,  lzo_uint  in_len,
-                     lzo_bytep out, lzo_uintp out_len,
-                     lzo_voidp wrkmem )
+LZO_COMPRESS(const lzo_bytep in,  lzo_uint  in_len,
+             lzo_bytep out, lzo_uintp out_len,
+             lzo_voidp wrkmem)
 {
-    return _lzo1b_do_compress(in,in_len,out,out_len,wrkmem,do_compress);
+    return _lzo1b_do_compress(in, in_len, out, out_len, wrkmem, do_compress);
 }
 
 

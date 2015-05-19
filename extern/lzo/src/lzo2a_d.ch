@@ -37,9 +37,9 @@
 #define _NEXTBYTE   (*ip++)
 
 LZO_PUBLIC(int)
-DO_DECOMPRESS    ( const lzo_bytep in , lzo_uint  in_len,
-                         lzo_bytep out, lzo_uintp out_len,
-                         lzo_voidp wrkmem )
+DO_DECOMPRESS(const lzo_bytep in , lzo_uint  in_len,
+              lzo_bytep out, lzo_uintp out_len,
+              lzo_voidp wrkmem)
 {
     lzo_bytep op;
     const lzo_bytep ip;
@@ -62,17 +62,21 @@ DO_DECOMPRESS    ( const lzo_bytep in , lzo_uint  in_len,
     while (TEST_IP_AND_TEST_OP)
     {
         NEEDBITS(1);
+
         if (MASKBITS(1) == 0)
         {
             DUMPBITS(1);
             /* a literal */
-            NEED_IP(1); NEED_OP(1);
+            NEED_IP(1);
+            NEED_OP(1);
             *op++ = *ip++;
             continue;
         }
+
         DUMPBITS(1);
 
         NEEDBITS(1);
+
         if (MASKBITS(1) == 0)
         {
             DUMPBITS(1);
@@ -80,26 +84,31 @@ DO_DECOMPRESS    ( const lzo_bytep in , lzo_uint  in_len,
             NEEDBITS(2);
             t = M1_MIN_LEN + (lzo_uint) MASKBITS(2);
             DUMPBITS(2);
-            NEED_IP(1); NEED_OP(t);
+            NEED_IP(1);
+            NEED_OP(t);
             m_pos = op - 1 - *ip++;
-            assert(m_pos >= out); assert(m_pos < op);
+            assert(m_pos >= out);
+            assert(m_pos < op);
             TEST_LB(m_pos);
-            MEMCPY_DS(op,m_pos,t);
+            MEMCPY_DS(op, m_pos, t);
             continue;
         }
+
         DUMPBITS(1);
 
         NEED_IP(2);
         t = *ip++;
         m_pos = op;
-        m_pos -= (t & 31) | (((lzo_uint) *ip++) << 5);
+        m_pos -= (t & 31) | (((lzo_uint) * ip++) << 5);
         t >>= 5;
+
         if (t == 0)
         {
 #if (SWD_N >= 8192)
             NEEDBITS(1);
             t = MASKBITS(1);
             DUMPBITS(1);
+
             if (t == 0)
                 t = 10 - 1;
             else
@@ -108,10 +117,12 @@ DO_DECOMPRESS    ( const lzo_bytep in , lzo_uint  in_len,
                 m_pos -= 8192;      /* t << 13 */
                 t = M3_MIN_LEN - 1;
             }
+
 #else
             t = 10 - 1;
 #endif
             NEED_IP(1);
+
             while (*ip == 0)
             {
                 t += 255;
@@ -119,20 +130,25 @@ DO_DECOMPRESS    ( const lzo_bytep in , lzo_uint  in_len,
                 TEST_OV(t);
                 NEED_IP(1);
             }
+
             t += *ip++;
         }
         else
         {
 #if defined(LZO_EOF_CODE)
+
             if (m_pos == op)
                 goto eof_found;
+
 #endif
             t += 2;
         }
-        assert(m_pos >= out); assert(m_pos < op);
+
+        assert(m_pos >= out);
+        assert(m_pos < op);
         TEST_LB(m_pos);
         NEED_OP(t);
-        MEMCPY_DS(op,m_pos,t);
+        MEMCPY_DS(op, m_pos, t);
     }
 
 
@@ -148,7 +164,7 @@ eof_found:
 #endif
     *out_len = pd(op, out);
     return (ip == ip_end ? LZO_E_OK :
-           (ip < ip_end  ? LZO_E_INPUT_NOT_CONSUMED : LZO_E_INPUT_OVERRUN));
+            (ip < ip_end  ? LZO_E_INPUT_NOT_CONSUMED : LZO_E_INPUT_OVERRUN));
 
 
 #if defined(HAVE_NEED_IP)

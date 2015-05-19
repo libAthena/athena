@@ -177,7 +177,7 @@ public:
      * \return Int8* The buffer at the current position from the given length.
      */
     atUint8* readUBytes(atUint64 length);
-    
+
     atUint64 readBytesToBuf(void* buf, atUint64 len) {return readUBytesToBuf(buf, len);}
     atUint64 readUBytesToBuf(void* buf, atUint64 len);
 

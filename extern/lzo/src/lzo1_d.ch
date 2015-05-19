@@ -105,7 +105,7 @@
 
 
 #if !defined(LZO_EOF_CODE) && !defined(TEST_IP)
-   /* if we have no EOF code, we have to test for the end of the input */
+/* if we have no EOF code, we have to test for the end of the input */
 #  define TEST_IP               (ip < ip_end)
 #endif
 

@@ -34,9 +34,9 @@
 ************************************************************************/
 
 LZO_PUBLIC(int)
-DO_DECOMPRESS  ( const lzo_bytep in , lzo_uint  in_len,
-                       lzo_bytep out, lzo_uintp out_len,
-                       lzo_voidp wrkmem )
+DO_DECOMPRESS(const lzo_bytep in , lzo_uint  in_len,
+              lzo_bytep out, lzo_uintp out_len,
+              lzo_voidp wrkmem)
 {
     lzo_bytep op;
     const lzo_bytep ip;
@@ -58,6 +58,7 @@ DO_DECOMPRESS  ( const lzo_bytep in , lzo_uint  in_len,
     while (TEST_IP_AND_TEST_OP)
     {
         t = *ip++;
+
         if (t > 31)
             goto match;
 
@@ -65,6 +66,7 @@ DO_DECOMPRESS  ( const lzo_bytep in , lzo_uint  in_len,
         if (t == 0)
         {
             NEED_IP(1);
+
             while (*ip == 0)
             {
                 t += 255;
@@ -72,22 +74,36 @@ DO_DECOMPRESS  ( const lzo_bytep in , lzo_uint  in_len,
                 TEST_IV(t);
                 NEED_IP(1);
             }
+
             t += 31 + *ip++;
         }
+
         /* copy literals */
-        assert(t > 0); NEED_OP(t); NEED_IP(t+1);
+        assert(t > 0);
+        NEED_OP(t);
+        NEED_IP(t + 1);
 #if (LZO_OPT_UNALIGNED32)
+
         if (t >= 4)
         {
-            do {
+            do
+            {
                 UA_COPY4(op, ip);
-                op += 4; ip += 4; t -= 4;
-            } while (t >= 4);
-            if (t > 0) do *op++ = *ip++; while (--t > 0);
+                op += 4;
+                ip += 4;
+                t -= 4;
+            }
+            while (t >= 4);
+
+            if (t > 0) do* op++ = *ip++;
+
+                while (--t > 0);
         }
         else
 #endif
-        do *op++ = *ip++; while (--t > 0);
+            do* op++ = *ip++;
+
+            while (--t > 0);
 
         t = *ip++;
 
@@ -99,27 +115,35 @@ DO_DECOMPRESS  ( const lzo_bytep in , lzo_uint  in_len,
                 m_pos = op - 1 - 0x800;
                 m_pos -= (t >> 2) & 7;
                 m_pos -= *ip++ << 3;
-                TEST_LB(m_pos); NEED_OP(3);
-                *op++ = *m_pos++; *op++ = *m_pos++; *op++ = *m_pos++;
+                TEST_LB(m_pos);
+                NEED_OP(3);
+                *op++ = *m_pos++;
+                *op++ = *m_pos++;
+                *op++ = *m_pos++;
             }
             else
             {
 match:
+
                 if (t < M3_MARKER)
                 {
                     m_pos = op - 1;
                     m_pos -= (t >> 2) & 7;
                     m_pos -= *ip++ << 3;
                     t >>= 5;
-                    TEST_LB(m_pos); assert(t > 0); NEED_OP(t+3-1);
+                    TEST_LB(m_pos);
+                    assert(t > 0);
+                    NEED_OP(t + 3 - 1);
                     goto copy_match;
                 }
                 else
                 {
                     t &= 31;
+
                     if (t == 0)
                     {
                         NEED_IP(1);
+
                         while (*ip == 0)
                         {
                             t += 255;
@@ -127,8 +151,10 @@ match:
                             TEST_OV(t);
                             NEED_IP(1);
                         }
+
                         t += 31 + *ip++;
                     }
+
                     NEED_IP(2);
                     m_pos = op;
 #if (LZO_OPT_UNALIGNED16) && (LZO_ABI_LITTLE_ENDIAN)
@@ -138,38 +164,64 @@ match:
                     m_pos -= *ip++ >> 2;
                     m_pos -= *ip++ << 6;
 #endif
+
                     if (m_pos == op)
                         goto eof_found;
                 }
 
                 /* copy match */
-                TEST_LB(m_pos); assert(t > 0); NEED_OP(t+3-1);
+                TEST_LB(m_pos);
+                assert(t > 0);
+                NEED_OP(t + 3 - 1);
 #if (LZO_OPT_UNALIGNED32)
+
                 if (t >= 2 * 4 - (3 - 1) && (op - m_pos) >= 4)
                 {
                     UA_COPY4(op, m_pos);
-                    op += 4; m_pos += 4; t -= 4 - (3 - 1);
-                    do {
+                    op += 4;
+                    m_pos += 4;
+                    t -= 4 - (3 - 1);
+
+                    do
+                    {
                         UA_COPY4(op, m_pos);
-                        op += 4; m_pos += 4; t -= 4;
-                    } while (t >= 4);
-                    if (t > 0) do *op++ = *m_pos++; while (--t > 0);
+                        op += 4;
+                        m_pos += 4;
+                        t -= 4;
+                    }
+                    while (t >= 4);
+
+                    if (t > 0) do* op++ = *m_pos++;
+
+                        while (--t > 0);
                 }
                 else
 #endif
                 {
 copy_match:
-                *op++ = *m_pos++; *op++ = *m_pos++;
-                do *op++ = *m_pos++; while (--t > 0);
+                    *op++ = *m_pos++;
+                    *op++ = *m_pos++;
+
+                    do* op++ = *m_pos++;
+
+                    while (--t > 0);
                 }
             }
+
             t = ip[-2] & 3;
+
             if (t == 0)
                 break;
 
             /* copy literals */
-            assert(t > 0); NEED_OP(t); NEED_IP(t+1);
-            do *op++ = *ip++; while (--t > 0);
+            assert(t > 0);
+            NEED_OP(t);
+            NEED_IP(t + 1);
+
+            do* op++ = *ip++;
+
+            while (--t > 0);
+
             t = *ip++;
         }
     }
@@ -184,7 +236,7 @@ eof_found:
     assert(t == 1);
     *out_len = pd(op, out);
     return (ip == ip_end ? LZO_E_OK :
-           (ip < ip_end  ? LZO_E_INPUT_NOT_CONSUMED : LZO_E_INPUT_OVERRUN));
+            (ip < ip_end  ? LZO_E_INPUT_NOT_CONSUMED : LZO_E_INPUT_OVERRUN));
 
 
 #if defined(HAVE_NEED_IP)

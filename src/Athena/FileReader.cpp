@@ -73,6 +73,7 @@ bool FileReader::isLittleEndian() const
 void FileReader::open()
 {
     m_fileHandle = fopen(m_filename.c_str(), "rb");
+
     if (!m_fileHandle)
         THROW_FILE_NOT_FOUND_EXCEPTION(m_filename);
 
@@ -104,7 +105,7 @@ void FileReader::seek(atInt64 pos, SeekOrigin origin)
 bool FileReader::atEnd() const
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(true, "File not open");
 
     return feof(m_fileHandle) != 0;
 }
@@ -112,7 +113,7 @@ bool FileReader::atEnd() const
 atUint64 FileReader::position() const
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0, "File not open");
 
     return ftello64(m_fileHandle);
 }
@@ -120,7 +121,7 @@ atUint64 FileReader::position() const
 atUint64 FileReader::length() const
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0, "File not open");
 
     return utility::fileSize(m_filename);
 }
@@ -139,13 +140,14 @@ void FileReader::seekBit(int bit)
 bool FileReader::readBit()
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File is not open for reading");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(false, "File is not open for reading");
 
     if (!m_bitValid)
     {
         size_t size = fread(&m_currentByte, 1, 1, m_fileHandle);
+
         if (size != sizeof(atUint8))
-            THROW_IO_EXCEPTION("Error reading from file.");
+            THROW_IO_EXCEPTION_RETURN(false, "Error reading from file.");
 
         m_bitShift = 0;
         m_bitValid = true;
@@ -153,6 +155,7 @@ bool FileReader::readBit()
 
     atUint8 flag = (1 << m_bitShift);
     m_bitShift++;
+
     if (m_bitShift > 7)
         m_bitValid = false;
 
@@ -162,7 +165,7 @@ bool FileReader::readBit()
 atUint8 FileReader::readUByte()
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0, "File not open for reading");
 
     m_bitValid = false;
     atUint8 val = 0;
@@ -173,24 +176,27 @@ atUint8 FileReader::readUByte()
 atInt8 FileReader::readByte()
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0, "File not open for reading");
+
     return (atInt8)readUByte();
 }
 
 atUint8* FileReader::readUBytes(atUint64 len)
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(nullptr, "File not open for reading");
+
     m_bitValid = false;
     atUint8* val = new atUint8[len];
     fread(val, 1, len, m_fileHandle);
     return val;
 }
-    
+
 atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len)
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0, "File not open for reading");
+
     m_bitValid = false;
     return fread(buf, 1, len, m_fileHandle);
 }
@@ -198,14 +204,15 @@ atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len)
 atInt8* FileReader::readBytes(atUint64 len)
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(nullptr, "File not open for reading");
+
     return (atInt8*)readUBytes(len);
 }
 
 atUint16 FileReader::readUint16()
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0, "File not open for reading");
 
     m_bitValid = false;
     atUint16 val;
@@ -220,7 +227,7 @@ atUint16 FileReader::readUint16()
 atInt16 FileReader::readInt16()
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0, "File not open for reading");
 
     return (atInt16)readUint16();
 }
@@ -228,7 +235,7 @@ atInt16 FileReader::readInt16()
 atUint32 FileReader::readUint32()
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0, "File not open for reading");
 
     m_bitValid = false;
     atUint32 val;
@@ -243,7 +250,7 @@ atUint32 FileReader::readUint32()
 atInt32 FileReader::readInt32()
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0, "File not open for reading");
 
     return (atInt32)readUint32();
 }
@@ -251,7 +258,7 @@ atInt32 FileReader::readInt32()
 atUint64 FileReader::readUint64()
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0, "File not open for reading");
 
     m_bitValid = false;
     atUint64 val;
@@ -266,7 +273,7 @@ atUint64 FileReader::readUint64()
 atInt64 FileReader::readInt64()
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0, "File not open for reading");
 
     return (atInt64)readUint64();
 }
@@ -274,7 +281,7 @@ atInt64 FileReader::readInt64()
 double FileReader::readDouble()
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0, "File not open for reading");
 
     m_bitValid = false;
     double val;
@@ -289,7 +296,7 @@ double FileReader::readDouble()
 float FileReader::readFloat()
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0, "File not open for reading");
 
     m_bitValid = false;
     float val;
@@ -304,7 +311,7 @@ float FileReader::readFloat()
 bool FileReader::readBool()
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(false, "File not open for reading");
 
     return (readByte() != 0);
 }
@@ -315,6 +322,7 @@ std::string FileReader::readString(atInt32 maxlen)
     atUint8 chr = readByte();
 
     atInt32 i = 0;
+
     while (chr != 0)
     {
         if (maxlen >= 0 && i >= maxlen - 1)
@@ -331,26 +339,30 @@ std::string FileReader::readString(atInt32 maxlen)
 std::string FileReader::readUnicode(atInt32 maxlen)
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for reading");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(std::string(), "File not open for reading");
 
     std::string ret;
     std::vector<short> tmp;
 
     atInt32 i = 0;
-    for(;;)
+
+    for (;;)
     {
         if (maxlen >= 0 && i >= maxlen - 1)
             break;
 
         short chr = readUint16();
+
         if (chr)
             tmp.push_back(chr);
         else
             break;
+
         i++;
     };
 
     utf8::utf16to8(tmp.begin(), tmp.end(), back_inserter(ret));
+
     return ret;
 }
 

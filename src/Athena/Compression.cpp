@@ -33,8 +33,8 @@ atInt32 decompressZlib(const atUint8* src, atUint32 srcLen, atUint8* dst, atUint
     z_stream strm = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     strm.total_in  = strm.avail_in  = srcLen;
     strm.total_out = strm.avail_out = dstLen;
-    strm.next_in   = (Bytef *) src;
-    strm.next_out  = (Bytef *) dst;
+    strm.next_in   = (Bytef*) src;
+    strm.next_out  = (Bytef*) dst;
 
     strm.zalloc = Z_NULL;
     strm.zfree  = Z_NULL;
@@ -44,9 +44,11 @@ atInt32 decompressZlib(const atUint8* src, atUint32 srcLen, atUint8* dst, atUint
     atInt32 ret = -1;
 
     err = inflateInit(&strm); //15 window bits, and the +32 tells zlib to to detect if using gzip or zlib
+
     if (err == Z_OK)
     {
         err = inflate(&strm, Z_FINISH);
+
         if (err == Z_STREAM_END)
             ret = strm.total_out;
         else
@@ -66,13 +68,13 @@ atInt32 decompressZlib(const atUint8* src, atUint32 srcLen, atUint8* dst, atUint
     return ret;
 }
 
-atInt32 compressZlib(const atUint8 *src, atUint32 srcLen, atUint8* dst, atUint32 dstLen)
+atInt32 compressZlib(const atUint8* src, atUint32 srcLen, atUint8* dst, atUint32 dstLen)
 {
     z_stream strm = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     strm.total_in  = strm.avail_in  = srcLen;
     strm.total_out = strm.avail_out = dstLen;
-    strm.next_in   = (Bytef *) src;
-    strm.next_out  = (Bytef *) dst;
+    strm.next_in   = (Bytef*) src;
+    strm.next_out  = (Bytef*) dst;
 
     strm.zalloc = Z_NULL;
     strm.zfree  = Z_NULL;
@@ -86,6 +88,7 @@ atInt32 compressZlib(const atUint8 *src, atUint32 srcLen, atUint8* dst, atUint32
     if (err == Z_OK)
     {
         err = deflate(&strm, Z_FINISH);
+
         if (err == Z_STREAM_END)
             ret = strm.total_out;
         else
@@ -124,17 +127,18 @@ atUint32 yaz0Decode(const atUint8* src, atUint8* dst, atUint32 uncompressedSize)
 
     atInt32 validBitCount = 0; //number of valid bits left in "code" byte
     atUint8 currCodeByte;
-    while(dstPlace < uncompressedSize)
+
+    while (dstPlace < uncompressedSize)
     {
         //read new "code" byte if the current one is used up
-        if(validBitCount == 0)
+        if (validBitCount == 0)
         {
             currCodeByte = src[srcPlace];
             ++srcPlace;
             validBitCount = 8;
         }
 
-        if((currCodeByte & 0x80) != 0)
+        if ((currCodeByte & 0x80) != 0)
         {
             //straight copy
             dst[dstPlace] = src[srcPlace];
@@ -152,7 +156,8 @@ atUint32 yaz0Decode(const atUint8* src, atUint8* dst, atUint32 uncompressedSize)
             atUint32 copySource = dstPlace - (dist + 1);
 
             atUint32 numBytes = byte1 >> 4;
-            if(numBytes == 0)
+
+            if (numBytes == 0)
             {
                 numBytes = src[srcPlace] + 0x12;
                 srcPlace++;
@@ -161,7 +166,7 @@ atUint32 yaz0Decode(const atUint8* src, atUint8* dst, atUint32 uncompressedSize)
                 numBytes += 2;
 
             //copy run
-            for(atUint32 i = 0; i < numBytes; ++i)
+            for (atUint32 i = 0; i < numBytes; ++i)
             {
                 dst[dstPlace] = dst[copySource];
                 copySource++;
@@ -171,7 +176,7 @@ atUint32 yaz0Decode(const atUint8* src, atUint8* dst, atUint32 uncompressedSize)
 
         //use next bit from "code" byte
         currCodeByte <<= 1;
-        validBitCount-=1;
+        validBitCount -= 1;
     }
 
     return dstPlace;
@@ -183,8 +188,8 @@ typedef struct
     atUint32 srcPos, dstPos;
 } yaz0_Ret;
 
-atUint32 simpleEnc(const atUint8* src, atInt32 size, atInt32 pos, atUint32 *pMatchPos);
-atUint32 nintendoEnc(const atUint8* src, atInt32 size, atInt32 pos, atUint32 *pMatchPos);
+atUint32 simpleEnc(const atUint8* src, atInt32 size, atInt32 pos, atUint32* pMatchPos);
+atUint32 nintendoEnc(const atUint8* src, atInt32 size, atInt32 pos, atUint32* pMatchPos);
 
 atUint32 yaz0Encode(const atUint8* src, atUint32 srcSize, atUint8* data)
 {
@@ -196,11 +201,13 @@ atUint32 yaz0Encode(const atUint8* src, atUint32 srcSize, atUint8* data)
 
     atUint32 validBitCount = 0; //number of valid bits left in "code" byte
     atUint8 currCodeByte = 0;
-    while(r.srcPos < srcSize)
+
+    while (r.srcPos < srcSize)
     {
         atUint32 numBytes;
         atUint32 matchPos;
         numBytes = nintendoEnc(src, srcSize, r.srcPos, &matchPos);
+
         if (numBytes < 3)
         {
             //straight copy
@@ -222,9 +229,11 @@ atUint32 yaz0Encode(const atUint8* src, atUint32 srcSize, atUint8* data)
                 byte2 = dist & 0xff;
                 dst[r.dstPos++] = byte1;
                 dst[r.dstPos++] = byte2;
+
                 // maximum runlength for 3 byte encoding
-                if (numBytes > 0xff+0x12)
-                    numBytes = 0xff+0x12;
+                if (numBytes > 0xff + 0x12)
+                    numBytes = 0xff + 0x12;
+
                 byte3 = numBytes - 0x12;
                 dst[r.dstPos++] = byte3;
             }
@@ -235,30 +244,38 @@ atUint32 yaz0Encode(const atUint8* src, atUint32 srcSize, atUint8* data)
                 dst[r.dstPos++] = byte1;
                 dst[r.dstPos++] = byte2;
             }
+
             r.srcPos += numBytes;
         }
+
         validBitCount++;
+
         //write eight codes
-        if(validBitCount == 8)
+        if (validBitCount == 8)
         {
             data[pos] = currCodeByte;
             pos++;
-            for (i=0;i</*=*/r.dstPos;pos++,i++)
+
+            for (i = 0; i </*=*/r.dstPos; pos++, i++)
                 data[pos] = dst[i];
-            dstSize += r.dstPos+1;
+
+            dstSize += r.dstPos + 1;
 
             currCodeByte = 0;
             validBitCount = 0;
             r.dstPos = 0;
         }
     }
-    if(validBitCount > 0)
+
+    if (validBitCount > 0)
     {
         data[pos] = currCodeByte;
         pos++;
-        for (i=0;i</*=*/r.dstPos;pos++,i++)
+
+        for (i = 0; i </*=*/r.dstPos; pos++, i++)
             data[pos] = dst[i];
-        dstSize += r.dstPos+1;
+
+        dstSize += r.dstPos + 1;
 
         currCodeByte = 0;
         validBitCount = 0;
@@ -269,7 +286,7 @@ atUint32 yaz0Encode(const atUint8* src, atUint32 srcSize, atUint8* data)
 }
 
 // a lookahead encoding scheme for ngc Yaz0
-atUint32 nintendoEnc(const atUint8* src, atInt32 size, atInt32 pos, atUint32 *pMatchPos)
+atUint32 nintendoEnc(const atUint8* src, atInt32 size, atInt32 pos, atUint32* pMatchPos)
 {
     atUint32 numBytes = 1;
     static atUint32 numBytes1;
@@ -278,30 +295,36 @@ atUint32 nintendoEnc(const atUint8* src, atInt32 size, atInt32 pos, atUint32 *pM
 
     // if prevFlag is set, it means that the previous position was determined by look-ahead try.
     // so just use it. this is not the best optimization, but nintendo's choice for speed.
-    if (prevFlag == 1) {
+    if (prevFlag == 1)
+    {
         *pMatchPos = matchPos;
         prevFlag = 0;
         return numBytes1;
     }
+
     prevFlag = 0;
     numBytes = simpleEnc(src, size, pos, &matchPos);
     *pMatchPos = matchPos;
 
     // if this position is RLE encoded, then compare to copying 1 byte and next position(pos+1) encoding
-    if (numBytes >= 3) {
-        numBytes1 = simpleEnc(src, size, pos+1, &matchPos);
+    if (numBytes >= 3)
+    {
+        numBytes1 = simpleEnc(src, size, pos + 1, &matchPos);
+
         // if the next position encoding is +2 longer than current position, choose it.
         // this does not guarantee the best optimization, but fairly good optimization with speed.
-        if (numBytes1 >= numBytes+2) {
+        if (numBytes1 >= numBytes + 2)
+        {
             numBytes = 1;
             prevFlag = 1;
         }
     }
+
     return numBytes;
 }
 
 // simple and straight encoding scheme for Yaz0
-atUint32 simpleEnc(const atUint8* src, atInt32 size, atInt32 pos, atUint32 *pMatchPos)
+atUint32 simpleEnc(const atUint8* src, atInt32 size, atInt32 pos, atUint32* pMatchPos)
 {
     int startPos = pos - 0x1000, j, i;
     atUint32 numBytes = 1;
@@ -309,28 +332,34 @@ atUint32 simpleEnc(const atUint8* src, atInt32 size, atInt32 pos, atUint32 *pMat
 
     if (startPos < 0)
         startPos = 0;
+
     for (i = startPos; i < pos; i++)
     {
-        for (j = 0; j < size-pos; j++)
+        for (j = 0; j < size - pos; j++)
         {
-            if (src[i+j] != src[j+pos])
+            if (src[i + j] != src[j + pos])
                 break;
         }
+
         if ((atUint32)j > numBytes)
         {
             numBytes = j;
             matchPos = i;
         }
     }
+
     *pMatchPos = matchPos;
+
     if (numBytes == 2)
         numBytes = 1;
+
     return numBytes;
 }
 
 atUint32 decompressLZ77(const atUint8* src, atUint32 srcLen, atUint8** dst)
 {
     LZBase* lzCodec;
+
     if (*(atUint8*)src == 0x11)
         lzCodec = new LZType11;
     else
@@ -345,6 +374,7 @@ atUint32 decompressLZ77(const atUint8* src, atUint32 srcLen, atUint8** dst)
 atUint32 compressLZ77(const atUint8* src, atUint32 srcLen, atUint8** dst, bool extended)
 {
     LZBase* lzCodec;
+
     if (extended)
         lzCodec = new LZType11;
     else

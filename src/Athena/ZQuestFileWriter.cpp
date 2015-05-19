@@ -44,6 +44,7 @@ void ZQuestFileWriter::write(ZQuestFile* quest, bool compress)
     base::writeUint32(ZQuestFile::Version);
     atUint8* questData = quest->data();
     atUint32 compLen;
+
     if (compress)
     {
         atUint8* compData = new atUint8[quest->length() + 0x40]; // add 20 bytes because sometimes the file grows with compression
@@ -79,6 +80,7 @@ void ZQuestFileWriter::write(ZQuestFile* quest, bool compress)
     base::writeUBytes(questData, compLen);
 
     base::save();
+
     // Delete compressed data to prevent memory leaks
     if (questData != quest->data())
     {

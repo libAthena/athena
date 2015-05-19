@@ -34,13 +34,16 @@
 
 /* don't pull in <windows.h> - we don't need it */
 #if 0
-BOOL FAR PASCAL LibMain ( HANDLE hInstance, WORD wDataSegment,
-                          WORD wHeapSize, LPSTR lpszCmdLine )
+BOOL FAR PASCAL LibMain(HANDLE hInstance, WORD wDataSegment,
+                        WORD wHeapSize, LPSTR lpszCmdLine)
 #else
-int __far __pascal LibMain ( int a, short b, short c, long d )
+int __far __pascal LibMain(int a, short b, short c, long d)
 #endif
 {
-    LZO_UNUSED(a); LZO_UNUSED(b); LZO_UNUSED(c); LZO_UNUSED(d);
+    LZO_UNUSED(a);
+    LZO_UNUSED(b);
+    LZO_UNUSED(c);
+    LZO_UNUSED(d);
     return 1;
 }
 

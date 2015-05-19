@@ -178,7 +178,7 @@ public:
 #ifdef ATHENA_USE_QT
 signals:
     void nameChanged(QString);
-    void orientationChanged(bool,bool);
+    void orientationChanged(bool, bool);
     void offsetChanged(QPoint);
     void textureOffsetChanged(QPoint);
     void sizeChanged(QSize);

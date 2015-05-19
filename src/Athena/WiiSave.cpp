@@ -51,7 +51,7 @@ WiiSave::~WiiSave()
 
 }
 
-void WiiSave::addFile( WiiFile* file)
+void WiiSave::addFile(WiiFile* file)
 {
     m_root->addChild(file);
 }
@@ -97,7 +97,7 @@ WiiBanner* WiiSave::banner() const
     return m_banner;
 }
 
-std::vector<WiiFile *> WiiSave::allFiles() const
+std::vector<WiiFile*> WiiSave::allFiles() const
 {
     return m_root->allChildren();
 }

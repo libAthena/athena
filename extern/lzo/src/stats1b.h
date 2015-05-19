@@ -57,19 +57,19 @@ extern "C" {
 
 typedef struct
 {
-/* algorithm configuration */
+    /* algorithm configuration */
     unsigned r_bits;
     unsigned m3o_bits;
     unsigned dd_bits;
     unsigned clevel;
 
-/* internal configuration */
+    /* internal configuration */
     unsigned d_bits;
     long min_lookahead;
     long max_lookbehind;
-    const char *compress_id;
+    const char* compress_id;
 
-/* counts */
+    /* counts */
     long lit_runs;
     long r0short_runs;
     long r0fast_runs;
@@ -80,16 +80,16 @@ typedef struct
     long m4_matches;
     long r1_matches;
 
-/* */
+    /* */
     long lit_run[R0MIN];
     long m2_match[M2_MAX_LEN + 1];
     long m3_match[M3_MAX_LEN + 1];
 #if (M3O_BITS < 8)
     long lit_runs_after_m3_match;
-    long lit_run_after_m3_match[LZO_SIZE(8-M3O_BITS)];
+    long lit_run_after_m3_match[LZO_SIZE(8 - M3O_BITS)];
 #endif
 
-/* */
+    /* */
     long matches;
     long match_bytes;
     long literals;
@@ -97,21 +97,21 @@ typedef struct
     long literal_bytes;
     double literal_overhead_percent;
 
-/* */
+    /* */
     long unused_dict_entries;
     double unused_dict_entries_percent;
 
-/* */
+    /* */
     long in_len;
     long out_len;
 }
 lzo1b_stats_t;
 
 
-void _lzo1b_stats_init(lzo1b_stats_t *lzo_stats);
-void _lzo1b_stats_calc(lzo1b_stats_t *lzo_stats);
+void _lzo1b_stats_init(lzo1b_stats_t* lzo_stats);
+void _lzo1b_stats_calc(lzo1b_stats_t* lzo_stats);
 
-extern lzo1b_stats_t * const lzo1b_stats;
+extern lzo1b_stats_t* const lzo1b_stats;
 
 #define lzo_stats_t     lzo1b_stats_t
 #define lzo_stats       lzo1b_stats
