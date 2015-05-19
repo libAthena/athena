@@ -33,7 +33,7 @@ class ZQuestFileReader : protected MemoryReader
 {
     MEMORYREADER_BASE();
 
-public:    
+public:
     /*!
      * \brief ZQuestFileReader
      * \param data

@@ -64,21 +64,28 @@
 __lzo_static_forceinline unsigned lzo_bitops_ctlz32_func(lzo_uint32_t v)
 {
 #if (LZO_BITOPS_USE_MSC_BITSCAN) && (LZO_ARCH_AMD64 || LZO_ARCH_I386)
-    unsigned long r; (void) _BitScanReverse(&r, v); return (unsigned) r ^ 31;
+    unsigned long r;
+    (void) _BitScanReverse(&r, v);
+    return (unsigned) r ^ 31;
 #define lzo_bitops_ctlz32(v)    lzo_bitops_ctlz32_func(v)
 #elif (LZO_BITOPS_USE_ASM_BITSCAN) && (LZO_ARCH_AMD64 || LZO_ARCH_I386) && (LZO_ASM_SYNTAX_GNUC)
     lzo_uint32_t r;
-    __asm__("bsr %1,%0" : "=r" (r) : "rm" (v) __LZO_ASM_CLOBBER_LIST_CC);
+    __asm__("bsr %1,%0" : "=r"(r) : "rm"(v) __LZO_ASM_CLOBBER_LIST_CC);
     return (unsigned) r ^ 31;
 #define lzo_bitops_ctlz32(v)    lzo_bitops_ctlz32_func(v)
 #elif (LZO_BITOPS_USE_GNUC_BITSCAN) && (LZO_SIZEOF_INT == 4)
-    unsigned r; r = (unsigned) __builtin_clz(v); return r;
+    unsigned r;
+    r = (unsigned) __builtin_clz(v);
+    return r;
 #define lzo_bitops_ctlz32(v)    ((unsigned) __builtin_clz(v))
 #elif (LZO_BITOPS_USE_GNUC_BITSCAN) && (LZO_SIZEOF_LONG == 8) && (LZO_WORDSIZE >= 8)
-    unsigned r; r = (unsigned) __builtin_clzl(v); return r ^ 32;
+    unsigned r;
+    r = (unsigned) __builtin_clzl(v);
+    return r ^ 32;
 #define lzo_bitops_ctlz32(v)    (((unsigned) __builtin_clzl(v)) ^ 32)
 #else
-    LZO_UNUSED(v); return 0;
+    LZO_UNUSED(v);
+    return 0;
 #endif
 }
 
@@ -86,21 +93,28 @@ __lzo_static_forceinline unsigned lzo_bitops_ctlz32_func(lzo_uint32_t v)
 __lzo_static_forceinline unsigned lzo_bitops_ctlz64_func(lzo_uint64_t v)
 {
 #if (LZO_BITOPS_USE_MSC_BITSCAN) && (LZO_ARCH_AMD64)
-    unsigned long r; (void) _BitScanReverse64(&r, v); return (unsigned) r ^ 63;
+    unsigned long r;
+    (void) _BitScanReverse64(&r, v);
+    return (unsigned) r ^ 63;
 #define lzo_bitops_ctlz64(v)    lzo_bitops_ctlz64_func(v)
 #elif (LZO_BITOPS_USE_ASM_BITSCAN) && (LZO_ARCH_AMD64) && (LZO_ASM_SYNTAX_GNUC)
     lzo_uint64_t r;
-    __asm__("bsr %1,%0" : "=r" (r) : "rm" (v) __LZO_ASM_CLOBBER_LIST_CC);
+    __asm__("bsr %1,%0" : "=r"(r) : "rm"(v) __LZO_ASM_CLOBBER_LIST_CC);
     return (unsigned) r ^ 63;
 #define lzo_bitops_ctlz64(v)    lzo_bitops_ctlz64_func(v)
 #elif (LZO_BITOPS_USE_GNUC_BITSCAN) && (LZO_SIZEOF_LONG == 8) && (LZO_WORDSIZE >= 8)
-    unsigned r; r = (unsigned) __builtin_clzl(v); return r;
+    unsigned r;
+    r = (unsigned) __builtin_clzl(v);
+    return r;
 #define lzo_bitops_ctlz64(v)    ((unsigned) __builtin_clzl(v))
 #elif (LZO_BITOPS_USE_GNUC_BITSCAN) && (LZO_SIZEOF_LONG_LONG == 8) && (LZO_WORDSIZE >= 8)
-    unsigned r; r = (unsigned) __builtin_clzll(v); return r;
+    unsigned r;
+    r = (unsigned) __builtin_clzll(v);
+    return r;
 #define lzo_bitops_ctlz64(v)    ((unsigned) __builtin_clzll(v))
 #else
-    LZO_UNUSED(v); return 0;
+    LZO_UNUSED(v);
+    return 0;
 #endif
 }
 #endif
@@ -108,18 +122,23 @@ __lzo_static_forceinline unsigned lzo_bitops_ctlz64_func(lzo_uint64_t v)
 __lzo_static_forceinline unsigned lzo_bitops_cttz32_func(lzo_uint32_t v)
 {
 #if (LZO_BITOPS_USE_MSC_BITSCAN) && (LZO_ARCH_AMD64 || LZO_ARCH_I386)
-    unsigned long r; (void) _BitScanForward(&r, v); return (unsigned) r;
+    unsigned long r;
+    (void) _BitScanForward(&r, v);
+    return (unsigned) r;
 #define lzo_bitops_cttz32(v)    lzo_bitops_cttz32_func(v)
 #elif (LZO_BITOPS_USE_ASM_BITSCAN) && (LZO_ARCH_AMD64 || LZO_ARCH_I386) && (LZO_ASM_SYNTAX_GNUC)
     lzo_uint32_t r;
-    __asm__("bsf %1,%0" : "=r" (r) : "rm" (v) __LZO_ASM_CLOBBER_LIST_CC);
+    __asm__("bsf %1,%0" : "=r"(r) : "rm"(v) __LZO_ASM_CLOBBER_LIST_CC);
     return (unsigned) r;
 #define lzo_bitops_cttz32(v)    lzo_bitops_cttz32_func(v)
 #elif (LZO_BITOPS_USE_GNUC_BITSCAN) && (LZO_SIZEOF_INT >= 4)
-    unsigned r; r = (unsigned) __builtin_ctz(v); return r;
+    unsigned r;
+    r = (unsigned) __builtin_ctz(v);
+    return r;
 #define lzo_bitops_cttz32(v)    ((unsigned) __builtin_ctz(v))
 #else
-    LZO_UNUSED(v); return 0;
+    LZO_UNUSED(v);
+    return 0;
 #endif
 }
 
@@ -127,21 +146,28 @@ __lzo_static_forceinline unsigned lzo_bitops_cttz32_func(lzo_uint32_t v)
 __lzo_static_forceinline unsigned lzo_bitops_cttz64_func(lzo_uint64_t v)
 {
 #if (LZO_BITOPS_USE_MSC_BITSCAN) && (LZO_ARCH_AMD64)
-    unsigned long r; (void) _BitScanForward64(&r, v); return (unsigned) r;
+    unsigned long r;
+    (void) _BitScanForward64(&r, v);
+    return (unsigned) r;
 #define lzo_bitops_cttz64(v)    lzo_bitops_cttz64_func(v)
 #elif (LZO_BITOPS_USE_ASM_BITSCAN) && (LZO_ARCH_AMD64) && (LZO_ASM_SYNTAX_GNUC)
     lzo_uint64_t r;
-    __asm__("bsf %1,%0" : "=r" (r) : "rm" (v) __LZO_ASM_CLOBBER_LIST_CC);
+    __asm__("bsf %1,%0" : "=r"(r) : "rm"(v) __LZO_ASM_CLOBBER_LIST_CC);
     return (unsigned) r;
 #define lzo_bitops_cttz64(v)    lzo_bitops_cttz64_func(v)
 #elif (LZO_BITOPS_USE_GNUC_BITSCAN) && (LZO_SIZEOF_LONG >= 8) && (LZO_WORDSIZE >= 8)
-    unsigned r; r = (unsigned) __builtin_ctzl(v); return r;
+    unsigned r;
+    r = (unsigned) __builtin_ctzl(v);
+    return r;
 #define lzo_bitops_cttz64(v)    ((unsigned) __builtin_ctzl(v))
 #elif (LZO_BITOPS_USE_GNUC_BITSCAN) && (LZO_SIZEOF_LONG_LONG >= 8) && (LZO_WORDSIZE >= 8)
-    unsigned r; r = (unsigned) __builtin_ctzll(v); return r;
+    unsigned r;
+    r = (unsigned) __builtin_ctzll(v);
+    return r;
 #define lzo_bitops_cttz64(v)    ((unsigned) __builtin_ctzll(v))
 #else
-    LZO_UNUSED(v); return 0;
+    LZO_UNUSED(v);
+    return 0;
 #endif
 }
 #endif
@@ -179,7 +205,7 @@ lzo_unused_funcs_impl(void, lzo_bitops_unused_funcs)(void)
 typedef lzo_uint16_t __lzo_may_alias lzo_memops_TU2;
 #define lzo_memops_TU2p volatile lzo_memops_TU2 *
 #elif defined(__lzo_byte_struct)
-__lzo_byte_struct(lzo_memops_TU2_struct,2)
+__lzo_byte_struct(lzo_memops_TU2_struct, 2)
 typedef struct lzo_memops_TU2_struct lzo_memops_TU2;
 #else
 struct lzo_memops_TU2_struct { unsigned char a[2]; } __lzo_may_alias;
@@ -194,7 +220,7 @@ typedef struct lzo_memops_TU2_struct lzo_memops_TU2;
 typedef lzo_uint32_t __lzo_may_alias lzo_memops_TU4;
 #define lzo_memops_TU4p volatile lzo_memops_TU4 __LZO_MMODEL *
 #elif defined(__lzo_byte_struct)
-__lzo_byte_struct(lzo_memops_TU4_struct,4)
+__lzo_byte_struct(lzo_memops_TU4_struct, 4)
 typedef struct lzo_memops_TU4_struct lzo_memops_TU4;
 #else
 struct lzo_memops_TU4_struct { unsigned char a[4]; } __lzo_may_alias;
@@ -209,7 +235,7 @@ typedef struct lzo_memops_TU4_struct lzo_memops_TU4;
 typedef lzo_uint64_t __lzo_may_alias lzo_memops_TU8;
 #define lzo_memops_TU8p volatile lzo_memops_TU8 __LZO_MMODEL *
 #elif defined(__lzo_byte_struct)
-__lzo_byte_struct(lzo_memops_TU8_struct,8)
+__lzo_byte_struct(lzo_memops_TU8_struct, 8)
 typedef struct lzo_memops_TU8_struct lzo_memops_TU8;
 #else
 struct lzo_memops_TU8_struct { unsigned char a[8]; } __lzo_may_alias;
@@ -276,10 +302,10 @@ typedef struct lzo_memops_TU8_struct lzo_memops_TU8;
     d__8[0] = s__8[0]; d__8[1] = s__8[1]; d__8[2] = s__8[2]; d__8[3] = s__8[3]; \
     d__8[4] = s__8[4]; d__8[5] = s__8[5]; d__8[6] = s__8[6]; d__8[7] = s__8[7]; \
     LZO_BLOCK_END
-LZO_COMPILE_TIME_ASSERT_HEADER(sizeof(*(lzo_memops_TU1p)0)==1)
+LZO_COMPILE_TIME_ASSERT_HEADER(sizeof(*(lzo_memops_TU1p)0) == 1)
 #define LZO_MEMOPS_COPY1(dd,ss) LZO_MEMOPS_MOVE1(dd,ss)
 #if (LZO_OPT_UNALIGNED16)
-LZO_COMPILE_TIME_ASSERT_HEADER(sizeof(*(lzo_memops_TU2p)0)==2)
+LZO_COMPILE_TIME_ASSERT_HEADER(sizeof(*(lzo_memops_TU2p)0) == 2)
 #define LZO_MEMOPS_COPY2(dd,ss) \
     * (lzo_memops_TU2p) (lzo_memops_TU0p) (dd) = * (const lzo_memops_TU2p) (const lzo_memops_TU0p) (ss)
 #elif defined(lzo_memops_tcheck__)
@@ -291,7 +317,7 @@ LZO_COMPILE_TIME_ASSERT_HEADER(sizeof(*(lzo_memops_TU2p)0)==2)
 #define LZO_MEMOPS_COPY2(dd,ss) LZO_MEMOPS_MOVE2(dd,ss)
 #endif
 #if (LZO_OPT_UNALIGNED32)
-LZO_COMPILE_TIME_ASSERT_HEADER(sizeof(*(lzo_memops_TU4p)0)==4)
+LZO_COMPILE_TIME_ASSERT_HEADER(sizeof(*(lzo_memops_TU4p)0) == 4)
 #define LZO_MEMOPS_COPY4(dd,ss) \
     * (lzo_memops_TU4p) (lzo_memops_TU0p) (dd) = * (const lzo_memops_TU4p) (const lzo_memops_TU0p) (ss)
 #elif defined(lzo_memops_tcheck__)
@@ -307,7 +333,7 @@ LZO_COMPILE_TIME_ASSERT_HEADER(sizeof(*(lzo_memops_TU4p)0)==4)
     LZO_BLOCK_BEGIN LZO_MEMOPS_COPY4(dd,ss); LZO_MEMOPS_COPY4((lzo_memops_TU1p)(lzo_memops_TU0p)(dd)+4,(const lzo_memops_TU1p)(const lzo_memops_TU0p)(ss)+4); LZO_BLOCK_END
 #else
 #if (LZO_OPT_UNALIGNED64)
-LZO_COMPILE_TIME_ASSERT_HEADER(sizeof(*(lzo_memops_TU8p)0)==8)
+LZO_COMPILE_TIME_ASSERT_HEADER(sizeof(*(lzo_memops_TU8p)0) == 8)
 #define LZO_MEMOPS_COPY8(dd,ss) \
     * (lzo_memops_TU8p) (lzo_memops_TU0p) (dd) = * (const lzo_memops_TU8p) (const lzo_memops_TU0p) (ss)
 #elif (LZO_OPT_UNALIGNED32)
@@ -340,11 +366,11 @@ __lzo_static_forceinline lzo_uint16_t lzo_memops_get_le16(const lzo_voidp ss)
 #elif (LZO_OPT_UNALIGNED16 && LZO_ARCH_POWERPC && LZO_ABI_BIG_ENDIAN) && (LZO_ASM_SYNTAX_GNUC)
     const lzo_memops_TU2p s = (const lzo_memops_TU2p) ss;
     unsigned long vv;
-    __asm__("lhbrx %0,0,%1" : "=r" (vv) : "r" (s), "m" (*s));
+    __asm__("lhbrx %0,0,%1" : "=r"(vv) : "r"(s), "m"(*s));
     v = (lzo_uint16_t) vv;
 #else
     const lzo_memops_TU1p s = (const lzo_memops_TU1p) ss;
-    v = (lzo_uint16_t) (((lzo_uint16_t)s[0]) | ((lzo_uint16_t)s[1] << 8));
+    v = (lzo_uint16_t)(((lzo_uint16_t)s[0]) | ((lzo_uint16_t)s[1] << 8));
 #endif
     return v;
 }
@@ -362,11 +388,11 @@ __lzo_static_forceinline lzo_uint32_t lzo_memops_get_le32(const lzo_voidp ss)
 #elif (LZO_OPT_UNALIGNED32 && LZO_ARCH_POWERPC && LZO_ABI_BIG_ENDIAN) && (LZO_ASM_SYNTAX_GNUC)
     const lzo_memops_TU4p s = (const lzo_memops_TU4p) ss;
     unsigned long vv;
-    __asm__("lwbrx %0,0,%1" : "=r" (vv) : "r" (s), "m" (*s));
+    __asm__("lwbrx %0,0,%1" : "=r"(vv) : "r"(s), "m"(*s));
     v = (lzo_uint32_t) vv;
 #else
     const lzo_memops_TU1p s = (const lzo_memops_TU1p) ss;
-    v = (lzo_uint32_t) (((lzo_uint32_t)s[0]) | ((lzo_uint32_t)s[1] << 8) | ((lzo_uint32_t)s[2] << 16) | ((lzo_uint32_t)s[3] << 24));
+    v = (lzo_uint32_t)(((lzo_uint32_t)s[0]) | ((lzo_uint32_t)s[1] << 8) | ((lzo_uint32_t)s[2] << 16) | ((lzo_uint32_t)s[3] << 24));
 #endif
     return v;
 }
@@ -387,7 +413,7 @@ __lzo_static_forceinline lzo_uint16_t lzo_memops_get_ne16(const lzo_voidp ss)
     return v;
 }
 #if (LZO_OPT_UNALIGNED16)
-LZO_COMPILE_TIME_ASSERT_HEADER(sizeof(*(lzo_memops_TU2p)0)==2)
+LZO_COMPILE_TIME_ASSERT_HEADER(sizeof(*(lzo_memops_TU2p)0) == 2)
 #define LZO_MEMOPS_GET_NE16(ss)    (* (const lzo_memops_TU2p) (const lzo_memops_TU0p) (ss))
 #else
 #define LZO_MEMOPS_GET_NE16(ss)    lzo_memops_get_ne16(ss)
@@ -400,14 +426,14 @@ __lzo_static_forceinline lzo_uint32_t lzo_memops_get_ne32(const lzo_voidp ss)
     return v;
 }
 #if (LZO_OPT_UNALIGNED32)
-LZO_COMPILE_TIME_ASSERT_HEADER(sizeof(*(lzo_memops_TU4p)0)==4)
+LZO_COMPILE_TIME_ASSERT_HEADER(sizeof(*(lzo_memops_TU4p)0) == 4)
 #define LZO_MEMOPS_GET_NE32(ss)    (* (const lzo_memops_TU4p) (const lzo_memops_TU0p) (ss))
 #else
 #define LZO_MEMOPS_GET_NE32(ss)    lzo_memops_get_ne32(ss)
 #endif
 
 #if (LZO_OPT_UNALIGNED64)
-LZO_COMPILE_TIME_ASSERT_HEADER(sizeof(*(lzo_memops_TU8p)0)==8)
+LZO_COMPILE_TIME_ASSERT_HEADER(sizeof(*(lzo_memops_TU8p)0) == 8)
 #define LZO_MEMOPS_GET_NE64(ss)    (* (const lzo_memops_TU8p) (const lzo_memops_TU0p) (ss))
 #endif
 
@@ -418,10 +444,10 @@ __lzo_static_forceinline void lzo_memops_put_le16(lzo_voidp dd, lzo_uint16_t vv)
 #elif (LZO_OPT_UNALIGNED16 && LZO_ARCH_POWERPC && LZO_ABI_BIG_ENDIAN) && (LZO_ASM_SYNTAX_GNUC)
     lzo_memops_TU2p d = (lzo_memops_TU2p) dd;
     unsigned long v = vv;
-    __asm__("sthbrx %2,0,%1" : "=m" (*d) : "r" (d), "r" (v));
+    __asm__("sthbrx %2,0,%1" : "=m"(*d) : "r"(d), "r"(v));
 #else
     lzo_memops_TU1p d = (lzo_memops_TU1p) dd;
-    d[0] = LZO_BYTE((vv      ) & 0xff);
+    d[0] = LZO_BYTE((vv) & 0xff);
     d[1] = LZO_BYTE((vv >>  8) & 0xff);
 #endif
 }
@@ -438,10 +464,10 @@ __lzo_static_forceinline void lzo_memops_put_le32(lzo_voidp dd, lzo_uint32_t vv)
 #elif (LZO_OPT_UNALIGNED32 && LZO_ARCH_POWERPC && LZO_ABI_BIG_ENDIAN) && (LZO_ASM_SYNTAX_GNUC)
     lzo_memops_TU4p d = (lzo_memops_TU4p) dd;
     unsigned long v = vv;
-    __asm__("stwbrx %2,0,%1" : "=m" (*d) : "r" (d), "r" (v));
+    __asm__("stwbrx %2,0,%1" : "=m"(*d) : "r"(d), "r"(v));
 #else
     lzo_memops_TU1p d = (lzo_memops_TU1p) dd;
-    d[0] = LZO_BYTE((vv      ) & 0xff);
+    d[0] = LZO_BYTE((vv) & 0xff);
     d[1] = LZO_BYTE((vv >>  8) & 0xff);
     d[2] = LZO_BYTE((vv >> 16) & 0xff);
     d[3] = LZO_BYTE((vv >> 24) & 0xff);

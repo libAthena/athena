@@ -35,10 +35,10 @@
 ************************************************************************/
 
 LZO_LOCAL_IMPL(int)
-_lzo1b_do_compress   ( const lzo_bytep in,  lzo_uint  in_len,
-                             lzo_bytep out, lzo_uintp out_len,
-                             lzo_voidp wrkmem,
-                             lzo_compress_t func )
+_lzo1b_do_compress(const lzo_bytep in,  lzo_uint  in_len,
+                   lzo_bytep out, lzo_uintp out_len,
+                   lzo_voidp wrkmem,
+                   lzo_compress_t func)
 {
     int r;
 #if defined(LZO_TEST_COMPRESS_OVERRUN)
@@ -64,19 +64,22 @@ _lzo1b_do_compress   ( const lzo_bytep in,  lzo_uint  in_len,
         *out_len = 0;
         r = LZO_E_NOT_COMPRESSIBLE;
 #else
-        *out_len = pd(STORE_RUN(out,in,in_len), out);
+        *out_len = pd(STORE_RUN(out, in, in_len), out);
         r = (*out_len > in_len) ? LZO_E_OK : LZO_E_ERROR;
 #endif
     }
     else
-        r = func(in,in_len,out,out_len,wrkmem);
+        r = func(in, in_len, out, out_len, wrkmem);
 
 
 #if defined(LZO_EOF_CODE)
 #if defined(LZO_TEST_COMPRESS_OVERRUN)
+
     if (r == LZO_E_OK && avail_out - *out_len < 3)
         r = LZO_E_COMPRESS_OVERRUN;
+
 #endif
+
     if (r == LZO_E_OK)
     {
         lzo_bytep op = out + *out_len;
@@ -85,14 +88,15 @@ _lzo1b_do_compress   ( const lzo_bytep in,  lzo_uint  in_len,
         op[2] = 0;
         *out_len += 3;
     }
+
 #endif
 
 
 #if (LZO_COLLECT_STATS)
     lzo_stats->out_len = *out_len;
     lzo_stats->match_bytes =
-       1 * lzo_stats->m1_matches + 2 * lzo_stats->m2_matches +
-       3 * lzo_stats->m3_matches + 4 * lzo_stats->m4_matches;
+        1 * lzo_stats->m1_matches + 2 * lzo_stats->m2_matches +
+        3 * lzo_stats->m3_matches + 4 * lzo_stats->m4_matches;
     _lzo1b_stats_calc(lzo_stats);
 #endif
 
@@ -112,30 +116,30 @@ _lzo1b_do_compress   ( const lzo_bytep in,  lzo_uint  in_len,
 #if (LZO_COLLECT_STATS)
 
 static lzo_stats_t lzo_statistics;
-lzo_stats_t * const lzo1b_stats = &lzo_statistics;
+lzo_stats_t* const lzo1b_stats = &lzo_statistics;
 
 
-void _lzo1b_stats_init(lzo_stats_t *lzo_stats)
+void _lzo1b_stats_init(lzo_stats_t* lzo_stats)
 {
-    lzo_memset(lzo_stats,0,sizeof(*lzo_stats));
+    lzo_memset(lzo_stats, 0, sizeof(*lzo_stats));
 }
 
 
-void _lzo1b_stats_calc(lzo_stats_t *lzo_stats)
+void _lzo1b_stats_calc(lzo_stats_t* lzo_stats)
 {
     lzo_stats->matches =
-       lzo_stats->m1_matches + lzo_stats->m2_matches +
-       lzo_stats->m3_matches + lzo_stats->m4_matches;
+        lzo_stats->m1_matches + lzo_stats->m2_matches +
+        lzo_stats->m3_matches + lzo_stats->m4_matches;
 
     lzo_stats->literal_overhead = lzo_stats->lit_runs +
-       2 * (lzo_stats->r0short_runs + lzo_stats->r0fast_runs +
-            lzo_stats->r0long_runs);
+                                  2 * (lzo_stats->r0short_runs + lzo_stats->r0fast_runs +
+                                       lzo_stats->r0long_runs);
     lzo_stats->literal_bytes = lzo_stats->literals +
-       lzo_stats->literal_overhead;
+                               lzo_stats->literal_overhead;
 
 #if 0
     assert(lzo_stats->match_bytes + lzo_stats->literal_bytes ==
-       lzo_stats->out_len);
+           lzo_stats->out_len);
 #endif
 
     lzo_stats->m2_matches -= lzo_stats->r1_matches;
@@ -143,7 +147,7 @@ void _lzo1b_stats_calc(lzo_stats_t *lzo_stats)
 
     if (lzo_stats->literals > 0)
         lzo_stats->literal_overhead_percent =
-           100.0 * lzo_stats->literal_overhead / lzo_stats->literals;
+            100.0 * lzo_stats->literal_overhead / lzo_stats->literals;
 }
 
 

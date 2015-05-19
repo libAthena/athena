@@ -53,13 +53,16 @@ ALTTPFile* ALTTPFileReader::readFile()
         std::vector<atUint16>                 dungeonDeaths;
 
         int j = 0x140;
+
         while ((j--) > 0)
         {
             roomFlags.push_back(readRoomFlags());
         }
+
         quest->setRoomFlags(roomFlags);
 
         j = 0x0C0;
+
         while ((j--) > 0)
             owEvents.push_back(readOverworldEvent());
 
@@ -108,6 +111,7 @@ ALTTPFile* ALTTPFileReader::readFile()
         quest->setMagicUsage((ALTTPMagicUsage&)*base::readBytes(sizeof(ALTTPMagicUsage)));
 
         j = 0x10;
+
         while ((j--) > 0)
         {
             dungeonKeys.push_back(base::readByte());
@@ -125,7 +129,8 @@ ALTTPFile* ALTTPFileReader::readFile()
         quest->setTagAlong((ALTTPTagAlong)base::readByte());
 
         j = 6;
-        while((j--) > 0)
+
+        while ((j--) > 0)
         {
             oldmanFlags.push_back(base::readByte());
         }
@@ -134,7 +139,8 @@ ALTTPFile* ALTTPFileReader::readFile()
         quest->setBombFlag(base::readByte());
 
         j = 5;
-        while((j--) > 0)
+
+        while ((j--) > 0)
         {
             unknown1.push_back(base::readByte());
         }
@@ -142,7 +148,8 @@ ALTTPFile* ALTTPFileReader::readFile()
         quest->setUnknown1(unknown1);
 
         j = 6;
-        while((j--) > 0)
+
+        while ((j--) > 0)
         {
             playerName.push_back(base::readUint16());
         }
@@ -151,10 +158,12 @@ ALTTPFile* ALTTPFileReader::readFile()
         quest->setValid((base::readUint16() == 0x55AA));
 
         j = 0x0D;
-        while((j--) > 0)
+
+        while ((j--) > 0)
         {
             dungeonDeaths.push_back(base::readUint16());
         }
+
         quest->setDungeonDeathTotals(dungeonDeaths);
 
         quest->setUnknown2(base::readUint16());

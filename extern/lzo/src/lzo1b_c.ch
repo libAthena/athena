@@ -63,9 +63,9 @@
 extern "C" {
 #endif
 LZO_PRIVATE(int)
-do_compress    ( const lzo_bytep in , lzo_uint  in_len,
-                       lzo_bytep out, lzo_uintp out_len,
-                       lzo_voidp wrkmem )
+do_compress(const lzo_bytep in , lzo_uint  in_len,
+            lzo_bytep out, lzo_uintp out_len,
+            lzo_voidp wrkmem)
 {
     const lzo_bytep ip;
 #if (DD_BITS > 0)
@@ -101,7 +101,7 @@ do_compress    ( const lzo_bytep in , lzo_uint  in_len,
 
     /* init dictionary */
 #if (LZO_DETERMINISTIC)
-    BZERO8_PTR(wrkmem,sizeof(lzo_dict_t),D_SIZE);
+    BZERO8_PTR(wrkmem, sizeof(lzo_dict_t), D_SIZE);
 #endif
 
 
@@ -111,15 +111,16 @@ do_compress    ( const lzo_bytep in , lzo_uint  in_len,
 
 
 #if (DD_BITS > 0)
-    DVAL_FIRST(dv,ip);
-    UPDATE_D(dict,drun,dv,ip,in);
+    DVAL_FIRST(dv, ip);
+    UPDATE_D(dict, drun, dv, ip, in);
     ip++;
-    DVAL_NEXT(dv,ip);
+    DVAL_NEXT(dv, ip);
 #else
     ip++;
 #endif
 
     assert(ip < ip_end);
+
     for (;;)
     {
         const lzo_bytep m_pos;
@@ -133,9 +134,9 @@ do_compress    ( const lzo_bytep in , lzo_uint  in_len,
         lzo_uint m_len;
 
 
-/***********************************************************************
-// search for a match
-************************************************************************/
+        /***********************************************************************
+        // search for a match
+        ************************************************************************/
 
 #if !defined(LZO_SEARCH_MATCH_INCLUDE_FILE)
 #  define LZO_SEARCH_MATCH_INCLUDE_FILE     "lzo1b_sm.ch"
@@ -152,32 +153,34 @@ do_compress    ( const lzo_bytep in , lzo_uint  in_len,
 
 
 
-/***********************************************************************
-// found a literal
-************************************************************************/
+        /***********************************************************************
+        // found a literal
+        ************************************************************************/
 
 
-    /* a literal */
+        /* a literal */
 literal:
 #if (DD_BITS == 0)
-        UPDATE_I(dict,0,dindex,ip,in);
+        UPDATE_I(dict, 0, dindex, ip, in);
 #endif
+
         if (++ip >= ip_end)
             break;
+
 #if (DD_BITS > 0)
-        DVAL_NEXT(dv,ip);
+        DVAL_NEXT(dv, ip);
 #endif
         continue;
 
 
 
-/***********************************************************************
-// found a match
-************************************************************************/
+        /***********************************************************************
+        // found a match
+        ************************************************************************/
 
 match:
 #if (DD_BITS == 0)
-        UPDATE_I(dict,0,dindex,ip,in);
+        UPDATE_I(dict, 0, dindex, ip, in);
 #endif
         /* we have found a match of at least M2_MIN_LEN */
 
@@ -193,9 +196,9 @@ match:
         assert(ii == ip);
 
 
-/***********************************************************************
-// code the match
-************************************************************************/
+        /***********************************************************************
+        // code the match
+        ************************************************************************/
 
 #if !defined(LZO_CODE_MATCH_INCLUDE_FILE)
 #  define LZO_CODE_MATCH_INCLUDE_FILE   "lzo1b_cm.ch"
@@ -210,9 +213,9 @@ match:
     }
 
 
-/***********************************************************************
-// end of block
-************************************************************************/
+    /***********************************************************************
+    // end of block
+    ************************************************************************/
 
     assert(ip <= in_end);
 
@@ -224,9 +227,11 @@ match:
         for (i = 0; i < D_SIZE; i++)
         {
             p = dict[i];
+
             if (BOUNDS_CHECKING_OFF_IN_EXPR(p == NULL || p < in || p > in_end))
                 lzo_stats->unused_dict_entries++;
         }
+
         lzo_stats->unused_dict_entries_percent =
             100.0 * lzo_stats->unused_dict_entries / D_SIZE;
     }
@@ -234,6 +239,7 @@ match:
 
 
 #if defined(LZO_RETURN_IF_NOT_COMPRESSIBLE)
+
     /* return if op == out to indicate that we
      * couldn't compress and didn't copy anything.
      */
@@ -242,13 +248,14 @@ match:
         *out_len = 0;
         return LZO_E_NOT_COMPRESSIBLE;
     }
+
 #endif
 
     /* store the final literal run */
-    if (pd(in_end,ii) > 0)
+    if (pd(in_end, ii) > 0)
     {
-        lzo_uint t = pd(in_end,ii);
-        op = STORE_RUN(op,ii,t);
+        lzo_uint t = pd(in_end, ii);
+        op = STORE_RUN(op, ii, t);
     }
 
     *out_len = pd(op, out);

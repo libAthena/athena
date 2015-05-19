@@ -57,17 +57,18 @@ extern "C" {
 //
 ************************************************************************/
 
-typedef struct {
+typedef struct
+{
 
-/* configuration */
+    /* configuration */
     unsigned rbits;
     unsigned clevel;
 
-/* internal configuration */
+    /* internal configuration */
     unsigned dbits;
     unsigned lbits;
 
-/* constants */
+    /* constants */
     unsigned min_match_short;
     unsigned max_match_short;
     unsigned min_match_long;
@@ -78,7 +79,7 @@ typedef struct {
     unsigned r0fast;
     unsigned r0max;
 
-/* counts */
+    /* counts */
     long short_matches;
     long long_matches;
     long r1_matches;
@@ -88,14 +89,14 @@ typedef struct {
     long r0fast_runs;
     long r0long_runs;
 
-/* */
+    /* */
     long lit_run[RSIZE];
     long lit_run_after_long_match[RSIZE];
     long short_match[MAX_MATCH_SHORT + 1];
     long long_match[MAX_MATCH_LONG + 1];
     long marker[256];
 
-/* these could prove useful for further optimizations */
+    /* these could prove useful for further optimizations */
     long short_match_offset_osize[MAX_MATCH_SHORT + 1];
     long short_match_offset_256[MAX_MATCH_SHORT + 1];
     long short_match_offset_1024[MAX_MATCH_SHORT + 1];
@@ -104,13 +105,13 @@ typedef struct {
     long matches_out_of_range_4;
     long match_out_of_range[MAX_MATCH_SHORT + 1];
 
-/* */
+    /* */
     long in_len;
     long out_len;
 }
 lzo1a_stats_t;
 
-extern lzo1a_stats_t *lzo1a_stats;
+extern lzo1a_stats_t* lzo1a_stats;
 
 
 

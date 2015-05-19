@@ -60,37 +60,48 @@ store_run(lzo_bytep const oo, const lzo_bytep const ii, lzo_uint r_len)
         while (r_len >= (t = tt))
         {
             r_len -= t;
-            *op++ = 0; *op++ = (R0MAX - R0MIN);
+            *op++ = 0;
+            *op++ = (R0MAX - R0MIN);
             MEMCPY8_DS(op, ip, t);
             LZO_STATS(lzo_stats->r0long_runs++);
         }
+
         tt >>= 1;
-        do {
+
+        do
+        {
             if (r_len >= (t = tt))
             {
                 r_len -= t;
-                *op++ = 0; *op++ = LZO_BYTE((R0FAST - R0MIN) + r_bits);
+                *op++ = 0;
+                *op++ = LZO_BYTE((R0FAST - R0MIN) + r_bits);
                 MEMCPY8_DS(op, ip, t);
                 LZO_STATS(lzo_stats->r0long_runs++);
             }
+
             tt >>= 1;
-        } while (--r_bits > 0);
+        }
+        while (--r_bits > 0);
     }
+
     assert(r_len < 512);
 
     while (r_len >= (t = R0FAST))
     {
         r_len -= t;
-        *op++ = 0; *op++ = (R0FAST - R0MIN);
+        *op++ = 0;
+        *op++ = (R0FAST - R0MIN);
         MEMCPY8_DS(op, ip, t);
         LZO_STATS(lzo_stats->r0fast_runs++);
     }
 
     t = r_len;
+
     if (t >= R0MIN)
     {
         /* code a short R0 run */
-        *op++ = 0; *op++ = LZO_BYTE(t - R0MIN);
+        *op++ = 0;
+        *op++ = LZO_BYTE(t - R0MIN);
         MEMCPY_DS(op, ip, t);
         LZO_STATS(lzo_stats->r0short_runs++);
     }

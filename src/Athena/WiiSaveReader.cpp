@@ -52,24 +52,27 @@ WiiSaveReader::WiiSaveReader(const std::string& filename)
 WiiSave* WiiSaveReader::readSave()
 {
     WiiSave* ret = new WiiSave;
+
     try
     {
         if (length() < 0xF0C0)
-            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr,"Not a valid WiiSave");
+            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr, "Not a valid WiiSave");
 
         WiiBanner* banner = this->readBanner();
+
         if (!banner)
-            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr,"Invalid banner");
+            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr, "Invalid banner");
 
         ret->setBanner(banner);
         atUint32 bkVer = base::readUint32();
 
         if (bkVer != 0x00000070)
-            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr,"Invalid BacKup header size");
+            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr, "Invalid BacKup header size");
 
         atUint32 bkMagic = base::readUint32();
+
         if (bkMagic != 0x426B0001)
-            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr,"Invalid BacKup header magic");
+            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr, "Invalid BacKup header magic");
 
         atUint32 ngId = base::readUint32();
         atUint32 numFiles = base::readUint32();
@@ -85,9 +88,11 @@ WiiSave* WiiSaveReader::readSave()
         base::seek(0x10);
 
         std::vector<WiiFile*> files;
+
         for (atUint32 i = 0; i < numFiles; ++i)
         {
             WiiFile* file = readFile();
+
             if (file)
                 files.push_back(file);
         }
@@ -96,7 +101,7 @@ WiiSave* WiiSaveReader::readSave()
 
         readCerts(totalSize);
     }
-    catch(...)
+    catch (...)
     {
         delete ret;
         ret = NULL;
@@ -141,18 +146,23 @@ WiiBanner* WiiSaveReader::readBanner()
         std::cerr << "MD5 Mismatch" << std::endl;
         // Make sure to reset m_reader values back to the old ones.
         std::cerr << "MD5 provided:   ";
+
         for (int i = 0; i < 16; ++i)
             std::cerr << std::setw(2) << std::setfill('0') << std::hex << (int)(md5[i]);
+
         std::cerr << std::endl;
 
         std::cerr << "MD5 Calculated: ";
+
         for (int i = 0; i < 16; ++i)
             std::cerr << std::hex << (int)(md5Calc[i]);
+
         std::cerr << std::endl;
         base::setData(oldData, oldLen);
         base::seek(oldPos, SeekOrigin::Begin);
-        THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr,"MD5 Mismatch");
+        THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr, "MD5 Mismatch");
     }
+
     // Set the binary reader buffer;
     base::setData(dec, 0xF0C0);
     // Start reading the header
@@ -178,7 +188,7 @@ WiiBanner* WiiSaveReader::readBanner()
         // Make sure to reset m_reader values back to the old ones.
         base::setData(oldData, oldLen);
         base::seek(oldPos, SeekOrigin::Begin);
-        THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr,"Invalid Header Magic");
+        THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr, "Invalid Header Magic");
     }
 
     flags = base::readUint32();
@@ -186,10 +196,12 @@ WiiBanner* WiiSaveReader::readBanner()
     base::seek(22);
 
     gameTitle = base::readUnicode();
+
     if (base::position() != 0x0080)
         base::seek(0x0080, SeekOrigin::Begin);
 
     subTitle = base::readUnicode();
+
     if (base::position() != 0x00C0)
         base::seek(0x00C0, SeekOrigin::Begin);
 
@@ -208,6 +220,7 @@ WiiBanner* WiiSaveReader::readBanner()
     if (banner->bannerSize() == 0x72a0)
     {
         WiiImage* icon = readImage(48, 48);
+
         if (icon)
             banner->addIcon(icon);
         else
@@ -215,9 +228,10 @@ WiiBanner* WiiSaveReader::readBanner()
     }
     else
     {
-        for(int i = 0; i < 8; i++)
+        for (int i = 0; i < 8; i++)
         {
             WiiImage* icon = readImage(48, 48);
+
             if (icon)
                 banner->addIcon(icon);
             else
@@ -232,9 +246,9 @@ WiiBanner* WiiSaveReader::readBanner()
 
 WiiImage* WiiSaveReader::readImage(atUint32 width, atUint32 height)
 {
-    atUint8* image = (atUint8*)base::readBytes(width*height*2);
+    atUint8* image = (atUint8*)base::readBytes(width * height * 2);
 
-    if (!utility::isEmpty((atInt8*)image, width*height*2))
+    if (!utility::isEmpty((atInt8*)image, width * height * 2))
         return new WiiImage(width, height, image);
 
     return NULL;
@@ -252,6 +266,7 @@ WiiFile* WiiSaveReader::readFile()
     WiiFile* ret;
 
     atUint32 magic = base::readUint32();
+
     if (magic != 0x03adf17e)
     {
         std::cerr << "Not a valid File entry header: 0x" << std::hex << magic << std::endl;

@@ -53,9 +53,9 @@
 ************************************************************************/
 
 static __lzo_noinline
-int do_compress          ( const lzo_bytep in , lzo_uint  in_len,
-                                 lzo_bytep out, lzo_uintp out_len,
-                                 lzo_voidp wrkmem )
+int do_compress(const lzo_bytep in , lzo_uint  in_len,
+                lzo_bytep out, lzo_uintp out_len,
+                lzo_voidp wrkmem)
 {
     const lzo_bytep ip;
     lzo_bytep op;
@@ -69,6 +69,7 @@ int do_compress          ( const lzo_bytep in , lzo_uint  in_len,
     ii = ip;
 
     ip++;
+
     for (;;)
     {
         const lzo_bytep m_pos;
@@ -77,25 +78,33 @@ int do_compress          ( const lzo_bytep in , lzo_uint  in_len,
         lzo_uint dindex;
         lzo_uint lit;
 
-        DINDEX1(dindex,ip);
-        GINDEX(m_pos,m_off,dict,dindex,in);
-        if (LZO_CHECK_MPOS_NON_DET(m_pos,m_off,in,ip,M3_MAX_OFFSET))
+        DINDEX1(dindex, ip);
+        GINDEX(m_pos, m_off, dict, dindex, in);
+
+        if (LZO_CHECK_MPOS_NON_DET(m_pos, m_off, in, ip, M3_MAX_OFFSET))
             goto literal;
+
 #if 1
+
         if (m_off <= M2_MAX_OFFSET || m_pos[3] == ip[3])
             goto try_match;
-        DINDEX2(dindex,ip);
+
+        DINDEX2(dindex, ip);
 #endif
-        GINDEX(m_pos,m_off,dict,dindex,in);
-        if (LZO_CHECK_MPOS_NON_DET(m_pos,m_off,in,ip,M3_MAX_OFFSET))
+        GINDEX(m_pos, m_off, dict, dindex, in);
+
+        if (LZO_CHECK_MPOS_NON_DET(m_pos, m_off, in, ip, M3_MAX_OFFSET))
             goto literal;
+
         if (m_off <= M2_MAX_OFFSET || m_pos[3] == ip[3])
             goto try_match;
+
         goto literal;
 
 
 try_match:
 #if 0 && (LZO_OPT_UNALIGNED16)
+
         if (UA_GET_NE16(m_pos) != UA_GET_NE16(ip))
 #else
         if (m_pos[0] != ip[0] || m_pos[1] != ip[1])
@@ -108,16 +117,23 @@ try_match:
             {
                 m_pos += 3;
 #if 0
+
                 if (m_off <= M2_MAX_OFFSET)
                     goto match;
+
                 if (lit <= 3)
                     goto match;
+
                 if (lit == 3)           /* better compression, but slower */
                 {
-                    assert(op - 2 > out); op[-2] |= LZO_BYTE(3);
-                    *op++ = *ii++; *op++ = *ii++; *op++ = *ii++;
+                    assert(op - 2 > out);
+                    op[-2] |= LZO_BYTE(3);
+                    *op++ = *ii++;
+                    *op++ = *ii++;
+                    *op++ = *ii++;
                     goto code_match;
                 }
+
                 if (*m_pos == ip[3])
 #endif
                     goto match;
@@ -125,19 +141,22 @@ try_match:
         }
 
 
-    /* a literal */
+        /* a literal */
 literal:
-        UPDATE_I(dict,0,dindex,ip,in);
+        UPDATE_I(dict, 0, dindex, ip, in);
+
         if (++ip >= ip_end)
             break;
+
         continue;
 
 
-    /* a match */
+        /* a match */
 match:
-        UPDATE_I(dict,0,dindex,ip,in);
+        UPDATE_I(dict, 0, dindex, ip, in);
         /* store current literal run */
-        lit = pd(ip,ii);
+        lit = pd(ip, ii);
+
         if (lit > 0)
         {
             lzo_uint t = lit;
@@ -151,28 +170,36 @@ match:
                 lzo_uint tt = t - 31;
 
                 *op++ = 0;
+
                 while (tt > 255)
                 {
                     tt -= 255;
                     UA_SET1(op, 0);
                     op++;
                 }
+
                 assert(tt > 0);
                 *op++ = LZO_BYTE(tt);
             }
-            do *op++ = *ii++; while (--t > 0);
+
+            do* op++ = *ii++;
+
+            while (--t > 0);
         }
+
         assert(ii == ip);
 
 
         /* code the match */
         ip += 3;
+
         if (*m_pos++ != *ip++ || *m_pos++ != *ip++ || *m_pos++ != *ip++ ||
-            *m_pos++ != *ip++ || *m_pos++ != *ip++ || *m_pos++ != *ip++)
+                *m_pos++ != *ip++ || *m_pos++ != *ip++ || *m_pos++ != *ip++)
         {
             --ip;
             m_len = pd(ip, ii);
-            assert(m_len >= 3); assert(m_len <= 8);
+            assert(m_len >= 3);
+            assert(m_len <= 8);
 
             if (m_off <= M2_MAX_OFFSET)
             {
@@ -180,7 +207,7 @@ match:
                 *op++ = LZO_BYTE(((m_len - 2) << 5) | ((m_off & 7) << 2));
                 *op++ = LZO_BYTE(m_off >> 3);
             }
-            else if (m_len == 3 && m_off <= 2*M2_MAX_OFFSET && lit > 0)
+            else if (m_len == 3 && m_off <= 2 * M2_MAX_OFFSET && lit > 0)
             {
                 m_off -= 1;
                 /* m_off -= M2_MAX_OFFSET; */
@@ -199,8 +226,10 @@ match:
             {
                 const lzo_bytep end;
                 end = in_end;
+
                 while (ip < end && *m_pos == *ip)
                     m_pos++, ip++;
+
                 m_len = pd(ip, ii);
             }
             assert(m_len >= 3);
@@ -211,29 +240,33 @@ match:
             {
                 m_len -= 33;
                 *op++ = M3_MARKER | 0;
+
                 while (m_len > 255)
                 {
                     m_len -= 255;
                     UA_SET1(op, 0);
                     op++;
                 }
+
                 assert(m_len > 0);
                 *op++ = LZO_BYTE(m_len);
             }
+
             *op++ = LZO_BYTE((m_off & 63) << 2);
             *op++ = LZO_BYTE(m_off >> 6);
         }
 
         ii = ip;
+
         if (ip >= ip_end)
             break;
     }
 
 
     /* store final literal run */
-    if (pd(in_end,ii) > 0)
+    if (pd(in_end, ii) > 0)
     {
-        lzo_uint t = pd(in_end,ii);
+        lzo_uint t = pd(in_end, ii);
 
         if (t < 4 && op > out)
             op[-2] = LZO_BYTE(op[-2] | t);
@@ -244,15 +277,18 @@ match:
             lzo_uint tt = t - 31;
 
             *op++ = 0;
+
             while (tt > 255)
             {
                 tt -= 255;
                 UA_SET1(op, 0);
                 op++;
             }
+
             assert(tt > 0);
             *op++ = LZO_BYTE(tt);
         }
+
         UA_COPYN(op, ii, t);
         op += t;
     }
@@ -267,9 +303,9 @@ match:
 ************************************************************************/
 
 LZO_PUBLIC(int)
-lzo1f_1_compress ( const lzo_bytep in , lzo_uint  in_len,
-                         lzo_bytep out, lzo_uintp out_len,
-                         lzo_voidp wrkmem )
+lzo1f_1_compress(const lzo_bytep in , lzo_uint  in_len,
+                 lzo_bytep out, lzo_uintp out_len,
+                 lzo_voidp wrkmem)
 {
     lzo_bytep op = out;
     int r = LZO_E_OK;
@@ -279,11 +315,15 @@ lzo1f_1_compress ( const lzo_bytep in , lzo_uint  in_len,
     else if (in_len <= 10)
     {
         *op++ = LZO_BYTE(in_len);
-        do *op++ = *in++; while (--in_len > 0);
+
+        do* op++ = *in++;
+
+        while (--in_len > 0);
+
         *out_len = pd(op, out);
     }
     else
-        r = do_compress(in,in_len,out,out_len,wrkmem);
+        r = do_compress(in, in_len, out, out_len, wrkmem);
 
     if (r == LZO_E_OK)
     {

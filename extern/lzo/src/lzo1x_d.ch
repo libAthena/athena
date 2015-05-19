@@ -35,9 +35,9 @@
 
 #if defined(DO_DECOMPRESS)
 LZO_PUBLIC(int)
-DO_DECOMPRESS  ( const lzo_bytep in , lzo_uint  in_len,
-                       lzo_bytep out, lzo_uintp out_len,
-                       lzo_voidp wrkmem )
+DO_DECOMPRESS(const lzo_bytep in , lzo_uint  in_len,
+              lzo_bytep out, lzo_uintp out_len,
+              lzo_voidp wrkmem)
 #endif
 {
     lzo_bytep op;
@@ -61,6 +61,7 @@ DO_DECOMPRESS  ( const lzo_bytep in , lzo_uint  in_len,
     LZO_UNUSED(wrkmem);
 
 #if defined(COPY_DICT)
+
     if (dict)
     {
         if (dict_len > M4_MAX_OFFSET)
@@ -68,6 +69,7 @@ DO_DECOMPRESS  ( const lzo_bytep in , lzo_uint  in_len,
             dict += dict_len - M4_MAX_OFFSET;
             dict_len = M4_MAX_OFFSET;
         }
+
         dict_end = dict + dict_len;
     }
     else
@@ -75,6 +77,7 @@ DO_DECOMPRESS  ( const lzo_bytep in , lzo_uint  in_len,
         dict_len = 0;
         dict_end = NULL;
     }
+
 #endif /* COPY_DICT */
 
     *out_len = 0;
@@ -83,13 +86,22 @@ DO_DECOMPRESS  ( const lzo_bytep in , lzo_uint  in_len,
     ip = in;
 
     NEED_IP(1);
+
     if (*ip > 17)
     {
         t = *ip++ - 17;
+
         if (t < 4)
             goto match_next;
-        assert(t > 0); NEED_OP(t); NEED_IP(t+3);
-        do *op++ = *ip++; while (--t > 0);
+
+        assert(t > 0);
+        NEED_OP(t);
+        NEED_IP(t + 3);
+
+        do* op++ = *ip++;
+
+        while (--t > 0);
+
         goto first_literal_run;
     }
 
@@ -97,8 +109,10 @@ DO_DECOMPRESS  ( const lzo_bytep in , lzo_uint  in_len,
     {
         NEED_IP(3);
         t = *ip++;
+
         if (t >= 16)
             goto match;
+
         /* a literal run */
         if (t == 0)
         {
@@ -109,47 +123,74 @@ DO_DECOMPRESS  ( const lzo_bytep in , lzo_uint  in_len,
                 TEST_IV(t);
                 NEED_IP(1);
             }
+
             t += 15 + *ip++;
         }
+
         /* copy literals */
-        assert(t > 0); NEED_OP(t+3); NEED_IP(t+6);
+        assert(t > 0);
+        NEED_OP(t + 3);
+        NEED_IP(t + 6);
 #if (LZO_OPT_UNALIGNED64) && (LZO_OPT_UNALIGNED32)
         t += 3;
+
         if (t >= 8) do
-        {
-            UA_COPY8(op,ip);
-            op += 8; ip += 8; t -= 8;
-        } while (t >= 8);
+            {
+                UA_COPY8(op, ip);
+                op += 8;
+                ip += 8;
+                t -= 8;
+            }
+            while (t >= 8);
+
         if (t >= 4)
         {
-            UA_COPY4(op,ip);
-            op += 4; ip += 4; t -= 4;
+            UA_COPY4(op, ip);
+            op += 4;
+            ip += 4;
+            t -= 4;
         }
+
         if (t > 0)
         {
             *op++ = *ip++;
+
             if (t > 1) { *op++ = *ip++; if (t > 2) { *op++ = *ip++; } }
         }
+
 #elif (LZO_OPT_UNALIGNED32) || (LZO_ALIGNED_OK_4)
 #if !(LZO_OPT_UNALIGNED32)
-        if (PTR_ALIGNED2_4(op,ip))
+
+        if (PTR_ALIGNED2_4(op, ip))
         {
 #endif
-        UA_COPY4(op,ip);
-        op += 4; ip += 4;
-        if (--t > 0)
-        {
-            if (t >= 4)
+            UA_COPY4(op, ip);
+            op += 4;
+            ip += 4;
+
+            if (--t > 0)
             {
-                do {
-                    UA_COPY4(op,ip);
-                    op += 4; ip += 4; t -= 4;
-                } while (t >= 4);
-                if (t > 0) do *op++ = *ip++; while (--t > 0);
+                if (t >= 4)
+                {
+                    do
+                    {
+                        UA_COPY4(op, ip);
+                        op += 4;
+                        ip += 4;
+                        t -= 4;
+                    }
+                    while (t >= 4);
+
+                    if (t > 0) do* op++ = *ip++;
+
+                        while (--t > 0);
+                }
+                else
+                    do* op++ = *ip++;
+
+                    while (--t > 0);
             }
-            else
-                do *op++ = *ip++; while (--t > 0);
-        }
+
 #if !(LZO_OPT_UNALIGNED32)
         }
         else
@@ -157,9 +198,15 @@ DO_DECOMPRESS  ( const lzo_bytep in , lzo_uint  in_len,
 #endif
 #if !(LZO_OPT_UNALIGNED32)
         {
-            *op++ = *ip++; *op++ = *ip++; *op++ = *ip++;
-            do *op++ = *ip++; while (--t > 0);
+            *op++ = *ip++;
+            *op++ = *ip++;
+            *op++ = *ip++;
+
+            do* op++ = *ip++;
+
+            while (--t > 0);
         }
+
 #endif
 
 
@@ -167,8 +214,10 @@ first_literal_run:
 
 
         t = *ip++;
+
         if (t >= 16)
             goto match;
+
 #if defined(COPY_DICT)
 #if defined(LZO1Z)
         m_off = (1 + M2_MAX_OFFSET) + (t << 6) + (*ip++ >> 2);
@@ -177,7 +226,8 @@ first_literal_run:
         m_off = (1 + M2_MAX_OFFSET) + (t >> 2) + (*ip++ << 2);
 #endif
         NEED_OP(3);
-        t = 3; COPY_DICT(t,m_off)
+        t = 3;
+        COPY_DICT(t, m_off)
 #else /* !COPY_DICT */
 #if defined(LZO1Z)
         t = (1 + M2_MAX_OFFSET) + (t << 6) + (*ip++ >> 2);
@@ -188,15 +238,20 @@ first_literal_run:
         m_pos -= t >> 2;
         m_pos -= *ip++ << 2;
 #endif
-        TEST_LB(m_pos); NEED_OP(3);
-        *op++ = *m_pos++; *op++ = *m_pos++; *op++ = *m_pos;
+        TEST_LB(m_pos);
+        NEED_OP(3);
+        *op++ = *m_pos++;
+        *op++ = *m_pos++;
+        *op++ = *m_pos;
 #endif /* COPY_DICT */
         goto match_done;
 
 
         /* handle matches */
-        for (;;) {
+        for (;;)
+        {
 match:
+
             if (t >= 64)                /* a M2 match */
             {
 #if defined(COPY_DICT)
@@ -208,6 +263,7 @@ match:
                 t = (t >> 4) - 3;
 #elif defined(LZO1Z)
                 m_off = t & 0x1f;
+
                 if (m_off >= 0x1c)
                     m_off = last_m_off;
                 else
@@ -215,6 +271,7 @@ match:
                     m_off = 1 + (m_off << 6) + (*ip++ >> 2);
                     last_m_off = m_off;
                 }
+
                 t = (t >> 5) - 1;
 #endif
 #else /* !COPY_DICT */
@@ -232,6 +289,7 @@ match:
                 {
                     lzo_uint off = t & 0x1f;
                     m_pos = op;
+
                     if (off >= 0x1c)
                     {
                         assert(last_m_off > 0);
@@ -246,13 +304,16 @@ match:
                 }
                 t = (t >> 5) - 1;
 #endif
-                TEST_LB(m_pos); assert(t > 0); NEED_OP(t+3-1);
+                TEST_LB(m_pos);
+                assert(t > 0);
+                NEED_OP(t + 3 - 1);
                 goto copy_match;
 #endif /* COPY_DICT */
             }
             else if (t >= 32)           /* a M3 match */
             {
                 t &= 31;
+
                 if (t == 0)
                 {
                     while (*ip == 0)
@@ -262,9 +323,11 @@ match:
                         TEST_OV(t);
                         NEED_IP(1);
                     }
+
                     t += 31 + *ip++;
                     NEED_IP(2);
                 }
+
 #if defined(COPY_DICT)
 #if defined(LZO1Z)
                 m_off = 1 + (ip[0] << 6) + (ip[1] >> 2);
@@ -298,6 +361,7 @@ match:
                 m_pos -= (t & 8) << 11;
 #endif /* COPY_DICT */
                 t &= 7;
+
                 if (t == 0)
                 {
                     while (*ip == 0)
@@ -307,9 +371,11 @@ match:
                         TEST_OV(t);
                         NEED_IP(1);
                     }
+
                     t += 7 + *ip++;
                     NEED_IP(2);
                 }
+
 #if defined(COPY_DICT)
 #if defined(LZO1Z)
                 m_off += (ip[0] << 6) + (ip[1] >> 2);
@@ -317,8 +383,10 @@ match:
                 m_off += (ip[0] >> 2) + (ip[1] << 6);
 #endif
                 ip += 2;
+
                 if (m_off == 0)
                     goto eof_found;
+
                 m_off += 0x4000;
 #if defined(LZO1Z)
                 last_m_off = m_off;
@@ -332,8 +400,10 @@ match:
                 m_pos -= (ip[0] >> 2) + (ip[1] << 6);
 #endif
                 ip += 2;
+
                 if (m_pos == op)
                     goto eof_found;
+
                 m_pos -= 0x4000;
 #if defined(LZO1Z)
                 last_m_off = pd((const lzo_bytep)op, m_pos);
@@ -350,7 +420,8 @@ match:
                 m_off = 1 + (t >> 2) + (*ip++ << 2);
 #endif
                 NEED_OP(2);
-                t = 2; COPY_DICT(t,m_off)
+                t = 2;
+                COPY_DICT(t, m_off)
 #else /* !COPY_DICT */
 #if defined(LZO1Z)
                 t = 1 + (t << 6) + (*ip++ >> 2);
@@ -361,8 +432,10 @@ match:
                 m_pos -= t >> 2;
                 m_pos -= *ip++ << 2;
 #endif
-                TEST_LB(m_pos); NEED_OP(2);
-                *op++ = *m_pos++; *op++ = *m_pos;
+                TEST_LB(m_pos);
+                NEED_OP(2);
+                *op++ = *m_pos++;
+                *op++ = *m_pos;
 #endif /* COPY_DICT */
                 goto match_done;
             }
@@ -370,56 +443,84 @@ match:
             /* copy match */
 #if defined(COPY_DICT)
 
-            NEED_OP(t+3-1);
-            t += 3-1; COPY_DICT(t,m_off)
+            NEED_OP(t + 3 - 1);
+            t += 3 - 1;
+            COPY_DICT(t, m_off)
 
 #else /* !COPY_DICT */
 
-            TEST_LB(m_pos); assert(t > 0); NEED_OP(t+3-1);
+            TEST_LB(m_pos);
+            assert(t > 0);
+            NEED_OP(t + 3 - 1);
 #if (LZO_OPT_UNALIGNED64) && (LZO_OPT_UNALIGNED32)
+
             if (op - m_pos >= 8)
             {
                 t += (3 - 1);
+
                 if (t >= 8) do
-                {
-                    UA_COPY8(op,m_pos);
-                    op += 8; m_pos += 8; t -= 8;
-                } while (t >= 8);
+                    {
+                        UA_COPY8(op, m_pos);
+                        op += 8;
+                        m_pos += 8;
+                        t -= 8;
+                    }
+                    while (t >= 8);
+
                 if (t >= 4)
                 {
-                    UA_COPY4(op,m_pos);
-                    op += 4; m_pos += 4; t -= 4;
+                    UA_COPY4(op, m_pos);
+                    op += 4;
+                    m_pos += 4;
+                    t -= 4;
                 }
+
                 if (t > 0)
                 {
                     *op++ = m_pos[0];
+
                     if (t > 1) { *op++ = m_pos[1]; if (t > 2) { *op++ = m_pos[2]; } }
                 }
             }
             else
 #elif (LZO_OPT_UNALIGNED32) || (LZO_ALIGNED_OK_4)
 #if !(LZO_OPT_UNALIGNED32)
-            if (t >= 2 * 4 - (3 - 1) && PTR_ALIGNED2_4(op,m_pos))
+            if (t >= 2 * 4 - (3 - 1) && PTR_ALIGNED2_4(op, m_pos))
             {
                 assert((op - m_pos) >= 4);  /* both pointers are aligned */
 #else
+
             if (t >= 2 * 4 - (3 - 1) && (op - m_pos) >= 4)
             {
 #endif
-                UA_COPY4(op,m_pos);
-                op += 4; m_pos += 4; t -= 4 - (3 - 1);
-                do {
-                    UA_COPY4(op,m_pos);
-                    op += 4; m_pos += 4; t -= 4;
-                } while (t >= 4);
-                if (t > 0) do *op++ = *m_pos++; while (--t > 0);
+                UA_COPY4(op, m_pos);
+                op += 4;
+                m_pos += 4;
+                t -= 4 - (3 - 1);
+
+                do
+                {
+                    UA_COPY4(op, m_pos);
+                    op += 4;
+                    m_pos += 4;
+                    t -= 4;
+                }
+                while (t >= 4);
+
+                if (t > 0) do* op++ = *m_pos++;
+
+                    while (--t > 0);
             }
             else
 #endif
             {
 copy_match:
-                *op++ = *m_pos++; *op++ = *m_pos++;
-                do *op++ = *m_pos++; while (--t > 0);
+                *op++ = *m_pos++;
+                *op++ = *m_pos++;
+
+                do* op++ = *m_pos++;
+
+                while (--t > 0);
             }
 
 #endif /* COPY_DICT */
@@ -430,17 +531,27 @@ match_done:
 #else
             t = ip[-2] & 3;
 #endif
+
             if (t == 0)
                 break;
 
             /* copy literals */
 match_next:
-            assert(t > 0); assert(t < 4); NEED_OP(t); NEED_IP(t+3);
+            assert(t > 0);
+            assert(t < 4);
+            NEED_OP(t);
+            NEED_IP(t + 3);
 #if 0
-            do *op++ = *ip++; while (--t > 0);
+
+            do* op++ = *ip++;
+
+            while (--t > 0);
+
 #else
             *op++ = *ip++;
+
             if (t > 1) { *op++ = *ip++; if (t > 2) { *op++ = *ip++; } }
+
 #endif
             t = *ip++;
         }
@@ -449,7 +560,7 @@ match_next:
 eof_found:
     *out_len = pd(op, out);
     return (ip == ip_end ? LZO_E_OK :
-           (ip < ip_end  ? LZO_E_INPUT_NOT_CONSUMED : LZO_E_INPUT_OVERRUN));
+            (ip < ip_end  ? LZO_E_INPUT_NOT_CONSUMED : LZO_E_INPUT_OVERRUN));
 
 
 #if defined(HAVE_NEED_IP)

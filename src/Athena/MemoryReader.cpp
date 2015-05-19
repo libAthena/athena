@@ -43,6 +43,7 @@ MemoryReader::MemoryReader(const atUint8* data, atUint64 length)
 {
     if (!data)
         THROW_INVALID_DATA_EXCEPTION("data cannot be NULL");
+
     if (length == 0)
         THROW_INVALID_OPERATION_EXCEPTION("length cannot be 0");
 
@@ -97,21 +98,26 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin)
 {
     switch (origin)
     {
-    case SeekOrigin::Begin:
-        if ((position < 0 || (atInt64)position > (atInt64)m_length))
-            THROW_IO_EXCEPTION("Position %0.8X outside stream bounds ", position);
-        m_position = position;
-    break;
-    case SeekOrigin::Current:
-        if ((((atInt64)m_position + position) < 0 || (m_position + position) > m_length))
-            THROW_IO_EXCEPTION("Position %0.8X outside stream bounds ", position);
-        m_position += position;
-    break;
-    case SeekOrigin::End:
-        if ((((atInt64)m_length - position < 0) || (m_length - position) > m_length))
-            THROW_IO_EXCEPTION("Position %0.8X outside stream bounds ", position);
-        m_position = m_length - position;
-    break;
+        case SeekOrigin::Begin:
+            if ((position < 0 || (atInt64)position > (atInt64)m_length))
+                THROW_IO_EXCEPTION("Position %0.8X outside stream bounds ", position);
+
+            m_position = position;
+            break;
+
+        case SeekOrigin::Current:
+            if ((((atInt64)m_position + position) < 0 || (m_position + position) > m_length))
+                THROW_IO_EXCEPTION("Position %0.8X outside stream bounds ", position);
+
+            m_position += position;
+            break;
+
+        case SeekOrigin::End:
+            if ((((atInt64)m_length - position < 0) || (m_length - position) > m_length))
+                THROW_IO_EXCEPTION("Position %0.8X outside stream bounds ", position);
+
+            m_position = m_length - position;
+            break;
     }
 }
 
@@ -174,12 +180,14 @@ bool MemoryReader::readBit()
 {
     if (!m_data)
         loadData();
+
     if (m_position > m_length)
         THROW_IO_EXCEPTION_RETURN(false, "Position %0.8X outside stream bounds ", m_position);
 
     bool ret = (*(atUint8*)(m_data + m_position) & (1 << m_bitPosition)) != 0;
 
     m_bitPosition++;
+
     if (m_bitPosition > 7)
     {
         m_bitPosition = 0;
@@ -199,6 +207,7 @@ atInt8 MemoryReader::readByte()
         m_bitPosition = 0;
         m_position += sizeof(atUint8);
     }
+
     if (m_position + 1 > m_length)
         THROW_IO_EXCEPTION_RETURN(0, "Position %0.8X outside stream bounds ", m_position);
 
@@ -218,6 +227,7 @@ atUint8 MemoryReader::readUByte()
         m_bitPosition = 0;
         m_position += sizeof(atUint8);
     }
+
     if (m_position + 1 > m_length)
         THROW_IO_EXCEPTION_RETURN(0, "Position %0.8X outside stream bounds ", m_position);
 
@@ -245,26 +255,26 @@ atUint8* MemoryReader::readUBytes(atUint64 length)
     m_position += length;
     return ret;
 }
-    
+
 atUint64 MemoryReader::readUBytesToBuf(void* buf, atUint64 length)
 {
     if (!m_data)
         loadData();
-    
+
     if (m_bitPosition > 0)
     {
         m_bitPosition = 0;
         m_position += sizeof(atUint8);
     }
-    
+
     if (m_position + length > m_length)
         THROW_IO_EXCEPTION_RETURN(0, "Position %0.8X outside stream bounds ", m_position);
-    
+
     memcpy(buf, (const atUint8*)(m_data + m_position), length);
     m_position += length;
     return length;
 }
-    
+
 atInt16 MemoryReader::readInt16()
 {
     if (!m_data)
@@ -278,6 +288,7 @@ atInt16 MemoryReader::readInt16()
 
     if (m_position + sizeof(atInt16) > m_length)
         THROW_IO_EXCEPTION_RETURN(0, "Position %0.8X outside stream bounds ", m_position);
+
     atInt16 ret = *(atInt16*)(m_data + m_position);
     m_position += sizeof(atInt16);
 
@@ -307,6 +318,7 @@ atInt32 MemoryReader::readInt32()
 
     if (m_position + sizeof(atInt32) > m_length)
         THROW_IO_EXCEPTION_RETURN(0, "Position %0.8X outside stream bounds ", m_position);
+
     atInt32 ret = *(atInt32*)(m_data + m_position);
     m_position += 4;
 
@@ -333,6 +345,7 @@ atInt64 MemoryReader::readInt64()
         m_bitPosition = 0;
         m_position += sizeof(atUint8);
     }
+
     if (m_position + sizeof(atInt64) > m_length)
         THROW_IO_EXCEPTION_RETURN(0, "Position %0.8X outside stream bounds ", m_position);
 
@@ -362,6 +375,7 @@ float MemoryReader::readFloat()
         m_bitPosition = 0;
         m_position += sizeof(atUint8);
     }
+
     if (m_position + sizeof(float) > m_length)
         THROW_IO_EXCEPTION_RETURN(0, "Position %0.8X outside stream bounds ", m_position);
 
@@ -386,6 +400,7 @@ double MemoryReader::readDouble()
         m_bitPosition = 0;
         m_position += sizeof(atUint8);
     }
+
     if (m_position + sizeof(double) > m_length)
         THROW_IO_EXCEPTION_RETURN(0, "Position %0.8X outside stream bounds ", m_position);
 
@@ -396,6 +411,7 @@ double MemoryReader::readDouble()
         utility::BigDouble(ret);
     else
         utility::LittleDouble(ret);
+
     return ret;
 }
 
@@ -409,6 +425,7 @@ bool MemoryReader::readBool()
         m_bitPosition = 0;
         m_position += sizeof(atUint8);
     }
+
     if (m_position + sizeof(bool) > m_length)
         THROW_IO_EXCEPTION_RETURN(false, "Position %0.8X outside stream bounds ", m_position);
 
@@ -421,18 +438,21 @@ std::string MemoryReader::readUnicode(atInt32 maxlen)
 {
     if (!m_data)
         loadData();
+
     std::string ret;
     std::vector<short> tmp;
     atUint16 chr = readUint16();
 
     atInt32 i = 0;
-    for(;;)
+
+    for (;;)
     {
         if (maxlen >= 0 && i >= maxlen - 1)
             break;
 
         if (!chr)
             break;
+
         tmp.push_back(chr);
         chr = readUint16();
         i++;
@@ -448,6 +468,7 @@ std::string MemoryReader::readString(atInt32 maxlen)
     atUint8 chr = readByte();
 
     atInt32 i = 0;
+
     while (chr != 0)
     {
         if (maxlen >= 0 && i >= maxlen - 1)
@@ -474,6 +495,7 @@ void MemoryReader::loadData()
 
     if (!in)
         THROW_FILE_NOT_FOUND_EXCEPTION(m_filepath);
+
     rewind(in);
 
     length = utility::fileSize(m_filepath);
@@ -485,6 +507,7 @@ void MemoryReader::loadData()
 
     atUint64 done = 0;
     atUint64 blocksize = BLOCKSZ;
+
     do
     {
         if (blocksize > length - done)
@@ -500,9 +523,10 @@ void MemoryReader::loadData()
         done += ret;
 
         if (m_progressCallback)
-            m_progressCallback((int)((float)(done* 100.f)/length));
+            m_progressCallback((int)((float)(done * 100.f) / length));
 
-    } while (done < length);
+    }
+    while (done < length);
 
     fclose(in);
     m_length = length;

@@ -41,23 +41,25 @@ bool isSystemBigEndian()
     return (*(atUint16*)test == 0xFEFF);
 }
 
-void fillRandom(atUint8 * rndArea, atUint64 count)
+void fillRandom(atUint8* rndArea, atUint64 count)
 {
-    for(atUint64 i = 0; i < count; i++)
-        rndArea[i]=rand();
+    for (atUint64 i = 0; i < count; i++)
+        rndArea[i] = rand();
 }
 
-std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems)
+std::vector<std::string>& split(const std::string& s, char delim, std::vector<std::string>& elems)
 {
     std::stringstream ss(s);
     std::string item;
+
     while (std::getline(ss, item, delim))
         elems.push_back(item);
+
     return elems;
 }
 
 
-std::vector<std::string> split(const std::string &s, char delim)
+std::vector<std::string> split(const std::string& s, char delim)
 {
     std::vector<std::string> elems;
     split(s, delim, elems);
@@ -88,13 +90,16 @@ std::string vsprintf(const char* fmt, va_list list)
     char* buffer = 0;
     buffer = new char[size];
     int nsize = ::vsnprintf(buffer, size, fmt, list);
-    while(size<=nsize)
-    { //fail delete buffer and try again
+
+    while (size <= nsize)
+    {
+        //fail delete buffer and try again
         delete[] buffer;
         buffer = 0;
-        buffer = new char[nsize+1]; //+1 for /0
+        buffer = new char[nsize + 1]; //+1 for /0
         nsize = ::vsnprintf(buffer, size, fmt, list);
     }
+
     std::string ret(buffer);
     delete[] buffer;
     return ret;
@@ -120,6 +125,7 @@ bool parseBool(const std::string& boolean, bool* valid)
     {
         if (valid)
             *valid = true;
+
         return true;
     }
 
@@ -128,6 +134,7 @@ bool parseBool(const std::string& boolean, bool* valid)
     {
         if (valid)
             *valid = true;
+
         return false;
     }
 
@@ -144,6 +151,7 @@ int countChar(const std::string& str, const char chr, int* lastOccur)
     int ret = 0;
 
     int index = 0;
+
     for (char c : str)
     {
         if (c == chr)
@@ -153,6 +161,7 @@ int countChar(const std::string& str, const char chr, int* lastOccur)
 
             ret++;
         }
+
         index++;
     }
 
@@ -167,26 +176,28 @@ atUint64 fileSize(const std::string& filename)
 }
 
 // trim from both ends
-std::string &trim(std::string &s)
+std::string& trim(std::string& s)
 {
     // Find first non whitespace char in StrToTrim
-    std::string::size_type first = s.find_first_not_of( ' ' );
+    std::string::size_type first = s.find_first_not_of(' ');
+
     // Check whether something went wrong?
-    if( first == std::string::npos )
+    if (first == std::string::npos)
     {
-      first = 0;
+        first = 0;
     }
 
     // Find last non whitespace char from StrToTrim
-    std::string::size_type last = s.find_last_not_of( ' ' );
+    std::string::size_type last = s.find_last_not_of(' ');
+
     // If something didn't go wrong, Last will be recomputed to get real length of substring
-    if( last != std::string::npos )
+    if (last != std::string::npos)
     {
-      last = ( last + 1 ) - first;
+        last = (last + 1) - first;
     }
 
     // Copy such a string to TrimmedString
-    s = s.substr( first, last );
+    s = s.substr(first, last);
 
     return s;
 }

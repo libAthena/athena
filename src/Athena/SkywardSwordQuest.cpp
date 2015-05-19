@@ -52,13 +52,13 @@ union AmmoValues
     atUint32 value;
 };
 
-SkywardSwordQuest::SkywardSwordQuest(atUint8 *data, atUint32 len)
+SkywardSwordQuest::SkywardSwordQuest(atUint8* data, atUint32 len)
     : ZQuestFile(ZQuestFile::SS, Endian::BigEndian, data, len),
       m_skipData(nullptr)
 {
 }
 
-void SkywardSwordQuest::setSkipData(const atUint8 *data)
+void SkywardSwordQuest::setSkipData(const atUint8* data)
 {
     if (m_skipData)
     {
@@ -69,7 +69,7 @@ void SkywardSwordQuest::setSkipData(const atUint8 *data)
     m_skipData = (atUint8*)data;
 }
 
-atUint8 *SkywardSwordQuest::skipData() const
+atUint8* SkywardSwordQuest::skipData() const
 {
     return m_skipData;
 }
@@ -85,6 +85,7 @@ void SkywardSwordQuest::setPlayerName(const std::string& name)
     for (atUint32 i = 0; i < 8; i++)
     {
         atUint16& c = *(atUint16*)(m_data + priv::NAME_OFFSET + (i * 2));
+
         if (i >= val.size())
         {
             c = 0;
@@ -99,9 +100,11 @@ void SkywardSwordQuest::setPlayerName(const std::string& name)
 std::string SkywardSwordQuest::playerName() const
 {
     std::vector<atUint16> val;
+
     for (atUint32 i = 0; i < 8; i++)
     {
         atUint16 c = *(atUint16*)(m_data + priv::NAME_OFFSET + (i * 2));
+
         if (c == 0)
             break;
 
@@ -132,14 +135,16 @@ void SkywardSwordQuest::setAmmoCount(SkywardSwordQuest::AmmoType type, atUint32 
     AmmoValues& values = *(AmmoValues*)(m_data + priv::AMMO_COUNT_OFFSET);
     utility::BigUint32(values.value);
 
-    switch(type)
+    switch (type)
     {
         case Arrows:
             values.arrows = count;
             break;
+
         case Bombs:
             values.bombs = count;
             break;
+
         case Seeds:
             values.seeds = count;
             break;
@@ -153,12 +158,19 @@ atUint32 SkywardSwordQuest::ammoCount(AmmoType type)
     AmmoValues values = *(AmmoValues*)(m_data + priv::AMMO_COUNT_OFFSET);
     utility::BigUint32(values.value);
 
-    switch(type)
+    switch (type)
     {
-        case Arrows: return values.arrows;
-        case Bombs:  return values.bombs;
-        case Seeds:  return values.seeds;
-        default: return 0;
+        case Arrows:
+            return values.arrows;
+
+        case Bombs:
+            return values.bombs;
+
+        case Seeds:
+            return values.seeds;
+
+        default:
+            return 0;
     }
 }
 

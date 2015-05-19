@@ -337,7 +337,8 @@ public:
      * \brief setCrystals
      * \param val
      */
-    void setCrystals(ALTTPCrystals val);\
+    void setCrystals(ALTTPCrystals val);
+    \
 
     /*!
      * \brief crystals

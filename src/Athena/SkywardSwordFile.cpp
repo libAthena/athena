@@ -36,7 +36,7 @@ SkywardSwordFile::~SkywardSwordFile()
 {
 }
 
-void SkywardSwordFile::addQuest(Athena::SkywardSwordQuest *q)
+void SkywardSwordFile::addQuest(Athena::SkywardSwordQuest* q)
 {
     // Do not allow more than 3 quests
     if (m_quests.size() >= 3)
@@ -45,7 +45,7 @@ void SkywardSwordFile::addQuest(Athena::SkywardSwordQuest *q)
     m_quests.push_back(q);
 }
 
-SkywardSwordQuest *SkywardSwordFile::quest(atUint32 id)
+SkywardSwordQuest* SkywardSwordFile::quest(atUint32 id)
 {
     if (id > m_quests.size() - 1)
         THROW_INVALID_OPERATION_EXCEPTION_RETURN(nullptr, "index out of range");

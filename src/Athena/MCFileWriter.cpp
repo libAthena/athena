@@ -41,14 +41,14 @@ atUint16 MCFileWriter::calculateSlotChecksum(atUint32 game)
 
     first = (first + second) & 0xFFFF;
     atUint16 result = first << 16;
-    second = ~first&0xFFFF;
+    second = ~first & 0xFFFF;
     second += 1;
     result += second;
 
     return result;
 }
 
-atUint16 MCFileWriter::calculateChecksum(atUint8 *data, atUint32 length)
+atUint16 MCFileWriter::calculateChecksum(atUint8* data, atUint32 length)
 {
     atUint16 sum = 0;
     int i = length;

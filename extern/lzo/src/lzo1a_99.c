@@ -46,10 +46,10 @@
 ************************************************************************/
 
 static int
-_lzo1a_do_compress ( const lzo_bytep in,  lzo_uint  in_len,
-                           lzo_bytep out, lzo_uintp out_len,
-                           lzo_voidp wrkmem,
-                           lzo_compress_t func )
+_lzo1a_do_compress(const lzo_bytep in,  lzo_uint  in_len,
+                   lzo_bytep out, lzo_uintp out_len,
+                   lzo_voidp wrkmem,
+                   lzo_compress_t func)
 {
     int r;
 
@@ -65,12 +65,12 @@ _lzo1a_do_compress ( const lzo_bytep in,  lzo_uint  in_len,
         *out_len = 0;
         r = LZO_E_NOT_COMPRESSIBLE;
 #else
-        *out_len = pd(STORE_RUN(out,in,in_len), out);
+        *out_len = pd(STORE_RUN(out, in, in_len), out);
         r = (*out_len > in_len) ? LZO_E_OK : LZO_E_ERROR;
 #endif
     }
     else
-        r = func(in,in_len,out,out_len,wrkmem);
+        r = func(in, in_len, out, out_len, wrkmem);
 
     return r;
 }
@@ -105,11 +105,11 @@ _lzo1a_do_compress ( const lzo_bytep in,  lzo_uint  in_len,
 ************************************************************************/
 
 LZO_PUBLIC(int)
-LZO_COMPRESS ( const lzo_bytep in,  lzo_uint  in_len,
-                     lzo_bytep out, lzo_uintp out_len,
-                     lzo_voidp wrkmem )
+LZO_COMPRESS(const lzo_bytep in,  lzo_uint  in_len,
+             lzo_bytep out, lzo_uintp out_len,
+             lzo_voidp wrkmem)
 {
-    return _lzo1a_do_compress(in,in_len,out,out_len,wrkmem,do_compress);
+    return _lzo1a_do_compress(in, in_len, out, out_len, wrkmem, do_compress);
 }
 
 

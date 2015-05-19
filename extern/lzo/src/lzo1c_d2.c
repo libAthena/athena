@@ -35,13 +35,13 @@
 
 #if defined(LZO_ARCH_I386) && defined(LZO_USE_ASM)
 LZO_EXTERN(int) lzo1c_decompress_asm_safe
-                                (const lzo_bytep src, lzo_uint  src_len,
-                                       lzo_bytep dst, lzo_uintp dst_len,
-                                       lzo_voidp wrkmem);
+(const lzo_bytep src, lzo_uint  src_len,
+ lzo_bytep dst, lzo_uintp dst_len,
+ lzo_voidp wrkmem);
 LZO_PUBLIC(int) lzo1c_decompress_asm_safe
-                                (const lzo_bytep src, lzo_uint  src_len,
-                                       lzo_bytep dst, lzo_uintp dst_len,
-                                       lzo_voidp wrkmem)
+(const lzo_bytep src, lzo_uint  src_len,
+ lzo_bytep dst, lzo_uintp dst_len,
+ lzo_voidp wrkmem)
 {
     return lzo1c_decompress_safe(src, src_len, dst, dst_len, wrkmem);
 }

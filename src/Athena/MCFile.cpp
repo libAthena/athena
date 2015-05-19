@@ -30,7 +30,7 @@ atUint8* reverse(atUint8* data, atUint32 length)
     atUint32 a = 0;
     atUint32 swap;
 
-    for (;a<--length; a++)
+    for (; a < --length; a++)
     {
         swap = data[a];
         data[a] = data[length];

@@ -57,18 +57,18 @@ extern const lzo_compress_t _lzo1b_99_compress_func;
 //
 ************************************************************************/
 
-LZO_LOCAL_DECL(lzo_bytep )
-_lzo1b_store_run ( lzo_bytep const oo, const lzo_bytep const ii,
-                   lzo_uint r_len);
+LZO_LOCAL_DECL(lzo_bytep)
+_lzo1b_store_run(lzo_bytep const oo, const lzo_bytep const ii,
+                 lzo_uint r_len);
 
 #define STORE_RUN   _lzo1b_store_run
 
 
 LZO_LOCAL_DECL(int)
-_lzo1b_do_compress ( const lzo_bytep in,  lzo_uint  in_len,
-                           lzo_bytep out, lzo_uintp out_len,
-                           lzo_voidp wrkmem,
-                           lzo_compress_t func );
+_lzo1b_do_compress(const lzo_bytep in,  lzo_uint  in_len,
+                   lzo_bytep out, lzo_uintp out_len,
+                   lzo_voidp wrkmem,
+                   lzo_compress_t func);
 
 
 #endif /* already included */

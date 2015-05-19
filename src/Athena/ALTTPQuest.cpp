@@ -73,6 +73,7 @@ ALTTPOverworldEvent* ALTTPQuest::overworldEvent(atUint32 id) const
 {
     if (id > m_overworldEvents.size() - 1)
         THROW_INVALID_OPERATION_EXCEPTION_RETURN(nullptr, "index out of range");
+
     return m_overworldEvents[id];
 }
 
@@ -443,7 +444,7 @@ void ALTTPQuest::setUnknown1(atUint32 id, atUint8 val)
 atUint8 ALTTPQuest::unknown1(atUint32 id)
 {
     if (id > m_unknown1.size())
-        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0,"index out of range");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0, "index out of range");
 
     return m_unknown1[id];
 }
@@ -472,25 +473,30 @@ void ALTTPQuest::setPlayerName(const std::string& playerName)
             m_playerName.push_back((atUint16)0xA9);
             continue;
         }
+
         char c = playerName[i];
+
         if (c >= 'A' && c <= 'P' && c != 'I')
         {
 
             m_playerName.push_back((atUint16)(c - 'A'));
             continue;
         }
+
         if (c >= 'Q' && c <= 'Z')
         {
             std::cout << std::hex << (atUint16)((c - 'Q') + 0x20) << std::endl;
             m_playerName.push_back((atUint16)((c - 'Q') + 0x20));
             continue;
         }
+
         if (c >= 'a' && c <= 'f')
         {
             std::cout << std::hex << (atUint16)((c - 'a') + 0x2A) << std::endl;
             m_playerName.push_back((atUint16)((c - 'a') + 0x2A));
             continue;
         }
+
         if (c >= 'g' && c <= 'v')
         {
             if (c == 'k')
@@ -498,38 +504,60 @@ void ALTTPQuest::setPlayerName(const std::string& playerName)
                 m_playerName.push_back(0x42);
                 continue;
             }
+
             if (c == 'i')
             {
                 m_playerName.push_back(0x44);
                 continue;
             }
+
             m_playerName.push_back((atUint16)((c - 'g') + 0x40));
             continue;
         }
+
         if (c >= 'w' && c <= 'z')
         {
             m_playerName.push_back((atUint16)((c - 'w') + 0x60));
             continue;
         }
+
         if (c >= '0' && c <= '9')
         {
             m_playerName.push_back((atUint16)((c - '0') + 0x64));
             continue;
         }
+
         if (c == '-' || c == '.')
         {
             m_playerName.push_back((atUint16)(c - '-') + 0x80);
             continue;
         }
 
-        switch(c)
+        switch (c)
         {
-            case '?' : m_playerName.push_back(0x6E); break;
-            case '!' : m_playerName.push_back(0x6F); break;
-            case ',' : m_playerName.push_back(0x82); break;
-            case '(' : m_playerName.push_back(0x85); break;
-            case ')' : m_playerName.push_back(0x86); break;
-            case 'I' : m_playerName.push_back(0xAF); break;
+            case '?' :
+                m_playerName.push_back(0x6E);
+                break;
+
+            case '!' :
+                m_playerName.push_back(0x6F);
+                break;
+
+            case ',' :
+                m_playerName.push_back(0x82);
+                break;
+
+            case '(' :
+                m_playerName.push_back(0x85);
+                break;
+
+            case ')' :
+                m_playerName.push_back(0x86);
+                break;
+
+            case 'I' :
+                m_playerName.push_back(0xAF);
+                break;
         }
     }
 }
@@ -550,16 +578,19 @@ std::string ALTTPQuest::playerNameToString() const
             ret.push_back((char)('A' + c));
             continue;
         }
+
         if (c >= 0x20 && c <= 0x29)
         {
             ret.push_back((char)('Q' + (c - 0x20)));
             continue;
         }
+
         if (c >= 0x2A && c <= 0x2F)
         {
             ret.push_back((char)('a' + (c - 0x2A)));
             continue;
         }
+
         if (c >= 0x40 && c <= 0x4F)
         {
             if (c == 0x42)
@@ -567,39 +598,62 @@ std::string ALTTPQuest::playerNameToString() const
                 ret.push_back('k');
                 continue;
             }
+
             if (c == 0x44)
             {
                 ret.push_back('i');
                 continue;
             }
+
             ret.push_back((char)('g' + (c - 0x40)));
         }
+
         if (c >= 0x60 && c <= 0x63)
         {
             ret.push_back((char)('w' + (c - 0x60)));
             continue;
         }
+
         if (c >= 0x64 && c <= 0x6D)
         {
             ret.push_back((char)('0' + (c - 0x64)));
             continue;
         }
+
         if (c == 0x80 || c == 0x81)
         {
             ret.push_back((char)('-' + (c - 0x80)));
             continue;
         }
 
-        switch(c)
+        switch (c)
         {
-            case 0x6E: ret.push_back('?'); break;
-            case 0x6F: ret.push_back('!'); break;
-            case 0x82: ret.push_back(','); break;
-            case 0x85: ret.push_back('('); break;
-            case 0x86: ret.push_back(')'); break;
-            case 0xAF: ret.push_back('I'); break;
+            case 0x6E:
+                ret.push_back('?');
+                break;
+
+            case 0x6F:
+                ret.push_back('!');
+                break;
+
+            case 0x82:
+                ret.push_back(',');
+                break;
+
+            case 0x85:
+                ret.push_back('(');
+                break;
+
+            case 0x86:
+                ret.push_back(')');
+                break;
+
+            case 0xAF:
+                ret.push_back('I');
+                break;
         }
     }
+
     return ret;
 }
 
