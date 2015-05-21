@@ -499,11 +499,7 @@ void MemoryReader::loadData()
     rewind(in);
 
     length = utility::fileSize(m_filepath);
-#ifdef HW_RVL
-    m_data = (Uint8*)memalign(32, length);
-#else
     m_data = new atUint8[length];
-#endif
 
     atUint64 done = 0;
     atUint64 blocksize = BLOCKSZ;

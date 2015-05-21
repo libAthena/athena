@@ -75,13 +75,13 @@ inline atInt64  swap64(atInt64 val)
 inline atUint64 swapU64(atUint64 val) {return (atUint64)swap64(val);}
 inline float swapFloat(float val)
 {
-    atInt32 ival = swap32(*((atInt32*)(&val)));
-    return *((float*)(&ival));
+    atInt32 ival = swap64(static_cast<atInt32>(val));
+    return static_cast<float>(ival);
 }
 inline double  swapDouble(double val)
 {
-    atInt64 ival = swap64(*((atInt64*)(&val)));
-    return *((double*)(&ival));
+    atInt64 ival = swap64(static_cast<atInt64>(val));
+    return static_cast<double>(ival);
 }
 inline atInt16 LittleInt16(atInt16& val)
 {
@@ -202,6 +202,8 @@ inline double BigDouble(double& val)
 
     return val;
 }
+
+atUint64 rand64();
 
 void fillRandom(atUint8* rndArea, atUint64 count);
 std::vector<std::string> split(const std::string& s, char delim);

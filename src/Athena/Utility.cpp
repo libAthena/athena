@@ -19,11 +19,13 @@
 #include <stdlib.h>
 #include <sstream>
 #include <algorithm>
-#include <cstdarg>
+#include <stdarg.h>
 #include <iterator>
 #include <cstdio>
+#include <sys/types.h>
 #include <sys/stat.h>
 #include <Athena/Exception.hpp>
+#include <random>
 
 #ifdef _MSC_VER
 #include <functional>
@@ -171,7 +173,7 @@ int countChar(const std::string& str, const char chr, int* lastOccur)
 
 atUint64 fileSize(const std::string& filename)
 {
-    struct stat64 st;
+    stat64_t st;
     stat64(filename.c_str(), &st);
     return st.st_size;
 }
@@ -201,6 +203,16 @@ std::string& trim(std::string& s)
     s = s.substr(first, last);
 
     return s;
+}
+
+atUint64 rand64()
+{
+    // Combine 4 parts of low 16-bit of each rand()
+    atUint64 r0 = (atUint64)rand() << 48;
+    atUint64 r1 = (atUint64)rand() << 48 >> 16;
+    atUint64 r2 = (atUint64)rand() << 48 >> 32;
+    atUint64 r3 = (atUint64)rand() << 48 >> 48;
+    return r0 | r1 | r2 | r3;
 }
 
 } // utility

@@ -1,7 +1,7 @@
 #include "LZ77/LZLookupTable.hpp"
 #include "LZ77/LZType11.hpp"
 #include <Athena/MemoryWriter.hpp>
-#include <memory.h>
+#include <string.h>
 
 
 LZType11::LZType11(atInt32 minimumOffset, atInt32 slidingWindow, atInt32 minimumMatch, atInt32 blockSize)

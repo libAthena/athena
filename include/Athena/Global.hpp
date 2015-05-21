@@ -40,6 +40,15 @@
 #   endif
 #endif
 
+
+#ifdef GEKKO
+#include "gekko_support.h"
+typedef struct stat stat64_t;
+#define stat64 stat
+#else
+typedef struct stat64 stat64_t;
+#endif
+
 #ifndef aDebug
 #define aDebug() \
     std::cout << __FILE__ << "(" << __LINE__ << ") " << AT_PRETTY_FUNCTION << ": "

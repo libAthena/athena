@@ -2,7 +2,10 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <limits.h>
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
 
 #ifdef _MSC_VER
 #define stat64 __stat64
@@ -23,7 +26,7 @@ std::string Dir::absolutePath() const
 
 bool Dir::isDir() const
 {
-    struct stat64 st;
+    stat64_t st;
     int e = stat64(m_path.c_str(), &st);
     if (e < 0)
         return false;
@@ -46,6 +49,17 @@ bool Dir::cd(const std::string& path)
 bool Dir::rm(const std::string& path)
 {
     return !(remove((m_path + "/" + path).c_str()) < 0);
+}
+
+bool Dir::touch()
+{
+    srand(time(NULL));
+    atUint64 tmp = utility::rand64();
+    std::string tmpFile = utility::sprintf("%" PRIX64 ".tmp", tmp);
+    bool ret = FileInfo(m_path + "/" + tmpFile).touch();
+    if (ret)
+        return rm(tmpFile);
+    return false;
 }
 
 bool Dir::mkdir(const std::string& dir, mode_t mode)

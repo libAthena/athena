@@ -1,3 +1,4 @@
+#ifdef __APPLE__
 #include "osx_largefilewrapper.h"
 #include <stdio.h>
 
@@ -10,4 +11,6 @@ off_t ftello64(FILE* fp)
 {
     return ftello(fp);
 }
+#endif
+
 

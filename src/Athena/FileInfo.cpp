@@ -4,12 +4,16 @@
 #include "Athena/FileReader.hpp"
 #include <sys/time.h>
 #include <time.h>
-#include <fcntl.h>
 #include <stdio.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <limits.h>
+#include <stdlib.h>
+
+#if !(defined(HW_DOL) || defined(HW_RVL) || defined(_WIN32))
+#include <fcntl.h>
+#endif
 
 #ifdef _WIN32
 #include <windows.h>
@@ -76,8 +80,14 @@ atUint64 FileInfo::size() const
 
 bool FileInfo::exists() const
 {
+#ifdef GEKKO
+    struct stat st;
+    int e = stat(m_path.c_str(), &st);
+#else
     struct stat64 st;
     int e = stat64(m_path.c_str(), &st);
+#endif
+
     if (e < 0)
         return false;
 
@@ -86,8 +96,13 @@ bool FileInfo::exists() const
 
 bool FileInfo::isLink() const
 {
+#ifdef GEKKO
+    struct stat st;
+    int e = stat(m_path.c_str(), &st);
+#else
     struct stat64 st;
     int e = stat64(m_path.c_str(), &st);
+#endif
     if (e < 0)
         return false;
 
@@ -96,7 +111,7 @@ bool FileInfo::isLink() const
 
 bool FileInfo::isFile() const
 {
-    struct stat64 st;
+    stat64_t st;
     int e = stat64(m_path.c_str(), &st);
     if (e < 0)
         return false;
@@ -106,25 +121,16 @@ bool FileInfo::isFile() const
 
 bool FileInfo::touch() const
 {
-#ifndef _WIN32
-    struct stat st;
-    struct timespec newTimes[2];
-
-    if (stat(m_path.c_str(), &st) < 0) {
+#if defined(__GNUC__) && !(defined(HW_DOL) || defined(HW_RVL) || defined(GEKKO))
+    stat64_t st;
+    if (stat64(m_path.c_str(), &st) < 0) {
         (void)Athena::io::FileWriter(m_path);
         return true;
     }
-
-    /* keep atime unchanged */
-    newTimes[0] = st.st_atim;
-
-    /* set mtime to current time */
-    clock_gettime(CLOCK_REALTIME, &newTimes[1]);
-
-    if (utimensat(AT_FDCWD, m_path.c_str(), newTimes, 0) < 0) {
+    if (utimensat(AT_FDCWD, m_path.c_str(), NULL, 0) < 0) {
         return false;
     }
-#else
+#elif defined(_WIN32)
     FILETIME modtime;
     SYSTEMTIME st;
     HANDLE fh;
@@ -170,6 +176,29 @@ bool FileInfo::touch() const
     }
 
     CloseHandle(fh);
+#elif (defined(HW_RVL) || defined(HW_DOL)) && defined(GEKKO)
+    // Generic portable version, not extremely reliable but does work
+    atUint64 val = 0xCDCDCDCDCD;
+    try
+    {
+        Athena::io::FileReader reader(m_path.c_str());
+        val = reader.readUint64();
+    }
+    catch(...)
+    {
+    }
+
+    try
+    {
+        Athena::io::FileWriter writer(m_path, false);
+        if (val != 0xCDCDCDCDCD)
+            writer.writeUint64(val);
+    }
+    catch(...)
+    {
+        return false;
+    }
+
 #endif
 
     return true;

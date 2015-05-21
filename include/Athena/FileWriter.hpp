@@ -17,6 +17,7 @@
 #define FILEWRITER_HPP
 
 #include "Athena/IStreamWriter.hpp"
+#include <stdio.h>
 
 namespace Athena
 {
@@ -35,7 +36,6 @@ public:
     void open(bool overwrite = true);
     void close();
     bool isOpen() const;
-    bool save();
     void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
     inline void seekAlign32() {seek(ROUND_UP_32(position()), SeekOrigin::Begin);}
     bool atEnd() const;

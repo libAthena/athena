@@ -2,6 +2,7 @@
 #define DIR_HPP
 
 #include "Athena/FileInfo.hpp"
+#include <stdio.h>
 
 namespace Athena
 {
@@ -22,6 +23,7 @@ public:
 
     bool cd(const std::string& path);
     bool rm(const std::string& path);
+    bool touch();
     static bool mkdir(const std::string& dir, mode_t mode = 0755);
     static bool mkpath(const std::string& path, mode_t mode = 0755);
 private:

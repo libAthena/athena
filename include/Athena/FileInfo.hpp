@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include <Athena/Global.hpp>
+#include "Athena/Global.hpp"
 
 namespace Athena
 {
