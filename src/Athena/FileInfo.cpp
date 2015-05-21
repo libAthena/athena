@@ -80,13 +80,8 @@ atUint64 FileInfo::size() const
 
 bool FileInfo::exists() const
 {
-#ifdef GEKKO
-    struct stat st;
-    int e = stat(m_path.c_str(), &st);
-#else
-    struct stat64 st;
+    struct stat64_t st;
     int e = stat64(m_path.c_str(), &st);
-#endif
 
     if (e < 0)
         return false;
@@ -96,13 +91,8 @@ bool FileInfo::exists() const
 
 bool FileInfo::isLink() const
 {
-#ifdef GEKKO
-    struct stat st;
-    int e = stat(m_path.c_str(), &st);
-#else
-    struct stat64 st;
+    struct stat64_t st;
     int e = stat64(m_path.c_str(), &st);
-#endif
     if (e < 0)
         return false;
 
