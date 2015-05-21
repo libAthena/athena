@@ -495,12 +495,7 @@ void MemoryWriter::resize(atUint64 newSize)
         THROW_INVALID_OPERATION_EXCEPTION("Stream::resize() -> New size cannot be less to the old size.");
 
     // Allocate and copy new buffer
-#ifdef HW_RVL
-    Uint8* newArray = (Uint8*)memalign(32, newSize);
-#else
     atUint8* newArray = new atUint8[newSize];
-#endif
-
     memset(newArray, 0, newSize);
 
     if (m_data)
@@ -508,11 +503,7 @@ void MemoryWriter::resize(atUint64 newSize)
         memcpy(newArray, m_data, m_length);
 
         // Delete the old one
-#ifdef HW_RVL
-        free(m_data);
-#else
         delete[] m_data;
-#endif
     }
 
     // Swap the pointer and size out for the new ones.

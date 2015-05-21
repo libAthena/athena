@@ -61,3 +61,5 @@ win32 {
    headerFiles.files = $$PWD/include/*
    INSTALLS += libFiles headerFiles
 }
+
+

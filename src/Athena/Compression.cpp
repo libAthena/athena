@@ -358,32 +358,18 @@ atUint32 simpleEnc(const atUint8* src, atInt32 size, atInt32 pos, atUint32* pMat
 
 atUint32 decompressLZ77(const atUint8* src, atUint32 srcLen, atUint8** dst)
 {
-    LZBase* lzCodec;
-
     if (*(atUint8*)src == 0x11)
-        lzCodec = new LZType11;
-    else
-        lzCodec = new LZType10;
+        return LZType11().decompress(src, dst, srcLen);
 
-    atUint32 retLength = lzCodec->decompress(src, dst, srcLen);
-    delete lzCodec;
-
-    return retLength;
+    return LZType10(2).decompress(src, dst, srcLen);
 }
 
 atUint32 compressLZ77(const atUint8* src, atUint32 srcLen, atUint8** dst, bool extended)
 {
-    LZBase* lzCodec;
-
     if (extended)
-        lzCodec = new LZType11;
-    else
-        lzCodec = new LZType10(2);
+        return LZType11().compress(src, dst, srcLen);
 
-    atUint32 retLength = lzCodec->compress(src, dst, srcLen);
-    delete lzCodec;
-
-    return retLength;
+    return LZType10(2).compress(src, dst, srcLen);
 }
 
 } // Compression

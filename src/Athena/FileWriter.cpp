@@ -31,7 +31,7 @@ namespace Athena
 {
 namespace io
 {
-FileWriter::FileWriter(const std::string& filename)
+FileWriter::FileWriter(const std::string& filename, bool overwrite)
     : m_filename(filename),
       m_fileHandle(NULL),
       m_endian(Endian::LittleEndian),
@@ -39,7 +39,7 @@ FileWriter::FileWriter(const std::string& filename)
       m_bitShift(0),
       m_bitValid(false)
 {
-    open();
+    open(overwrite);
 }
 
 FileWriter::~FileWriter()
@@ -68,9 +68,12 @@ bool FileWriter::isLittleEndian() const
     return (m_endian == Endian::LittleEndian);
 }
 
-void FileWriter::open()
+void FileWriter::open(bool overwrite)
 {
-    m_fileHandle = fopen(m_filename.c_str(), "w+b");
+    if (overwrite)
+        m_fileHandle = fopen(m_filename.c_str(), "w+b");
+    else
+        m_fileHandle = fopen(m_filename.c_str(), "r+b");
 
     if (!m_fileHandle)
         THROW_FILE_NOT_FOUND_EXCEPTION(m_filename);
@@ -92,11 +95,6 @@ void FileWriter::close()
 bool FileWriter::isOpen() const
 {
     return m_fileHandle != NULL;
-}
-
-bool FileWriter::save()
-{
-    return true;
 }
 
 void FileWriter::seek(atInt64 pos, SeekOrigin origin)

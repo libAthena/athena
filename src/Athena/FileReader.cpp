@@ -41,7 +41,8 @@ FileReader::FileReader(const std::string& filename)
 
 FileReader::~FileReader()
 {
-    close();
+    if (isOpen())
+        close();
 }
 
 std::string FileReader::filename() const
