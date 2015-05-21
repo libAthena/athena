@@ -127,7 +127,7 @@ bool FileInfo::touch() const
         (void)Athena::io::FileWriter(m_path);
         return true;
     }
-    if (utimensat(AT_FDCWD, m_path.c_str(), NULL, 0) < 0) {
+    if (utimes(m_path.c_str(), NULL) < 0) {
         return false;
     }
 #elif defined(_WIN32)
