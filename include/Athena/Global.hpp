@@ -116,6 +116,11 @@ typedef Vector2D<float> Vector2Df;
 #endif // ATHENA_NO_SAKURA
 } // Athena
 
+typedef void (*atEXCEPTION_HANDLER)(const std::string& file, const std::string& function, int line, const std::string&, ...);
+
+atEXCEPTION_HANDLER atGetExceptionHandler();
+void atSetExceptionHandler(atEXCEPTION_HANDLER func);
+
 std::ostream& operator<<(std::ostream& os, const Athena::SeekOrigin& origin);
 std::ostream& operator<<(std::ostream& os, const Athena::Endian& endian);
 #endif // GLOBAL_HPP

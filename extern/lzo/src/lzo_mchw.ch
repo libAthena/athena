@@ -110,9 +110,9 @@ LZO_COMPRESS_T;
 ************************************************************************/
 
 static int
-init_match ( LZO_COMPRESS_T *c, lzo_swd_p s,
-             const lzo_bytep dict, lzo_uint dict_len,
-             lzo_uint32_t flags )
+init_match(LZO_COMPRESS_T* c, lzo_swd_p s,
+           const lzo_bytep dict, lzo_uint dict_len,
+           lzo_uint32_t flags)
 {
     int r;
 
@@ -127,7 +127,8 @@ init_match ( LZO_COMPRESS_T *c, lzo_swd_p s,
     c->lit_bytes = c->match_bytes = c->rep_bytes = 0;
     c->lazy = 0;
 
-    r = swd_init(s,dict,dict_len);
+    r = swd_init(s, dict, dict_len);
+
     if (r != LZO_E_OK)
     {
         swd_exit(s);
@@ -144,8 +145,8 @@ init_match ( LZO_COMPRESS_T *c, lzo_swd_p s,
 ************************************************************************/
 
 static int
-find_match ( LZO_COMPRESS_T *c, lzo_swd_p s,
-             lzo_uint this_len, lzo_uint skip )
+find_match(LZO_COMPRESS_T* c, lzo_swd_p s,
+           lzo_uint this_len, lzo_uint skip)
 {
     assert(c->init);
 
@@ -164,8 +165,10 @@ find_match ( LZO_COMPRESS_T *c, lzo_swd_p s,
     s->m_len = SWD_THRESHOLD;
     s->m_off = 0;
 #ifdef SWD_BEST_OFF
+
     if (s->use_best_off)
-        lzo_memset(s->best_pos,0,sizeof(s->best_pos));
+        lzo_memset(s->best_pos, 0, sizeof(s->best_pos));
+
 #endif
     swd_findbest(s);
     c->m_len = s->m_len;
@@ -183,9 +186,11 @@ find_match ( LZO_COMPRESS_T *c, lzo_swd_p s,
     {
         c->look = s->look + 1;
     }
+
     c->bp = c->ip - c->look;
 
 #if 0
+
     /* brute force match search */
     if (c->m_len > SWD_THRESHOLD && c->m_len + 1 <= c->look)
     {
@@ -195,18 +200,23 @@ find_match ( LZO_COMPRESS_T *c, lzo_swd_p s,
 
         if (ip - in > s->swd_n)
             in = ip - s->swd_n;
+
         for (;;)
         {
             while (*in != *ip)
                 in++;
+
             if (in == ip)
                 break;
+
             if (in != m)
-                if (lzo_memcmp(in,ip,c->m_len+1) == 0)
-                    printf("%p %p %p %5d\n",in,ip,m,c->m_len);
+                if (lzo_memcmp(in, ip, c->m_len + 1) == 0)
+                    printf("%p %p %p %5d\n", in, ip, m, c->m_len);
+
             in++;
         }
     }
+
 #endif
 
     if (c->cb && c->cb->nprogress && c->textsize > c->printcount)

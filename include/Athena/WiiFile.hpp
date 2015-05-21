@@ -51,9 +51,9 @@ public:
         OwnerWrite = 0x20,
 
         // Mask values;
-        OtherRW = (OtherRead|OtherWrite), //!< Mask to get the Other group permissions
-        GroupRW = (GroupRead|GroupWrite),
-        OwnerRW = (OwnerRead|OwnerWrite)
+        OtherRW = (OtherRead | OtherWrite), //!< Mask to get the Other group permissions
+        GroupRW = (GroupRead | GroupWrite),
+        OwnerRW = (OwnerRead | OwnerWrite)
     };
 
     /*!

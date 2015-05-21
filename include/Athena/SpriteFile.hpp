@@ -258,9 +258,9 @@ signals:
     void originChanged(QPoint);
     void sizeChanged(QSize);
 #endif
-    private:
-    #ifndef ATHENA_USE_QT
-        std::vector<STexture*> m_textures;
+private:
+#ifndef ATHENA_USE_QT
+    std::vector<STexture*> m_textures;
     Vector2Di              m_size;
     Vector2Df              m_origin;
     std::unordered_map<std::string, Sprite*> m_sprites;

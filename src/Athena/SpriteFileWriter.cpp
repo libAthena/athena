@@ -26,7 +26,7 @@ namespace Athena
 {
 namespace io
 {
-SpriteFileWriter::SpriteFileWriter(atUint8 *data, atUint64 length)
+SpriteFileWriter::SpriteFileWriter(atUint8* data, atUint64 length)
     : base(data, length)
 {
 }
@@ -60,12 +60,14 @@ void SpriteFileWriter::writeFile(Sakura::SpriteFile* file)
     }
 
 #ifndef ATHENA_USE_QT
+
     for (std::pair<std::string, Sakura::Sprite*> spritePair : file->sprites())
     {
         Sakura::Sprite* sprite = spritePair.second;
         base::writeString(sprite->name());
 #else
-    foreach(Sakura::Sprite* sprite, file->sprites().values())
+
+    foreach (Sakura::Sprite* sprite, file->sprites().values())
     {
 
         base::writeString(sprite->name().toStdString());
@@ -80,7 +82,8 @@ void SpriteFileWriter::writeFile(Sakura::SpriteFile* file)
         {
             base::writeFloat(frame->frameTime());
             base::writeUint16(frame->partCount());
-            for (Sakura::SpritePart* part: frame->parts())
+
+            for (Sakura::SpritePart* part : frame->parts())
             {
 #ifndef ATHENA_USE_QT
                 base::writeString(part->name());

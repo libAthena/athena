@@ -66,13 +66,13 @@ lzo_version(void)
     return LZO_VERSION;
 }
 
-LZO_PUBLIC(const char *)
+LZO_PUBLIC(const char*)
 lzo_version_string(void)
 {
     return lzo_version_string_;
 }
 
-LZO_PUBLIC(const char *)
+LZO_PUBLIC(const char*)
 lzo_version_date(void)
 {
     return lzo_version_date_;
@@ -121,20 +121,26 @@ lzo_adler32(lzo_uint32_t adler, const lzo_bytep buf, lzo_uint len)
     {
         k = len < LZO_NMAX ? (unsigned) len : LZO_NMAX;
         len -= k;
+
         if (k >= 16) do
-        {
-            LZO_DO16(buf,0);
-            buf += 16;
-            k -= 16;
-        } while (k >= 16);
+            {
+                LZO_DO16(buf, 0);
+                buf += 16;
+                k -= 16;
+            }
+            while (k >= 16);
+
         if (k != 0) do
-        {
-            s1 += *buf++;
-            s2 += s1;
-        } while (--k > 0);
+            {
+                s1 += *buf++;
+                s2 += s1;
+            }
+            while (--k > 0);
+
         s1 %= LZO_BASE;
         s2 %= LZO_BASE;
     }
+
     return (s2 << 16) | s1;
 }
 

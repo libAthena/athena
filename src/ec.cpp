@@ -20,13 +20,15 @@
 */
 // order of the addition group of points
 static atUint8 ec_N[30] = { 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                          0x13, 0xe9, 0x74, 0xe7, 0x2f, 0x8a, 0x69, 0x22, 0x03, 0x1d, 0x26, 0x03, 0xcf, 0xe0, 0xd7 };
+                            0x13, 0xe9, 0x74, 0xe7, 0x2f, 0x8a, 0x69, 0x22, 0x03, 0x1d, 0x26, 0x03, 0xcf, 0xe0, 0xd7
+                          };
 
 // base point
 static atUint8 ec_G[60] = { 0x00, 0xfa, 0xc9, 0xdf, 0xcb, 0xac, 0x83, 0x13, 0xbb, 0x21, 0x39, 0xf1, 0xbb, 0x75, 0x5f,
-                          0xef, 0x65, 0xbc, 0x39, 0x1f, 0x8b, 0x36, 0xf8, 0xf8, 0xeb, 0x73, 0x71, 0xfd, 0x55, 0x8b,
-                          0x01, 0x00, 0x6a, 0x08, 0xa4, 0x19, 0x03, 0x35, 0x06, 0x78, 0xe5, 0x85, 0x28, 0xbe, 0xbf,
-                          0x8a, 0x0b, 0xef, 0xf8, 0x67, 0xa7, 0xca, 0x36, 0x71, 0x6f, 0x7e, 0x01, 0xf8, 0x10, 0x52 };
+                            0xef, 0x65, 0xbc, 0x39, 0x1f, 0x8b, 0x36, 0xf8, 0xf8, 0xeb, 0x73, 0x71, 0xfd, 0x55, 0x8b,
+                            0x01, 0x00, 0x6a, 0x08, 0xa4, 0x19, 0x03, 0x35, 0x06, 0x78, 0xe5, 0x85, 0x28, 0xbe, 0xbf,
+                            0x8a, 0x0b, 0xef, 0xf8, 0x67, 0xa7, 0xca, 0x36, 0x71, 0x6f, 0x7e, 0x01, 0xf8, 0x10, 0x52
+                          };
 /*
 static void elt_print(char *name, u8 *a)
 {
@@ -40,17 +42,17 @@ static void elt_print(char *name, u8 *a)
     printf("\n");
 }
 */
-static void elt_copy(atUint8 *d, atUint8 *a)
+static void elt_copy(atUint8* d, atUint8* a)
 {
     memcpy(d, a, 30);
 }
 
-static void elt_zero(atUint8 *d)
+static void elt_zero(atUint8* d)
 {
     memset(d, 0, 30);
 }
 
-static int elt_is_zero(atUint8 *d)
+static int elt_is_zero(atUint8* d)
 {
     atUint32 i;
 
@@ -61,7 +63,7 @@ static int elt_is_zero(atUint8 *d)
     return 1;
 }
 
-static void elt_add(atUint8 *d, atUint8 *a, atUint8 *b)
+static void elt_add(atUint8* d, atUint8* a, atUint8* b)
 {
     atUint32 i;
 
@@ -69,7 +71,7 @@ static void elt_add(atUint8 *d, atUint8 *a, atUint8 *b)
         d[i] = a[i] ^ b[i];
 }
 
-static void elt_mul_x(atUint8 *d, atUint8 *a)
+static void elt_mul_x(atUint8* d, atUint8* a)
 {
     atUint8 carry, x, y;
     atUint32 i;
@@ -77,17 +79,20 @@ static void elt_mul_x(atUint8 *d, atUint8 *a)
     carry = a[0] & 1;
 
     x = 0;
-    for (i = 0; i < 29; i++) {
+
+    for (i = 0; i < 29; i++)
+    {
         y = a[i + 1];
         d[i] = x ^ (y >> 7);
         x = y << 1;
     }
+
     d[29] = x ^ carry;
 
     d[20] ^= carry << 2;
 }
 
-static void elt_mul(atUint8 *d, atUint8 *a, atUint8 *b)
+static void elt_mul(atUint8* d, atUint8* a, atUint8* b)
 {
     atUint32 i, n;
     atUint8 mask;
@@ -96,14 +101,18 @@ static void elt_mul(atUint8 *d, atUint8 *a, atUint8 *b)
 
     i = 0;
     mask = 1;
-    for (n = 0; n < 233; n++) {
+
+    for (n = 0; n < 233; n++)
+    {
         elt_mul_x(d, d);
 
         if ((a[i] & mask) != 0)
             elt_add(d, d, b);
 
         mask >>= 1;
-        if (mask == 0) {
+
+        if (mask == 0)
+        {
             mask = 0x80;
             i++;
         }
@@ -112,22 +121,24 @@ static void elt_mul(atUint8 *d, atUint8 *a, atUint8 *b)
 
 static const atUint8 square[16] = { 0x00, 0x01, 0x04, 0x05, 0x10, 0x11, 0x14, 0x15, 0x40, 0x41, 0x44, 0x45, 0x50, 0x51, 0x54, 0x55 };
 
-static void elt_square_to_wide(atUint8 *d, atUint8 *a)
+static void elt_square_to_wide(atUint8* d, atUint8* a)
 {
     atUint32 i;
 
-    for (i = 0; i < 30; i++) {
-        d[2*i] = square[a[i] >> 4];
-        d[2*i + 1] = square[a[i] & 15];
+    for (i = 0; i < 30; i++)
+    {
+        d[2 * i] = square[a[i] >> 4];
+        d[2 * i + 1] = square[a[i] & 15];
     }
 }
 
-static void wide_reduce(atUint8 *d)
+static void wide_reduce(atUint8* d)
 {
     atUint32 i;
     atUint8 x;
 
-    for (i = 0; i < 30; i++) {
+    for (i = 0; i < 30; i++)
+    {
         x = d[i];
 
         d[i + 19] ^= x >> 7;
@@ -147,7 +158,7 @@ static void wide_reduce(atUint8 *d)
     d[30] &= 1;
 }
 
-static void elt_square(atUint8 *d, atUint8 *a)
+static void elt_square(atUint8* d, atUint8* a)
 {
     atUint8 wide[60];
 
@@ -157,12 +168,14 @@ static void elt_square(atUint8 *d, atUint8 *a)
     elt_copy(d, wide + 30);
 }
 
-static void itoh_tsujii(atUint8 *d, atUint8 *a, atUint8 *b, atUint32 j)
+static void itoh_tsujii(atUint8* d, atUint8* a, atUint8* b, atUint32 j)
 {
     atUint8 t[30];
 
     elt_copy(t, a);
-    while (j--) {
+
+    while (j--)
+    {
         elt_square(d, t);
         elt_copy(t, d);
     }
@@ -170,7 +183,7 @@ static void itoh_tsujii(atUint8 *d, atUint8 *a, atUint8 *b, atUint32 j)
     elt_mul(d, t, b);
 }
 
-static void elt_inv(atUint8 *d, atUint8 *a)
+static void elt_inv(atUint8* d, atUint8* a)
 {
     atUint8 t[30];
     atUint8 s[30];
@@ -212,22 +225,23 @@ static int point_is_on_curve(u8 *p)
     return elt_is_zero(s);
 }
 */
-static int point_is_zero(atUint8 *p)
+static int point_is_zero(atUint8* p)
 {
     return elt_is_zero(p) && elt_is_zero(p + 30);
 }
 
-static void point_double(atUint8 *r, atUint8 *p)
+static void point_double(atUint8* r, atUint8* p)
 {
     atUint8 s[30], t[30];
-    atUint8 *px, *py, *rx, *ry;
+    atUint8* px, *py, *rx, *ry;
 
     px = p;
     py = p + 30;
     rx = r;
     ry = r + 30;
 
-    if (elt_is_zero(px)) {
+    if (elt_is_zero(px))
+    {
         elt_zero(rx);
         elt_zero(ry);
 
@@ -249,10 +263,10 @@ static void point_double(atUint8 *r, atUint8 *p)
     elt_add(ry, ry, t);
 }
 
-static void point_add(atUint8 *r, atUint8 *p, atUint8 *q)
+static void point_add(atUint8* r, atUint8* p, atUint8* q)
 {
     atUint8 s[30], t[30], u[30];
-    atUint8 *px, *py, *qx, *qy, *rx, *ry;
+    atUint8* px, *py, *qx, *qy, *rx, *ry;
 
     px = p;
     py = p + 30;
@@ -261,13 +275,15 @@ static void point_add(atUint8 *r, atUint8 *p, atUint8 *q)
     rx = r;
     ry = r + 30;
 
-    if (point_is_zero(p)) {
+    if (point_is_zero(p))
+    {
         elt_copy(rx, qx);
         elt_copy(ry, qy);
         return;
     }
 
-    if (point_is_zero(q)) {
+    if (point_is_zero(q))
+    {
         elt_copy(rx, px);
         elt_copy(ry, py);
         return;
@@ -275,11 +291,14 @@ static void point_add(atUint8 *r, atUint8 *p, atUint8 *q)
 
     elt_add(u, px, qx);
 
-    if (elt_is_zero(u)) {
+    if (elt_is_zero(u))
+    {
         elt_add(u, py, qy);
+
         if (elt_is_zero(u))
             point_double(r, p);
-        else {
+        else
+        {
             elt_zero(rx);
             elt_zero(ry);
         }
@@ -302,7 +321,7 @@ static void point_add(atUint8 *r, atUint8 *p, atUint8 *q)
     elt_add(ry, s, rx);
 }
 
-static void point_mul(atUint8 *d, atUint8 *a, atUint8 *b)	// a is bignum
+static void point_mul(atUint8* d, atUint8* a, atUint8* b)   // a is bignum
 {
     atUint32 i;
     atUint8 mask;
@@ -311,14 +330,16 @@ static void point_mul(atUint8 *d, atUint8 *a, atUint8 *b)	// a is bignum
     elt_zero(d + 30);
 
     for (i = 0; i < 30; i++)
-        for (mask = 0x80; mask != 0; mask >>= 1) {
+        for (mask = 0x80; mask != 0; mask >>= 1)
+        {
             point_double(d, d);
+
             if ((a[i] & mask) != 0)
                 point_add(d, d, b);
         }
 }
 
-void generate_ecdsa(atUint8 *R, atUint8 *S, atUint8 *k, atUint8 *hash)
+void generate_ecdsa(atUint8* R, atUint8* S, atUint8* k, atUint8* hash)
 {
     atUint8 e[30];
     atUint8 kk[30];
@@ -333,25 +354,28 @@ void generate_ecdsa(atUint8 *R, atUint8 *S, atUint8 *k, atUint8 *hash)
     Athena::utility::fillRandom(m, sizeof(m));
     m[0] = 0;
 
-    //	R = (mG).x
+    //  R = (mG).x
 
     point_mul(mG, m, ec_G);
     elt_copy(R, mG);
+
     if (bn_compare(R, ec_N, 30) >= 0)
         bn_sub_modulus(R, ec_N, 30);
 
-    //	S = m**-1*(e + Rk) (mod N)
+    //  S = m**-1*(e + Rk) (mod N)
 
     elt_copy(kk, k);
+
     if (bn_compare(kk, ec_N, 30) >= 0)
         bn_sub_modulus(kk, ec_N, 30);
+
     bn_mul(S, R, kk, ec_N, 30);
     bn_add(kk, S, e, ec_N, 30);
     bn_inv(minv, m, ec_N, 30);
     bn_mul(S, minv, kk, ec_N, 30);
 }
 
-bool check_ecdsa(atUint8 *Q, atUint8 *R, atUint8 *S, atUint8 *hash)
+bool check_ecdsa(atUint8* Q, atUint8* R, atUint8* S, atUint8* hash)
 {
     atUint8 Sinv[30];
     atUint8 e[30];
@@ -377,44 +401,49 @@ bool check_ecdsa(atUint8 *Q, atUint8 *R, atUint8 *S, atUint8 *hash)
     return (bn_compare(r1, R, 30) == 0);
 }
 
-void ec_priv_to_pub(atUint8 *k, atUint8 *Q)
+void ec_priv_to_pub(atUint8* k, atUint8* Q)
 {
     point_mul(Q, k, ec_G);
 }
 
-bool check_ec(atUint8 *ng, atUint8 *ap, atUint8 *sig, atUint8 *sig_hash)
+bool check_ec(atUint8* ng, atUint8* ap, atUint8* sig, atUint8* sig_hash)
 {
     atUint8* ap_hash;
-    atUint8 *ng_Q, *ap_R, *ap_S;
-    atUint8 *ap_Q, *sig_R, *sig_S;
+    atUint8* ng_Q, *ap_R, *ap_S;
+    atUint8* ap_Q, *sig_R, *sig_S;
 
     ng_Q = ng + 0x0108;
     ap_R = ap + 0x04;
     ap_S = ap + 0x22;
 
 
-    ap_hash = getSha1(ap+0x80, 0x100);
+    ap_hash = getSha1(ap + 0x80, 0x100);
     ap_Q = ap + 0x0108;
     sig_R = sig;
     sig_S = sig + 30;
 
     return check_ecdsa(ng_Q, ap_R, ap_S, ap_hash)
-            && check_ecdsa(ap_Q, sig_R, sig_S, sig_hash);
+           && check_ecdsa(ap_Q, sig_R, sig_S, sig_hash);
 }
 
-void make_ec_cert(atUint8 *cert, atUint8 *sig, char *signer, char *name, atUint8 *priv, atUint32 key_id )
+void make_ec_cert(atUint8* cert, atUint8* sig, char* signer, char* name, atUint8* priv, atUint32 key_id)
 {
     memset(cert, 0, 0x180);
     *(atUint32*)(cert) =  0x10002;
+
     if (!Athena::utility::isSystemBigEndian())
         *(atUint32*)(cert) = Athena::utility::swapU32(*(atUint32*)(cert));
+
     memcpy((char*)cert + 4, sig, 60);
     strcpy((char*)cert + 0x80, signer);
     *(atUint32*)(cert + 0xc0) =  2;
+
     if (!Athena::utility::isSystemBigEndian())
         *(atUint32*)(cert + 0xc0) = Athena::utility::swapU32(*(atUint32*)(cert + 0xc0));
+
     strcpy((char*)cert + 0xc4, name);
     *(atUint32*)(cert + 0x104) =  key_id;
+
     if (!Athena::utility::isSystemBigEndian())
         *(atUint32*)(cert + 0x104) = Athena::utility::swapU32(*(atUint32*)(cert + 0x104));
 

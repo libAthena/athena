@@ -55,11 +55,13 @@ SpriteFile::SpriteFile(const QSize& size, const QPoint& origin)
 SpriteFile::~SpriteFile()
 {
 #ifndef ATHENA_USE_QT
+
     for (std::pair<std::string, Sprite*> sprite : m_sprites)
     {
         delete sprite.second;
         sprite.second = NULL;
     }
+
 #endif
     m_sprites.clear();
 }
@@ -207,12 +209,16 @@ void SpriteFile::addSprite(Sprite* sprite)
 #ifndef ATHENA_USE_QT
     std::string name(sprite->name());
     Athena::utility::tolower(name);
+
     if (m_sprites.find(name) != m_sprites.end())
         return;
+
 #else
     QString name = sprite->name().toLower();
+
     if (m_sprites.contains(name))
         return;
+
 #endif
 
     m_sprites[name] = sprite;
@@ -224,6 +230,7 @@ void SpriteFile::removeSprite(const std::string& name)
     std::string tmpName(name);
     Athena::utility::tolower(tmpName);
     std::unordered_map<std::string, Sprite*>::iterator iterator = m_sprites.find(tmpName);
+
     if (iterator != m_sprites.end())
         m_sprites.erase(iterator);
 }
@@ -244,6 +251,7 @@ void SpriteFile::setSprites(std::unordered_map<std::string, Sprite*> sprites)
 {
     if (sprites.size() == 0)
         return;
+
     if (m_sprites.size() > 0)
     {
         for (std::pair<std::string, Sprite*> sprite : m_sprites)
@@ -251,16 +259,18 @@ void SpriteFile::setSprites(std::unordered_map<std::string, Sprite*> sprites)
             delete sprite.second;
             sprite.second = NULL;
         }
+
         m_sprites.clear();
     }
 
     m_sprites = sprites;
 }
 #else
-void SpriteFile::setSprites(QMap<QString, Sprite *> sprites)
+void SpriteFile::setSprites(QMap<QString, Sprite*> sprites)
 {
     if (sprites.size() == 0)
         return;
+
     m_sprites.clear();
     m_sprites = sprites;
 }
@@ -271,6 +281,7 @@ Sprite* SpriteFile::sprite(const std::string& name)
 {
     std::string nameLow(name);
     Athena::utility::tolower(nameLow);
+
     if (m_sprites.find(nameLow) == m_sprites.end())
         return NULL;
 
@@ -308,18 +319,19 @@ void SpriteFile::setTextures(std::vector<STexture*> textures)
 
     if (m_textures.size() > 0)
     {
-        for(STexture* tex : m_textures)
+        for (STexture* tex : m_textures)
         {
             delete tex;
             tex = NULL;
         }
+
         m_textures.clear();
     }
 
     m_textures = textures;
 }
 #else
-void SpriteFile::setTextures(QList<STexture *> textures)
+void SpriteFile::setTextures(QList<STexture*> textures)
 {
     if (textures.size() == 0)
         return;

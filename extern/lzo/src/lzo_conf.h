@@ -47,7 +47,7 @@
 #  error "include this file first"
 #endif
 #if defined(LZO_CFG_BUILD_DLL) && (LZO_CFG_BUILD_DLL+0) && !defined(__LZO_EXPORT1) && !defined(__LZO_EXPORT2) && 0
-  /* idea: we could auto-define __LZO_EXPORT1 for DLL exports */
+/* idea: we could auto-define __LZO_EXPORT1 for DLL exports */
 #ifndef __LZODEFS_H_INCLUDED
 #if defined(LZO_HAVE_CONFIG_H)
 #  include <config.h>
@@ -56,8 +56,8 @@
 #include <stddef.h>
 #include <lzo/lzodefs.h>
 #endif
-  /* #define __LZO_EXPORT1 __attribute__((__visibility__("default"))) */
-  /* #define __LZO_EXPORT1 __declspec(dllexport) */
+/* #define __LZO_EXPORT1 __attribute__((__visibility__("default"))) */
+/* #define __LZO_EXPORT1 __declspec(dllexport) */
 #endif
 #include <lzo/lzoconf.h>
 #if defined(LZO_CFG_EXTRA_CONFIG_HEADER2)
@@ -75,24 +75,24 @@
 ************************************************************************/
 
 #if (LZO_CC_MSC && (_MSC_VER >= 1000 && _MSC_VER < 1100))
-   /* disable bogus "unreachable code" warnings */
+/* disable bogus "unreachable code" warnings */
 #  pragma warning(disable: 4702)
 #endif
 #if (LZO_CC_MSC && (_MSC_VER >= 1000))
 #  pragma warning(disable: 4127 4701)
-   /* disable warnings about inlining */
+/* disable warnings about inlining */
 #  pragma warning(disable: 4514 4710 4711)
 #endif
 #if (LZO_CC_MSC && (_MSC_VER >= 1300))
-   /* disable '-Wall' warnings in system header files */
+/* disable '-Wall' warnings in system header files */
 #  pragma warning(disable: 4820)
 #endif
 #if (LZO_CC_MSC && (_MSC_VER >= 1800))
-   /* disable '-Wall' warnings in system header files */
+/* disable '-Wall' warnings in system header files */
 #  pragma warning(disable: 4746)
 #endif
 #if (LZO_CC_INTELC && (__INTEL_COMPILER >= 900))
-   /* disable pedantic warnings in system header files */
+/* disable pedantic warnings in system header files */
 #  pragma warning(disable: 1684)
 #endif
 
@@ -277,8 +277,8 @@ LZO_COMPILE_TIME_ASSERT_HEADER(sizeof(lzo_uint64_t) == 8)
 
 #if !defined(DMUL)
 #if 0
-   /* 32*32 multiplies may be faster than 64*64 on some 64-bit machines,
-    * but then we need extra casts from unsigned<->size_t */
+/* 32*32 multiplies may be faster than 64*64 on some 64-bit machines,
+ * but then we need extra casts from unsigned<->size_t */
 #  define DMUL(a,b) ((lzo_xint) ((lzo_uint32_t)(a) * (lzo_uint32_t)(b)))
 #else
 #  define DMUL(a,b) ((lzo_xint) ((a) * (b)))

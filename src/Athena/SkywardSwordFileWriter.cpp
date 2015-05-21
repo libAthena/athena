@@ -25,25 +25,25 @@ namespace Athena
 namespace io
 {
 
-SkywardSwordFileWriter::SkywardSwordFileWriter(atUint8 *data, atUint64 len)
+SkywardSwordFileWriter::SkywardSwordFileWriter(atUint8* data, atUint64 len)
     : base(data, len)
 {
     base::setEndian(Endian::BigEndian);
 }
 
-SkywardSwordFileWriter::SkywardSwordFileWriter(const std::string &filename)
+SkywardSwordFileWriter::SkywardSwordFileWriter(const std::string& filename)
     : base(filename)
 {
     base::setEndian(Endian::BigEndian);
 }
 
-void SkywardSwordFileWriter::write(SkywardSwordFile *file)
+void SkywardSwordFileWriter::write(SkywardSwordFile* file)
 {
     if (!file)
         THROW_INVALID_OPERATION_EXCEPTION("file cannot be NULL");
 
     atUint32 magic = (file->region() == Region::NTSC ? SkywardSwordFile::USMagic :
-                   (file->region() == Region::NTSCJ ? SkywardSwordFile::JAMagic : SkywardSwordFile::EUMagic));
+                      (file->region() == Region::NTSCJ ? SkywardSwordFile::JAMagic : SkywardSwordFile::EUMagic));
 
     base::writeUint32(magic);
     base::seek(0x1C, SeekOrigin::Begin);
@@ -51,10 +51,12 @@ void SkywardSwordFileWriter::write(SkywardSwordFile *file)
 
     std::vector<SkywardSwordQuest*> quests = file->questList();
     int i = 0;
+
     for (SkywardSwordQuest* q : quests)
     {
         if (q->length() != 0x53C0)
             THROW_INVALID_DATA_EXCEPTION("q->data() not 0x53C0 bytes in length");
+
         // Update the checksums
         q->fixChecksums();
         // Write the save data

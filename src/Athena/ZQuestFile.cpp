@@ -70,6 +70,7 @@ ZQuestFile::ZQuestFile(ZQuestFile::Game game, Endian endian, atUint8* data, atUi
       m_length(length)
 {
     initGameStrings();
+
     if (gameString.empty() && (m_game < GameStrings.size() - 1))
         m_gameString = GameStrings[m_game];
 }
@@ -84,6 +85,7 @@ ZQuestFile::~ZQuestFile()
 void ZQuestFile::setGame(ZQuestFile::Game game)
 {
     m_game = game;
+
     if (m_game > GameStrings.size() - 1)
         return;
 
@@ -145,6 +147,7 @@ const std::vector<std::string> ZQuestFile::gameStringList()
 {
     if (GameStrings.size() <= 0)
         initGameStrings();
+
     return GameStrings;
 }
 }

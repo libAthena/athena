@@ -30,17 +30,17 @@ namespace Athena
 namespace io
 {
 
-ZQuestFileReader::ZQuestFileReader(atUint8 *data, atUint64 length)
+ZQuestFileReader::ZQuestFileReader(atUint8* data, atUint64 length)
     : base(data, length)
 {
 }
 
-ZQuestFileReader::ZQuestFileReader(const std::string &filename)
+ZQuestFileReader::ZQuestFileReader(const std::string& filename)
     : base(filename)
 {
 }
 
-ZQuestFile *ZQuestFileReader::read()
+ZQuestFile* ZQuestFileReader::read()
 {
     atUint32 magic, version, compressedLen, uncompressedLen;
     ZQuestFile::Game game = ZQuestFile::NoGame;
@@ -52,12 +52,12 @@ ZQuestFile *ZQuestFileReader::read()
     magic = base::readUint32();
 
     if ((magic & 0x00FFFFFF) != (ZQuestFile::Magic & 0x00FFFFFF))
-        THROW_INVALID_DATA_EXCEPTION("Not a valid ZQuest file");
+        THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr, "Not a valid ZQuest file");
 
     version = base::readUint32();
 
     if (version > ZQuestFile::Version)
-        THROW_INVALID_DATA_EXCEPTION("Unsupported ZQuest version");
+        THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr, "Unsupported ZQuest version");
 
     compressedLen = base::readUint32();
     uncompressedLen = base::readUint32();
@@ -65,6 +65,7 @@ ZQuestFile *ZQuestFileReader::read()
     if (version >= ZQUEST_VERSION_CHECK(2, 0, 0))
     {
         gameString = std::string((const char*)base::readBytes(0x0A), 0x0A);
+
         for (size_t i = 0; i <  ZQuestFile::gameStringList().size(); i++)
         {
             if (!ZQuestFile::gameStringList().at(i).substr(0, 0x0A).compare(gameString))
@@ -74,6 +75,7 @@ ZQuestFile *ZQuestFileReader::read()
                 break;
             }
         }
+
         BOM = base::readUint16();
         checksum = base::readUint32();
     }
@@ -91,7 +93,7 @@ ZQuestFile *ZQuestFileReader::read()
         if (checksum != Athena::Checksums::crc32(data, compressedLen))
         {
             delete[] data;
-            THROW_INVALID_DATA_EXCEPTION("Checksum mismatch, data corrupt");
+            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr, "Checksum mismatch, data corrupt");
         }
     }
     else
@@ -109,7 +111,7 @@ ZQuestFile *ZQuestFileReader::read()
         {
             delete[] dst;
             delete[] data;
-            THROW_INVALID_DATA_EXCEPTION("Error decompressing data");
+            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr, "Error decompressing data");
         }
 
         delete[] data;

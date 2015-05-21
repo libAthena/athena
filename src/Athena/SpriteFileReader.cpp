@@ -42,18 +42,19 @@ SpriteFileReader::SpriteFileReader(const std::string& filepath)
 Sakura::SpriteFile* SpriteFileReader::readFile()
 {
     Sakura::SpriteFile* ret = NULL;
+
     try
     {
         atUint32 magic = base::readUint32();
 
         if (magic != Sakura::SpriteFile::Magic)
-            THROW_INVALID_DATA_EXCEPTION("Not a valid Sakura Sprite container");
+            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr, "Not a valid Sakura Sprite container");
 
         atUint32 version = base::readUint32();
 
         // TODO: Make this more verbose
         if (version != Sakura::SpriteFile::Version)
-            THROW_INVALID_DATA_EXCEPTION("Unsupported version");
+            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr, "Unsupported version");
 
         // After reading in the magic and version we need to load some
         // metadata about the file.
@@ -126,6 +127,7 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
 
             // Each state id corresponds to a texture held in the parent class
             std::vector<int> stateIds;
+
             for (int j = 0; j < stateCount; j++)
                 stateIds.push_back(base::readUint16());
 
@@ -157,6 +159,7 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
 #else
                 QList<Sakura::SpritePart*> parts;
 #endif
+
                 for (atUint8 j = 0; j < partCount; j++)
                 {
                     Sakura::SpritePart* part = new Sakura::SpritePart(frame);
@@ -184,29 +187,34 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
 
                     parts.push_back(part);
                 }
+
                 frame->setParts(parts);
                 frames.push_back(frame);
             }
 
             sprite->setFrames(frames);
 #ifndef ATHENA_USE_QT
+
             if (sprite->name() != std::string())
             {
                 std::string nameLow(sprite->name());
                 Athena::utility::tolower(nameLow);
                 sprites[nameLow] = sprite;
             }
+
 #else
+
             if (!sprite->name().isEmpty())
                 sprites[sprite->name().toLower()] = sprite;
+
 #endif
             else
-                THROW_IO_EXCEPTION("Sprite names cannot be empty");
+                THROW_IO_EXCEPTION_RETURN(nullptr, "Sprite names cannot be empty");
         }
 
         ret->setSprites(sprites);
     }
-    catch(...)
+    catch (...)
     {
         delete ret;
         ret = NULL;

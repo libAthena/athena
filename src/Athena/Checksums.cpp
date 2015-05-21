@@ -157,8 +157,10 @@ atUint16 crc16(const atUint8* data, atUint64 length)
 
     atInt32 pos = 0;
     atUint16 checksum = 0;
+
     while (length--)
         checksum = (crc16Table[(checksum ^ data[pos++]) & 0xFF] ^ (checksum >> 8));
+
     return checksum;
 }
 

@@ -41,7 +41,7 @@ public:
      *   \param data The existing buffer
      *   \param length The length of the existing buffer
      */
-    explicit MemoryWriter(atUint8* data = nullptr, atUint64 length=0x10);
+    explicit MemoryWriter(atUint8* data = nullptr, atUint64 length = 0x10);
 
     /*! \brief This constructor creates an instance from a file on disk.
      *
@@ -87,7 +87,7 @@ public:
      *  \param origin The Origin to seek \sa SeekOrigin
      */
     void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
-    
+
     /*! \brief Sets the buffers position relative to the next 32-byte aligned position.<br />
      */
     inline void seekAlign32() {seek(ROUND_UP_32(m_position), SeekOrigin::Begin);}
@@ -148,7 +148,7 @@ public:
      *
      *   \param filename If not empty, the filename to save to
      */
-    void save(const std::string& filename="");
+    void save(const std::string& filename = "");
 
     /*!
      * \brief Seeks to the specified bit within the current byte

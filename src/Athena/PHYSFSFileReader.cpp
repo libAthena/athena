@@ -42,23 +42,29 @@ bool PHYSFSFileReader::isOpen() const
 void PHYSFSFileReader::seek(atInt64 position, SeekOrigin origin)
 {
     atInt64 curPos = PHYSFS_tell(m_handle);
+
     switch (origin)
     {
-    case SeekOrigin::Begin:
-        if ((position < 0 || (atInt64)position > (atInt64)m_length))
-            THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", position);
-        PHYSFS_seek(m_handle, position);
-    break;
-    case SeekOrigin::Current:
-        if ((((atInt64)curPos + position) < 0 || (curPos + position) > m_length))
-            THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", position);
-        PHYSFS_seek(m_handle, curPos + position);
-    break;
-    case SeekOrigin::End:
-        if ((((atInt64)m_length - position < 0) || (m_length - position) > m_length))
-            THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", position);
-        PHYSFS_seek(m_handle, m_length - position);
-    break;
+        case SeekOrigin::Begin:
+            if ((position < 0 || (atInt64)position > (atInt64)m_length))
+                THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", position);
+
+            PHYSFS_seek(m_handle, position);
+            break;
+
+        case SeekOrigin::Current:
+            if ((((atInt64)curPos + position) < 0 || (curPos + position) > m_length))
+                THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", position);
+
+            PHYSFS_seek(m_handle, curPos + position);
+            break;
+
+        case SeekOrigin::End:
+            if ((((atInt64)m_length - position < 0) || (m_length - position) > m_length))
+                THROW_IO_EXCEPTION("Position %0.16X outside stream bounds ", position);
+
+            PHYSFS_seek(m_handle, m_length - position);
+            break;
     }
 }
 
@@ -80,13 +86,15 @@ atInt8 PHYSFSFileReader::readByte()
 atUint8* PHYSFSFileReader::readUBytes(atUint64 length)
 {
     atUint8* data = new atUint8[length];
+
     if (PHYSFS_read(m_handle, data, 1, length) == length)
         return data;
+
     delete[] data;
     THROW_IO_EXCEPTION("Position outside stream bounds");
 }
 
-atInt8*PHYSFSFileReader::readBytes(atUint64 length)
+atInt8* PHYSFSFileReader::readBytes(atUint64 length)
 {
     return (atInt8*)readUBytes(length);
 }

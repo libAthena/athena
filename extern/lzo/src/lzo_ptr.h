@@ -98,12 +98,12 @@ typedef union
     size_t          a_size_t;
     ptrdiff_t       a_ptrdiff_t;
     lzo_uintptr_t   a_lzo_uintptr_t;
-    void *          a_void_p;
-    char *          a_char_p;
-    unsigned char * a_uchar_p;
-    const void *          a_c_void_p;
-    const char *          a_c_char_p;
-    const unsigned char * a_c_uchar_p;
+    void*           a_void_p;
+    char*           a_char_p;
+    unsigned char* a_uchar_p;
+    const void*           a_c_void_p;
+    const char*           a_c_char_p;
+    const unsigned char* a_c_uchar_p;
     lzo_voidp       a_lzo_voidp;
     lzo_bytep       a_lzo_bytep;
     const lzo_voidp a_c_lzo_voidp;

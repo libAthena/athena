@@ -48,9 +48,10 @@ Sprite::Sprite(SpriteFile* root, const std::string& name)
 Sprite::~Sprite()
 {
 #ifndef ATHENA_USE_QT
+
     for (SpriteFrame* frame : m_frames)
 #else
-    foreach(SpriteFrame* frame, m_frames)
+    foreach (SpriteFrame* frame, m_frames)
 #endif
     {
         delete frame;
@@ -172,6 +173,7 @@ bool Sprite::addFrame(SpriteFrame* part)
 {
     if (m_frames.size() > 65536)
         return false;
+
     for (SpriteFrame* tmp : m_frames)
     {
         if (tmp == part)
@@ -186,14 +188,18 @@ bool Sprite::removeFrame(SpriteFrame* frame)
 {
 #ifndef ATHENA_USE_QT
     std::vector<SpriteFrame*>::iterator iter = std::find(m_frames.begin(), m_frames.end(), frame);
+
     if (iter != m_frames.end())
     {
         m_frames.erase(iter);
         return true;
     }
+
 #else
+
     if (m_frames.removeOne(frame))
         return true;
+
 #endif
     return false;
 }
@@ -209,6 +215,7 @@ void Sprite::setFrames(std::vector<SpriteFrame*> frames)
 {
     if (frames.size() == 0)
         return;
+
     if (m_frames.size() > 0)
     {
         for (SpriteFrame* frame : m_frames)
@@ -216,8 +223,10 @@ void Sprite::setFrames(std::vector<SpriteFrame*> frames)
             delete frame;
             frame = NULL;
         }
+
         m_frames.clear();
     }
+
     m_frames = frames;
 }
 #else
@@ -251,6 +260,7 @@ SpriteFile* Sprite::container() const
 void Sprite::setCurrentFrame(SpriteFrame* frame)
 {
     atUint32 id = 0;
+
     for (SpriteFrame* tmpFrame : m_frames)
     {
         if (tmpFrame == frame)
@@ -258,6 +268,7 @@ void Sprite::setCurrentFrame(SpriteFrame* frame)
             setCurrentFrame(id);
             return;
         }
+
         id++;
     }
 }
@@ -281,6 +292,7 @@ SpriteFrame* Sprite::currentFrame() const
 void Sprite::advanceFrame()
 {
     m_currentFrame++;
+
     if (m_currentFrame >= m_frames.size())
         m_currentFrame = (atUint32)m_frames.size() - 1;
 }

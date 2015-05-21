@@ -153,15 +153,17 @@ RBITS | MBITS  MIN  THR.  MSIZE  MAXS  MINL  MAXL   MAXO  R0MAX R0FAST
 // get algorithm info, return memory required for compression
 ************************************************************************/
 
-LZO_EXTERN(lzo_uint) lzo1_info ( int *rbits, int *clevel );
+LZO_EXTERN(lzo_uint) lzo1_info(int* rbits, int* clevel);
 
 LZO_PUBLIC(lzo_uint)
-lzo1_info ( int *rbits, int *clevel )
+lzo1_info(int* rbits, int* clevel)
 {
     if (rbits)
         *rbits = RBITS;
+
     if (clevel)
         *clevel = CLEVEL;
+
     return D_SIZE * lzo_sizeof(lzo_bytep);
 }
 
@@ -190,9 +192,9 @@ lzo1_info ( int *rbits, int *clevel )
 ************************************************************************/
 
 LZO_PUBLIC(int)
-lzo1_decompress  ( const lzo_bytep in , lzo_uint  in_len,
-                         lzo_bytep out, lzo_uintp out_len,
-                         lzo_voidp wrkmem )
+lzo1_decompress(const lzo_bytep in , lzo_uint  in_len,
+                lzo_bytep out, lzo_uintp out_len,
+                lzo_voidp wrkmem)
 {
     lzo_bytep op;
     const lzo_bytep ip;
@@ -203,6 +205,7 @@ lzo1_decompress  ( const lzo_bytep in , lzo_uint  in_len,
 
     op = out;
     ip = in;
+
     while (ip < ip_end)
     {
         t = *ip++;  /* get marker */
@@ -212,9 +215,11 @@ lzo1_decompress  ( const lzo_bytep in , lzo_uint  in_len,
             if (t == 0)             /* a R0 literal run */
             {
                 t = *ip++;
+
                 if (t >= R0FAST - R0MIN)            /* a long R0 run */
                 {
                     t -= R0FAST - R0MIN;
+
                     if (t == 0)
                         t = R0FAST;
                     else
@@ -224,23 +229,30 @@ lzo1_decompress  ( const lzo_bytep in , lzo_uint  in_len,
 #else
                         /* help the optimizer */
                         lzo_uint tt = 256;
-                        do tt <<= 1; while (--t > 0);
+
+                        do tt <<= 1;
+
+                        while (--t > 0);
+
                         t = tt;
 #endif
                     }
-                    MEMCPY8_DS(op,ip,t);
+
+                    MEMCPY8_DS(op, ip, t);
                     continue;
                 }
+
                 t += R0MIN;
             }
-            MEMCPY_DS(op,ip,t);
+
+            MEMCPY_DS(op, ip, t);
         }
         else                    /* a match */
         {
             lzo_uint tt;
             /* get match offset */
             const lzo_bytep m_pos = op - 1;
-            m_pos -= (lzo_uint)(t & OMASK) | (((lzo_uint) *ip++) << OBITS);
+            m_pos -= (lzo_uint)(t & OMASK) | (((lzo_uint) * ip++) << OBITS);
 
             /* get match len */
             if (t >= ((MSIZE - 1) << OBITS))                /* all m-bits set */
@@ -253,7 +265,7 @@ lzo1_decompress  ( const lzo_bytep in , lzo_uint  in_len,
             /* a half unrolled loop */
             *op++ = *m_pos++;
             *op++ = *m_pos++;
-            MEMCPY_DS(op,m_pos,tt);
+            MEMCPY_DS(op, m_pos, tt);
         }
     }
 
@@ -261,7 +273,7 @@ lzo1_decompress  ( const lzo_bytep in , lzo_uint  in_len,
 
     /* the next line is the only check in the decompressor ! */
     return (ip == ip_end ? LZO_E_OK :
-           (ip < ip_end  ? LZO_E_INPUT_NOT_CONSUMED : LZO_E_INPUT_OVERRUN));
+            (ip < ip_end  ? LZO_E_INPUT_NOT_CONSUMED : LZO_E_INPUT_OVERRUN));
 }
 
 
@@ -282,26 +294,33 @@ store_run(lzo_bytep op, const lzo_bytep ii, lzo_uint r_len)
     if (r_len >= 512)
     {
         unsigned r_bits = 7;        /* 256 << 7 == 32768 */
-        do {
+
+        do
+        {
             while (r_len >= (256u << r_bits))
             {
                 r_len -= (256u << r_bits);
-                *op++ = 0; *op++ = LZO_BYTE((R0FAST - R0MIN) + r_bits);
+                *op++ = 0;
+                *op++ = LZO_BYTE((R0FAST - R0MIN) + r_bits);
                 MEMCPY8_DS(op, ii, (256u << r_bits));
             }
-        } while (--r_bits > 0);
+        }
+        while (--r_bits > 0);
     }
+
     while (r_len >= R0FAST)
     {
         r_len -= R0FAST;
-        *op++ = 0; *op++ = R0FAST - R0MIN;
+        *op++ = 0;
+        *op++ = R0FAST - R0MIN;
         MEMCPY8_DS(op, ii, R0FAST);
     }
 
     if (r_len >= R0MIN)
     {
         /* code a short R0 run */
-        *op++ = 0; *op++ = LZO_BYTE(r_len - R0MIN);
+        *op++ = 0;
+        *op++ = LZO_BYTE(r_len - R0MIN);
         MEMCPY_DS(op, ii, r_len);
     }
     else if (r_len > 0)
@@ -326,9 +345,9 @@ store_run(lzo_bytep op, const lzo_bytep ii, lzo_uint r_len)
 ************************************************************************/
 
 static int
-do_compress    ( const lzo_bytep in , lzo_uint  in_len,
-                       lzo_bytep out, lzo_uintp out_len,
-                       lzo_voidp wrkmem )
+do_compress(const lzo_bytep in , lzo_uint  in_len,
+            lzo_bytep out, lzo_uintp out_len,
+            lzo_voidp wrkmem)
 {
     const lzo_bytep ip;
 #if defined(__LZO_HASH_INCREMENTAL)
@@ -336,8 +355,8 @@ do_compress    ( const lzo_bytep in , lzo_uint  in_len,
 #endif
     lzo_bytep op;
     const lzo_bytep m_pos;
-    const lzo_bytep const ip_end = in+in_len - DVAL_LEN - MIN_MATCH_LONG;
-    const lzo_bytep const in_end = in+in_len - DVAL_LEN;
+    const lzo_bytep const ip_end = in + in_len - DVAL_LEN - MIN_MATCH_LONG;
+    const lzo_bytep const in_end = in + in_len - DVAL_LEN;
     const lzo_bytep ii;
     lzo_dict_p const dict = (lzo_dict_p) wrkmem;
 
@@ -348,60 +367,72 @@ do_compress    ( const lzo_bytep in , lzo_uint  in_len,
     op = out;
     ip = in;
     ii = ip;                /* point to start of literal run */
+
     if (in_len <= MIN_MATCH_LONG + DVAL_LEN + 1)
         goto the_end;
 
     /* init dictionary */
 #if (LZO_DETERMINISTIC)
-    BZERO8_PTR(wrkmem,sizeof(lzo_dict_t),D_SIZE);
+    BZERO8_PTR(wrkmem, sizeof(lzo_dict_t), D_SIZE);
 #endif
 
-    DVAL_FIRST(dv,ip);
-    UPDATE_D(dict,0,dv,ip,in);
+    DVAL_FIRST(dv, ip);
+    UPDATE_D(dict, 0, dv, ip, in);
     ip++;
-    DVAL_NEXT(dv,ip);
+    DVAL_NEXT(dv, ip);
 
-    do {
+    do
+    {
         LZO_DEFINE_UNINITIALIZED_VAR(lzo_uint, m_off, 0);
         lzo_uint dindex;
 
-        DINDEX1(dindex,ip);
-        GINDEX(m_pos,m_off,dict,dindex,in);
-        if (LZO_CHECK_MPOS(m_pos,m_off,in,ip,MAX_OFFSET))
+        DINDEX1(dindex, ip);
+        GINDEX(m_pos, m_off, dict, dindex, in);
+
+        if (LZO_CHECK_MPOS(m_pos, m_off, in, ip, MAX_OFFSET))
             goto literal;
+
         if (m_pos[0] == ip[0] && m_pos[1] == ip[1] && m_pos[2] == ip[2])
             goto match;
-        DINDEX2(dindex,ip);
-        GINDEX(m_pos,m_off,dict,dindex,in);
-        if (LZO_CHECK_MPOS(m_pos,m_off,in,ip,MAX_OFFSET))
+
+        DINDEX2(dindex, ip);
+        GINDEX(m_pos, m_off, dict, dindex, in);
+
+        if (LZO_CHECK_MPOS(m_pos, m_off, in, ip, MAX_OFFSET))
             goto literal;
+
         if (m_pos[0] == ip[0] && m_pos[1] == ip[1] && m_pos[2] == ip[2])
             goto match;
+
         goto literal;
 
 
 literal:
-        UPDATE_I(dict,0,dindex,ip,in);
+        UPDATE_I(dict, 0, dindex, ip, in);
+
         if (++ip >= ip_end)
             break;
+
         continue;
 
 match:
-        UPDATE_I(dict,0,dindex,ip,in);
+        UPDATE_I(dict, 0, dindex, ip, in);
 #if !defined(NDEBUG) && (LZO_DICT_USE_PTR)
         m_pos_sav = m_pos;
 #endif
         m_pos += 3;
         {
-    /* we have found a match (of at least length 3) */
+            /* we have found a match (of at least length 3) */
 #if !defined(NDEBUG) && !(LZO_DICT_USE_PTR)
             assert((m_pos_sav = ip - m_off) == (m_pos - 3));
 #endif
+
             /* 1) store the current literal run */
-            if (pd(ip,ii) > 0)
+            if (pd(ip, ii) > 0)
             {
-                lzo_uint t = pd(ip,ii);
+                lzo_uint t = pd(ip, ii);
 #if 1
+
                 /* OPTIMIZED: inline the copying of a short run */
                 if (t < R0MIN)
                 {
@@ -410,7 +441,7 @@ match:
                 }
                 else
 #endif
-                    op = store_run(op,ii,t);
+                    op = store_run(op, ii, t);
             }
 
             /* 2a) compute match len */
@@ -427,33 +458,34 @@ match:
 #define PS  *m_pos++ != *ip++
 
 #if (MIN_MATCH_LONG - MIN_MATCH == 2)                   /* MBITS == 2 */
+
             if (PS || PS)
 #elif (MIN_MATCH_LONG - MIN_MATCH == 6)                 /* MBITS == 3 */
             if (PS || PS || PS || PS || PS || PS)
 #elif (MIN_MATCH_LONG - MIN_MATCH == 14)                /* MBITS == 4 */
             if (PS || PS || PS || PS || PS || PS || PS ||
-                PS || PS || PS || PS || PS || PS || PS)
+                    PS || PS || PS || PS || PS || PS || PS)
 #elif (MIN_MATCH_LONG - MIN_MATCH == 30)                /* MBITS == 5 */
             if (PS || PS || PS || PS || PS || PS || PS || PS ||
-                PS || PS || PS || PS || PS || PS || PS || PS ||
-                PS || PS || PS || PS || PS || PS || PS || PS ||
-                PS || PS || PS || PS || PS || PS)
+                    PS || PS || PS || PS || PS || PS || PS || PS ||
+                    PS || PS || PS || PS || PS || PS || PS || PS ||
+                    PS || PS || PS || PS || PS || PS)
 #else
 #  error "MBITS not yet implemented"
 #endif
             {
                 lzo_uint m_len;
 
-            /* 2b) code a short match */
-                    assert(pd(ip,m_pos) == m_off);
+                /* 2b) code a short match */
+                assert(pd(ip, m_pos) == m_off);
                 --ip;   /* ran one too far, point back to non-match */
                 m_len = pd(ip, ii);
-                    assert(m_len >= MIN_MATCH_SHORT);
-                    assert(m_len <= MAX_MATCH_SHORT);
-                    assert(m_off > 0);
-                    assert(m_off <= MAX_OFFSET);
-                    assert(ii-m_off == m_pos_sav);
-                    assert(lzo_memcmp(m_pos_sav,ii,m_len) == 0);
+                assert(m_len >= MIN_MATCH_SHORT);
+                assert(m_len <= MAX_MATCH_SHORT);
+                assert(m_off > 0);
+                assert(m_off <= MAX_OFFSET);
+                assert(ii - m_off == m_pos_sav);
+                assert(lzo_memcmp(m_pos_sav, ii, m_len) == 0);
                 --m_off;
                 /* code short match len + low offset bits */
                 *op++ = LZO_BYTE(((m_len - THRESHOLD) << OBITS) |
@@ -462,41 +494,45 @@ match:
                 *op++ = LZO_BYTE(m_off >> OBITS);
 
 
-            /* 2c) Insert phrases (beginning with ii+1) into the dictionary. */
+                /* 2c) Insert phrases (beginning with ii+1) into the dictionary. */
 
 #define SI      /* nothing */
 #define DI      ++ii; DVAL_NEXT(dv,ii); UPDATE_D(dict,0,dv,ii,in);
 #define XI      assert(ii < ip); ii = ip; DVAL_FIRST(dv,(ip));
 
 #if (CLEVEL == 9) || (CLEVEL >= 7 && MBITS <= 4) || (CLEVEL >= 5 && MBITS <= 3)
-            /* Insert the whole match (ii+1)..(ip-1) into dictionary.  */
+                /* Insert the whole match (ii+1)..(ip-1) into dictionary.  */
                 ++ii;
-                do {
-                    DVAL_NEXT(dv,ii);
-                    UPDATE_D(dict,0,dv,ii,in);
-                } while (++ii < ip);
-                DVAL_NEXT(dv,ii);
+
+                do
+                {
+                    DVAL_NEXT(dv, ii);
+                    UPDATE_D(dict, 0, dv, ii, in);
+                }
+                while (++ii < ip);
+
+                DVAL_NEXT(dv, ii);
                 assert(ii == ip);
-                DVAL_ASSERT(dv,ip);
+                DVAL_ASSERT(dv, ip);
 #elif (CLEVEL >= 3)
                 SI   DI DI   XI
 #elif (CLEVEL >= 2)
                 SI   DI      XI
 #else
-                             XI
+                XI
 #endif
 
             }
             else
             {
-            /* we've found a long match - see how far we can still go */
+                /* we've found a long match - see how far we can still go */
                 const lzo_bytep end;
                 lzo_uint m_len;
 
                 assert(ip <= in_end);
                 assert(ii == ip - MIN_MATCH_LONG);
 
-                if (pd(in_end,ip) <= (MAX_MATCH_LONG - MIN_MATCH_LONG))
+                if (pd(in_end, ip) <= (MAX_MATCH_LONG - MIN_MATCH_LONG))
                     end = in_end;
                 else
                 {
@@ -506,17 +542,18 @@ match:
 
                 while (ip < end  &&  *m_pos == *ip)
                     m_pos++, ip++;
+
                 assert(ip <= in_end);
 
-            /* 2b) code the long match */
+                /* 2b) code the long match */
                 m_len = pd(ip, ii);
-                    assert(m_len >= MIN_MATCH_LONG);
-                    assert(m_len <= MAX_MATCH_LONG);
-                    assert(m_off > 0);
-                    assert(m_off <= MAX_OFFSET);
-                    assert(ii-m_off == m_pos_sav);
-                    assert(lzo_memcmp(m_pos_sav,ii,m_len) == 0);
-                    assert(pd(ip,m_pos) == m_off);
+                assert(m_len >= MIN_MATCH_LONG);
+                assert(m_len <= MAX_MATCH_LONG);
+                assert(m_off > 0);
+                assert(m_off <= MAX_OFFSET);
+                assert(ii - m_off == m_pos_sav);
+                assert(lzo_memcmp(m_pos_sav, ii, m_len) == 0);
+                assert(pd(ip, m_pos) == m_off);
                 --m_off;
                 /* code long match flag + low offset bits */
                 *op++ = LZO_BYTE(((MSIZE - 1) << OBITS) | (m_off & OMASK));
@@ -526,18 +563,22 @@ match:
                 *op++ = LZO_BYTE(m_len - MIN_MATCH_LONG);
 
 
-            /* 2c) Insert phrases (beginning with ii+1) into the dictionary. */
+                /* 2c) Insert phrases (beginning with ii+1) into the dictionary. */
 #if (CLEVEL == 9)
-            /* Insert the whole match (ii+1)..(ip-1) into dictionary.  */
-            /* This is not recommended because it is slow. */
+                /* Insert the whole match (ii+1)..(ip-1) into dictionary.  */
+                /* This is not recommended because it is slow. */
                 ++ii;
-                do {
-                    DVAL_NEXT(dv,ii);
-                    UPDATE_D(dict,0,dv,ii,in);
-                } while (++ii < ip);
-                DVAL_NEXT(dv,ii);
+
+                do
+                {
+                    DVAL_NEXT(dv, ii);
+                    UPDATE_D(dict, 0, dv, ii, in);
+                }
+                while (++ii < ip);
+
+                DVAL_NEXT(dv, ii);
                 assert(ii == ip);
-                DVAL_ASSERT(dv,ip);
+                DVAL_ASSERT(dv, ip);
 #elif (CLEVEL >= 8)
                 SI   DI DI DI DI DI DI DI DI   XI
 #elif (CLEVEL >= 7)
@@ -553,14 +594,15 @@ match:
 #elif (CLEVEL >= 2)
                 SI   DI                        XI
 #else
-                                               XI
+                XI
 #endif
             }
 
             /* ii now points to the start of next literal run */
             assert(ii == ip);
         }
-    } while (ip < ip_end);
+    }
+    while (ip < ip_end);
 
 
 
@@ -569,6 +611,7 @@ the_end:
 
 
 #if defined(LZO_RETURN_IF_NOT_COMPRESSIBLE)
+
     /* return -1 if op == out to indicate that we
      * couldn't compress and didn't copy anything.
      */
@@ -577,12 +620,13 @@ the_end:
         *out_len = 0;
         return LZO_E_NOT_COMPRESSIBLE;
     }
+
 #endif
 
 
     /* store the final literal run */
-    if (pd(in_end+DVAL_LEN,ii) > 0)
-        op = store_run(op,ii,pd(in_end+DVAL_LEN,ii));
+    if (pd(in_end + DVAL_LEN, ii) > 0)
+        op = store_run(op, ii, pd(in_end + DVAL_LEN, ii));
 
     *out_len = pd(op, out);
     return 0;               /* compression went ok */
@@ -594,9 +638,9 @@ the_end:
 ************************************************************************/
 
 LZO_PUBLIC(int)
-lzo1_compress ( const lzo_bytep in , lzo_uint  in_len,
-                      lzo_bytep out, lzo_uintp out_len,
-                      lzo_voidp wrkmem )
+lzo1_compress(const lzo_bytep in , lzo_uint  in_len,
+              lzo_bytep out, lzo_uintp out_len,
+              lzo_voidp wrkmem)
 {
     int r = LZO_E_OK;
 
@@ -608,11 +652,11 @@ lzo1_compress ( const lzo_bytep in , lzo_uint  in_len,
 #if defined(LZO_RETURN_IF_NOT_COMPRESSIBLE)
         r = LZO_E_NOT_COMPRESSIBLE;
 #else
-        *out_len = pd(store_run(out,in,in_len), out);
+        *out_len = pd(store_run(out, in, in_len), out);
 #endif
     }
     else
-        r = do_compress(in,in_len,out,out_len,wrkmem);
+        r = do_compress(in, in_len, out, out_len, wrkmem);
 
     return r;
 }

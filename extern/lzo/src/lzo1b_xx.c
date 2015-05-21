@@ -33,7 +33,7 @@
 //
 ************************************************************************/
 
-static const lzo_compress_t * const c_funcs [9] =
+static const lzo_compress_t* const c_funcs [9] =
 {
     &_lzo1b_1_compress_func,
     &_lzo1b_2_compress_func,
@@ -49,7 +49,7 @@ static const lzo_compress_t * const c_funcs [9] =
 
 static lzo_compress_t lzo1b_get_compress_func(int clevel)
 {
-    const lzo_compress_t *f;
+    const lzo_compress_t* f;
 
     if (clevel < LZO1B_BEST_SPEED || clevel > LZO1B_BEST_COMPRESSION)
     {
@@ -58,24 +58,27 @@ static lzo_compress_t lzo1b_get_compress_func(int clevel)
         else
             return (lzo_compress_t) 0;
     }
-    f = c_funcs[clevel-1];
+
+    f = c_funcs[clevel - 1];
     assert(f && *f);
     return *f;
 }
 
 
 LZO_PUBLIC(int)
-lzo1b_compress ( const lzo_bytep src, lzo_uint  src_len,
-                       lzo_bytep dst, lzo_uintp dst_len,
-                       lzo_voidp wrkmem,
-                       int clevel )
+lzo1b_compress(const lzo_bytep src, lzo_uint  src_len,
+               lzo_bytep dst, lzo_uintp dst_len,
+               lzo_voidp wrkmem,
+               int clevel)
 {
     lzo_compress_t f;
 
     f = lzo1b_get_compress_func(clevel);
+
     if (!f)
         return LZO_E_ERROR;
-    return _lzo1b_do_compress(src,src_len,dst,dst_len,wrkmem,f);
+
+    return _lzo1b_do_compress(src, src_len, dst, dst_len, wrkmem, f);
 }
 
 

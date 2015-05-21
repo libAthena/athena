@@ -45,17 +45,18 @@ namespace Athena
 namespace io
 {
 
-WiiSaveWriter::WiiSaveWriter(const std::string &filename)
+WiiSaveWriter::WiiSaveWriter(const std::string& filename)
     : base(filename)
 {
     base::setEndian(Endian::BigEndian);
 }
 
 
-bool WiiSaveWriter::writeSave(WiiSave *save, atUint8 *macAddress, atUint32 ngId, atUint8 *ngPriv, atUint8 *ngSig, atUint32 ngKeyId,const std::string &filepath)
+bool WiiSaveWriter::writeSave(WiiSave* save, atUint8* macAddress, atUint32 ngId, atUint8* ngPriv, atUint8* ngSig, atUint32 ngKeyId, const std::string& filepath)
 {
     if (!save)
-        THROW_INVALID_OPERATION_EXCEPTION("save cannot be NULL");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(false, "save cannot be NULL");
+
     if (filepath != "")
         m_filepath = filepath;
 
@@ -74,10 +75,12 @@ bool WiiSaveWriter::writeSave(WiiSave *save, atUint8 *macAddress, atUint32 ngId,
     base::seek(2); // unknown;
     base::seek(0x10); // padding;
     atUint32 totalSize = 0;
+
     for (WiiFile* file : save->allFiles())
     {
         totalSize += writeFile(file);
     }
+
     atUint64 pos = base::position();
     // Write size data
     base::seek(0xF0C0 + 0x10, SeekOrigin::Begin);
@@ -93,11 +96,11 @@ bool WiiSaveWriter::writeSave(WiiSave *save, atUint8 *macAddress, atUint32 ngId,
     return true;
 }
 
-void WiiSaveWriter::writeBanner(WiiBanner *banner)
+void WiiSaveWriter::writeBanner(WiiBanner* banner)
 {
     base::setEndian(Endian::BigEndian);
     base::writeInt64(banner->gameID());
-    base::writeInt32((0x60a0+0x1200)*(atUint32)banner->icons().size());
+    base::writeInt32((0x60a0 + 0x1200) * (atUint32)banner->icons().size());
     base::writeByte((atInt8)banner->permissions());
     base::seek(1);
     base::writeBytes((atInt8*)MD5_BLANKER, 16);
@@ -118,11 +121,12 @@ void WiiSaveWriter::writeBanner(WiiBanner *banner)
         base::seek(0x00C0, SeekOrigin::Begin);
 
     WiiImage* bannerImage = banner->bannerImage();
-    base::writeBytes((atInt8*)bannerImage->data(), bannerImage->width()*bannerImage->height()*2);
+    base::writeBytes((atInt8*)bannerImage->data(), bannerImage->width()*bannerImage->height() * 2);
 
     // For empty icons
-    atUint8* tmpIcon = new atUint8[48*48*2];
-    memset(tmpIcon, 0, 48*48*2);
+    atUint8* tmpIcon = new atUint8[48 * 48 * 2];
+    memset(tmpIcon, 0, 48 * 48 * 2);
+
     for (atUint32 i = 0; i < 8; ++i)
     {
         if (i < banner->icons().size())
@@ -131,7 +135,7 @@ void WiiSaveWriter::writeBanner(WiiBanner *banner)
         }
         else
         {
-            base::writeBytes((atInt8*)tmpIcon, 48*48*2);
+            base::writeBytes((atInt8*)tmpIcon, 48 * 48 * 2);
         }
     }
 
@@ -154,7 +158,7 @@ void WiiSaveWriter::writeBanner(WiiBanner *banner)
     base::seek(0xF0C0, SeekOrigin::Begin);
 }
 
-atUint32 WiiSaveWriter::writeFile(WiiFile *file)
+atUint32 WiiSaveWriter::writeFile(WiiFile* file)
 {
     atUint32 ret = 0x80;
 
@@ -201,7 +205,7 @@ void WiiSaveWriter::writeImage(WiiImage* image)
     base::writeBytes(data, image->width() * image->height() * 2);
 }
 
-void WiiSaveWriter::writeCerts(atUint32 filesSize, atUint32 ngId, atUint8 *ngPriv, atUint8 *ngSig, atUint32 ngKeyId)
+void WiiSaveWriter::writeCerts(atUint32 filesSize, atUint32 ngId, atUint8* ngPriv, atUint8* ngSig, atUint32 ngKeyId)
 {
     atUint8  sig[0x40];
     atUint8  ngCert[0x180];
@@ -228,7 +232,7 @@ void WiiSaveWriter::writeCerts(atUint32 filesSize, atUint32 ngId, atUint8 *ngPri
     make_ec_cert(apCert, apSig, signer, name, apPriv, 0);
 
     hash = getSha1(apCert + 0x80, 0x100);
-    generate_ecdsa(apSig, apSig+30, ngPriv, hash);
+    generate_ecdsa(apSig, apSig + 30, ngPriv, hash);
     make_ec_cert(apCert, apSig, signer, name, apPriv, 0);
     delete[] hash;
 
@@ -242,12 +246,13 @@ void WiiSaveWriter::writeCerts(atUint32 filesSize, atUint32 ngId, atUint8 *ngPri
     delete[] hash;
     delete[] data;
 
-    generate_ecdsa(sig, sig+30, apPriv, hash2);
+    generate_ecdsa(sig, sig + 30, apPriv, hash2);
     int stuff = 0x2f536969;
+
     if (!utility::isSystemBigEndian())
         stuff = utility::swap32(stuff);
 
-    *(atUint32*)(sig+60) = stuff;
+    *(atUint32*)(sig + 60) = stuff;
     delete[] hash2;
 
     base::writeBytes((atInt8*)sig, 0x40);

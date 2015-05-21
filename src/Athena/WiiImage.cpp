@@ -33,6 +33,7 @@ WiiImage::~WiiImage()
 {
     if (m_data)
         delete[] m_data;
+
     m_data = NULL;
 }
 
@@ -51,7 +52,7 @@ atUint32 WiiImage::height() const
     return m_height;
 }
 
-atUint8 *WiiImage::toRGBA()
+atUint8* WiiImage::toRGBA()
 {
     atUint32 x, y;
     atUint32 x1, y1;
@@ -59,22 +60,24 @@ atUint8 *WiiImage::toRGBA()
     atUint8* bitmapdata = NULL;
 
     bitmapdata = new atUint8[m_width * m_height * 4];
-    if(bitmapdata == NULL)
-            return NULL;
 
-    for(iv = 0, y1 = 0; y1 < m_height; y1 += 4)
+    if (bitmapdata == NULL)
+        return NULL;
+
+    for (iv = 0, y1 = 0; y1 < m_height; y1 += 4)
     {
-        for(x1 = 0; x1 < m_width; x1 += 4)
+        for (x1 = 0; x1 < m_width; x1 += 4)
         {
-            for(y = y1; y < (y1 + 4); y++)
+            for (y = y1; y < (y1 + 4); y++)
             {
-                for(x = x1; x < (x1 + 4); x++)
+                for (x = x1; x < (x1 + 4); x++)
                 {
                     atUint16 oldpixel = *(atUint16*)(m_data + ((iv++) * 2));
                     //if((x >= m_width) || (y >= m_height))
                     //        continue;
                     oldpixel = utility::swapU16(oldpixel);
-                    if(oldpixel & (1 << 15))
+
+                    if (oldpixel & (1 << 15))
                     {
                         // RGB5
                         atUint8 b = (((oldpixel >> 10) & 0x1F) * 255) / 31;
@@ -98,6 +101,7 @@ atUint8 *WiiImage::toRGBA()
             }
         }
     }
+
     return bitmapdata;
 }
 

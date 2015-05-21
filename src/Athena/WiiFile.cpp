@@ -23,7 +23,7 @@ namespace Athena
 
 //! TODO: Remove this?
 WiiFile::WiiFile() :
-    m_permissions(WiiFile::GroupRW|WiiFile::OtherRW|WiiFile::OwnerRW),
+    m_permissions(WiiFile::GroupRW | WiiFile::OtherRW | WiiFile::OwnerRW),
     m_attributes(0),
     m_type(WiiFile::File),
     m_filename(""),
@@ -35,7 +35,7 @@ WiiFile::WiiFile() :
 }
 
 WiiFile::WiiFile(const std::string& filename) :
-    m_permissions(WiiFile::GroupRW|WiiFile::OtherRW|WiiFile::OwnerRW),
+    m_permissions(WiiFile::GroupRW | WiiFile::OtherRW | WiiFile::OwnerRW),
     m_attributes(0),
     m_type(WiiFile::File),
     m_filename(filename),
@@ -92,6 +92,7 @@ void WiiFile::setData(const atUint8* data)
         delete[] m_fileData;
         m_fileData = NULL;
     }
+
     m_fileData = (atUint8*)data;
 }
 
@@ -140,7 +141,7 @@ bool WiiFile::isFile() const
     return (m_type == WiiFile::File);
 }
 
-void WiiFile::addChild(WiiFile *file)
+void WiiFile::addChild(WiiFile* file)
 {
     if (!isDirectory())
         THROW_INVALID_OPERATION_EXCEPTION("%s is not a directory", filename().c_str());
@@ -153,10 +154,12 @@ void WiiFile::addChild(WiiFile *file)
     // Since we only support *NIX paths this is simple
     atUint32 depth = Athena::utility::countChar(tmpName, '/');
     bool owned = false;
+
     while ((depth--) > 0)
     {
         // add them from the beginning of the path up
         tmpName = tmpName.substr(0, tmpName.find('/'));
+
         for (atUint32 i = 0; i < m_children.size(); i++)
         {
             if (!m_children[i]->filename().compare(tmpName))
@@ -177,15 +180,16 @@ void WiiFile::addChild(WiiFile *file)
     }
 }
 
-WiiFile* WiiFile::child(const std::string &name)
+WiiFile* WiiFile::child(const std::string& name)
 {
     std::vector<WiiFile*>::iterator iter = std::find_if(m_children.begin(), m_children.end(),
-                                                        [&name](WiiFile* f) { return !f->filename().compare(name); });
+    [&name](WiiFile * f) { return !f->filename().compare(name); });
+
     if (iter != m_children.end())
         return *iter;
 
     std::string tmpName(name);
-    tmpName = tmpName.substr(tmpName.rfind('/')+1, tmpName.size() - tmpName.rfind('/'));
+    tmpName = tmpName.substr(tmpName.rfind('/') + 1, tmpName.size() - tmpName.rfind('/'));
 
     for (WiiFile* f : m_children)
     {
@@ -193,6 +197,7 @@ WiiFile* WiiFile::child(const std::string &name)
             continue;
 
         WiiFile* ret = f->child(tmpName);
+
         if (ret)
             return ret;
     }
@@ -239,11 +244,13 @@ atUint32 WiiFile::fileCount()
     return (atUint32)ret;
 }
 
-std::vector<WiiFile *> WiiFile::allChildren()
+std::vector<WiiFile*> WiiFile::allChildren()
 {
     std::vector<WiiFile*> ret;
+
     if (m_children.size() == 0)
         return ret;
+
     // Add our children first
     for (WiiFile* f : m_children)
         ret.push_back(f);
@@ -268,6 +275,7 @@ std::vector<WiiFile *> WiiFile::allChildren()
 std::string WiiFile::fullpath()
 {
     std::string ret;
+
     if (m_parent)
         ret = m_parent->filename() + "/";
 

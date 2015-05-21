@@ -152,11 +152,11 @@ extern "C" {
 
 
 #if (LZO_HASH == LZO_HASH_GZIP)
-   /* hash function like in gzip/zlib (deflate) */
+/* hash function like in gzip/zlib (deflate) */
 #  define _DINDEX(dv,p)     (_DV_A((p),DL_SHIFT))
 
 #elif (LZO_HASH == LZO_HASH_GZIP_INCREMENTAL)
-   /* incremental hash like in gzip/zlib (deflate) */
+/* incremental hash like in gzip/zlib (deflate) */
 #  define __LZO_HASH_INCREMENTAL 1
 #  define DVAL_FIRST(dv,p)  dv = _DV_A((p),DL_SHIFT)
 #  define DVAL_NEXT(dv,p)   dv = (((dv) << DL_SHIFT) ^ p[2])
@@ -164,7 +164,7 @@ extern "C" {
 #  define DVAL_LOOKAHEAD    DL_MIN_LEN
 
 #elif (LZO_HASH == LZO_HASH_LZO_INCREMENTAL_A)
-   /* incremental LZO hash version A */
+/* incremental LZO hash version A */
 #  define __LZO_HASH_INCREMENTAL 1
 #  define DVAL_FIRST(dv,p)  dv = _DV_A((p),5)
 #  define DVAL_NEXT(dv,p) \
@@ -173,7 +173,7 @@ extern "C" {
 #  define DVAL_LOOKAHEAD    DL_MIN_LEN
 
 #elif (LZO_HASH == LZO_HASH_LZO_INCREMENTAL_B)
-   /* incremental LZO hash version B */
+/* incremental LZO hash version B */
 #  define __LZO_HASH_INCREMENTAL 1
 #  define DVAL_FIRST(dv,p)  dv = _DV_B((p),5)
 #  define DVAL_NEXT(dv,p) \
@@ -215,8 +215,8 @@ static void
 DVAL_ASSERT(lzo_xint dv, const lzo_bytep p)
 {
     lzo_xint df;
-    DVAL_FIRST(df,(p));
-    assert(DINDEX(dv,p) == DINDEX(df,p));
+    DVAL_FIRST(df, (p));
+    assert(DINDEX(dv, p) == DINDEX(df, p));
 }
 #else
 #  define DVAL_ASSERT(dv,p) ((void) 0)

@@ -81,10 +81,10 @@
 
 
 LZO_PUBLIC(int)
-lzo1x_decompress_dict_safe ( const lzo_bytep in,  lzo_uint  in_len,
-                                   lzo_bytep out, lzo_uintp out_len,
-                                   lzo_voidp wrkmem /* NOT USED */,
-                             const lzo_bytep dict, lzo_uint dict_len)
+lzo1x_decompress_dict_safe(const lzo_bytep in,  lzo_uint  in_len,
+                           lzo_bytep out, lzo_uintp out_len,
+                           lzo_voidp wrkmem /* NOT USED */,
+                           const lzo_bytep dict, lzo_uint dict_len)
 
 
 #include "lzo1x_d.ch"

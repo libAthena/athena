@@ -31,7 +31,7 @@ namespace utility
 inline bool isEmpty(atInt8* buf, atUint32 size) {return !memcmp(buf, buf + 1, size - 1);}
 bool isSystemBigEndian();
 
-inline atInt16  swap16 (atInt16 val)
+inline atInt16  swap16(atInt16 val)
 {
 #if __GNUC__
     return __builtin_bswap16(val);
@@ -42,7 +42,7 @@ inline atInt16  swap16 (atInt16 val)
 #endif
 }
 inline atUint16 swapU16(atUint16 val) {return (atUint16)swap16(val);}
-inline atInt32  swap32 (atInt32 val)
+inline atInt32  swap32(atInt32 val)
 {
 #if __GNUC__
     return __builtin_bswap32(val);
@@ -55,7 +55,7 @@ inline atInt32  swap32 (atInt32 val)
 #endif
 }
 inline atUint32 swapU32(atUint32 val) {return (atUint32)swap32(val);}
-inline atInt64  swap64 (atInt64 val)
+inline atInt64  swap64(atInt64 val)
 {
 #if __GNUC__
     return __builtin_bswap64(val);
@@ -87,7 +87,7 @@ inline atInt16 LittleInt16(atInt16& val)
 {
     if (Athena::utility::isSystemBigEndian())
         val = Athena::utility::swap16(val);
-    
+
     return val;
 }
 inline atUint16 LittleUint16(atUint16& val)
@@ -95,14 +95,14 @@ inline atUint16 LittleUint16(atUint16& val)
     atInt16 ret = val;
     LittleInt16(ret);
     val = ret;
-    
+
     return val;
 }
 inline atInt16 BigInt16(atInt16& val)
 {
     if (!Athena::utility::isSystemBigEndian())
         val = Athena::utility::swap16(val);
-    
+
     return val;
 }
 inline atUint16 BigUint16(atUint16& val)
@@ -110,14 +110,14 @@ inline atUint16 BigUint16(atUint16& val)
     atInt16 ret = val;
     BigInt16(ret);
     val = ret;
-    
+
     return val;
 }
 inline atInt32 LittleInt32(atInt32& val)
 {
     if (Athena::utility::isSystemBigEndian())
         val = Athena::utility::swap32(val);
-    
+
     return val;
 }
 inline atUint32 LittleUint32(atUint32& val)
@@ -125,14 +125,14 @@ inline atUint32 LittleUint32(atUint32& val)
     atInt32 ret = val;
     LittleInt32(ret);
     val = ret;
-    
+
     return val;
 }
 inline atInt32 BigInt32(atInt32& val)
 {
     if (!Athena::utility::isSystemBigEndian())
         val = Athena::utility::swap32(val);
-    
+
     return val;
 }
 inline atUint32 BigUint32(atUint32& val)
@@ -140,14 +140,14 @@ inline atUint32 BigUint32(atUint32& val)
     atInt32 ret = val;
     BigInt32(ret);
     val = ret;
-    
+
     return val;
 }
 inline atInt64 LittleInt64(atInt64& val)
 {
     if (Athena::utility::isSystemBigEndian())
         val = Athena::utility::swap64(val);
-    
+
     return val;
 }
 inline atUint64 LittleUint64(atUint64& val)
@@ -155,14 +155,14 @@ inline atUint64 LittleUint64(atUint64& val)
     atInt64 ret = val;
     LittleInt64(ret);
     val = ret;
-    
+
     return val;
 }
 inline atInt64 BigInt64(atInt64& val)
 {
     if (!Athena::utility::isSystemBigEndian())
         val = Athena::utility::swap64(val);
-    
+
     return val;
 }
 inline atUint64 BigUint64(atUint64& val)
@@ -170,7 +170,7 @@ inline atUint64 BigUint64(atUint64& val)
     atInt64 ret = val;
     BigInt64(ret);
     val = ret;
-    
+
     return val;
 }
 
@@ -178,28 +178,28 @@ inline float LittleFloat(float& val)
 {
     if (Athena::utility::isSystemBigEndian())
         val = Athena::utility::swapFloat(val);
-    
+
     return val;
 }
 inline float BigFloat(float& val)
 {
     if (!Athena::utility::isSystemBigEndian())
         val = Athena::utility::swapFloat(val);
-    
+
     return val;
 }
 inline double LittleDouble(double& val)
 {
     if (Athena::utility::isSystemBigEndian())
         val = Athena::utility::swapDouble(val);
-    
+
     return val;
 }
 inline double BigDouble(double& val)
 {
     if (!Athena::utility::isSystemBigEndian())
         val = Athena::utility::swapDouble(val);
-    
+
     return val;
 }
 
@@ -216,13 +216,13 @@ bool parseBool(const std::string& boolean, bool* valid = NULL);
 int countChar(const std::string& str, const char chr, int* lastOccur = NULL);
 
 // trim from start
-std::string &ltrim(std::string &s);
+std::string& ltrim(std::string& s);
 
 // trim from end
-std::string &rtrim(std::string &s);
+std::string& rtrim(std::string& s);
 
 // trim from both ends
-std::string &trim(std::string &s);
+std::string& trim(std::string& s);
 atUint64 fileSize(const std::string& filename);
 } // utility
 } // Athena

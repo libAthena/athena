@@ -140,6 +140,7 @@ void FileWriter::writeBit(bool val)
         m_bitValid = false;
 
     fseeko64(m_fileHandle, m_bytePosition, (int)SeekOrigin::Begin);
+
     if (fwrite(&m_currentByte, 1, 1, m_fileHandle) != sizeof(atInt8))
         THROW_IO_EXCEPTION("Unable to data to file");
 }
@@ -148,6 +149,7 @@ void FileWriter::seekBit(int bit)
 {
     if (bit < 0 || bit > 7)
         THROW_INVALID_OPERATION_EXCEPTION("bit must be >= 0 and <= 7");
+
     m_bitShift = bit;
     m_bitValid = true;
 }
@@ -282,8 +284,10 @@ void FileWriter::writeString(const std::string& val)
     m_bitValid = false;
 
     char term = '\0';
+
     if (fwrite(val.c_str(), 1, val.length(), m_fileHandle) != val.length())
         THROW_IO_EXCEPTION("Unable to write to stream");
+
     if (fwrite(&term, 1, 1, m_fileHandle) != 1)
         THROW_IO_EXCEPTION("Unable to write to stream");
 }
@@ -310,6 +314,7 @@ void FileWriter::fill(atInt8 byte, atUint64 len)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
+
     fwrite(&byte, 1, len, m_fileHandle);
 }
 

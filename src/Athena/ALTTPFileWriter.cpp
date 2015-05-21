@@ -38,6 +38,7 @@ ALTTPFileWriter::ALTTPFileWriter(const std::string& filename)
 void ALTTPFileWriter::writeFile(ALTTPFile* file)
 {
     ALTTPQuest* quest = NULL;
+
     for (atUint32 i = 0; i < 6; i++)
     {
         if (i < 3)
@@ -108,7 +109,7 @@ void ALTTPFileWriter::writeFile(ALTTPFile* file)
         base::seek(1);
         base::writeByte(quest->tagAlong());
 
-        for(int j = 0; j < 6; j++)
+        for (int j = 0; j < 6; j++)
             base::writeByte(quest->oldManFlag(j));
 
         base::writeByte(quest->bombFlag());
@@ -204,6 +205,7 @@ atUint16 ALTTPFileWriter::calculateChecksum(atUint32 game)
 
     // First we start at 0
     atUint16 sum = 0;
+
     for (atUint32 i = 0; i < 0x4FE; i += 2)
         // Add each word one by one
         sum += *(atUint16*)(m_data + (i + (0x500 * game)));
