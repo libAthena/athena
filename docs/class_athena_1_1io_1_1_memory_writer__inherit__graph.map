@@ -1,0 +1,10 @@
+<map id="Athena::io::MemoryWriter" name="Athena::io::MemoryWriter">
+<area shape="rect" id="node4" href="$class_athena_1_1io_1_1_a_l_t_t_p_file_writer.html" title="A Link to the Past save data writer class. " alt="" coords="5,931,208,1038"/>
+<area shape="rect" id="node5" href="$class_athena_1_1io_1_1_m_c_file_writer.html" title="The Minish Cap Save save data writer class. " alt="" coords="232,924,413,1045"/>
+<area shape="rect" id="node6" href="$class_athena_1_1io_1_1_skyward_sword_file_writer.html" title="{Athena::io::SkywardSword\lFileWriter\n||+ SkywardSwordFileWriter()\l+ SkywardSwordFileWriter()\l+ write()\l}" alt="" coords="437,924,640,1045"/>
+<area shape="rect" id="node7" href="$class_athena_1_1io_1_1_sprite_file_writer.html" title="{Athena::io::SpriteFileWriter\n||+ SpriteFileWriter()\l+ SpriteFileWriter()\l+ writeFile()\l}" alt="" coords="665,931,863,1038"/>
+<area shape="rect" id="node8" href="$class_athena_1_1io_1_1_wii_save_writer.html" title="Wii data.bin writer class. " alt="" coords="887,939,1078,1031"/>
+<area shape="rect" id="node9" href="$class_athena_1_1io_1_1_z_quest_file_writer.html" title="The ZQuestFileWriter class. " alt="" coords="1102,931,1311,1038"/>
+<area shape="rect" id="node2" href="$class_athena_1_1io_1_1_i_stream_writer.html" title="{Athena::io::IStreamWriter\n||+ ~IStreamWriter()\l+ setEndian()\l+ endian()\l+ isBigEndian()\l+ isLittleEndian()\l+ isOpen()\l+ seek()\l+ seekAlign32()\l+ atEnd()\l+ position()\land 20 more...\l}" alt="" coords="555,277,746,501"/>
+<area shape="rect" id="node3" href="$class_athena_1_1io_1_1_i_stream.html" title="{Athena::io::IStream\n||+ ~IStream()\l+ setEndian()\l+ endian()\l+ isBigEndian()\l+ isLittleEndian()\l+ isOpen()\l+ seek()\l+ atEnd()\l+ position()\l+ length()\l+ seekBit()\l}" alt="" coords="575,5,726,229"/>
+</map>

@@ -1,0 +1,68 @@
+var annotated =
+[
+    [ "Athena", null, [
+      [ "error", null, [
+        [ "Exception", "class_athena_1_1error_1_1_exception.html", "class_athena_1_1error_1_1_exception" ],
+        [ "FileNotFoundException", "class_athena_1_1error_1_1_file_not_found_exception.html", "class_athena_1_1error_1_1_file_not_found_exception" ],
+        [ "InvalidDataException", "class_athena_1_1error_1_1_invalid_data_exception.html", "class_athena_1_1error_1_1_invalid_data_exception" ],
+        [ "InvalidOperationException", "class_athena_1_1error_1_1_invalid_operation_exception.html", "class_athena_1_1error_1_1_invalid_operation_exception" ],
+        [ "IOException", "class_athena_1_1error_1_1_i_o_exception.html", "class_athena_1_1error_1_1_i_o_exception" ],
+        [ "NotImplementedException", "class_athena_1_1error_1_1_not_implemented_exception.html", "class_athena_1_1error_1_1_not_implemented_exception" ]
+      ] ],
+      [ "io", null, [
+        [ "ALTTPFileReader", "class_athena_1_1io_1_1_a_l_t_t_p_file_reader.html", "class_athena_1_1io_1_1_a_l_t_t_p_file_reader" ],
+        [ "ALTTPFileWriter", "class_athena_1_1io_1_1_a_l_t_t_p_file_writer.html", "class_athena_1_1io_1_1_a_l_t_t_p_file_writer" ],
+        [ "FileReader", "class_athena_1_1io_1_1_file_reader.html", "class_athena_1_1io_1_1_file_reader" ],
+        [ "FileWriter", "class_athena_1_1io_1_1_file_writer.html", "class_athena_1_1io_1_1_file_writer" ],
+        [ "IStream", "class_athena_1_1io_1_1_i_stream.html", "class_athena_1_1io_1_1_i_stream" ],
+        [ "IStreamReader", "class_athena_1_1io_1_1_i_stream_reader.html", "class_athena_1_1io_1_1_i_stream_reader" ],
+        [ "IStreamWriter", "class_athena_1_1io_1_1_i_stream_writer.html", "class_athena_1_1io_1_1_i_stream_writer" ],
+        [ "MCFileReader", "class_athena_1_1io_1_1_m_c_file_reader.html", "class_athena_1_1io_1_1_m_c_file_reader" ],
+        [ "MCFileWriter", "class_athena_1_1io_1_1_m_c_file_writer.html", "class_athena_1_1io_1_1_m_c_file_writer" ],
+        [ "MemoryReader", "class_athena_1_1io_1_1_memory_reader.html", "class_athena_1_1io_1_1_memory_reader" ],
+        [ "MemoryWriter", "class_athena_1_1io_1_1_memory_writer.html", "class_athena_1_1io_1_1_memory_writer" ],
+        [ "SkywardSwordFileReader", "class_athena_1_1io_1_1_skyward_sword_file_reader.html", "class_athena_1_1io_1_1_skyward_sword_file_reader" ],
+        [ "SkywardSwordFileWriter", "class_athena_1_1io_1_1_skyward_sword_file_writer.html", "class_athena_1_1io_1_1_skyward_sword_file_writer" ],
+        [ "SpriteFileReader", "class_athena_1_1io_1_1_sprite_file_reader.html", "class_athena_1_1io_1_1_sprite_file_reader" ],
+        [ "SpriteFileWriter", "class_athena_1_1io_1_1_sprite_file_writer.html", "class_athena_1_1io_1_1_sprite_file_writer" ],
+        [ "WiiSaveReader", "class_athena_1_1io_1_1_wii_save_reader.html", "class_athena_1_1io_1_1_wii_save_reader" ],
+        [ "WiiSaveWriter", "class_athena_1_1io_1_1_wii_save_writer.html", "class_athena_1_1io_1_1_wii_save_writer" ],
+        [ "ZQuestFileReader", "class_athena_1_1io_1_1_z_quest_file_reader.html", "class_athena_1_1io_1_1_z_quest_file_reader" ],
+        [ "ZQuestFileWriter", "class_athena_1_1io_1_1_z_quest_file_writer.html", "class_athena_1_1io_1_1_z_quest_file_writer" ]
+      ] ],
+      [ "Sakura", null, [
+        [ "Sprite", "class_athena_1_1_sakura_1_1_sprite.html", "class_athena_1_1_sakura_1_1_sprite" ],
+        [ "SpriteFile", "class_athena_1_1_sakura_1_1_sprite_file.html", "class_athena_1_1_sakura_1_1_sprite_file" ],
+        [ "SpriteFrame", "class_athena_1_1_sakura_1_1_sprite_frame.html", "class_athena_1_1_sakura_1_1_sprite_frame" ],
+        [ "SpritePart", "class_athena_1_1_sakura_1_1_sprite_part.html", "class_athena_1_1_sakura_1_1_sprite_part" ],
+        [ "STexture", "struct_athena_1_1_sakura_1_1_s_texture.html", "struct_athena_1_1_sakura_1_1_s_texture" ],
+        [ "Vector2D", "class_athena_1_1_sakura_1_1_vector2_d.html", "class_athena_1_1_sakura_1_1_vector2_d" ]
+      ] ],
+      [ "ALTTPAbilities", "struct_athena_1_1_a_l_t_t_p_abilities.html", "struct_athena_1_1_a_l_t_t_p_abilities" ],
+      [ "ALTTPCrystals", "struct_athena_1_1_a_l_t_t_p_crystals.html", "struct_athena_1_1_a_l_t_t_p_crystals" ],
+      [ "ALTTPDungeonItemFlags", "struct_athena_1_1_a_l_t_t_p_dungeon_item_flags.html", "struct_athena_1_1_a_l_t_t_p_dungeon_item_flags" ],
+      [ "ALTTPFile", "class_athena_1_1_a_l_t_t_p_file.html", "class_athena_1_1_a_l_t_t_p_file" ],
+      [ "ALTTPInventory", "struct_athena_1_1_a_l_t_t_p_inventory.html", "struct_athena_1_1_a_l_t_t_p_inventory" ],
+      [ "ALTTPLightDarkWorldIndicator", "struct_athena_1_1_a_l_t_t_p_light_dark_world_indicator.html", "struct_athena_1_1_a_l_t_t_p_light_dark_world_indicator" ],
+      [ "ALTTPMagicUsage", "struct_athena_1_1_a_l_t_t_p_magic_usage.html", "struct_athena_1_1_a_l_t_t_p_magic_usage" ],
+      [ "ALTTPOverworldEvent", "struct_athena_1_1_a_l_t_t_p_overworld_event.html", "struct_athena_1_1_a_l_t_t_p_overworld_event" ],
+      [ "ALTTPPendants", "struct_athena_1_1_a_l_t_t_p_pendants.html", "struct_athena_1_1_a_l_t_t_p_pendants" ],
+      [ "ALTTPProgressFlags1", "struct_athena_1_1_a_l_t_t_p_progress_flags1.html", "struct_athena_1_1_a_l_t_t_p_progress_flags1" ],
+      [ "ALTTPProgressFlags2", "struct_athena_1_1_a_l_t_t_p_progress_flags2.html", "struct_athena_1_1_a_l_t_t_p_progress_flags2" ],
+      [ "ALTTPQuest", "class_athena_1_1_a_l_t_t_p_quest.html", "class_athena_1_1_a_l_t_t_p_quest" ],
+      [ "ALTTPRoomFlags", "struct_athena_1_1_a_l_t_t_p_room_flags.html", "struct_athena_1_1_a_l_t_t_p_room_flags" ],
+      [ "Dir", "class_athena_1_1_dir.html", "class_athena_1_1_dir" ],
+      [ "FileInfo", "class_athena_1_1_file_info.html", "class_athena_1_1_file_info" ],
+      [ "MCFile", "class_athena_1_1_m_c_file.html", "class_athena_1_1_m_c_file" ],
+      [ "MCSlot", "class_athena_1_1_m_c_slot.html", "class_athena_1_1_m_c_slot" ],
+      [ "SkywardSwordFile", "class_athena_1_1_skyward_sword_file.html", "class_athena_1_1_skyward_sword_file" ],
+      [ "SkywardSwordQuest", "class_athena_1_1_skyward_sword_quest.html", "class_athena_1_1_skyward_sword_quest" ],
+      [ "WiiBanner", "class_athena_1_1_wii_banner.html", "class_athena_1_1_wii_banner" ],
+      [ "WiiFile", "class_athena_1_1_wii_file.html", "class_athena_1_1_wii_file" ],
+      [ "WiiImage", "class_athena_1_1_wii_image.html", "class_athena_1_1_wii_image" ],
+      [ "WiiSave", "class_athena_1_1_wii_save.html", "class_athena_1_1_wii_save" ],
+      [ "ZQuestFile", "class_athena_1_1_z_quest_file.html", "class_athena_1_1_z_quest_file" ]
+    ] ],
+    [ "BinaryReader", "class_binary_reader.html", null ],
+    [ "BinaryWriter", "class_binary_writer.html", null ]
+];

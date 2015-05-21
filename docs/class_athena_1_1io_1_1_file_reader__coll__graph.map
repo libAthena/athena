@@ -1,0 +1,4 @@
+<map id="Athena::io::FileReader" name="Athena::io::FileReader">
+<area shape="rect" id="node2" href="$class_athena_1_1io_1_1_i_stream_reader.html" title="{Athena::io::IStreamReader\n||+ ~IStreamReader()\l+ setEndian()\l+ endian()\l+ isBigEndian()\l+ isLittleEndian()\l+ isOpen()\l+ seek()\l+ seekAlign32()\l+ atEnd()\l+ position()\land 20 more...\l}" alt="" coords="5,277,204,501"/>
+<area shape="rect" id="node3" href="$class_athena_1_1io_1_1_i_stream.html" title="{Athena::io::IStream\n||+ ~IStream()\l+ setEndian()\l+ endian()\l+ isBigEndian()\l+ isLittleEndian()\l+ isOpen()\l+ seek()\l+ atEnd()\l+ position()\l+ length()\l+ seekBit()\l}" alt="" coords="29,5,180,229"/>
+</map>
