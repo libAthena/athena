@@ -343,20 +343,17 @@ int main(int argc, const char** argv)
     if (Help)
         llvm::cl::PrintHelpMessage();
 
-    if (argc > 1)
-    {
-        llvm::IntrusiveRefCntPtr<clang::FileManager> fman(new clang::FileManager(clang::FileSystemOptions()));
-        std::vector<std::string> args = {"clang-tool",
-                                         "-fsyntax-only",
-                                         "-std=c++11",
-                                         "-I/run/media/jacko/Extra/llvm-build/usrmin/lib/clang/3.7.0/include",
-                                         "-I/home/jacko/Athena/include"};
-        for (int a=1 ; a<argc ; ++a)
-            args.push_back(argv[a]);
-        clang::tooling::ToolInvocation TI(args, new ATDNAAction, fman.get());
-        if (TI.run())
-            return 0;
-    }
+    llvm::IntrusiveRefCntPtr<clang::FileManager> fman(new clang::FileManager(clang::FileSystemOptions()));
+    std::vector<std::string> args = {"clang-tool",
+                                     "-fsyntax-only",
+                                     "-std=c++11",
+                                     "-I/run/media/jacko/Extra/llvm-build/usrmin/lib/clang/3.7.0/include",
+                                     "-I/home/jacko/Athena/include"};
+    for (int a=1 ; a<argc ; ++a)
+        args.push_back(argv[a]);
+    clang::tooling::ToolInvocation TI(args, new ATDNAAction, fman.get());
+    if (TI.run())
+        return 0;
 
     return -1;
 }
