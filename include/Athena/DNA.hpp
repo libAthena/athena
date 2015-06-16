@@ -17,13 +17,13 @@ namespace io
  * Athena bundles a build-tool called 'atdna'. This tool functions
  * just like the 'clang' compiler, except it emits
  */
-template <Endian dnaEndian = InheritEndian>
+template <Endian DNAE = InheritEndian>
 struct DNA
 {
-    template <typename T, Endian vEndian = dnaEndian>
+    template <typename T, Endian VE = DNAE>
     using Value = T;
 
-    template <typename T, Endian vEndian = dnaEndian>
+    template <typename T, Endian VE = DNAE>
     using Vector = std::vector<T>;
 
     virtual void read(IStreamReader&)=0;

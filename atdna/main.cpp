@@ -10,6 +10,7 @@
 #include "clang/AST/DeclCXX.h"
 #include "llvm/Support/Format.h"
 #include "llvm/Support/CommandLine.h"
+#include <map>
 
 static llvm::cl::opt<bool> Help("h", llvm::cl::desc("Alias for -help"), llvm::cl::Hidden);
 
@@ -23,13 +24,14 @@ static llvm::cl::list<std::string> InputFilenames(llvm::cl::Positional,
                                                   llvm::cl::desc("<Input files>"),
                                                   llvm::cl::OneOrMore);
 
-class ATDNAVisitor : public clang::RecursiveASTVisitor<ATDNAVisitor>
+class ATDNAEndianVisitor : public clang::RecursiveASTVisitor<ATDNAEndianVisitor>
 {
     clang::ASTContext& context;
-    llvm::raw_pwrite_stream& fileOut;
+    std::map<const clang::CXXRecordDecl*, int>& declTracker;
 public:
-    explicit ATDNAVisitor(clang::ASTContext& ctxin, llvm::raw_pwrite_stream& fo)
-    : context(ctxin), fileOut(fo) {}
+    explicit ATDNAEndianVisitor(clang::ASTContext& ctxin,
+                                std::map<const clang::CXXRecordDecl*, int>& dt)
+    : context(ctxin), declTracker(dt) {}
 
     bool VisitCXXRecordDecl(clang::CXXRecordDecl* decl)
     {
@@ -39,16 +41,14 @@ public:
         if (!decl->getNumBases())
             return true;
 
+        /* First ensure this inherits from struct Athena::io::DNA */
         bool foundDNA = false;
         for (const clang::CXXBaseSpecifier& base : decl->bases())
         {
             clang::QualType canonType = base.getType().getCanonicalType();
-            //llvm::outs() << "BASE " << canonType.getAsString() << "\n";
             if (!canonType.getAsString().compare(0, 22, "struct Athena::io::DNA"))
             {
-                llvm::outs() << "BASE " << canonType.getAsString() << "\n";
                 foundDNA = true;
-
                 const clang::CXXRecordDecl* recordDecl = canonType.getTypePtr()->getAsCXXRecordDecl();
                 if (recordDecl->getTemplateSpecializationKind())
                 {
@@ -59,7 +59,11 @@ public:
                         const clang::TemplateArgument& arg = templateArgs.get(0);
                         if (arg.getKind() == clang::TemplateArgument::Integral)
                         {
-                            llvm::outs() << arg.getIntegralType().getAsString() << " INT " << arg.getAsIntegral() << "\n";
+                            llvm::APSInt endian = arg.getAsIntegral();
+                            if (endian == 1) /* LittleEndian */
+                                declTracker[recordDecl] = 1;
+                            else if (endian == 2) /* BigEndian */
+                                declTracker[recordDecl] = 2;
                         }
                     }
                 }
@@ -67,105 +71,253 @@ public:
                 break;
             }
         }
+        return true;
+    }
+};
+
+class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
+{
+    clang::ASTContext& context;
+    llvm::raw_pwrite_stream& fileOut;
+    std::map<const clang::CXXRecordDecl*, int>& declTracker;
+
+    static std::string GetOpString(clang::BuiltinType* bType, unsigned width,
+                                   std::string fieldName, bool writerPass)
+    {
+        if (writerPass)
+        {
+            if (bType->isUnsignedInteger())
+            {
+                if (width == 8)
+                    return "writer.writeUByte(" + fieldName + ");";
+                else if (width == 16)
+                    return "writer.writeUint16(" + fieldName + ");";
+                else if (width == 32)
+                    return "writer.writeUint32(" + fieldName + ");";
+                else if (width == 64)
+                    return "writer.writeUint64(" + fieldName + ");";
+            }
+            else if (bType->isSignedInteger())
+            {
+                if (width == 8)
+                    return "writer.writeByte(" + fieldName + ");";
+                else if (width == 16)
+                    return "writer.writeInt16(" + fieldName + ");";
+                else if (width == 32)
+                    return "writer.writeInt32(" + fieldName + ");";
+                else if (width == 64)
+                    return "writer.writeInt64(" + fieldName + ");";
+            }
+            else if (bType->isFloatingPoint())
+            {
+                if (width == 32)
+                    return "writer.writeFloat(" + fieldName + ");";
+                else if (width == 64)
+                    return "writer.writeDouble(" + fieldName + ");";
+            }
+        }
+        else
+        {
+            if (bType->isUnsignedInteger())
+            {
+                if (width == 8)
+                    return fieldName + " = reader.readUByte();";
+                else if (width == 16)
+                    return fieldName + " = reader.readUint16();";
+                else if (width == 32)
+                    return fieldName + " = reader.readUint32();";
+                else if (width == 64)
+                    return fieldName + " = reader.readUint64();";
+            }
+            else if (bType->isSignedInteger())
+            {
+                if (width == 8)
+                    return fieldName + " = reader.readByte();";
+                else if (width == 16)
+                    return fieldName + " = reader.readInt16();";
+                else if (width == 32)
+                    return fieldName + " = reader.readInt32();";
+                else if (width == 64)
+                    return fieldName + " = reader.readInt64();";
+            }
+            else if (bType->isFloatingPoint())
+            {
+                if (width == 32)
+                    return fieldName + " = reader.readFloat();";
+                else if (width == 64)
+                    return fieldName + " = reader.readDouble();";
+            }
+        }
+        return std::string();
+    }
+
+public:
+    explicit ATDNAEmitVisitor(clang::ASTContext& ctxin,
+                              llvm::raw_pwrite_stream& fo,
+                              std::map<const clang::CXXRecordDecl*, int>& dt)
+    : context(ctxin), fileOut(fo), declTracker(dt) {}
+
+    bool VisitCXXRecordDecl(clang::CXXRecordDecl* decl)
+    {
+        if (decl->isInvalidDecl() || !decl->hasDefinition())
+            return true;
+
+        if (!decl->getNumBases())
+            return true;
+
+        /* First ensure this inherits from struct Athena::io::DNA */
+        bool foundDNA = false;
+        for (const clang::CXXBaseSpecifier& base : decl->bases())
+        {
+            clang::QualType canonType = base.getType().getCanonicalType();
+            if (!canonType.getAsString().compare(0, 22, "struct Athena::io::DNA"))
+            {
+                foundDNA = true;
+                break;
+            }
+        }
         if (!foundDNA)
             return true;
 
-        fileOut << "one" << "::" << "two";
+        /* Context endian */
+        int contextEndian = llvm::sys::IsLittleEndianHost ? 1 : 2;
+        if (declTracker.find(decl) != declTracker.end())
+            contextEndian = declTracker[decl];
 
-        llvm::outs() << "DECL name " << decl->getQualifiedNameAsString() << "\n";
-        llvm::outs() << "DECL kind " << decl->getKindName() << "\n";
-        const clang::ASTRecordLayout& layout = context.getASTRecordLayout(decl);
-        for (const clang::FieldDecl* field : decl->fields())
+        for (int p=0 ; p<2 ; ++p)
         {
-            llvm::outs() << "    Field " << field->getName();
-            clang::QualType qualType = field->getType();
-            const clang::Type* regType = qualType.getTypePtrOrNull();
-            if (regType->getTypeClass() == clang::Type::Typedef)
+            if (p)
+                fileOut << decl->getQualifiedNameAsString() << "::write(Athena::IStreamWriter& writer)\n{\n";
+            else
+                fileOut << decl->getQualifiedNameAsString() << "::read(Athena::IStreamReader& reader)\n{\n";
+            int currentEndian = 0;
+
+            for (const clang::FieldDecl* field : decl->fields())
             {
-                const clang::TypedefType* tdType = (const clang::TypedefType*)regType;
-                llvm::outs() << "    Typedef " << tdType->getDecl()->getNameAsString();
-            }
-            else if (regType->getTypeClass() == clang::Type::TemplateSpecialization)
-            {
-                const clang::TemplateSpecializationType* tsType = (const clang::TemplateSpecializationType*)regType;
-                const clang::TemplateDecl* tsDecl = tsType->getTemplateName().getAsTemplateDecl();
-                const clang::TemplateParameterList* tsList = tsDecl->getTemplateParameters();
-                llvm::outs() << "    Alias " << tsDecl->getNameAsString();
-                llvm::outs() << " " << tsType->getNumArgs() << " " << tsList->size() << "\n";
-                for (const clang::NamedDecl* param : *tsList)
+                clang::QualType qualType = field->getType();
+                clang::TypeInfo regTypeInfo = context.getTypeInfo(qualType);
+                const clang::Type* regType = qualType.getTypePtrOrNull();
+                if (regType->getTypeClass() == clang::Type::TemplateSpecialization)
                 {
-                    llvm::outs() << "    " << param->getName() << " " << param->getDeclKindName();
-                    if (param->getKind() == clang::Decl::NonTypeTemplateParm)
+                    const clang::TemplateSpecializationType* tsType = (const clang::TemplateSpecializationType*)regType;
+                    const clang::TemplateDecl* tsDecl = tsType->getTemplateName().getAsTemplateDecl();
+                    const clang::TemplateParameterList* classParms = tsDecl->getTemplateParameters();
+                    int endian = 0;
+                    for (const clang::NamedDecl* param : *classParms)
                     {
-                        const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)param;
-                        const clang::Expr* defArg = nttParm->getDefaultArgument();
-                        llvm::APSInt result;
-                        if (defArg->isIntegerConstantExpr(result, context))
+                        if (param->getKind() == clang::Decl::NonTypeTemplateParm)
                         {
-                            llvm::outs() << " " << result;
+                            const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)param;
+                            const clang::Expr* defArg = nttParm->getDefaultArgument();
+                            llvm::APSInt result;
+                            if (defArg->isIntegerConstantExpr(result, context))
+                                endian = result.getExtValue();
                         }
                     }
-                    llvm::outs() << "\n";
-                }
-                /*
-                const clang::TypeAliasTemplateDecl* tsOrig = llvm::dyn_cast_or_null<clang::TypeAliasTemplateDecl>(tsType->getTemplateName().getAsTemplateDecl());
-                if (tsOrig)
-                {
-                    const clang::TemplateParameterList* params = tsOrig->getTemplateParameters();
-                    llvm::outs() << " PARAMS:\n";
-                    for (const clang::NamedDecl* param : *params)
+
+                    if (!tsDecl->getNameAsString().compare("Value"))
                     {
-                        llvm::outs() << "    " << param->getName() << "\n";
-                    }
-                }
-                */
-                for (const clang::TemplateArgument& arg : *tsType)
-                {
-                    if (arg.getKind() == clang::TemplateArgument::Expression)
-                    {
-                        llvm::APSInt value;
-                        if (arg.getAsExpr()->isIntegerConstantExpr(value, context))
+
+                        std::string ioOp;
+                        const clang::TemplateArgument* typeArg = nullptr;
+                        for (const clang::TemplateArgument& arg : *tsType)
                         {
-                            llvm::outs() << " Expr " << value;
+                            if (arg.getKind() == clang::TemplateArgument::Type)
+                            {
+                                typeArg = &arg;
+                                clang::BuiltinType* builtinType = (clang::BuiltinType*)arg.getAsType().getCanonicalType().getTypePtr();
+                                if (builtinType->isBuiltinType())
+                                    ioOp = GetOpString(builtinType, regTypeInfo.Width, field->getName().str(), p);
+                            }
+                            else if (arg.getKind() == clang::TemplateArgument::Expression)
+                            {
+                                llvm::APSInt value;
+                                if (arg.getAsExpr()->isIntegerConstantExpr(value, context))
+                                    endian = value.getExtValue();
+                            }
                         }
+
+                        if (ioOp.empty())
+                        {
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(tsDecl->getLocation(), context.getDiagnostics().getDiagnosticIDs()->getCustomDiagID(clang::DiagnosticIDs::Fatal, "Athena error"));
+                            diag.AddString("Unable to use type '" + tsDecl->getNameAsString() + "' with Athena");
+                            if (typeArg)
+                                diag.AddSourceRange(clang::CharSourceRange(clang::TemplateArgumentLoc(*typeArg, clang::TemplateArgumentLocInfo()).getSourceRange(), false));
+                            continue;
+                        }
+
+                        if (!endian)
+                            endian = contextEndian;
+                        if (endian && currentEndian != endian)
+                        {
+                            if (endian == 1)
+                                fileOut << (p ? "    writer.setEndian(Athena::LittleEndian);\n" : "    reader.setEndian(Athena::LittleEndian);\n");
+                            else if (endian == 2)
+                                fileOut << (p ? "    writer.setEndian(Athena::BigEndian);\n" : "    reader.setEndian(Athena::BigEndian);\n");
+                            currentEndian = endian;
+                        }
+
+                        fileOut << "    " << ioOp << "\n";
+
                     }
-                    else if (arg.getKind() == clang::TemplateArgument::Type)
+                    else if (!tsDecl->getNameAsString().compare("Vector"))
                     {
-                        llvm::outs() << " Type " << arg.getAsType().getAsString();
+
                     }
+
                 }
+
             }
-            else if (regType->getTypeClass() == clang::Type::Builtin)
-            {
-                const clang::BuiltinType* bType = (const clang::BuiltinType*)regType;
-                llvm::outs() << "    Builtin " << bType->getName(clang::PrintingPolicy(clang::LangOptions()));
-            }
-            clang::TypeInfo regTypeInfo = context.getTypeInfo(qualType);
-            llvm::outs() << "    Width " << regTypeInfo.Width;
-            llvm::outs() << "    Off " << layout.getFieldOffset(field->getFieldIndex()) << "\n";
+
+            fileOut << "}\n\n";
+
         }
-        /*
-        if (decl->getQualifiedNameAsString() == "n::m::C")
-        {
-            clang::FullSourceLoc fullLoc = context.getFullLoc(decl->getLocStart());
-            if (fullLoc.isValid())
-                llvm::outs() << "Found declaration at "
-                             << fullLoc.getSpellingLineNumber() << ":"
-                             << fullLoc.getSpellingColumnNumber() << "\n";
-        }
-        */
+
         return true;
     }
 };
 
 class ATDNAConsumer : public clang::ASTConsumer
 {
-    ATDNAVisitor visitor;
+    ATDNAEndianVisitor endianVisitor;
+    ATDNAEmitVisitor emitVisitor;
+    llvm::raw_pwrite_stream& fileOut;
+    std::map<const clang::CXXRecordDecl*, int> declTracker;
 public:
     explicit ATDNAConsumer(clang::ASTContext& context, llvm::raw_pwrite_stream& fo)
-    : visitor(context, fo) {}
+    : endianVisitor(context, declTracker), emitVisitor(context, fo, declTracker),
+      fileOut(fo) {}
     void HandleTranslationUnit(clang::ASTContext& context)
-    {visitor.TraverseDecl(context.getTranslationUnitDecl());}
+    {
+        /* First pass - map explicit endian specifiers */
+        endianVisitor.TraverseDecl(context.getTranslationUnitDecl());
+
+        /* Resolve endian specifiers */
+        for (auto decl : declTracker)
+        {
+            for (const clang::DeclContext* prevDecl = decl.first->getParent();
+                 prevDecl ; prevDecl = prevDecl->getParent())
+            {
+                if (prevDecl->isRecord() &&
+                    declTracker.find((clang::CXXRecordDecl*)prevDecl) != declTracker.end())
+                {
+                    decl.second = declTracker[(clang::CXXRecordDecl*)prevDecl];
+                    break;
+                }
+            }
+        }
+
+        /* Write file head */
+        fileOut << "/* Auto generated atdna implementation */\n"
+                   "#include <Athena/IStreamReader.hpp>\n"
+                   "#include <Athena/IStreamWriter.hpp>\n\n";
+        for (const std::string& inputf : InputFilenames)
+            fileOut << "#include \"" << inputf << "\"\n";
+        fileOut << "\n";
+
+        /* Second pass - emit file */
+        emitVisitor.TraverseDecl(context.getTranslationUnitDecl());
+    }
 };
 
 class ATDNAAction : public clang::ASTFrontendAction
