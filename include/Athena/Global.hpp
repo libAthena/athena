@@ -73,15 +73,16 @@ typedef struct stat64 stat64_t;
 
 namespace Athena
 {
-enum class SeekOrigin
+enum SeekOrigin
 {
     Begin,
     Current,
     End
 };
 
-enum class Endian
+enum Endian
 {
+    InheritEndian=0,
     LittleEndian,
     BigEndian
 };

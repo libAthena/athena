@@ -1,27 +1,34 @@
 #ifndef DNA_HPP
 #define DNA_HPP
 
+#include "Global.hpp"
+#include "IStreamReader.hpp"
+#include "IStreamWriter.hpp"
 #include <vector>
 
 namespace Athena
 {
 namespace io
 {
-class IStreamReader;
-class IStreamWriter;
 
-template <bool bigEndian=true>
+/**
+ * @brief Base DNA class used against 'atdna'
+ *
+ * Athena bundles a build-tool called 'atdna'. This tool functions
+ * just like the 'clang' compiler, except it emits
+ */
+template <Endian dnaEndian = InheritEndian>
 struct DNA
 {
-    virtual bool read(IStreamReader& reader)=0;
-    virtual bool write(IStreamWriter& writer) const=0;
+    template <typename T, Endian vEndian = dnaEndian>
+    using Value = T;
+
+    template <typename T, Endian vEndian = dnaEndian>
+    using Vector = std::vector<T>;
+
+    virtual void read(IStreamReader&)=0;
+    virtual void write(IStreamWriter&) const=0;
 };
-
-template <typename T, bool bigEndian=true>
-using DNAValue = T;
-
-template <typename T, bool bigEndian=true>
-using DNAVector = std::vector<T>;
 
 }
 }

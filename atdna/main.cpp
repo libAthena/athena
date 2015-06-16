@@ -3,17 +3,33 @@
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/FrontendAction.h"
 #include "clang/Tooling/Tooling.h"
+#include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Lex/Preprocessor.h"
 #include "clang/Sema/Sema.h"
 #include "clang/AST/RecordLayout.h"
 #include "clang/AST/DeclCXX.h"
+#include "llvm/Support/Format.h"
+#include "llvm/Support/CommandLine.h"
 
-class FindNamedClassVisitor : public clang::RecursiveASTVisitor<FindNamedClassVisitor>
+static llvm::cl::opt<bool> Help("h", llvm::cl::desc("Alias for -help"), llvm::cl::Hidden);
+
+static llvm::cl::OptionCategory ATDNAFormatCategory("atdna options");
+
+static llvm::cl::opt<std::string> OutputFilename("o",
+                                                 llvm::cl::desc("Specify output filename"),
+                                                 llvm::cl::value_desc("filename"),
+                                                 llvm::cl::Prefix);
+static llvm::cl::list<std::string> InputFilenames(llvm::cl::Positional,
+                                                  llvm::cl::desc("<Input files>"),
+                                                  llvm::cl::OneOrMore);
+
+class ATDNAVisitor : public clang::RecursiveASTVisitor<ATDNAVisitor>
 {
     clang::ASTContext& context;
+    llvm::raw_pwrite_stream& fileOut;
 public:
-    explicit FindNamedClassVisitor(clang::ASTContext& ctxin)
-    : context(ctxin) {}
+    explicit ATDNAVisitor(clang::ASTContext& ctxin, llvm::raw_pwrite_stream& fo)
+    : context(ctxin), fileOut(fo) {}
 
     bool VisitCXXRecordDecl(clang::CXXRecordDecl* decl)
     {
@@ -26,15 +42,35 @@ public:
         bool foundDNA = false;
         for (const clang::CXXBaseSpecifier& base : decl->bases())
         {
-            llvm::outs() << "BASE " << base.getType().getCanonicalType().getAsString() << "\n";
-            if (!base.getType().getCanonicalType().getAsString().compare("struct Athena::io::DNA"))
+            clang::QualType canonType = base.getType().getCanonicalType();
+            //llvm::outs() << "BASE " << canonType.getAsString() << "\n";
+            if (!canonType.getAsString().compare(0, 22, "struct Athena::io::DNA"))
             {
+                llvm::outs() << "BASE " << canonType.getAsString() << "\n";
                 foundDNA = true;
+
+                const clang::CXXRecordDecl* recordDecl = canonType.getTypePtr()->getAsCXXRecordDecl();
+                if (recordDecl->getTemplateSpecializationKind())
+                {
+                    const clang::ClassTemplateSpecializationDecl* specDecl = (const clang::ClassTemplateSpecializationDecl*)recordDecl;
+                    const clang::TemplateArgumentList& templateArgs = specDecl->getTemplateInstantiationArgs();
+                    if (templateArgs.size())
+                    {
+                        const clang::TemplateArgument& arg = templateArgs.get(0);
+                        if (arg.getKind() == clang::TemplateArgument::Integral)
+                        {
+                            llvm::outs() << arg.getIntegralType().getAsString() << " INT " << arg.getAsIntegral() << "\n";
+                        }
+                    }
+                }
+
                 break;
             }
         }
         if (!foundDNA)
             return true;
+
+        fileOut << "one" << "::" << "two";
 
         llvm::outs() << "DECL name " << decl->getQualifiedNameAsString() << "\n";
         llvm::outs() << "DECL kind " << decl->getKindName() << "\n";
@@ -52,8 +88,37 @@ public:
             else if (regType->getTypeClass() == clang::Type::TemplateSpecialization)
             {
                 const clang::TemplateSpecializationType* tsType = (const clang::TemplateSpecializationType*)regType;
-                llvm::outs() << "    Alias " << tsType->getTemplateName().getAsTemplateDecl()->getNameAsString();
-                llvm::outs() << " " << tsType->getNumArgs() << " ";
+                const clang::TemplateDecl* tsDecl = tsType->getTemplateName().getAsTemplateDecl();
+                const clang::TemplateParameterList* tsList = tsDecl->getTemplateParameters();
+                llvm::outs() << "    Alias " << tsDecl->getNameAsString();
+                llvm::outs() << " " << tsType->getNumArgs() << " " << tsList->size() << "\n";
+                for (const clang::NamedDecl* param : *tsList)
+                {
+                    llvm::outs() << "    " << param->getName() << " " << param->getDeclKindName();
+                    if (param->getKind() == clang::Decl::NonTypeTemplateParm)
+                    {
+                        const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)param;
+                        const clang::Expr* defArg = nttParm->getDefaultArgument();
+                        llvm::APSInt result;
+                        if (defArg->isIntegerConstantExpr(result, context))
+                        {
+                            llvm::outs() << " " << result;
+                        }
+                    }
+                    llvm::outs() << "\n";
+                }
+                /*
+                const clang::TypeAliasTemplateDecl* tsOrig = llvm::dyn_cast_or_null<clang::TypeAliasTemplateDecl>(tsType->getTemplateName().getAsTemplateDecl());
+                if (tsOrig)
+                {
+                    const clang::TemplateParameterList* params = tsOrig->getTemplateParameters();
+                    llvm::outs() << " PARAMS:\n";
+                    for (const clang::NamedDecl* param : *params)
+                    {
+                        llvm::outs() << "    " << param->getName() << "\n";
+                    }
+                }
+                */
                 for (const clang::TemplateArgument& arg : *tsType)
                 {
                     if (arg.getKind() == clang::TemplateArgument::Expression)
@@ -93,55 +158,54 @@ public:
     }
 };
 
-class FindNamedClassConsumer : public clang::ASTConsumer
+class ATDNAConsumer : public clang::ASTConsumer
 {
-    FindNamedClassVisitor visitor;
+    ATDNAVisitor visitor;
 public:
-    explicit FindNamedClassConsumer(clang::ASTContext& context)
-    : visitor(context) {}
+    explicit ATDNAConsumer(clang::ASTContext& context, llvm::raw_pwrite_stream& fo)
+    : visitor(context, fo) {}
     void HandleTranslationUnit(clang::ASTContext& context)
     {visitor.TraverseDecl(context.getTranslationUnitDecl());}
 };
 
-static const char ATDNA_PREAMBLE[] =
-"#include <stdint.h>\n"
-"typedef uint16_t atUint16;\n"
-"typedef int16_t atInt16;\n"
-"typedef uint32_t atUint32;\n"
-"typedef int32_t atInt32;\n"
-"typedef uint64_t atUint64;\n"
-"typedef int64_t atInt64;\n"
-"#define TYPES_HPP\n";
-
-class FindNamedClassAction : public clang::ASTFrontendAction
+class ATDNAAction : public clang::ASTFrontendAction
 {
-    std::unique_ptr<llvm::MemoryBuffer> preambleBuf;
 public:
-    explicit FindNamedClassAction()
-    : preambleBuf(llvm::MemoryBuffer::getMemBuffer(ATDNA_PREAMBLE, "ATDNA_PREAMBLE.hpp")) {}
+    explicit ATDNAAction() {}
     std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(clang::CompilerInstance& compiler,
                                                           llvm::StringRef /*filename*/)
     {
-        //compiler.getDiagnostics().setSuppressAllDiagnostics();
-        compiler.getPreprocessorOpts().addRemappedFile("ATDNA_PREAMBLE.hpp", preambleBuf.get());
-        compiler.getPreprocessorOpts().ChainedIncludes.push_back("ATDNA_PREAMBLE.hpp");
-        compiler.getPreprocessorOpts().RetainRemappedFileBuffers = true;
-        return std::unique_ptr<clang::ASTConsumer>(new FindNamedClassConsumer(compiler.getASTContext()));
+        llvm::raw_pwrite_stream* fileout;
+        if (OutputFilename.size())
+            fileout = compiler.createOutputFile(OutputFilename, false, true, "", "", true);
+        else
+            fileout = compiler.createDefaultOutputFile(false, "a", "cpp");
+        return std::unique_ptr<clang::ASTConsumer>(new ATDNAConsumer(compiler.getASTContext(), *fileout));
     }
 };
 
+
 int main(int argc, const char** argv)
 {
+    llvm::cl::ParseCommandLineOptions(argc, argv, "Athena DNA Generator");
+    if (Help)
+        llvm::cl::PrintHelpMessage();
+
     if (argc > 1)
     {
-        clang::FileManager fman((clang::FileSystemOptions()));
-        llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> buf = fman.getBufferForFile(argv[1]);
-        std::error_code ec;
-        if ((ec = buf.getError()))
-            throw ec;
-        llvm::Twine buft(buf->get()->getBuffer());
-        clang::tooling::runToolOnCodeWithArgs(new FindNamedClassAction, buft, {"-std=c++11"}, argv[1]);
+        llvm::IntrusiveRefCntPtr<clang::FileManager> fman(new clang::FileManager(clang::FileSystemOptions()));
+        std::vector<std::string> args = {"clang-tool",
+                                         "-fsyntax-only",
+                                         "-std=c++11",
+                                         "-I/run/media/jacko/Extra/llvm-build/usrmin/lib/clang/3.7.0/include",
+                                         "-I/home/jacko/Athena/include"};
+        for (int a=1 ; a<argc ; ++a)
+            args.push_back(argv[a]);
+        clang::tooling::ToolInvocation TI(args, new ATDNAAction, fman.get());
+        if (TI.run())
+            return 0;
     }
-    return 0;
+
+    return -1;
 }
 
