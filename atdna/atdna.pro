@@ -22,34 +22,12 @@ CONFIG(debug, debug|release) {
 SOURCES += \
     main.cpp
 
-LIBS += -lclangFrontendTool -lclangFrontend -lclangTooling -lclangDriver \
-        -lclangSerialization -lclangCodeGen -lclangParse -lclangSema \
-        -lclangRewriteFrontend -lclangRewrite -lclangAnalysis -lclangEdit \
+LIBS += -lclangFrontend -lclangTooling -lclangDriver \
+        -lclangSerialization -lclangParse -lclangSema \
+        -lclangAnalysis -lclangEdit \
         -lclangAST -lclangLex -lclangBasic \
-        -lLLVMLTO -lLLVMObjCARCOpts -lLLVMLinker -lLLVMBitWriter -lLLVMIRReader \
-        -lLLVMXCoreDisassembler -lLLVMXCoreCodeGen -lLLVMXCoreDesc -lLLVMXCoreInfo \
-        -lLLVMXCoreAsmPrinter -lLLVMSystemZDisassembler -lLLVMSystemZCodeGen \
-        -lLLVMSystemZAsmParser -lLLVMSystemZDesc -lLLVMSystemZInfo -lLLVMSystemZAsmPrinter \
-        -lLLVMSparcDisassembler -lLLVMSparcCodeGen -lLLVMSparcAsmParser -lLLVMSparcDesc \
-        -lLLVMSparcInfo -lLLVMSparcAsmPrinter -lLLVMPowerPCDisassembler -lLLVMPowerPCCodeGen \
-        -lLLVMPowerPCAsmParser -lLLVMPowerPCDesc -lLLVMPowerPCInfo -lLLVMPowerPCAsmPrinter \
-        -lLLVMNVPTXCodeGen -lLLVMNVPTXDesc -lLLVMNVPTXInfo -lLLVMNVPTXAsmPrinter \
-        -lLLVMMSP430CodeGen -lLLVMMSP430Desc -lLLVMMSP430Info -lLLVMMSP430AsmPrinter \
-        -lLLVMMipsDisassembler -lLLVMMipsCodeGen -lLLVMMipsAsmParser -lLLVMMipsDesc \
-        -lLLVMMipsInfo -lLLVMMipsAsmPrinter -lLLVMHexagonDisassembler -lLLVMHexagonCodeGen \
-        -lLLVMHexagonDesc -lLLVMHexagonInfo -lLLVMCppBackendCodeGen -lLLVMCppBackendInfo \
-        -lLLVMARMDisassembler \
-        -lLLVMARMCodeGen -lLLVMARMAsmParser -lLLVMARMDesc -lLLVMARMInfo -lLLVMARMAsmPrinter \
-        -lLLVMAArch64Disassembler -lLLVMAArch64CodeGen -lLLVMAArch64AsmParser \
-        -lLLVMAArch64Desc -lLLVMAArch64Info -lLLVMAArch64AsmPrinter -lLLVMAArch64Utils \
-        -lLLVMAsmParser -lLLVMOption -lLLVMTableGen \
-        -lLLVMLineEditor -lLLVMInstrumentation -lLLVMX86Disassembler -lLLVMX86AsmParser \
-        -lLLVMX86CodeGen -lLLVMSelectionDAG -lLLVMAsmPrinter -lLLVMX86Desc -lLLVMMCDisassembler \
-        -lLLVMX86Info -lLLVMX86AsmPrinter -lLLVMX86Utils -lLLVMMCJIT \
-        -lLLVMipo -lLLVMVectorize -lLLVMInterpreter -lLLVMExecutionEngine \
-        -lLLVMRuntimeDyld -lLLVMCodeGen -lLLVMTarget -lLLVMScalarOpts -lLLVMProfileData \
-        -lLLVMObject -lLLVMMCParser -lLLVMBitReader -lLLVMInstCombine -lLLVMTransformUtils \
-        -lLLVMipa -lLLVMMC -lLLVMAnalysis -lLLVMCore -lLLVMSupport -lz -lpthread -lcurses -ldl
+        -lLLVMOption -lLLVMMCParser -lLLVMBitReader \
+        -lLLVMMC -lLLVMSupport -lz -lpthread -lcurses -ldl
 
 HEADERS += \
     test.hpp
