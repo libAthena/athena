@@ -1,11 +1,16 @@
 #ifndef DNA_HPP
 #define DNA_HPP
 
+/* BIG FAT WARNING!!!
+ *
+ * The type-structure of this file is expected to remain consistent for 'atdna'
+ * Any changes to the types or namespacing must be reflected in 'atdna/main.cpp'
+ */
+
 #include "Global.hpp"
 #include "IStreamReader.hpp"
 #include "IStreamWriter.hpp"
 #include <vector>
-#include <functional>
 
 namespace Athena
 {
@@ -16,7 +21,9 @@ namespace io
  * @brief Base DNA class used against 'atdna'
  *
  * Athena bundles a build-tool called 'atdna'. This tool functions
- * just like the 'clang' compiler, except it emits
+ * just like the 'clang' compiler, except it emits a full .cpp implementation
+ * with all read/write calls necessary to marshal the DNA structure to/from
+ * a streamed medium
  */
 template <Endian DNAE>
 struct DNA
