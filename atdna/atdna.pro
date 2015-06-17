@@ -10,12 +10,12 @@ QMAKE_CXXFLAGS_WARN_ON = -Wno-unused-parameter
 INCLUDEPATH += ../include
 
 CONFIG(debug, debug|release) {
-    INCLUDEPATH += /run/media/jacko/Extra/llvm-build/usr/include
-    LIBS += -L/run/media/jacko/Extra/llvm-build/usr/lib
+    # FOR FULL DEBUGGING, PLEASE UNCOMMENT THESE AND POINT THEM TO
+    # THE INSTALL PREFIX OF YOUR OWN DEBUG BUILD OF LLVM/CLANG!!
+    #INCLUDEPATH += /home/jacko/llvm-build/usr/include
+    #LIBS += -L/home/jacko/llvm-build/usr/lib
     LIBS += -g
 } else {
-    #INCLUDEPATH += /run/media/jacko/Extra/llvm-build/usrmin/include
-    #LIBS += -L/run/media/jacko/Extra/llvm-build/usrmin/lib
     LIBS += -flto
 }
 
