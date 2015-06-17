@@ -11,8 +11,8 @@
 #include "llvm/Support/Format.h"
 #include "llvm/Support/CommandLine.h"
 
-#ifndef SYSTEM_PREFIX
-#define SYSTEM_PREFIX /usr/local
+#ifndef INSTALL_PREFIX
+#define INSTALL_PREFIX /usr/local
 #endif
 #define XSTR(s) STR(s)
 #define STR(s) #s
@@ -441,7 +441,7 @@ int main(int argc, const char** argv)
     std::vector<std::string> args = {"clang-tool",
                                      "-fsyntax-only",
                                      "-std=c++11"};
-    args.push_back("-I" + std::string(XSTR(SYSTEM_PREFIX)) + "/lib/clang/" + CLANG_VERSION_STRING + "/include");
+    args.push_back("-I" + std::string(XSTR(INSTALL_PREFIX)) + "/lib/clang/" + CLANG_VERSION_STRING + "/include");
     llvm::outs() << args.back() << "\n";
     for (int a=1 ; a<argc ; ++a)
         args.push_back(argv[a]);
