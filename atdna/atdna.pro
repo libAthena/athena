@@ -59,6 +59,7 @@ unix {
         PREFIX = /usr/local
     }
     utilFiles.path = $$PREFIX/bin
+    utilFiles.files = $$OUT_PWD/atdna
     INSTALLS += utilFiles
 }
 
@@ -67,5 +68,6 @@ win32 {
         PREFIX = $$PWD/pkg
     }
     utilFiles.path = $$PREFIX/bin
+    utilFiles.files = $$OUT_PWD/atdna
     INSTALLS += utilFiles
 }
