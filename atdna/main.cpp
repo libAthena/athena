@@ -442,7 +442,7 @@ int main(int argc, const char** argv)
                                      "-fsyntax-only",
                                      "-std=c++11"};
     args.push_back("-I" + std::string(XSTR(INSTALL_PREFIX)) + "/lib/clang/" + CLANG_VERSION_STRING + "/include");
-    args.push_back("-I" + std::string(XSTR(INSTALL_PREFIX)) + "/include");
+    args.push_back("-I" + std::string(XSTR(INSTALL_PREFIX)) + "/include/Athena");
     for (int a=1 ; a<argc ; ++a)
         args.push_back(argv[a]);
 
