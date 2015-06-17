@@ -5,7 +5,7 @@ pkgver=1.1.0.17.gfb722a9
 pkgrel=1
 pkgdesc="Basic cross platform IO library"
 arch=('i686' 'x86_64')
-source=("${pkgname%-*}::git+https://github.com/Antidote/Athena.git#branch=atdna")
+source=("${pkgname%-*}::git+https://github.com/Antidote/Athena.git")
 options=(staticlibs)
 license="MIT"
 makedepends=('git qt5-base sed')

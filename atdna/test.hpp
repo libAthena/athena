@@ -1,4 +1,3 @@
-#include <stdint.h>
 #include <Athena/DNA.hpp>
 
 using namespace Athena;
