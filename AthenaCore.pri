@@ -62,7 +62,8 @@ HEADERS += \
     $$PWD/include/utf8/unchecked.h \
     $$PWD/include/Athena/FileInfo.hpp \
     $$PWD/include/Athena/Dir.hpp \
-    $$PWD/include/gekko_support.h
+    $$PWD/include/gekko_support.h \
+    $$PWD/include/Athena/DNA.hpp
 
 win32:HEADERS += \
     $$PWD/include/win32_largefilewrapper.h

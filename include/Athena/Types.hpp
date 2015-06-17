@@ -56,6 +56,34 @@ typedef unsigned long atUint32;
 typedef signed   long long atInt64;
 typedef unsigned long long atUint64;
 
+// Vector types
+#if __SSE__
+#include <xmmintrin.h>
+#endif
+
+typedef union
+{
+#if __clang__
+    float clangVec __attribute__((__vector_size__(12)));
+#endif
+#if __SSE__
+    __m128 mVec128;
+#endif
+    float vec[3];
+} atVec3f;
+
+typedef union
+{
+#if __clang__
+    float clangVec __attribute__((__vector_size__(16)));
+#endif
+#if __SSE__
+    __m128 mVec128;
+#endif
+    float vec[4];
+} atVec4f;
+
+
 #ifndef NULL
 #ifdef __cplusplus
 #define NULL 0

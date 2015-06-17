@@ -1,0 +1,30 @@
+# PKGBUILD for atdna
+_pkgname=atdna
+pkgname=$_pkgname-git
+pkgver=1.1.0.23.g647f9c4
+pkgrel=1
+pkgdesc="Companion DNA utility for libAthena"
+arch=('i686' 'x86_64')
+source=("${pkgname%-*}::git+https://github.com/Antidote/Athena.git")
+options=(staticlibs)
+license="MIT"
+makedepends=('git qt5-base sed clang libathena-git')
+depends=('libathena-git')
+md5sums=('SKIP')
+sha256sums=('SKIP')
+
+pkgver() {
+    cd "$srcdir/$_pkgname"
+    git describe --tags | sed 's|-|.|g'
+}
+
+build() {
+    cd "$srcdir/$_pkgname/atdna"
+    qmake PREFIX="$pkgdir/usr" INSTALL_PREFIX="/usr" && make
+}
+
+package() {
+    cd "$srcdir/$_pkgname/atdna"
+	qmake PREFIX="$pkgdir/usr" INSTALL_PREFIX="/usr" && make install
+}
+
