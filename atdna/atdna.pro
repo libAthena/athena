@@ -58,6 +58,9 @@ unix {
     isEmpty(PREFIX) {
         PREFIX = /usr/local
     }
+    isEmpty(INSTALL_PREFIX) {
+        INSTALL_PREFIX = /usr/local
+    }
     utilFiles.path = $$PREFIX/bin
     utilFiles.files = $$OUT_PWD/atdna
     INSTALLS += utilFiles
@@ -67,10 +70,13 @@ win32 {
     isEmpty(PREFIX) {
         PREFIX = $$PWD/pkg
     }
+    isEmpty(INSTALL_PREFIX) {
+        INSTALL_PREFIX = $$PWD/pkg
+    }
     utilFiles.path = $$PREFIX/bin
     utilFiles.files = $$OUT_PWD/atdna
     INSTALLS += utilFiles
 }
 
-DEFINES += SYSTEM_PREFIX="$$PREFIX"
+DEFINES += INSTALL_PREFIX="$$INSTALL_PREFIX"
 

@@ -14,7 +14,6 @@
 #ifndef SYSTEM_PREFIX
 #define SYSTEM_PREFIX /usr/local
 #endif
-
 #define XSTR(s) STR(s)
 #define STR(s) #s
 
