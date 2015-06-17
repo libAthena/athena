@@ -1,14 +1,15 @@
-# PKGBUILD for libAthena
-_pkgname=libathena
+# PKGBUILD for atdna
+_pkgname=atdna
 pkgname=$_pkgname-git
 pkgver=v1.0.0
 pkgrel=1
-pkgdesc="Basic cross platform IO library"
+pkgdesc="Companion DNA utility for libAthena"
 arch=('i686' 'x86_64')
 source=("${pkgname%-*}::git+https://github.com/Antidote/Athena.git")
 options=(staticlibs)
 license="MIT"
-makedepends=('git qt5-base sed')
+makedepends=('git qt5-base sed clang libathena-git')
+depends=('libathena-git')
 md5sums=('SKIP')
 sha256sums=('SKIP')
 

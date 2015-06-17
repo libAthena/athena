@@ -14,8 +14,8 @@ CONFIG(debug, debug|release) {
     LIBS += -L/run/media/jacko/Extra/llvm-build/usr/lib
     LIBS += -g
 } else {
-    INCLUDEPATH += /run/media/jacko/Extra/llvm-build/usrmin/include
-    LIBS += -L/run/media/jacko/Extra/llvm-build/usrmin/lib
+    #INCLUDEPATH += /run/media/jacko/Extra/llvm-build/usrmin/include
+    #LIBS += -L/run/media/jacko/Extra/llvm-build/usrmin/lib
     LIBS += -flto
 }
 
@@ -42,14 +42,30 @@ LIBS += -lclangFrontendTool -lclangFrontend -lclangTooling -lclangDriver \
         -lLLVMARMCodeGen -lLLVMARMAsmParser -lLLVMARMDesc -lLLVMARMInfo -lLLVMARMAsmPrinter \
         -lLLVMAArch64Disassembler -lLLVMAArch64CodeGen -lLLVMAArch64AsmParser \
         -lLLVMAArch64Desc -lLLVMAArch64Info -lLLVMAArch64AsmPrinter -lLLVMAArch64Utils \
-        -lLLVMMIRParser -lLLVMAsmParser -lLLVMLibDriver -lLLVMOption -lLLVMDebugInfoPDB -lLLVMTableGen \
-        -lLLVMOrcJIT -lLLVMLineEditor -lLLVMInstrumentation -lLLVMX86Disassembler -lLLVMX86AsmParser \
+        -lLLVMAsmParser -lLLVMOption -lLLVMTableGen \
+        -lLLVMLineEditor -lLLVMInstrumentation -lLLVMX86Disassembler -lLLVMX86AsmParser \
         -lLLVMX86CodeGen -lLLVMSelectionDAG -lLLVMAsmPrinter -lLLVMX86Desc -lLLVMMCDisassembler \
-        -lLLVMX86Info -lLLVMX86AsmPrinter -lLLVMX86Utils -lLLVMMCJIT -lLLVMDebugInfoDWARF \
-        -lLLVMPasses -lLLVMipo -lLLVMVectorize -lLLVMInterpreter -lLLVMExecutionEngine \
+        -lLLVMX86Info -lLLVMX86AsmPrinter -lLLVMX86Utils -lLLVMMCJIT \
+        -lLLVMipo -lLLVMVectorize -lLLVMInterpreter -lLLVMExecutionEngine \
         -lLLVMRuntimeDyld -lLLVMCodeGen -lLLVMTarget -lLLVMScalarOpts -lLLVMProfileData \
         -lLLVMObject -lLLVMMCParser -lLLVMBitReader -lLLVMInstCombine -lLLVMTransformUtils \
         -lLLVMipa -lLLVMMC -lLLVMAnalysis -lLLVMCore -lLLVMSupport -lz -lpthread -lcurses -ldl
 
 HEADERS += \
     test.hpp
+
+unix {
+    isEmpty(PREFIX) {
+        PREFIX = /usr/local
+    }
+    utilFiles.path = $$PREFIX/bin
+    INSTALLS += utilFiles
+}
+
+win32 {
+    isEmpty(PREFIX) {
+        PREFIX = $$PWD/pkg
+    }
+    utilFiles.path = $$PREFIX/bin
+    INSTALLS += utilFiles
+}

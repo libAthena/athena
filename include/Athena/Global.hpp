@@ -82,7 +82,6 @@ enum SeekOrigin
 
 enum Endian
 {
-    InheritEndian=0,
     LittleEndian,
     BigEndian
 };
