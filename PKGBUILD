@@ -19,7 +19,7 @@ pkgver() {
 
 build() {
     cd "$srcdir/$_pkgname"
-    qmake && make
+    qmake PREFIX="$pkgdir/usr" && make
 }
 
 package() {

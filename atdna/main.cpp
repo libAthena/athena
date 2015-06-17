@@ -11,6 +11,13 @@
 #include "llvm/Support/Format.h"
 #include "llvm/Support/CommandLine.h"
 
+#ifndef SYSTEM_PREFIX
+#define SYSTEM_PREFIX /usr/local
+#endif
+
+#define XSTR(s) STR(s)
+#define STR(s) #s
+
 static llvm::cl::opt<bool> Help("h", llvm::cl::desc("Alias for -help"), llvm::cl::Hidden);
 
 static llvm::cl::OptionCategory ATDNAFormatCategory("atdna options");
@@ -435,19 +442,12 @@ int main(int argc, const char** argv)
     std::vector<std::string> args = {"clang-tool",
                                      "-fsyntax-only",
                                      "-std=c++11"};
-
-    llvm::IntrusiveRefCntPtr<clang::FileManager> fman(new clang::FileManager(clang::FileSystemOptions()));
-    const clang::FileEntry* selfEntry = fman->getFile(argv[0]);
-    if (selfEntry && selfEntry->isValid())
-    {
-        std::string base(selfEntry->getDir()->getName());
-        args.push_back("-I" + base + "/clang/" + CLANG_VERSION_STRING + "/include");
-        args.push_back("-I" + base);
-    }
-
+    args.push_back("-I" + std::string(XSTR(SYSTEM_PREFIX)) + "/lib/clang/" + CLANG_VERSION_STRING + "/include");
+    llvm::outs() << args.back() << "\n";
     for (int a=1 ; a<argc ; ++a)
         args.push_back(argv[a]);
 
+    llvm::IntrusiveRefCntPtr<clang::FileManager> fman(new clang::FileManager(clang::FileSystemOptions()));
     clang::tooling::ToolInvocation TI(args, new ATDNAAction, fman.get());
     if (TI.run())
         return 0;

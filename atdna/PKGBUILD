@@ -1,7 +1,7 @@
 # PKGBUILD for atdna
 _pkgname=atdna
 pkgname=$_pkgname-git
-pkgver=1.1.0.17.gfb722a9
+pkgver=1.1.0.18.g2bb60ab
 pkgrel=1
 pkgdesc="Companion DNA utility for libAthena"
 arch=('i686' 'x86_64')
@@ -20,7 +20,7 @@ pkgver() {
 
 build() {
     cd "$srcdir/$_pkgname/atdna"
-    qmake && make
+    qmake PREFIX="$pkgdir/usr" && make
 }
 
 package() {

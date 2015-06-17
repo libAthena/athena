@@ -71,3 +71,6 @@ win32 {
     utilFiles.files = $$OUT_PWD/atdna
     INSTALLS += utilFiles
 }
+
+DEFINES += SYSTEM_PREFIX="$$PREFIX"
+
