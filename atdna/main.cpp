@@ -33,7 +33,6 @@ static llvm::cl::list<std::string> InputFilenames(llvm::cl::Positional,
 
 static llvm::cl::list<std::string> IncludeSearchPaths("I",
                                                       llvm::cl::desc("Header search path"),
-                                                      llvm::cl::OneOrMore,
                                                       llvm::cl::Prefix);
 
 class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
