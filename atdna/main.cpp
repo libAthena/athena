@@ -288,6 +288,7 @@ public:
                             currentEndian = endian;
                         }
 
+                        fileOut << "    /* " << field->getName() << " */\n";
                         if (!p)
                             fileOut << "    " << field->getName() << " = " << ioOp << ";\n";
                         else
@@ -382,6 +383,7 @@ public:
                             currentEndian = endian;
                         }
 
+                        fileOut << "    /* " << field->getName() << " */\n";
                         if (!p)
                         {
                             fileOut << "    " << field->getName() << ".clear();\n";
@@ -417,7 +419,8 @@ public:
                             clang::QualType canonType = base.getType().getCanonicalType();
                             if (!canonType.getAsString().compare(0, 22, "struct Athena::io::DNA"))
                             {
-                                fileOut << "    " << field->getNameAsString() << (p ? ".write(writer);\n" : ".read(reader);\n");
+                                fileOut << "    /* " << field->getName() << " */\n";
+                                fileOut << "    " << field->getName() << (p ? ".write(writer);\n" : ".read(reader);\n");
                                 currentEndian = -1;
                                 break;
                             }

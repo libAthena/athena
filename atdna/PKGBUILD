@@ -1,7 +1,7 @@
 # PKGBUILD for atdna
 _pkgname=atdna
 pkgname=$_pkgname-git
-pkgver=1.1.0.30.gc086957
+pkgver=1.1.0.31.gd6a4897
 pkgrel=1
 pkgdesc="Companion DNA utility for libAthena"
 arch=('i686' 'x86_64')
