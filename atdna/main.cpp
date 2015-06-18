@@ -52,7 +52,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
                 if (bType->isBooleanType())
                 {
-                    return "writer.writeBool(" + fieldName + ")";
+                    return "writer.writeBool(" + fieldName + ");";
                 }
                 else if (bType->isUnsignedInteger())
                 {
