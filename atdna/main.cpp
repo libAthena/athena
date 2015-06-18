@@ -7,6 +7,7 @@
 #include "clang/Sema/Sema.h"
 #include "clang/AST/RecordLayout.h"
 #include "clang/AST/DeclCXX.h"
+#include "clang/AST/TypeLoc.h"
 #include "clang/Basic/Version.h"
 #include "llvm/Support/Format.h"
 #include "llvm/Support/CommandLine.h"
@@ -30,20 +31,31 @@ static llvm::cl::list<std::string> InputFilenames(llvm::cl::Positional,
                                                   llvm::cl::desc("<Input files>"),
                                                   llvm::cl::OneOrMore);
 
+static llvm::cl::list<std::string> IncludeSearchPaths("I",
+                                                      llvm::cl::desc("Header search path"),
+                                                      llvm::cl::OneOrMore,
+                                                      llvm::cl::Prefix);
+
 class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
 {
     clang::ASTContext& context;
     llvm::raw_fd_ostream& fileOut;
 
     std::string GetOpString(const clang::Type* theType, unsigned width,
-                            std::string fieldName, bool writerPass)
+                            const std::string& fieldName, bool writerPass,
+                            bool& isDNAType)
     {
+        isDNAType = false;
         if (writerPass)
         {
             if (theType->isBuiltinType())
             {
                 const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
-                if (bType->isUnsignedInteger())
+                if (bType->isBooleanType())
+                {
+                    return "writer.writeBool(" + fieldName + ")";
+                }
+                else if (bType->isUnsignedInteger())
                 {
                     if (width == 8)
                         return "writer.writeUByte(" + fieldName + ");";
@@ -75,7 +87,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
             }
             else if (theType->isRecordType())
             {
-                const clang::RecordDecl* rDecl = ((clang::RecordType*)theType)->getDecl();
+                const clang::CXXRecordDecl* rDecl = theType->getAsCXXRecordDecl();
                 for (const clang::FieldDecl* field : rDecl->fields())
                 {
                     if (!field->getNameAsString().compare("clangVec"))
@@ -94,6 +106,12 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         }
                     }
                 }
+                for (const clang::CXXBaseSpecifier& base : rDecl->bases())
+                    if (!base.getType().getCanonicalType().getAsString().compare(0, 22, "struct Athena::io::DNA"))
+                    {
+                        isDNAType = true;
+                        return "write(writer);";
+                    }
             }
         }
         else
@@ -101,7 +119,11 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
             if (theType->isBuiltinType())
             {
                 const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
-                if (bType->isUnsignedInteger())
+                if (bType->isBooleanType())
+                {
+                    return "reader.readBool()";
+                }
+                else if (bType->isUnsignedInteger())
                 {
                     if (width == 8)
                         return "reader.readUByte()";
@@ -133,7 +155,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
             }
             else if (theType->isRecordType())
             {
-                const clang::RecordDecl* rDecl = ((clang::RecordType*)theType)->getDecl();
+                const clang::CXXRecordDecl* rDecl = theType->getAsCXXRecordDecl();
                 for (const clang::FieldDecl* field : rDecl->fields())
                 {
                     if (!field->getNameAsString().compare("clangVec"))
@@ -152,6 +174,12 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         }
                     }
                 }
+                for (const clang::CXXBaseSpecifier& base : rDecl->bases())
+                    if (!base.getType().getCanonicalType().getAsString().compare(0, 22, "struct Athena::io::DNA"))
+                    {
+                        isDNAType = true;
+                        return "read(reader);";
+                    }
             }
         }
         return std::string();
@@ -222,15 +250,19 @@ public:
                             }
                         }
 
+                        clang::QualType templateType;
                         std::string ioOp;
+                        bool isDNAType = false;
                         const clang::TemplateArgument* typeArg = nullptr;
                         for (const clang::TemplateArgument& arg : *tsType)
                         {
                             if (arg.getKind() == clang::TemplateArgument::Type)
                             {
                                 typeArg = &arg;
+                                templateType = arg.getAsType().getCanonicalType();
                                 const clang::Type* type = arg.getAsType().getCanonicalType().getTypePtr();
-                                ioOp = GetOpString(type, regTypeInfo.Width, field->getName().str(), p);
+                                std::string fieldName = field->getName().str();
+                                ioOp = GetOpString(type, regTypeInfo.Width, fieldName, p, isDNAType);
                             }
                             else if (arg.getKind() == clang::TemplateArgument::Expression)
                             {
@@ -242,11 +274,10 @@ public:
 
                         if (ioOp.empty())
                         {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(tsDecl->getLocation(), context.getDiagnostics().getCustomDiagID(clang::DiagnosticsEngine::Fatal, "Athena error"));
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), context.getDiagnostics().getCustomDiagID(clang::DiagnosticsEngine::Fatal, "Athena error: %0"));
                             diag.AddString("Unable to use type '" + tsDecl->getNameAsString() + "' with Athena");
-                            if (typeArg)
-                                diag.AddSourceRange(clang::CharSourceRange(clang::TemplateArgumentLoc(*typeArg, clang::TemplateArgumentLocInfo()).getSourceRange(), false));
-                            continue;
+                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                            return false;
                         }
 
                         if (currentEndian != endian)
@@ -279,7 +310,10 @@ public:
                             }
                         }
 
+                        clang::QualType templateType;
+                        const clang::DeclRefExpr* cntRefExpr = nullptr;
                         std::string ioOp;
+                        bool isDNAType = false;
                         std::string sizeVar;
                         const clang::TemplateArgument* typeArg = nullptr;
                         const clang::TemplateArgument* sizeArg = nullptr;
@@ -289,9 +323,10 @@ public:
                             if (arg.getKind() == clang::TemplateArgument::Type)
                             {
                                 typeArg = &arg;
-                                const clang::Type* type = arg.getAsType().getCanonicalType().getTypePtr();
-                                clang::TypeInfo typeInfo = context.getTypeInfo(arg.getAsType().getCanonicalType());
-                                ioOp = GetOpString(type, typeInfo.Width, "*it", p);
+                                templateType = arg.getAsType().getCanonicalType();
+                                clang::TypeInfo typeInfo = context.getTypeInfo(templateType);
+                                static const std::string itStr = "*it";
+                                ioOp = GetOpString(templateType.getTypePtr(), typeInfo.Width, itStr, p, isDNAType);
                             }
                             else if (arg.getKind() == clang::TemplateArgument::Expression)
                             {
@@ -308,8 +343,8 @@ public:
                                             argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
                                         if (argExpr->getStmtClass() == clang::Stmt::DeclRefExprClass)
                                         {
-                                            const clang::DeclRefExpr* refExpr = (clang::DeclRefExpr*)argExpr;
-                                            sizeVar = refExpr->getFoundDecl()->getNameAsString();
+                                            cntRefExpr = (clang::DeclRefExpr*)argExpr;
+                                            sizeVar = cntRefExpr->getFoundDecl()->getNameAsString();
                                         }
                                     }
                                 }
@@ -325,20 +360,18 @@ public:
 
                         if (ioOp.empty())
                         {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(tsDecl->getLocation(), context.getDiagnostics().getCustomDiagID(clang::DiagnosticsEngine::Fatal, "Athena error"));
-                            diag.AddString("Unable to use type '" + tsDecl->getNameAsString() + "' with Athena");
-                            if (typeArg)
-                                diag.AddSourceRange(clang::CharSourceRange(clang::TemplateArgumentLoc(*typeArg, clang::TemplateArgumentLocInfo()).getSourceRange(), false));
-                            continue;
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), context.getDiagnostics().getCustomDiagID(clang::DiagnosticsEngine::Fatal, "Athena error: %0"));
+                            diag.AddString("Unable to use type '" + templateType.getAsString() + "' with Athena");
+                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                            return false;
                         }
 
                         if (sizeVar.empty())
                         {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(tsDecl->getLocation(), context.getDiagnostics().getCustomDiagID(clang::DiagnosticsEngine::Fatal, "Athena error"));
-                            diag.AddString("Unable to use type '" + tsDecl->getNameAsString() + "' with Athena");
-                            if (sizeArg)
-                                diag.AddSourceRange(clang::CharSourceRange(clang::TemplateArgumentLoc(*sizeArg, clang::TemplateArgumentLocInfo()).getSourceRange(), false));
-                            continue;
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), context.getDiagnostics().getCustomDiagID(clang::DiagnosticsEngine::Fatal, "Athena error: %0"));
+                            diag.AddString("Unable to use count variable with Athena");
+                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                            return false;
                         }
 
                         if (currentEndian != endian)
@@ -354,10 +387,22 @@ public:
                         {
                             fileOut << "    " << field->getName() << ".clear();\n";
                             fileOut << "    " << field->getName() << ".reserve(" << sizeVar << ");\n";
-                            fileOut << "    for (int i=0 ; i<" << sizeVar << " ; ++i)\n        " << field->getName() << ".push_back(" << ioOp << ");\n";
+                            if (isDNAType)
+                                fileOut << "    for (int i=0 ; i<" << sizeVar << " ; ++i)\n"
+                                           "    {\n"
+                                           "        " << field->getName() << ".emplace_back();\n"
+                                           "        " << field->getName() << ".back()." << ioOp << "\n"
+                                           "    }\n";
+                            else
+                                fileOut << "    for (int i=0 ; i<" << sizeVar << " ; ++i)\n        " << field->getName() << ".push_back(" << ioOp << ");\n";
                         }
                         else
-                            fileOut << "    for (int i=0, auto it=" << field->getName() << ".begin() ; i<" << sizeVar << " && it!=" << field->getName() << ".end() ; ++i, ++it)\n        " << ioOp << "\n";
+                        {
+                            if (isDNAType)
+                                fileOut << "    for (int i=0, auto it=" << field->getName() << ".begin() ; i<" << sizeVar << " && it!=" << field->getName() << ".end() ; ++i, ++it)\n        it->" << ioOp << "\n";
+                            else
+                                fileOut << "    for (int i=0, auto it=" << field->getName() << ".begin() ; i<" << sizeVar << " && it!=" << field->getName() << ".end() ; ++i, ++it)\n        " << ioOp << "\n";
+                        }
 
                     }
 

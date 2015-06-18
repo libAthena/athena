@@ -12,6 +12,7 @@ struct ANCSSubFile : public io::DNA<BigEndian>
 struct ANCSFile : public io::DNA<BigEndian>
 {
     DECL_DNA
+    Value<bool> varBool;
     Value<atUint32> var32;
     Value<atUint16> var16;
     Value<atVec3f> vec3;
@@ -28,5 +29,8 @@ struct ANCSFile : public io::DNA<BigEndian>
 
     Value<atUint32> arrCount;
     Vector<atUint32, sizeof(arrCount)> array;
+
+    Value<atUint32> arrCount2;
+    Vector<ANCSSubFile, sizeof(arrCount2)> array2;
 };
 
