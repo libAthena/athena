@@ -267,22 +267,25 @@ public:
      *
      *  \sa Endian
      *  \param str The string to write to the buffer
+     *  \param fixedLen If not -1, the number of characters to zero-fill string to
      */
-    void writeUnicode(const std::string& str);
+    void writeUnicode(const std::string& str, atInt32 fixedLen = -1);
 
     /*! \brief Writes an string to the buffer and advances the buffer.
      *
      *  \sa Endian
      *  \param str The string to write to the buffer
+     *  \param fixedLen If not -1, the number of characters to zero-fill string to
      */
-    void writeString(const std::string& str);
+    void writeString(const std::string& str, atInt32 fixedLen = -1);
 
     /*! \brief Writes an wstring to the buffer and advances the buffer.
      *
      *  \sa Endian
      *  \param str The string to write to the buffer
+     *  \param fixedLen If not -1, the number of characters to zero-fill string to
      */
-    void writeWString(const std::wstring& str);
+    void writeWString(const std::wstring& str, atInt32 fixedLen = -1);
 
 
     void fill(atUint8 val, atUint64 length);

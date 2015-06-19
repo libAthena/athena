@@ -44,9 +44,9 @@ public:
     void writeBool(bool val);
     void writeVec3f(atVec3f vec);
     void writeVec4f(atVec4f vec);
-    void writeString(const std::string& val);
-    void writeWString(const std::wstring& str);
-    void writeUnicode(const std::string& str);
+    void writeString(const std::string& val, atInt32 fixedLen = -1);
+    void writeWString(const std::wstring& str, atInt32 fixedLen = -1);
+    void writeUnicode(const std::string& str, atInt32 fixedLen = -1);
     void fill(atInt8 byte, atUint64 len);
     void fill(atUint8 byte, atUint64 len);
 private:

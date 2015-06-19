@@ -412,7 +412,7 @@ public:
                                 }
                                 else if (arg.getKind() == clang::TemplateArgument::Expression)
                                 {
-                                    const clang::Expr* expr = arg.getAsExpr();
+                                    const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
                                     if (idx == 1)
                                     {
                                         sizeArg = &arg;
@@ -506,13 +506,13 @@ public:
                                 fileOut << "    " << fieldName << ".clear();\n";
                                 fileOut << "    " << fieldName << ".reserve(" << sizeExpr << ");\n";
                                 if (isDNAType)
-                                    fileOut << "    for (int i=0 ; i<(" << sizeExpr << ") ; ++i)\n"
+                                    fileOut << "    for (size_t i=0 ; i<(" << sizeExpr << ") ; ++i)\n"
                                                "    {\n"
                                                "        " << fieldName << ".emplace_back();\n"
                                                "        " << fieldName << ".back()." << ioOp << "\n"
                                                "    }\n";
                                 else
-                                    fileOut << "    for (int i=0 ; i<(" << sizeExpr << ") ; ++i)\n"
+                                    fileOut << "    for (size_t i=0 ; i<(" << sizeExpr << ") ; ++i)\n"
                                                "        " << fieldName << ".push_back(" << ioOp << ");\n";
                             }
                             else
@@ -533,7 +533,7 @@ public:
                             {
                                 if (arg.getKind() == clang::TemplateArgument::Expression)
                                 {
-                                    const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)arg.getAsExpr();
+                                    const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)arg.getAsExpr()->IgnoreImpCasts();
                                     if (uExpr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
                                         uExpr->getKind() == clang::UETT_SizeOf)
                                     {
@@ -585,7 +585,7 @@ public:
                             {
                                 if (arg.getKind() == clang::TemplateArgument::Expression)
                                 {
-                                    const clang::Expr* expr = arg.getAsExpr();
+                                    const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
                                     const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
                                     llvm::APSInt sizeLiteral;
                                     if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
@@ -609,7 +609,12 @@ public:
                             if (!p)
                                 fileOut << "    " << fieldName << " = reader.readString(" << sizeExprStr << ");\n";
                             else
-                                fileOut << "    writer.writeString(" << fieldName << ");\n";
+                            {
+                                fileOut << "    writer.writeString(" << fieldName;
+                                if (sizeExprStr.size())
+                                    fileOut << ", " << sizeExprStr;
+                                fileOut << ");\n";
+                            }
                         }
                         else if (!tsDecl->getNameAsString().compare("WString"))
                         {
@@ -644,7 +649,7 @@ public:
                             {
                                 if (arg.getKind() == clang::TemplateArgument::Expression)
                                 {
-                                    const clang::Expr* expr = arg.getAsExpr();
+                                    const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
                                     if (idx == 0)
                                     {
                                         llvm::APSInt sizeLiteral;
@@ -719,7 +724,12 @@ public:
                             if (!p)
                                 fileOut << "    " << fieldName << " = reader.readWString(" << sizeExprStr << ");\n";
                             else
-                                fileOut << "    writer.writeWString(" << fieldName << ");\n";
+                            {
+                                fileOut << "    writer.writeWString(" << fieldName;
+                                if (sizeExprStr.size())
+                                    fileOut << ", " << sizeExprStr;
+                                fileOut << ");\n";
+                            }
                         }
                         else if (!tsDecl->getNameAsString().compare("UTF8"))
                         {
@@ -729,7 +739,7 @@ public:
                             {
                                 if (arg.getKind() == clang::TemplateArgument::Expression)
                                 {
-                                    const clang::Expr* expr = arg.getAsExpr();
+                                    const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
                                     const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
                                     llvm::APSInt sizeLiteral;
                                     if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
@@ -753,12 +763,18 @@ public:
                             if (!p)
                                 fileOut << "    " << fieldName << " = reader.readUnicode(" << sizeExprStr << ");\n";
                             else
-                                fileOut << "    writer.writeUnicode(" << fieldName << ");\n";
+                            {
+                                fileOut << "    writer.writeUnicode(" << fieldName;
+                                if (sizeExprStr.size())
+                                    fileOut << ", " << sizeExprStr;
+                                fileOut << ");\n";
+                            }
                         }
                         else if (!tsDecl->getNameAsString().compare("Seek"))
                         {
                             size_t idx = 0;
-                            llvm::APSInt offset(64, 0);
+                            const clang::Expr* offsetExpr = nullptr;
+                            std::string offsetExprStr;
                             llvm::APSInt direction(64, 0);
                             const clang::Expr* directionExpr = nullptr;
                             bool bad = false;
@@ -766,19 +782,25 @@ public:
                             {
                                 if (arg.getKind() == clang::TemplateArgument::Expression)
                                 {
-                                    const clang::Expr* expr = arg.getAsExpr();
+                                    const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
                                     if (!idx)
                                     {
-                                        if (!expr->isIntegerConstantExpr(offset, context))
+                                        offsetExpr = expr;
+                                        const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
+                                        llvm::APSInt offsetLiteral;
+                                        if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
+                                            uExpr->getKind() == clang::UETT_SizeOf)
                                         {
-                                            if (!p)
-                                            {
-                                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                                diag.AddString("Unable to use non-constant offset expression in Athena");
-                                                diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
-                                            }
-                                            bad = true;
-                                            break;
+                                            const clang::Expr* argExpr = uExpr->getArgumentExpr();
+                                            while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
+                                                argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                                            offsetExpr = argExpr;
+                                            llvm::raw_string_ostream strStream(offsetExprStr);
+                                            argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
+                                        }
+                                        else if (expr->isIntegerConstantExpr(offsetLiteral, context))
+                                        {
+                                            offsetExprStr = offsetLiteral.toString(10);
                                         }
                                     }
                                     else
@@ -802,7 +824,6 @@ public:
                             if (bad)
                                 continue;
 
-                            int64_t offsetVal = offset.getSExtValue();
                             int64_t directionVal = direction.getSExtValue();
                             if (directionVal < 0 || directionVal > 2)
                             {
@@ -828,23 +849,23 @@ public:
                             if (directionVal == 0)
                             {
                                 if (!p)
-                                    fileOut << "    reader.seek(" << offsetVal << ", Athena::Begin);\n";
+                                    fileOut << "    reader.seek(" << offsetExprStr << ", Athena::Begin);\n";
                                 else
-                                    fileOut << "    writer.seek(" << offsetVal << ", Athena::Begin);\n";
+                                    fileOut << "    writer.seek(" << offsetExprStr << ", Athena::Begin);\n";
                             }
                             else if (directionVal == 1)
                             {
                                 if (!p)
-                                    fileOut << "    reader.seek(" << offsetVal << ", Athena::Current);\n";
+                                    fileOut << "    reader.seek(" << offsetExprStr << ", Athena::Current);\n";
                                 else
-                                    fileOut << "    writer.seek(" << offsetVal << ", Athena::Current);\n";
+                                    fileOut << "    writer.seek(" << offsetExprStr << ", Athena::Current);\n";
                             }
                             else if (directionVal == 2)
                             {
                                 if (!p)
-                                    fileOut << "    reader.seek(" << offsetVal << ", Athena::End);\n";
+                                    fileOut << "    reader.seek(" << offsetExprStr << ", Athena::End);\n";
                                 else
-                                    fileOut << "    writer.seek(" << offsetVal << ", Athena::End);\n";
+                                    fileOut << "    writer.seek(" << offsetExprStr << ", Athena::End);\n";
                             }
 
                         }

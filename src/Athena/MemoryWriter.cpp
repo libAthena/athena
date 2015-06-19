@@ -497,47 +497,100 @@ void MemoryWriter::writeVec4f(atVec4f vec)
     m_position += 16;
 }
 
-void MemoryWriter::writeUnicode(const std::string& str)
+void MemoryWriter::writeUnicode(const std::string& str, atInt32 fixedLen)
 {
     std::string tmpStr = "\xEF\xBB\xBF" + str;
 
-    std::vector<short> tmp;
+    std::vector<atUint16> tmp;
 
     utf8::utf8to16(tmpStr.begin(), tmpStr.end(), back_inserter(tmp));
 
-    for (atUint16 chr : tmp)
+    if (fixedLen < 0)
     {
-        if (chr != 0xFEFF)
-            writeInt16(chr);
+        for (atUint16 chr : tmp)
+        {
+            if (chr != 0xFEFF)
+                writeUint16(chr);
+        }
+        writeUint16(0);
+    }
+    else
+    {
+        auto it = tmp.begin();
+        for (atInt32 i=0 ; i<fixedLen ; ++i)
+        {
+            atUint16 chr;
+            if (it == tmp.end())
+                chr = 0;
+            else
+                chr = *it++;
+
+            if (chr == 0xFEFF)
+            {
+                --i;
+                continue;
+            }
+
+            writeUint16(chr);
+        }
     }
 
-    writeInt16(0);
 }
 
-void MemoryWriter::writeString(const std::string& str)
+void MemoryWriter::writeString(const std::string& str, atInt32 fixedLen)
 {
-    for (atUint8 c : str)
+    if (fixedLen < 0)
     {
-        writeUByte(c);
+        for (atUint8 c : str)
+        {
+            writeUByte(c);
 
-        if (c == '\0')
-            break;
+            if (c == '\0')
+                break;
+        }
+        writeUByte(0);
     }
-
-    writeUByte(0);
+    else
+    {
+        auto it = str.begin();
+        for (atInt32 i=0 ; i<fixedLen ; ++i)
+        {
+            atUint8 chr;
+            if (it == str.end())
+                chr = 0;
+            else
+                chr = *it++;
+            writeUByte(chr);
+        }
+    }
 }
 
-void MemoryWriter::writeWString(const std::wstring& str)
+void MemoryWriter::writeWString(const std::wstring& str, atInt32 fixedLen)
 {
-    for (atUint16 c : str)
+    if (fixedLen < 0)
     {
-        writeUint16(c);
+        for (atUint16 c : str)
+        {
+            writeUint16(c);
 
-        if (c == L'\0')
-            break;
+            if (c == L'\0')
+                break;
+        }
+        writeUint16(0);
     }
-
-    writeUint16(0);
+    else
+    {
+        auto it = str.begin();
+        for (atInt32 i=0 ; i<fixedLen ; ++i)
+        {
+            atUint16 chr;
+            if (it == str.end())
+                chr = 0;
+            else
+                chr = *it++;
+            writeUint16(chr);
+        }
+    }
 }
 
 void MemoryWriter::fill(atUint8 val, atUint64 length)

@@ -298,53 +298,117 @@ void FileWriter::writeVec4f(atVec4f vec)
         THROW_IO_EXCEPTION("Unable to write to stream");
 }
 
-void FileWriter::writeString(const std::string& val)
+void FileWriter::writeString(const std::string& val, atInt32 fixedLen)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
 
     m_bitValid = false;
-
     char term = '\0';
 
-    if (fwrite(val.c_str(), 1, val.length(), m_fileHandle) != val.length())
-        THROW_IO_EXCEPTION("Unable to write to stream");
+    if (fixedLen < 0)
+    {
+        if (fwrite(val.c_str(), 1, val.length(), m_fileHandle) != val.length())
+            THROW_IO_EXCEPTION("Unable to write to stream");
 
-    if (fwrite(&term, 1, 1, m_fileHandle) != 1)
-        THROW_IO_EXCEPTION("Unable to write to stream");
+        if (fwrite(&term, 1, 1, m_fileHandle) != 1)
+            THROW_IO_EXCEPTION("Unable to write to stream");
+    }
+    else
+    {
+        if (val.length() >= fixedLen)
+        {
+            if (fwrite(val.c_str(), 1, fixedLen, m_fileHandle) != fixedLen)
+                THROW_IO_EXCEPTION("Unable to write to stream");
+        }
+        else
+        {
+            if (fwrite(val.c_str(), 1, val.length(), m_fileHandle) != val.length())
+                THROW_IO_EXCEPTION("Unable to write to stream");
+            for (atUint32 i=val.length() ; i<fixedLen ; ++i)
+            {
+                if (fwrite(&term, 1, 1, m_fileHandle) != 1)
+                    THROW_IO_EXCEPTION("Unable to write to stream");
+            }
+        }
+    }
 }
 
-void FileWriter::writeWString(const std::wstring& val)
+void FileWriter::writeWString(const std::wstring& val, atInt32 fixedLen)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
 
     m_bitValid = false;
-
     wchar_t term = L'\0';
 
-    if (fwrite(val.c_str(), 2, val.length(), m_fileHandle) != val.length())
-        THROW_IO_EXCEPTION("Unable to write to stream");
+    if (fixedLen < 0)
+    {
+        if (fwrite(val.c_str(), 2, val.length(), m_fileHandle) != val.length())
+            THROW_IO_EXCEPTION("Unable to write to stream");
 
-    if (fwrite(&term, 2, 1, m_fileHandle) != 1)
-        THROW_IO_EXCEPTION("Unable to write to stream");
+        if (fwrite(&term, 2, 1, m_fileHandle) != 1)
+            THROW_IO_EXCEPTION("Unable to write to stream");
+    }
+    else
+    {
+        if (val.length() >= fixedLen)
+        {
+            if (fwrite(val.c_str(), 2, fixedLen, m_fileHandle) != fixedLen)
+                THROW_IO_EXCEPTION("Unable to write to stream");
+        }
+        else
+        {
+            if (fwrite(val.c_str(), 2, val.length(), m_fileHandle) != val.length())
+                THROW_IO_EXCEPTION("Unable to write to stream");
+            for (atUint32 i=val.length() ; i<fixedLen ; ++i)
+            {
+                if (fwrite(&term, 2, 1, m_fileHandle) != 1)
+                    THROW_IO_EXCEPTION("Unable to write to stream");
+            }
+        }
+    }
 }
 
-void FileWriter::writeUnicode(const std::string& str)
+void FileWriter::writeUnicode(const std::string& str, atInt32 fixedLen)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
 
     std::string tmpStr = "\xEF\xBB\xBF" + str;
 
-    std::vector<short> tmp;
+    std::vector<atUint16> tmp;
 
     utf8::utf8to16(tmpStr.begin(), tmpStr.end(), back_inserter(tmp));
 
-    for (atUint16 chr : tmp)
+    if (fixedLen < 0)
     {
-        if (chr != 0xFEFF)
-            writeInt16(chr);
+        for (atUint16 chr : tmp)
+        {
+            if (chr != 0xFEFF)
+                writeUint16(chr);
+        }
+        writeUint16(0);
+    }
+    else
+    {
+        auto it = tmp.begin();
+        for (atInt32 i=0 ; i<fixedLen ; ++i)
+        {
+            atUint16 chr;
+            if (it == tmp.end())
+                chr = 0;
+            else
+                chr = *it++;
+
+            if (chr == 0xFEFF)
+            {
+                --i;
+                continue;
+            }
+
+            writeUint16(chr);
+        }
     }
 }
 
