@@ -279,9 +279,12 @@ public:
                                     endianExpr = defArg;
                                     if (!defArg->isIntegerConstantExpr(endian, context))
                                     {
-                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
-                                        diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                        diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
+                                        if (!p)
+                                        {
+                                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
+                                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                            diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
+                                        }
                                         continue;
                                     }
                                 }
@@ -306,9 +309,12 @@ public:
                                     endianExpr = expr;
                                     if (expr->isIntegerConstantExpr(endian, context))
                                     {
-                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                        diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                        diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                        if (!p)
+                                        {
+                                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
+                                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                            diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                        }
                                         continue;
                                     }
                                 }
@@ -317,26 +323,32 @@ public:
                             int endianVal = endian.getSExtValue();
                             if (endianVal != 0 && endianVal != 1)
                             {
-                                if (endianExpr)
+                                if (!p)
                                 {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
-                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                    diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
-                                }
-                                else
-                                {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                    diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                                    if (endianExpr)
+                                    {
+                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
+                                        diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                        diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
+                                    }
+                                    else
+                                    {
+                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                                        diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                        diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                                    }
                                 }
                                 continue;
                             }
 
                             if (ioOp.empty())
                             {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                                diag.AddString("Unable to use type '" + tsDecl->getNameAsString() + "' with Athena");
-                                diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                                if (!p)
+                                {
+                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                                    diag.AddString("Unable to use type '" + tsDecl->getNameAsString() + "' with Athena");
+                                    diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                                }
                                 continue;
                             }
 
@@ -369,9 +381,12 @@ public:
                                     endianExpr = defArg;
                                     if (!defArg->isIntegerConstantExpr(endian, context))
                                     {
-                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
-                                        diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                        diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
+                                        if (!p)
+                                        {
+                                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
+                                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                            diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
+                                        }
                                         continue;
                                     }
                                 }
@@ -417,9 +432,12 @@ public:
                                         endianExpr = expr;
                                         if (!expr->isIntegerConstantExpr(endian, context))
                                         {
-                                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                            diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                            if (!p)
+                                            {
+                                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
+                                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                                diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                            }
                                             bad = true;
                                             break;
                                         }
@@ -433,34 +451,43 @@ public:
                             int endianVal = endian.getSExtValue();
                             if (endianVal != 0 && endianVal != 1)
                             {
-                                if (endianExpr)
+                                if (!p)
                                 {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
-                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                    diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
-                                }
-                                else
-                                {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                    diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                                    if (endianExpr)
+                                    {
+                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
+                                        diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                        diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
+                                    }
+                                    else
+                                    {
+                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                                        diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                        diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                                    }
                                 }
                                 continue;
                             }
 
                             if (ioOp.empty())
                             {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                                diag.AddString("Unable to use type '" + templateType.getAsString() + "' with Athena");
-                                diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                                if (!p)
+                                {
+                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                                    diag.AddString("Unable to use type '" + templateType.getAsString() + "' with Athena");
+                                    diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                                }
                                 continue;
                             }
 
                             if (sizeExpr.empty())
                             {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                                diag.AddString("Unable to use count variable with Athena");
-                                diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                                if (!p)
+                                {
+                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                                    diag.AddString("Unable to use count variable with Athena");
+                                    diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                                }
                                 continue;
                             }
 
@@ -485,7 +512,8 @@ public:
                                                "        " << fieldName << ".back()." << ioOp << "\n"
                                                "    }\n";
                                 else
-                                    fileOut << "    for (int i=0 ; i<(" << sizeExpr << ") ; ++i)\n        " << fieldName << ".push_back(" << ioOp << ");\n";
+                                    fileOut << "    for (int i=0 ; i<(" << sizeExpr << ") ; ++i)\n"
+                                               "        " << fieldName << ".push_back(" << ioOp << ");\n";
                             }
                             else
                             {
@@ -520,17 +548,20 @@ public:
                             }
                             if (sizeExprStr.empty())
                             {
-                                if (sizeExpr)
+                                if (!p)
                                 {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(sizeExpr->getLocStart(), AthenaError);
-                                    diag.AddString("Unable to use size variable with Athena");
-                                    diag.AddSourceRange(clang::CharSourceRange(sizeExpr->getSourceRange(), true));
-                                }
-                                else
-                                {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                                    diag.AddString("Unable to use size variable with Athena");
-                                    diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                                    if (sizeExpr)
+                                    {
+                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(sizeExpr->getLocStart(), AthenaError);
+                                        diag.AddString("Unable to use size variable with Athena");
+                                        diag.AddSourceRange(clang::CharSourceRange(sizeExpr->getSourceRange(), true));
+                                    }
+                                    else
+                                    {
+                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                                        diag.AddString("Unable to use size variable with Athena");
+                                        diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                                    }
                                 }
                                 continue;
                             }
@@ -594,9 +625,12 @@ public:
                                     endianExpr = defArg;
                                     if (!defArg->isIntegerConstantExpr(endian, context))
                                     {
-                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
-                                        diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                        diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
+                                        if (!p)
+                                        {
+                                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
+                                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                            diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
+                                        }
                                         continue;
                                     }
                                 }
@@ -635,9 +669,12 @@ public:
                                         endianExpr = expr;
                                         if (!expr->isIntegerConstantExpr(endian, context))
                                         {
-                                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                            diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                            if (!p)
+                                            {
+                                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
+                                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                                diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                            }
                                             bad = true;
                                             break;
                                         }
@@ -651,17 +688,20 @@ public:
                             int endianVal = endian.getSExtValue();
                             if (endianVal != 0 && endianVal != 1)
                             {
-                                if (endianExpr)
+                                if (!p)
                                 {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
-                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                    diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
-                                }
-                                else
-                                {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                    diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                                    if (endianExpr)
+                                    {
+                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
+                                        diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                        diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
+                                    }
+                                    else
+                                    {
+                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                                        diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                        diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                                    }
                                 }
                                 continue;
                             }
@@ -731,9 +771,12 @@ public:
                                     {
                                         if (!expr->isIntegerConstantExpr(offset, context))
                                         {
-                                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                            diag.AddString("Unable to use non-constant offset expression in Athena");
-                                            diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                            if (!p)
+                                            {
+                                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
+                                                diag.AddString("Unable to use non-constant offset expression in Athena");
+                                                diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                            }
                                             bad = true;
                                             break;
                                         }
@@ -743,9 +786,12 @@ public:
                                         directionExpr = expr;
                                         if (!expr->isIntegerConstantExpr(direction, context))
                                         {
-                                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                            diag.AddString("Unable to use non-constant direction expression in Athena");
-                                            diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                            if (!p)
+                                            {
+                                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
+                                                diag.AddString("Unable to use non-constant direction expression in Athena");
+                                                diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                            }
                                             bad = true;
                                             break;
                                         }
@@ -760,17 +806,20 @@ public:
                             int64_t directionVal = direction.getSExtValue();
                             if (directionVal < 0 || directionVal > 2)
                             {
-                                if (directionExpr)
+                                if (!p)
                                 {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(directionExpr->getLocStart(), AthenaError);
-                                    diag.AddString("Direction parameter must be 'Begin', 'Current', or 'End'");
-                                    diag.AddSourceRange(clang::CharSourceRange(directionExpr->getSourceRange(), true));
-                                }
-                                else
-                                {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                                    diag.AddString("Direction parameter must be 'Begin', 'Current', or 'End'");
-                                    diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                                    if (directionExpr)
+                                    {
+                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(directionExpr->getLocStart(), AthenaError);
+                                        diag.AddString("Direction parameter must be 'Begin', 'Current', or 'End'");
+                                        diag.AddSourceRange(clang::CharSourceRange(directionExpr->getSourceRange(), true));
+                                    }
+                                    else
+                                    {
+                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                                        diag.AddString("Direction parameter must be 'Begin', 'Current', or 'End'");
+                                        diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                                    }
                                 }
                                 continue;
                             }
@@ -810,9 +859,12 @@ public:
                                     const clang::Expr* expr = arg.getAsExpr();
                                     if (!expr->isIntegerConstantExpr(align, context))
                                     {
-                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                        diag.AddString("Unable to use non-constant align expression in Athena");
-                                        diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                        if (!p)
+                                        {
+                                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
+                                            diag.AddString("Unable to use non-constant align expression in Athena");
+                                            diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                        }
                                         bad = true;
                                         break;
                                     }
@@ -835,16 +887,16 @@ public:
                                 else if (align.isPowerOf2())
                                 {
                                     if (!p)
-                                        fileOut << "    reader.seek((reader.position() + " << alignVal-1 << ") & ~" << alignVal-1 << ", SeekOrigin::Begin);\n";
+                                        fileOut << "    reader.seek((reader.position() + " << alignVal-1 << ") & ~" << alignVal-1 << ", Athena::Begin);\n";
                                     else
-                                        fileOut << "    writer.seek((writer.position() + " << alignVal-1 << ") & ~" << alignVal-1 << ", SeekOrigin::Begin);\n";
+                                        fileOut << "    writer.seek((writer.position() + " << alignVal-1 << ") & ~" << alignVal-1 << ", Athena::Begin);\n";
                                 }
                                 else
                                 {
                                     if (!p)
-                                        fileOut << "    reader.seek((reader.position() + " << alignVal-1 << ") / " << alignVal << " * " << alignVal << ", SeekOrigin::Begin);\n";
+                                        fileOut << "    reader.seek((reader.position() + " << alignVal-1 << ") / " << alignVal << " * " << alignVal << ", Athena::Begin);\n";
                                     else
-                                        fileOut << "    writer.seek((writer.position() + " << alignVal-1 << ") / " << alignVal << " * " << alignVal << ", SeekOrigin::Begin);\n";
+                                        fileOut << "    writer.seek((writer.position() + " << alignVal-1 << ") / " << alignVal << " * " << alignVal << ", Athena::Begin);\n";
                                 }
                             }
                         }
