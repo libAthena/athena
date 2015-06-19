@@ -303,11 +303,11 @@ bool FileReader::readBool()
 
 atVec3f FileReader::readVec3f()
 {
+    atVec3f val = {};
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION_RETURN({}, "File not open for reading");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(val, "File not open for reading");
 
     m_bitValid = false;
-    atVec3f val = {};
     fread(&val, 1, 12, m_fileHandle);
 
     if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
@@ -322,11 +322,11 @@ atVec3f FileReader::readVec3f()
 
 atVec4f FileReader::readVec4f()
 {
+    atVec4f val = {};
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION_RETURN({}, "File not open for reading");
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN(val, "File not open for reading");
 
     m_bitValid = false;
-    atVec4f val = {};
     fread(&val, 1, 16, m_fileHandle);
 
     if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))

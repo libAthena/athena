@@ -431,7 +431,10 @@ atVec3f MemoryReader::readVec3f()
     }
 
     if (m_position + 12 > m_length)
-        THROW_IO_EXCEPTION_RETURN({}, "Position %0.8X outside stream bounds ", m_position);
+    {
+        atVec3f zero = {};
+        THROW_IO_EXCEPTION_RETURN(zero, "Position %0.8X outside stream bounds ", m_position);
+    }
 
     float* source = (float*)(m_data + m_position);
     atVec3f result = {source[0], source[1], source[2]};
@@ -464,7 +467,10 @@ atVec4f MemoryReader::readVec4f()
     }
 
     if (m_position + 16 > m_length)
-        THROW_IO_EXCEPTION_RETURN({}, "Position %0.8X outside stream bounds ", m_position);
+    {
+        atVec4f zero = {};
+        THROW_IO_EXCEPTION_RETURN(zero, "Position %0.8X outside stream bounds ", m_position);
+    }
 
     float* source = (float*)(m_data + m_position);
     atVec4f result = {source[0], source[1], source[2], source[3]};
