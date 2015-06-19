@@ -346,12 +346,13 @@ std::string FileReader::readString(atInt32 fixedLen)
 
     atUint8 chr = readByte();
     atInt32 i;
-    for (i = 0 ; chr != 0 ; ++i)
+    for (i = 1 ; chr != 0 ; ++i)
     {
-        if (fixedLen >= 0 && i >= fixedLen - 1)
+        ret += chr;
+
+        if (fixedLen >= 0 && i >= fixedLen)
             break;
 
-        ret += chr;
         chr = readByte();
     }
 
@@ -367,12 +368,13 @@ std::wstring FileReader::readWString(atInt32 fixedLen)
     atUint16 chr = readUint16();
 
     atInt32 i;
-    for (i = 0 ; chr != 0 ; ++i)
+    for (i = 1 ; chr != 0 ; ++i)
     {
-        if (fixedLen >= 0 && i >= fixedLen - 1)
+        ret += chr;
+
+        if (fixedLen >= 0 && i >= fixedLen)
             break;
 
-        ret += chr;
         chr = readUint16();
     }
 
