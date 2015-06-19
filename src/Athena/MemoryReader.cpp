@@ -493,7 +493,7 @@ atVec4f MemoryReader::readVec4f()
     return result;
 }
 
-std::string MemoryReader::readUnicode(atInt32 maxlen)
+std::string MemoryReader::readUnicode(atInt32 fixedLen)
 {
     if (!m_data)
         loadData();
@@ -502,11 +502,10 @@ std::string MemoryReader::readUnicode(atInt32 maxlen)
     std::vector<short> tmp;
     atUint16 chr = readUint16();
 
-    atInt32 i = 0;
-
-    for (;;)
+    atInt32 i;
+    for (i = 0 ;; ++i)
     {
-        if (maxlen >= 0 && i >= maxlen - 1)
+        if (fixedLen >= 0 && i >= fixedLen - 1)
             break;
 
         if (!chr)
@@ -514,49 +513,53 @@ std::string MemoryReader::readUnicode(atInt32 maxlen)
 
         tmp.push_back(chr);
         chr = readUint16();
-        i++;
     }
+
+    if (fixedLen >= 0 && i < fixedLen)
+        seek(fixedLen - i);
 
     utf8::utf16to8(tmp.begin(), tmp.end(), back_inserter(ret));
     return ret;
 }
 
-std::string MemoryReader::readString(atInt32 maxlen)
+std::string MemoryReader::readString(atInt32 fixedLen)
 {
     std::string ret;
     atUint8 chr = readByte();
 
-    atInt32 i = 0;
-
-    while (chr != 0)
+    atInt32 i;
+    for (i = 0 ; chr != 0 ; ++i)
     {
-        if (maxlen >= 0 && i >= maxlen - 1)
+        if (fixedLen >= 0 && i >= fixedLen - 1)
             break;
 
         ret += chr;
         chr = readByte();
-        i++;
     }
+
+    if (fixedLen >= 0 && i < fixedLen)
+        seek(fixedLen - i);
 
     return ret;
 }
 
-std::wstring MemoryReader::readWString(atInt32 maxlen)
+std::wstring MemoryReader::readWString(atInt32 fixedLen)
 {
     std::wstring ret;
     atUint16 chr = readUint16();
 
-    atInt32 i = 0;
-
-    while (chr != 0)
+    atInt32 i;
+    for (i = 0 ; chr != 0 ; ++i)
     {
-        if (maxlen >= 0 && i >= maxlen - 1)
+        if (fixedLen >= 0 && i >= fixedLen - 1)
             break;
 
         ret += chr;
         chr = readUint16();
-        i++;
     }
+
+    if (fixedLen >= 0 && i < fixedLen)
+        seek(fixedLen - i);
 
     return ret;
 }

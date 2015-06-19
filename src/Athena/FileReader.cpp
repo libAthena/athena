@@ -340,70 +340,71 @@ atVec4f FileReader::readVec4f()
     return val;
 }
 
-std::string FileReader::readString(atInt32 maxlen)
+std::string FileReader::readString(atInt32 fixedLen)
 {
     std::string ret;
+
     atUint8 chr = readByte();
-
-    atInt32 i = 0;
-
-    while (chr != 0)
+    atInt32 i;
+    for (i = 0 ; chr != 0 ; ++i)
     {
-        if (maxlen >= 0 && i >= maxlen - 1)
+        if (fixedLen >= 0 && i >= fixedLen - 1)
             break;
 
         ret += chr;
         chr = readByte();
-        i++;
     }
+
+    if (fixedLen >= 0 && i < fixedLen)
+        seek(fixedLen - i);
 
     return ret;
 }
 
-std::wstring FileReader::readWString(atInt32 maxlen)
+std::wstring FileReader::readWString(atInt32 fixedLen)
 {
     std::wstring ret;
     atUint16 chr = readUint16();
 
-    atInt32 i = 0;
-
-    while (chr != 0)
+    atInt32 i;
+    for (i = 0 ; chr != 0 ; ++i)
     {
-        if (maxlen >= 0 && i >= maxlen - 1)
+        if (fixedLen >= 0 && i >= fixedLen - 1)
             break;
 
         ret += chr;
         chr = readUint16();
-        i++;
     }
+
+    if (fixedLen >= 0 && i < fixedLen)
+        seek(fixedLen - i);
 
     return ret;
 }
 
-std::string FileReader::readUnicode(atInt32 maxlen)
+std::string FileReader::readUnicode(atInt32 fixedLen)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION_RETURN(std::string(), "File not open for reading");
 
     std::string ret;
-    std::vector<short> tmp;
-
-    atInt32 i = 0;
-
-    for (;;)
+    std::vector<atUint16> tmp;
+    atInt32 i;
+    for (i = 0 ;; ++i)
     {
-        if (maxlen >= 0 && i >= maxlen - 1)
+        if (fixedLen >= 0 && i >= fixedLen - 1)
             break;
 
-        short chr = readUint16();
+        atUint16 chr = readUint16();
 
         if (chr)
             tmp.push_back(chr);
         else
             break;
-
-        i++;
     };
+
+    if (fixedLen >= 0 && i < fixedLen)
+        seek(fixedLen - i);
 
     utf8::utf16to8(tmp.begin(), tmp.end(), back_inserter(ret));
 
