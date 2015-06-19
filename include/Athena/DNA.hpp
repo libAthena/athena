@@ -11,6 +11,7 @@
 #include "IStreamReader.hpp"
 #include "IStreamWriter.hpp"
 #include <vector>
+#include <memory>
 
 namespace Athena
 {
@@ -33,6 +34,24 @@ struct DNA
 
     template <typename T, size_t cntVar, Endian VE = DNAE>
     using Vector = std::vector<T>;
+
+    template <size_t sizeVar>
+    using Buffer = std::unique_ptr<atUint8[]>;
+
+    template <atInt32 sizeVar = -1>
+    using String = std::string;
+
+    template <atInt32 sizeVar = -1, Endian VE = DNAE>
+    using WString = std::wstring;
+
+    template <atInt32 sizeVar = -1>
+    using UTF8 = std::string;
+
+    template <off_t offset, SeekOrigin direction>
+    struct Seek {};
+
+    template <size_t align>
+    struct Align {};
 
     virtual void read(IStreamReader&)=0;
     virtual void write(IStreamWriter&) const=0;

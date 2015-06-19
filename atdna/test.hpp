@@ -27,10 +27,21 @@ struct ANCSFile : public io::DNA<BigEndian>
 
     ANCSSubFile subFile;
 
-    Value<atUint32> arrCount;
-    Vector<atUint32, sizeof(arrCount)> array;
+    Align<4> align;
+
+    Value<atUint32> arrCount[2];
+    Vector<atUint32, sizeof(arrCount[0])> array;
+
+    Seek<21, Current> seek;
 
     Value<atUint32> arrCount2;
-    Vector<ANCSSubFile, sizeof(arrCount2)> array2;
+    Vector<ANCSSubFile, sizeof(arrCount[1] + arrCount2)> array2;
+
+    Value<atUint32> bufSz;
+    Buffer<sizeof(bufSz)> buf;
+
+    String<32> str;
+    WString<64> wstr;
+    UTF8<> utf8str[5];
 };
 

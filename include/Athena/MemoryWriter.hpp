@@ -1,18 +1,3 @@
-// This file is part of libAthena.
-//
-// libAthena is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// libAthena is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with libAthena.  If not, see <http://www.gnu.org/licenses/>
-
 #ifndef MEMORYWRITER_HPP
 #define MEMORYWRITER_HPP
 
@@ -261,6 +246,22 @@ public:
      */
     void writeBool(bool);
 
+    /*! \brief Writes an atVec3f (12 bytes) to the buffer and advances the buffer.
+     *         It also swaps the bytes depending on the platform and Stream settings.
+     *
+     * \sa Endian
+     * \param vec The value to write to the buffer
+     */
+    void writeVec3f(atVec3f vec);
+
+    /*! \brief Writes an atVec4f (16 bytes) to the buffer and advances the buffer.
+     *         It also swaps the bytes depending on the platform and Stream settings.
+     *
+     * \sa Endian
+     * \param vec The value to write to the buffer
+     */
+    void writeVec4f(atVec4f vec);
+
     /*! \brief Writes an unicode string to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
@@ -275,6 +276,14 @@ public:
      *  \param str The string to write to the buffer
      */
     void writeString(const std::string& str);
+
+    /*! \brief Writes an wstring to the buffer and advances the buffer.
+     *
+     *  \sa Endian
+     *  \param str The string to write to the buffer
+     */
+    void writeWString(const std::wstring& str);
+
 
     void fill(atUint8 val, atUint64 length);
     void fill(atInt8 val, atUint64 length);

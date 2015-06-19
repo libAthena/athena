@@ -1,18 +1,3 @@
-// This file is part of libAthena.
-//
-// libAthena is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// libAthena is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with libAthena.  If not, see <http://www.gnu.org/licenses/>
-
 #include "Athena/FileWriter.hpp"
 #include "Athena/FileNotFoundException.hpp"
 #include "Athena/InvalidDataException.hpp"
@@ -276,6 +261,43 @@ void FileWriter::writeBool(bool val)
     writeByte(val);
 }
 
+void FileWriter::writeVec3f(atVec3f vec)
+{
+    if (!isOpen())
+        THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
+
+    m_bitValid = false;
+
+    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
+    {
+        vec.vec[0] = utility::swapFloat(vec.vec[0]);
+        vec.vec[1] = utility::swapFloat(vec.vec[1]);
+        vec.vec[2] = utility::swapFloat(vec.vec[2]);
+    }
+
+    if (fwrite(&vec, 1, 12, m_fileHandle) != 12)
+        THROW_IO_EXCEPTION("Unable to write to stream");
+}
+
+void FileWriter::writeVec4f(atVec4f vec)
+{
+    if (!isOpen())
+        THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
+
+    m_bitValid = false;
+
+    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
+    {
+        vec.vec[0] = utility::swapFloat(vec.vec[0]);
+        vec.vec[1] = utility::swapFloat(vec.vec[1]);
+        vec.vec[2] = utility::swapFloat(vec.vec[2]);
+        vec.vec[3] = utility::swapFloat(vec.vec[3]);
+    }
+
+    if (fwrite(&vec, 1, 16, m_fileHandle) != 16)
+        THROW_IO_EXCEPTION("Unable to write to stream");
+}
+
 void FileWriter::writeString(const std::string& val)
 {
     if (!isOpen())
@@ -289,6 +311,22 @@ void FileWriter::writeString(const std::string& val)
         THROW_IO_EXCEPTION("Unable to write to stream");
 
     if (fwrite(&term, 1, 1, m_fileHandle) != 1)
+        THROW_IO_EXCEPTION("Unable to write to stream");
+}
+
+void FileWriter::writeWString(const std::wstring& val)
+{
+    if (!isOpen())
+        THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
+
+    m_bitValid = false;
+
+    wchar_t term = L'\0';
+
+    if (fwrite(val.c_str(), 2, val.length(), m_fileHandle) != val.length())
+        THROW_IO_EXCEPTION("Unable to write to stream");
+
+    if (fwrite(&term, 2, 1, m_fileHandle) != 1)
         THROW_IO_EXCEPTION("Unable to write to stream");
 }
 

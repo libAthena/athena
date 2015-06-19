@@ -1,18 +1,3 @@
-// This file is part of libAthena.
-//
-// libAthena is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// libAthena is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with libAthena.  If not, see <http://www.gnu.org/licenses/>
-
 #include "Athena/FileReader.hpp"
 #include "Athena/FileNotFoundException.hpp"
 #include "Athena/InvalidDataException.hpp"
@@ -316,9 +301,48 @@ bool FileReader::readBool()
     return (readByte() != 0);
 }
 
+atVec3f FileReader::readVec3f()
+{
+    if (!isOpen())
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN({}, "File not open for reading");
+
+    m_bitValid = false;
+    atVec3f val = {};
+    fread(&val, 1, 12, m_fileHandle);
+
+    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
+    {
+        val.vec[0] = utility::swapFloat(val.vec[0]);
+        val.vec[1] = utility::swapFloat(val.vec[1]);
+        val.vec[2] = utility::swapFloat(val.vec[2]);
+    }
+
+    return val;
+}
+
+atVec4f FileReader::readVec4f()
+{
+    if (!isOpen())
+        THROW_INVALID_OPERATION_EXCEPTION_RETURN({}, "File not open for reading");
+
+    m_bitValid = false;
+    atVec4f val = {};
+    fread(&val, 1, 16, m_fileHandle);
+
+    if ((!utility::isSystemBigEndian() && isBigEndian()) || (utility::isSystemBigEndian() && isLittleEndian()))
+    {
+        val.vec[0] = utility::swapFloat(val.vec[0]);
+        val.vec[1] = utility::swapFloat(val.vec[1]);
+        val.vec[2] = utility::swapFloat(val.vec[2]);
+        val.vec[3] = utility::swapFloat(val.vec[3]);
+    }
+
+    return val;
+}
+
 std::string FileReader::readString(atInt32 maxlen)
 {
-    std::string ret = "";
+    std::string ret;
     atUint8 chr = readByte();
 
     atInt32 i = 0;
@@ -330,6 +354,26 @@ std::string FileReader::readString(atInt32 maxlen)
 
         ret += chr;
         chr = readByte();
+        i++;
+    }
+
+    return ret;
+}
+
+std::wstring FileReader::readWString(atInt32 maxlen)
+{
+    std::wstring ret;
+    atUint16 chr = readUint16();
+
+    atInt32 i = 0;
+
+    while (chr != 0)
+    {
+        if (maxlen >= 0 && i >= maxlen - 1)
+            break;
+
+        ret += chr;
+        chr = readUint16();
         i++;
     }
 

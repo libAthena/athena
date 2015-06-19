@@ -1,18 +1,3 @@
-// This file is part of libAthena.
-//
-// libAthena is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// libAthena is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with libAthena.  If not, see <http://www.gnu.org/licenses/>
-
 #include "Athena/MemoryWriter.hpp"
 #include "Athena/IOException.hpp"
 #include "Athena/InvalidOperationException.hpp"
@@ -443,6 +428,75 @@ void MemoryWriter::writeBool(bool val)
     m_position += sizeof(bool);
 }
 
+void MemoryWriter::writeVec3f(atVec3f vec)
+{
+    if (!isOpen())
+        resize(12);
+
+    if (m_bitPosition > 0)
+    {
+        m_bitPosition = 0;
+        m_position += sizeof(atUint8);
+    }
+
+    if (m_position + 12 > m_length)
+        resize(m_position + 12);
+
+    if (isBigEndian())
+    {
+        utility::BigFloat(vec.vec[0]);
+        utility::BigFloat(vec.vec[1]);
+        utility::BigFloat(vec.vec[2]);
+    }
+    else
+    {
+        utility::LittleFloat(vec.vec[0]);
+        utility::LittleFloat(vec.vec[1]);
+        utility::LittleFloat(vec.vec[2]);
+    }
+
+    ((float*)(m_data + m_position))[0] = vec.vec[0];
+    ((float*)(m_data + m_position))[1] = vec.vec[1];
+    ((float*)(m_data + m_position))[2] = vec.vec[2];
+    m_position += 12;
+}
+
+void MemoryWriter::writeVec4f(atVec4f vec)
+{
+    if (!isOpen())
+        resize(16);
+
+    if (m_bitPosition > 0)
+    {
+        m_bitPosition = 0;
+        m_position += sizeof(atUint8);
+    }
+
+    if (m_position + 16 > m_length)
+        resize(m_position + 16);
+
+    if (isBigEndian())
+    {
+        utility::BigFloat(vec.vec[0]);
+        utility::BigFloat(vec.vec[1]);
+        utility::BigFloat(vec.vec[2]);
+        utility::BigFloat(vec.vec[3]);
+    }
+    else
+    {
+        utility::LittleFloat(vec.vec[0]);
+        utility::LittleFloat(vec.vec[1]);
+        utility::LittleFloat(vec.vec[2]);
+        utility::LittleFloat(vec.vec[3]);
+    }
+
+    ((float*)(m_data + m_position))[0] = vec.vec[0];
+    ((float*)(m_data + m_position))[1] = vec.vec[1];
+    ((float*)(m_data + m_position))[2] = vec.vec[2];
+    ((float*)(m_data + m_position))[3] = vec.vec[3];
+    m_position += 16;
+}
+
 void MemoryWriter::writeUnicode(const std::string& str)
 {
     std::string tmpStr = "\xEF\xBB\xBF" + str;
@@ -471,6 +525,19 @@ void MemoryWriter::writeString(const std::string& str)
     }
 
     writeUByte(0);
+}
+
+void MemoryWriter::writeWString(const std::wstring& str)
+{
+    for (atUint16 c : str)
+    {
+        writeUint16(c);
+
+        if (c == L'\0')
+            break;
+    }
+
+    writeUint16(0);
 }
 
 void MemoryWriter::fill(atUint8 val, atUint64 length)

@@ -1,18 +1,3 @@
-// This file is part of libAthena.
-//
-// libAthena is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// libAthena is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with libAthena.  If not, see <http://www.gnu.org/licenses/>
-
 #ifndef FILEWRITER_HPP
 #define FILEWRITER_HPP
 
@@ -57,7 +42,10 @@ public:
     void writeDouble(double val);
     void writeFloat(float val);
     void writeBool(bool val);
+    void writeVec3f(atVec3f vec);
+    void writeVec4f(atVec4f vec);
     void writeString(const std::string& val);
+    void writeWString(const std::wstring& str);
     void writeUnicode(const std::string& str);
     void fill(atInt8 byte, atUint64 len);
     void fill(atUint8 byte, atUint64 len);
