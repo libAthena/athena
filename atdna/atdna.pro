@@ -7,7 +7,13 @@ DEFINES += __STDC_LIMIT_MACROS=1 __STDC_CONSTANT_MACROS=1
 QMAKE_CXXFLAGS += -fno-rtti
 QMAKE_CXXFLAGS_WARN_ON = -Wno-unused-parameter
 
+isEmpty(LLVM_CONFIG) {
+    LLVM_CONFIG = llvm-config
+}
+
 INCLUDEPATH += ../include
+INCLUDEPATH += $$system($$LLVM_CONFIG --includedir)
+LIBS += -L$$system($$LLVM_CONFIG --libdir)
 
 CONFIG(debug, debug|release) {
     # FOR FULL DEBUGGING, PLEASE UNCOMMENT THESE AND POINT THEM TO

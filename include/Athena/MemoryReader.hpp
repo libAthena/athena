@@ -1,18 +1,3 @@
-// This file is part of libAthena.
-//
-// libAthena is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// libAthena is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with libAthena.  If not, see <http://www.gnu.org/licenses/>
-
 #ifndef MEMORYREADER_HPP
 #define MEMORYREADER_HPP
 
@@ -268,6 +253,20 @@ public:
      */
     bool readBool();
 
+    /*! \brief Reads an atVec3f (12 bytes) and advances the current position
+     *
+     *  \return atVec3f The value at the current address
+     *  \throw IOException when address is out of range
+     */
+    atVec3f readVec3f();
+
+    /*! \brief Reads an atVec4f (16 bytes) and advances the current position
+     *
+     *  \return atVec4f The value at the current address
+     *  \throw IOException when address is out of range
+     */
+    atVec4f readVec4f();
+
     /*! \brief Reads a Unicode string and advances the position in the file
      *
      *  \return std::string The value at the current address
@@ -281,6 +280,13 @@ public:
      *  \throw IOException when address is out of range
      */
     std::string readString(atInt32 maxlen = -1);
+
+    /*! \brief Reads a wstring and advances the position in the file
+     *
+     *  \return std::wstring The value at the current address
+     *  \throw IOException when address is out of range
+     */
+    std::wstring readWString(atInt32 maxlen = -1);
 
     void setProgressCallback(std::function<void(int)> cb);
 protected:

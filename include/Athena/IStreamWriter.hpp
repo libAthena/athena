@@ -36,7 +36,10 @@ public:
     virtual void writeDouble(double) = 0;
     virtual void writeFloat(float) = 0;
     virtual void writeBool(bool) = 0;
+    virtual void writeVec3f(atVec3f vec) = 0;
+    virtual void writeVec4f(atVec4f vec) = 0;
     virtual void writeString(const std::string&) = 0;
+    virtual void writeWString(const std::wstring&) = 0;
     virtual void writeUnicode(const std::string&) = 0;
     virtual void fill(atUint8, atUint64) = 0;
     virtual void fill(atInt8, atUint64) = 0;

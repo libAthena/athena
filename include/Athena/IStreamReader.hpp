@@ -38,8 +38,11 @@ public:
     virtual double   readDouble() = 0;
     virtual float    readFloat() = 0;
     virtual bool     readBool() = 0;
+    virtual atVec3f  readVec3f() = 0;
+    virtual atVec4f  readVec4f() = 0;
     virtual std::string readUnicode(atInt32 = -1) = 0;
     virtual std::string readString(atInt32 = -1) = 0;
+    virtual std::wstring readWString(atInt32 = -1) = 0;
 };
 }
 }

@@ -1,18 +1,3 @@
-// This file is part of libAthena.
-//
-// libAthena is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// libAthena is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with libAthena.  If not, see <http://www.gnu.org/licenses/>
-
 #include "Athena/MemoryReader.hpp"
 #include "Athena/IOException.hpp"
 #include "Athena/FileNotFoundException.hpp"
@@ -434,6 +419,74 @@ bool MemoryReader::readBool()
     return ret;
 }
 
+atVec3f MemoryReader::readVec3f()
+{
+    if (!m_data)
+        loadData();
+
+    if (m_bitPosition > 0)
+    {
+        m_bitPosition = 0;
+        m_position += sizeof(atUint8);
+    }
+
+    if (m_position + 12 > m_length)
+        THROW_IO_EXCEPTION_RETURN({}, "Position %0.8X outside stream bounds ", m_position);
+
+    float* source = (float*)(m_data + m_position);
+    atVec3f result = {source[0], source[1], source[2]};
+    if (isBigEndian())
+    {
+        utility::BigFloat(result.vec[0]);
+        utility::BigFloat(result.vec[1]);
+        utility::BigFloat(result.vec[2]);
+    }
+    else
+    {
+        utility::LittleFloat(result.vec[0]);
+        utility::LittleFloat(result.vec[1]);
+        utility::LittleFloat(result.vec[2]);
+    }
+
+    m_position += 12;
+    return result;
+}
+
+atVec4f MemoryReader::readVec4f()
+{
+    if (!m_data)
+        loadData();
+
+    if (m_bitPosition > 0)
+    {
+        m_bitPosition = 0;
+        m_position += sizeof(atUint8);
+    }
+
+    if (m_position + 16 > m_length)
+        THROW_IO_EXCEPTION_RETURN({}, "Position %0.8X outside stream bounds ", m_position);
+
+    float* source = (float*)(m_data + m_position);
+    atVec4f result = {source[0], source[1], source[2], source[3]};
+    if (isBigEndian())
+    {
+        utility::BigFloat(result.vec[0]);
+        utility::BigFloat(result.vec[1]);
+        utility::BigFloat(result.vec[2]);
+        utility::BigFloat(result.vec[3]);
+    }
+    else
+    {
+        utility::LittleFloat(result.vec[0]);
+        utility::LittleFloat(result.vec[1]);
+        utility::LittleFloat(result.vec[2]);
+        utility::LittleFloat(result.vec[3]);
+    }
+
+    m_position += 16;
+    return result;
+}
+
 std::string MemoryReader::readUnicode(atInt32 maxlen)
 {
     if (!m_data)
@@ -464,7 +517,7 @@ std::string MemoryReader::readUnicode(atInt32 maxlen)
 
 std::string MemoryReader::readString(atInt32 maxlen)
 {
-    std::string ret = "";
+    std::string ret;
     atUint8 chr = readByte();
 
     atInt32 i = 0;
@@ -476,6 +529,26 @@ std::string MemoryReader::readString(atInt32 maxlen)
 
         ret += chr;
         chr = readByte();
+        i++;
+    }
+
+    return ret;
+}
+
+std::wstring MemoryReader::readWString(atInt32 maxlen)
+{
+    std::wstring ret;
+    atUint16 chr = readUint16();
+
+    atInt32 i = 0;
+
+    while (chr != 0)
+    {
+        if (maxlen >= 0 && i >= maxlen - 1)
+            break;
+
+        ret += chr;
+        chr = readUint16();
         i++;
     }
 
