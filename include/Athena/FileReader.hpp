@@ -50,9 +50,9 @@ public:
     bool   readBool();
     atVec3f readVec3f();
     atVec4f readVec4f();
-    std::string readString(atInt32 maxlen = -1);
-    std::wstring readWString(atInt32 maxLen = -1);
-    std::string readUnicode(atInt32 maxlen = -1);
+    std::string readString(atInt32 fixedLen = -1);
+    std::wstring readWString(atInt32 fixedLen = -1);
+    std::string readUnicode(atInt32 fixedLen = -1);
 protected:
     std::string  m_filename;
     FILE*        m_fileHandle;

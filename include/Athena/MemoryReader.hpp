@@ -269,24 +269,27 @@ public:
 
     /*! \brief Reads a Unicode string and advances the position in the file
      *
+     *  \param fixedLen If non-negative, this is a fixed-length string read
      *  \return std::string The value at the current address
      *  \throw IOException when address is out of range
      */
-    std::string readUnicode(atInt32 maxlen = -1);
+    std::string readUnicode(atInt32 fixedLen = -1);
 
     /*! \brief Reads a string and advances the position in the file
      *
+     *  \param fixedLen If non-negative, this is a fixed-length string read
      *  \return std::string The value at the current address
      *  \throw IOException when address is out of range
      */
-    std::string readString(atInt32 maxlen = -1);
+    std::string readString(atInt32 fixedLen = -1);
 
     /*! \brief Reads a wstring and advances the position in the file
      *
+     *  \param fixedLen If non-negative, this is a fixed-length string read
      *  \return std::wstring The value at the current address
      *  \throw IOException when address is out of range
      */
-    std::wstring readWString(atInt32 maxlen = -1);
+    std::wstring readWString(atInt32 fixedLen = -1);
 
     void setProgressCallback(std::function<void(int)> cb);
 protected:
