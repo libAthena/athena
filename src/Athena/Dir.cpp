@@ -1,11 +1,17 @@
 #include "Athena/Dir.hpp"
-#include <dirent.h>
 #include <sys/stat.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <limits.h>
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
+
+#ifndef _WIN32
+#include <dirent.h>
+#include <unistd.h>
+#else
+#include <time.h>
+#include <direct.h>
+#endif
 
 #ifdef _MSC_VER
 #define stat64 __stat64
@@ -64,7 +70,11 @@ bool Dir::touch()
 
 bool Dir::mkdir(const std::string& dir, mode_t mode)
 {
+#if _WIN32
+    return !(::_mkdir(dir.c_str()) < 0);
+#else    
     return !(::mkdir(dir.c_str(), mode) < 0);
+#endif
 }
 
 bool Dir::mkpath(const std::string& path, mode_t mode)

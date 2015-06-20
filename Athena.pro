@@ -51,15 +51,15 @@ unix {
 }
 
 win32 {
-   isEmpty(PREFIX) {
+    isEmpty(PREFIX) {
         PREFIX = $$PWD/pkg
-   }
+    }
 
-   libFiles.path = $$PREFIX/lib
-   libFiles.files = $$PWD/lib/*
-   headerFiles.path = $$PREFIX/include/Athena
-   headerFiles.files = $$PWD/include/*
-   INSTALLS += libFiles headerFiles
+    libFiles.path = $$PREFIX/lib
+    libFiles.files = $$PWD/lib/*
+    headerFiles.path = $$PREFIX/include/Athena
+    headerFiles.files = $$PWD/include/*
+    INSTALLS += libFiles headerFiles
 }
 
 

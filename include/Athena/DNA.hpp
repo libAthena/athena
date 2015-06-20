@@ -62,6 +62,13 @@ struct DNA
     void read(Athena::io::IStreamReader&); \
     void write(Athena::io::IStreamWriter&) const; \
 
+/** Macro to supply count variable to atdna and mute it for other compilers */
+#ifdef __clang__
+#define DNA_COUNT(cnt) sizeof(cnt)
+#else
+#define DNA_COUNT(cnt) 0
+#endif
+
 }
 }
 
