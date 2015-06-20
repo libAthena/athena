@@ -316,16 +316,16 @@ void FileWriter::writeString(const std::string& val, atInt32 fixedLen)
     }
     else
     {
-        if (val.length() >= fixedLen)
+        if ((atInt32)val.length() >= fixedLen)
         {
-            if (fwrite(val.c_str(), 1, fixedLen, m_fileHandle) != fixedLen)
+            if ((atInt32)fwrite(val.c_str(), 1, fixedLen, m_fileHandle) != fixedLen)
                 THROW_IO_EXCEPTION("Unable to write to stream");
         }
         else
         {
             if (fwrite(val.c_str(), 1, val.length(), m_fileHandle) != val.length())
                 THROW_IO_EXCEPTION("Unable to write to stream");
-            for (atUint32 i=val.length() ; i<fixedLen ; ++i)
+            for (atInt32 i=val.length() ; i<fixedLen ; ++i)
             {
                 if (fwrite(&term, 1, 1, m_fileHandle) != 1)
                     THROW_IO_EXCEPTION("Unable to write to stream");
@@ -352,16 +352,16 @@ void FileWriter::writeWString(const std::wstring& val, atInt32 fixedLen)
     }
     else
     {
-        if (val.length() >= fixedLen)
+        if ((atInt32)val.length() >= fixedLen)
         {
-            if (fwrite(val.c_str(), 2, fixedLen, m_fileHandle) != fixedLen)
+            if ((atInt32)fwrite(val.c_str(), 2, fixedLen, m_fileHandle) != fixedLen)
                 THROW_IO_EXCEPTION("Unable to write to stream");
         }
         else
         {
             if (fwrite(val.c_str(), 2, val.length(), m_fileHandle) != val.length())
                 THROW_IO_EXCEPTION("Unable to write to stream");
-            for (atUint32 i=val.length() ; i<fixedLen ; ++i)
+            for (atInt32 i=val.length() ; i<fixedLen ; ++i)
             {
                 if (fwrite(&term, 2, 1, m_fileHandle) != 1)
                     THROW_IO_EXCEPTION("Unable to write to stream");
