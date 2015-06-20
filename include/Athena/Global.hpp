@@ -7,6 +7,21 @@
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4996)
+
+#include <sys/stat.h>
+
+#if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)
+#define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+#endif
+
+#if !defined(S_ISDIR) && defined(S_IFMT) && defined(S_IFDIR)
+#define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
+#endif
+
+#if !defined(S_ISLNK)
+#define S_ISLNK(m) 0
+#endif
+
 #endif
 
 #ifndef AT_PRETTY_FUNCTION
@@ -30,6 +45,8 @@
 #include "gekko_support.h"
 typedef struct stat stat64_t;
 #define stat64 stat
+#elif _WIN32
+typedef struct _stat64 stat64_t;
 #else
 typedef struct stat64 stat64_t;
 #endif

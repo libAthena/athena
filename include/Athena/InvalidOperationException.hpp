@@ -36,14 +36,13 @@ public:
 #ifdef _MSC_VER
 #define THROW_INVALID_OPERATION_EXCEPTION(args, ...) \
     do  { \
-    if (atGetExceptionHandler()) {atGetExceptionHandler()(__FILE__, AT_PRETTY_FUNCTION, __LINE__, __VA_ARGS__);  return; \
-    } else {
-std::string msg = Athena::utility::sprintf(args, __VA_ARGS__);
+    if (atGetExceptionHandler()) {atGetExceptionHandler()(__FILE__, AT_PRETTY_FUNCTION, __LINE__, args, __VA_ARGS__);  return; \
+    } else { \
+std::string msg = Athena::utility::sprintf(args , __VA_ARGS__); \
 \
-throw Athena::error::InvalidOperationException(std::string("InvalidOperationException: ") + msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__);
+throw Athena::error::InvalidOperationException(std::string("InvalidOperationException: ") + msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__); \
 \
 } \
-
 } while (0)
 #elif defined (__GNUC__)
 #define THROW_INVALID_OPERATION_EXCEPTION(args...) \
@@ -56,17 +55,14 @@ throw Athena::error::InvalidOperationException(std::string("InvalidOperationExce
 #endif
 
 #ifdef _MSC_VER
-#define THROW_INVALID_OPERATION_EXCEPTIONRETURN(ret, args, ...) \
+#define THROW_INVALID_OPERATION_EXCEPTION_RETURN(ret, args, ...) \
     do  { \
-    if (atGetExceptionHandler()) {atGetExceptionHandler()(__FILE__, AT_PRETTY_FUNCTION, __LINE__, __VA_ARGS__);  return ret; \
-    } else {
-    std::string msg = Athena::utility::sprintf(args, __VA_ARGS__);
-
+    if (atGetExceptionHandler()) {atGetExceptionHandler()(__FILE__, AT_PRETTY_FUNCTION, __LINE__, args, __VA_ARGS__);  return ret; \
+    } else { \
+    std::string msg = Athena::utility::sprintf(args, __VA_ARGS__); \
 \
-throw Athena::error::InvalidOperationException(std::string("InvalidOperationException: ") + msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__);
-\
+throw Athena::error::InvalidOperationException(std::string("InvalidOperationException: ") + msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__); \
 } \
-
 } while (0)
 #elif defined(__GNUC__)
 #define THROW_INVALID_OPERATION_EXCEPTION_RETURN(ret, args...) \

@@ -32,7 +32,7 @@ public:
 #ifdef _MSC_VER
 #define THROW_INVALID_DATA_EXCEPTION(args, ...) \
     do  { \
-    if (atGetExceptionHandler()) {atGetExceptionHandler()(__FILE__, AT_PRETTY_FUNCTION, __LINE__, __VA_ARGS__);  return; } \
+    if (atGetExceptionHandler()) {atGetExceptionHandler()(__FILE__, AT_PRETTY_FUNCTION, __LINE__, args, __VA_ARGS__);  return; } \
     else { std::string msg = Athena::utility::sprintf(args, __VA_ARGS__); \
         throw Athena::error::InvalidDataException(msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__); \
         } \
@@ -47,9 +47,9 @@ public:
 #endif
 
 #ifdef _MSC_VER
-#define THROW_INVALID_DATA_EXCEPTION(args, ...) \
+#define THROW_INVALID_DATA_EXCEPTION_RETURN(ret, args, ...) \
     do  { \
-    if (atGetExceptionHandler()) {atGetExceptionHandler()(__FILE__, AT_PRETTY_FUNCTION, __LINE__, __VA_ARGS__);  return; } \
+    if (atGetExceptionHandler()) {atGetExceptionHandler()(__FILE__, AT_PRETTY_FUNCTION, __LINE__, args, __VA_ARGS__);  return ret; } \
     else { std::string msg = Athena::utility::sprintf(args, __VA_ARGS__); \
         throw Athena::error::InvalidDataException(msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__); \
         } \

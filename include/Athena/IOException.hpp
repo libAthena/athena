@@ -37,14 +37,11 @@ public:
 #ifdef _MSC_VER
 #define THROW_IO_EXCEPTION(args, ...) \
     do  { \
-    if (atGetExceptionHandler()) {atGetExceptionHandler()(__FILE__, AT_PRETTY_FUNCTION, __LINE__, __VA_ARGS__);  return; \
-    } else {
-std::string msg = Athena::utility::sprintf(args, __VA_ARGS__);
-\
-throw Athena::error::IOException(std::string("IOException: ") + msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__);
-\
+    if (atGetExceptionHandler()) {atGetExceptionHandler()(__FILE__, AT_PRETTY_FUNCTION, __LINE__, args, __VA_ARGS__);  return; \
+    } else { \
+std::string msg = Athena::utility::sprintf(args, __VA_ARGS__); \
+throw Athena::error::IOException(std::string("IOException: ") + msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__); \
 } \
-
 } while (0)
 #elif defined(__GNUC__)
 #define THROW_IO_EXCEPTION(args...) \
@@ -59,15 +56,11 @@ throw Athena::error::IOException(std::string("IOException: ") + msg, __FILE__, A
 #ifdef _MSC_VER
 #define THROW_IO_EXCEPTION_RETURN(ret, args, ...) \
     do  { \
-    if (atGetExceptionHandler()) {atGetExceptionHandler()(__FILE__, AT_PRETTY_FUNCTION, __LINE__, __VA_ARGS__);  return ret; \
-    } else {
-    std::string msg = Athena::utility::sprintf(args, __VA_ARGS__);
-
-\
-throw Athena::error::IOException(std::string("IOException: ") + msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__);
-\
+    if (atGetExceptionHandler()) {atGetExceptionHandler()(__FILE__, AT_PRETTY_FUNCTION, __LINE__, args, __VA_ARGS__);  return ret; \
+    } else { \
+    std::string msg = Athena::utility::sprintf(args, __VA_ARGS__); \
+throw Athena::error::IOException(std::string("IOException: ") + msg, __FILE__, AT_PRETTY_FUNCTION, __LINE__); \
 } \
-
 } while (0)
 #elif defined(__GNUC__)
 #define THROW_IO_EXCEPTION_RETURN(ret, args...) \

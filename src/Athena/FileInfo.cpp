@@ -2,14 +2,17 @@
 #include "Athena/Utility.hpp"
 #include "Athena/FileWriter.hpp"
 #include "Athena/FileReader.hpp"
-#include <sys/time.h>
 #include <time.h>
 #include <stdio.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #include <limits.h>
 #include <stdlib.h>
+
+#ifndef _WIN32
+#include <sys/time.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <dirent.h>
+#endif
 
 #if !(defined(HW_DOL) || defined(HW_RVL) || defined(_WIN32))
 #include <fcntl.h>
@@ -24,7 +27,7 @@
 #include <functional>
 #include <locale>
 #define stat64 __stat64
-#define realpath(__name, __resolved) _fullpath((__name), (__resolved), 4096)
+#define realpath(__name, __resolved) _fullpath((__resolved), (__name), 4096)
 #endif
 
 namespace Athena
@@ -126,7 +129,7 @@ bool FileInfo::touch() const
     HANDLE fh;
     wchar_t date[80], time[80];
 
-    fh = CreateFileW(path, GENERIC_READ | FILE_WRITE_ATTRIBUTES, 0, NULL, CREATE_NEW, 0, NULL);
+    fh = CreateFileA(m_path.c_str(), GENERIC_READ | FILE_WRITE_ATTRIBUTES, 0, NULL, CREATE_NEW, 0, NULL);
     if (fh == INVALID_HANDLE_VALUE)
         return false;
 

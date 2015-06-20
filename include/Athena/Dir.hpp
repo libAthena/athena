@@ -4,6 +4,10 @@
 #include "Athena/FileInfo.hpp"
 #include <stdio.h>
 
+#if _WIN32
+typedef int mode_t;
+#endif
+
 namespace Athena
 {
 class Dir
