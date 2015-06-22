@@ -44,11 +44,50 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
     clang::ASTContext& context;
     llvm::raw_fd_ostream& fileOut;
 
+    bool isDNARecord(const clang::CXXRecordDecl* record, std::string& baseDNA)
+    {
+        for (const clang::CXXBaseSpecifier& base : record->bases())
+        {
+            const clang::QualType qtp = base.getType().getCanonicalType();
+            if (!qtp.getAsString().compare(0, sizeof(ATHENA_DNA_BASETYPE)-1, ATHENA_DNA_BASETYPE))
+                return true;
+        }
+        for (const clang::CXXBaseSpecifier& base : record->bases())
+        {
+            clang::QualType qtp = base.getType().getCanonicalType();
+            const clang::Type* tp = qtp.getTypePtrOrNull();
+            if (tp)
+            {
+                const clang::CXXRecordDecl* rDecl = tp->getAsCXXRecordDecl();
+                if (rDecl)
+                {
+                    if (isDNARecord(rDecl, baseDNA))
+                    {
+                        bool hasRead = false;
+                        bool hasWrite = false;
+                        for (const clang::CXXMethodDecl* method : rDecl->methods())
+                        {
+                            std::string compName = method->getNameAsString();
+                            if (!compName.compare("read"))
+                                hasRead = true;
+                            else if (!compName.compare("write"))
+                                hasWrite = true;
+                        }
+                        if (hasRead && hasWrite)
+                            baseDNA = rDecl->getNameAsString();
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     std::string GetOpString(const clang::Type* theType, unsigned width,
                             const std::string& fieldName, bool writerPass,
-                            bool& isDNAType)
+                            bool& isDNATypeOut)
     {
-        isDNAType = false;
+        isDNATypeOut = false;
         if (writerPass)
         {
             if (theType->isBuiltinType())
@@ -56,36 +95,36 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
                 if (bType->isBooleanType())
                 {
-                    return "writer.writeBool(" + fieldName + ");";
+                    return "__dna_writer.writeBool(" + fieldName + ");";
                 }
                 else if (bType->isUnsignedInteger())
                 {
                     if (width == 8)
-                        return "writer.writeUByte(" + fieldName + ");";
+                        return "__dna_writer.writeUByte(" + fieldName + ");";
                     else if (width == 16)
-                        return "writer.writeUint16(" + fieldName + ");";
+                        return "__dna_writer.writeUint16(" + fieldName + ");";
                     else if (width == 32)
-                        return "writer.writeUint32(" + fieldName + ");";
+                        return "__dna_writer.writeUint32(" + fieldName + ");";
                     else if (width == 64)
-                        return "writer.writeUint64(" + fieldName + ");";
+                        return "__dna_writer.writeUint64(" + fieldName + ");";
                 }
                 else if (bType->isSignedInteger())
                 {
                     if (width == 8)
-                        return "writer.writeByte(" + fieldName + ");";
+                        return "__dna_writer.writeByte(" + fieldName + ");";
                     else if (width == 16)
-                        return "writer.writeInt16(" + fieldName + ");";
+                        return "__dna_writer.writeInt16(" + fieldName + ");";
                     else if (width == 32)
-                        return "writer.writeInt32(" + fieldName + ");";
+                        return "__dna_writer.writeInt32(" + fieldName + ");";
                     else if (width == 64)
-                        return "writer.writeInt64(" + fieldName + ");";
+                        return "__dna_writer.writeInt64(" + fieldName + ");";
                 }
                 else if (bType->isFloatingPoint())
                 {
                     if (width == 32)
-                        return "writer.writeFloat(" + fieldName + ");";
+                        return "__dna_writer.writeFloat(" + fieldName + ");";
                     else if (width == 64)
-                        return "writer.writeDouble(" + fieldName + ");";
+                        return "__dna_writer.writeDouble(" + fieldName + ");";
                 }
             }
             else if (theType->isRecordType())
@@ -103,18 +142,18 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                 context.getTypeInfo(eType).Width != 32)
                                 continue;
                             if (vType->getNumElements() == 3)
-                                return "writer.writeVec3f(" + fieldName + ");";
+                                return "__dna_writer.writeVec3f(" + fieldName + ");";
                             else if (vType->getNumElements() == 4)
-                                return "writer.writeVec4f(" + fieldName + ");";
+                                return "__dna_writer.writeVec4f(" + fieldName + ");";
                         }
                     }
                 }
-                for (const clang::CXXBaseSpecifier& base : rDecl->bases())
-                    if (!base.getType().getCanonicalType().getAsString().compare(0, sizeof(ATHENA_DNA_BASETYPE)-1, ATHENA_DNA_BASETYPE))
-                    {
-                        isDNAType = true;
-                        return "write(writer);";
-                    }
+                std::string baseDNA;
+                if (isDNARecord(rDecl, baseDNA))
+                {
+                    isDNATypeOut = true;
+                    return "write(__dna_writer);";
+                }
             }
         }
         else
@@ -124,36 +163,36 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
                 if (bType->isBooleanType())
                 {
-                    return "reader.readBool()";
+                    return "__dna_reader.readBool()";
                 }
                 else if (bType->isUnsignedInteger())
                 {
                     if (width == 8)
-                        return "reader.readUByte()";
+                        return "__dna_reader.readUByte()";
                     else if (width == 16)
-                        return "reader.readUint16()";
+                        return "__dna_reader.readUint16()";
                     else if (width == 32)
-                        return "reader.readUint32()";
+                        return "__dna_reader.readUint32()";
                     else if (width == 64)
-                        return "reader.readUint64()";
+                        return "__dna_reader.readUint64()";
                 }
                 else if (bType->isSignedInteger())
                 {
                     if (width == 8)
-                        return "reader.readByte()";
+                        return "__dna_reader.readByte()";
                     else if (width == 16)
-                        return "reader.readInt16()";
+                        return "__dna_reader.readInt16()";
                     else if (width == 32)
-                        return "reader.readInt32()";
+                        return "__dna_reader.readInt32()";
                     else if (width == 64)
-                        return "reader.readInt64()";
+                        return "__dna_reader.readInt64()";
                 }
                 else if (bType->isFloatingPoint())
                 {
                     if (width == 32)
-                        return "reader.readFloat()";
+                        return "__dna_reader.readFloat()";
                     else if (width == 64)
-                        return "reader.readDouble()";
+                        return "__dna_reader.readDouble()";
                 }
             }
             else if (theType->isRecordType())
@@ -171,18 +210,18 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                 context.getTypeInfo(eType).Width != 32)
                                 continue;
                             if (vType->getNumElements() == 3)
-                                return "reader.readVec3f()";
+                                return "__dna_reader.readVec3f()";
                             else if (vType->getNumElements() == 4)
-                                return "reader.readVec4f()";
+                                return "__dna_reader.readVec4f()";
                         }
                     }
                 }
-                for (const clang::CXXBaseSpecifier& base : rDecl->bases())
-                    if (!base.getType().getCanonicalType().getAsString().compare(0, sizeof(ATHENA_DNA_BASETYPE)-1, ATHENA_DNA_BASETYPE))
-                    {
-                        isDNAType = true;
-                        return "read(reader);";
-                    }
+                std::string baseDNA;
+                if (isDNARecord(rDecl, baseDNA))
+                {
+                    isDNATypeOut = true;
+                    return "read(__dna_reader);";
+                }
             }
         }
         return std::string();
@@ -202,30 +241,61 @@ public:
             return true;
 
         /* First ensure this inherits from struct Athena::io::DNA */
-        bool foundDNA = false;
-        for (const clang::CXXBaseSpecifier& base : decl->bases())
+        std::string baseDNA;
+        if (!isDNARecord(decl, baseDNA))
+            return true;
+
+        /* Make sure there aren't namespace conflicts or Delete meta type */
+        for (const clang::FieldDecl* field : decl->fields())
         {
-            clang::QualType canonType = base.getType().getCanonicalType();
-            if (!canonType.getAsString().compare(0, sizeof(ATHENA_DNA_BASETYPE)-1, ATHENA_DNA_BASETYPE))
+            if (!field->getNameAsString().compare("__dna_reader") ||
+                !field->getNameAsString().compare("__dna_writer"))
             {
-                foundDNA = true;
-                break;
+                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                diag.AddString("Field may not be named '__dna_reader' or '__dna_writer'");
+                diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                return true;
+            }
+            clang::QualType qualType = field->getType().getCanonicalType();
+            const clang::Type* regType = qualType.getTypePtrOrNull();
+            if (regType)
+            {
+                const clang::CXXRecordDecl* rDecl = regType->getAsCXXRecordDecl();
+                if (rDecl)
+                {
+                    if (!rDecl->getNameAsString().compare("Delete"))
+                    {
+                        const clang::CXXRecordDecl* rParentDecl = llvm::dyn_cast_or_null<clang::CXXRecordDecl>(rDecl->getParent());
+                        if (rParentDecl)
+                        {
+                            std::string parentCheck = rParentDecl->getTypeForDecl()->getCanonicalTypeInternal().getAsString();
+                            if (!parentCheck.compare(0, sizeof(ATHENA_DNA_BASETYPE)-1, ATHENA_DNA_BASETYPE))
+                                return true;
+                        }
+                    }
+                }
             }
         }
-        if (!foundDNA)
-            return true;
 
         /* Two passes - read then write */
         for (int p=0 ; p<2 ; ++p)
         {
             if (p)
-                fileOut << "void " << decl->getQualifiedNameAsString() << "::write(Athena::io::IStreamWriter& writer) const\n{\n";
+                fileOut << "void " << decl->getQualifiedNameAsString() << "::write(Athena::io::IStreamWriter& __dna_writer) const\n{\n";
             else
-                fileOut << "void " << decl->getQualifiedNameAsString() << "::read(Athena::io::IStreamReader& reader)\n{\n";
+                fileOut << "void " << decl->getQualifiedNameAsString() << "::read(Athena::io::IStreamReader& __dna_reader)\n{\n";
             int currentEndian = -1;
 
-            for (const clang::FieldDecl* field : decl->fields())
+            if (baseDNA.size())
             {
+                if (p)
+                    fileOut << "    " << baseDNA << "::write(__dna_writer);\n";
+                else
+                    fileOut << "    " << baseDNA << "::read(__dna_reader);\n";
+            }
+
+            for (const clang::FieldDecl* field : decl->fields())
+            {   
                 clang::QualType qualType = field->getType();
                 clang::TypeInfo regTypeInfo = context.getTypeInfo(qualType);
                 const clang::Type* regType = qualType.getTypePtrOrNull();
@@ -355,9 +425,9 @@ public:
                             if (currentEndian != endianVal)
                             {
                                 if (endianVal == 0)
-                                    fileOut << (p ? "    writer.setEndian(Athena::LittleEndian);\n" : "    reader.setEndian(Athena::LittleEndian);\n");
+                                    fileOut << (p ? "    __dna_writer.setEndian(Athena::LittleEndian);\n" : "    __dna_reader.setEndian(Athena::LittleEndian);\n");
                                 else if (endianVal == 1)
-                                    fileOut << (p ? "    writer.setEndian(Athena::BigEndian);\n" : "    reader.setEndian(Athena::BigEndian);\n");
+                                    fileOut << (p ? "    __dna_writer.setEndian(Athena::BigEndian);\n" : "    __dna_reader.setEndian(Athena::BigEndian);\n");
                                 currentEndian = endianVal;
                             }
 
@@ -494,9 +564,9 @@ public:
                             if (currentEndian != endianVal)
                             {
                                 if (endianVal == 0)
-                                    fileOut << (p ? "    writer.setEndian(Athena::LittleEndian);\n" : "    reader.setEndian(Athena::LittleEndian);\n");
+                                    fileOut << (p ? "    __dna_writer.setEndian(Athena::LittleEndian);\n" : "    __dna_reader.setEndian(Athena::LittleEndian);\n");
                                 else if (endianVal == 1)
-                                    fileOut << (p ? "    writer.setEndian(Athena::BigEndian);\n" : "    reader.setEndian(Athena::BigEndian);\n");
+                                    fileOut << (p ? "    __dna_writer.setEndian(Athena::BigEndian);\n" : "    __dna_reader.setEndian(Athena::BigEndian);\n");
                                 currentEndian = endianVal;
                             }
 
@@ -570,11 +640,11 @@ public:
                             if (!p)
                             {
                                 fileOut << "    " << fieldName << ".reset(new atUint8[" << sizeExprStr << "]);\n";
-                                fileOut << "    reader.readUBytesToBuf(" << fieldName << ".get(), " << sizeExprStr << ");\n";
+                                fileOut << "    __dna_reader.readUBytesToBuf(" << fieldName << ".get(), " << sizeExprStr << ");\n";
                             }
                             else
                             {
-                                fileOut << "    writer.writeUBytes(" << fieldName << ".get(), " << sizeExprStr << ");\n";
+                                fileOut << "    __dna_writer.writeUBytes(" << fieldName << ".get(), " << sizeExprStr << ");\n";
                             }
                         }
                         else if (!tsDecl->getNameAsString().compare("String"))
@@ -607,10 +677,10 @@ public:
 
                             fileOut << "    /* " << fieldName << " */\n";
                             if (!p)
-                                fileOut << "    " << fieldName << " = reader.readString(" << sizeExprStr << ");\n";
+                                fileOut << "    " << fieldName << " = __dna_reader.readString(" << sizeExprStr << ");\n";
                             else
                             {
-                                fileOut << "    writer.writeString(" << fieldName;
+                                fileOut << "    __dna_writer.writeString(" << fieldName;
                                 if (sizeExprStr.size())
                                     fileOut << ", " << sizeExprStr;
                                 fileOut << ");\n";
@@ -714,18 +784,18 @@ public:
                             if (currentEndian != endianVal)
                             {
                                 if (endianVal == 0)
-                                    fileOut << (p ? "    writer.setEndian(Athena::LittleEndian);\n" : "    reader.setEndian(Athena::LittleEndian);\n");
+                                    fileOut << (p ? "    __dna_writer.setEndian(Athena::LittleEndian);\n" : "    __dna_reader.setEndian(Athena::LittleEndian);\n");
                                 else if (endianVal == 1)
-                                    fileOut << (p ? "    writer.setEndian(Athena::BigEndian);\n" : "    reader.setEndian(Athena::BigEndian);\n");
+                                    fileOut << (p ? "    __dna_writer.setEndian(Athena::BigEndian);\n" : "    __dna_reader.setEndian(Athena::BigEndian);\n");
                                 currentEndian = endianVal;
                             }
 
                             fileOut << "    /* " << fieldName << " */\n";
                             if (!p)
-                                fileOut << "    " << fieldName << " = reader.readWString(" << sizeExprStr << ");\n";
+                                fileOut << "    " << fieldName << " = __dna_reader.readWString(" << sizeExprStr << ");\n";
                             else
                             {
-                                fileOut << "    writer.writeWString(" << fieldName;
+                                fileOut << "    __dna_writer.writeWString(" << fieldName;
                                 if (sizeExprStr.size())
                                     fileOut << ", " << sizeExprStr;
                                 fileOut << ");\n";
@@ -761,10 +831,10 @@ public:
 
                             fileOut << "    /* " << fieldName << " */\n";
                             if (!p)
-                                fileOut << "    " << fieldName << " = reader.readUnicode(" << sizeExprStr << ");\n";
+                                fileOut << "    " << fieldName << " = __dna_reader.readUnicode(" << sizeExprStr << ");\n";
                             else
                             {
-                                fileOut << "    writer.writeUnicode(" << fieldName;
+                                fileOut << "    __dna_writer.writeUnicode(" << fieldName;
                                 if (sizeExprStr.size())
                                     fileOut << ", " << sizeExprStr;
                                 fileOut << ");\n";
@@ -849,23 +919,23 @@ public:
                             if (directionVal == 0)
                             {
                                 if (!p)
-                                    fileOut << "    reader.seek(" << offsetExprStr << ", Athena::Begin);\n";
+                                    fileOut << "    __dna_reader.seek(" << offsetExprStr << ", Athena::Begin);\n";
                                 else
-                                    fileOut << "    writer.seek(" << offsetExprStr << ", Athena::Begin);\n";
+                                    fileOut << "    __dna_writer.seek(" << offsetExprStr << ", Athena::Begin);\n";
                             }
                             else if (directionVal == 1)
                             {
                                 if (!p)
-                                    fileOut << "    reader.seek(" << offsetExprStr << ", Athena::Current);\n";
+                                    fileOut << "    __dna_reader.seek(" << offsetExprStr << ", Athena::Current);\n";
                                 else
-                                    fileOut << "    writer.seek(" << offsetExprStr << ", Athena::Current);\n";
+                                    fileOut << "    __dna_writer.seek(" << offsetExprStr << ", Athena::Current);\n";
                             }
                             else if (directionVal == 2)
                             {
                                 if (!p)
-                                    fileOut << "    reader.seek(" << offsetExprStr << ", Athena::End);\n";
+                                    fileOut << "    __dna_reader.seek(" << offsetExprStr << ", Athena::End);\n";
                                 else
-                                    fileOut << "    writer.seek(" << offsetExprStr << ", Athena::End);\n";
+                                    fileOut << "    __dna_writer.seek(" << offsetExprStr << ", Athena::End);\n";
                             }
 
                         }
@@ -901,23 +971,23 @@ public:
                                 if (alignVal == 32)
                                 {
                                     if (!p)
-                                        fileOut << "    reader.seekAlign32();\n";
+                                        fileOut << "    __dna_reader.seekAlign32();\n";
                                     else
-                                        fileOut << "    writer.seekAlign32();\n";
+                                        fileOut << "    __dna_writer.seekAlign32();\n";
                                 }
                                 else if (align.isPowerOf2())
                                 {
                                     if (!p)
-                                        fileOut << "    reader.seek((reader.position() + " << alignVal-1 << ") & ~" << alignVal-1 << ", Athena::Begin);\n";
+                                        fileOut << "    __dna_reader.seek((__dna_reader.position() + " << alignVal-1 << ") & ~" << alignVal-1 << ", Athena::Begin);\n";
                                     else
-                                        fileOut << "    writer.seek((writer.position() + " << alignVal-1 << ") & ~" << alignVal-1 << ", Athena::Begin);\n";
+                                        fileOut << "    __dna_writer.seek((__dna_writer.position() + " << alignVal-1 << ") & ~" << alignVal-1 << ", Athena::Begin);\n";
                                 }
                                 else
                                 {
                                     if (!p)
-                                        fileOut << "    reader.seek((reader.position() + " << alignVal-1 << ") / " << alignVal << " * " << alignVal << ", Athena::Begin);\n";
+                                        fileOut << "    __dna_reader.seek((__dna_reader.position() + " << alignVal-1 << ") / " << alignVal << " * " << alignVal << ", Athena::Begin);\n";
                                     else
-                                        fileOut << "    writer.seek((writer.position() + " << alignVal-1 << ") / " << alignVal << " * " << alignVal << ", Athena::Begin);\n";
+                                        fileOut << "    __dna_writer.seek((__dna_writer.position() + " << alignVal-1 << ") / " << alignVal << " * " << alignVal << ", Athena::Begin);\n";
                                 }
                             }
                         }
@@ -927,19 +997,13 @@ public:
                     else if (regType->getTypeClass() == clang::Type::Record)
                     {
                         const clang::CXXRecordDecl* cxxRDecl = regType->getAsCXXRecordDecl();
-                        if (cxxRDecl)
+                        std::string baseDNA;
+                        if (cxxRDecl && isDNARecord(cxxRDecl, baseDNA))
                         {
-                            for (const clang::CXXBaseSpecifier& base : cxxRDecl->bases())
-                            {
-                                clang::QualType canonType = base.getType().getCanonicalType();
-                                if (!canonType.getAsString().compare(0, sizeof(ATHENA_DNA_BASETYPE)-1, ATHENA_DNA_BASETYPE))
-                                {
-                                    fileOut << "    /* " << fieldName << " */\n";
-                                    fileOut << "    " << fieldName << (p ? ".write(writer);\n" : ".read(reader);\n");
-                                    currentEndian = -1;
-                                    break;
-                                }
-                            }
+                            fileOut << "    /* " << fieldName << " */\n";
+                            fileOut << "    " << fieldName << (p ? ".write(__dna_writer);\n" : ".read(__dna_reader);\n");
+                            currentEndian = -1;
+                            break;
                         }
                     }
 

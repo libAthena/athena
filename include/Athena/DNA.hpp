@@ -53,6 +53,8 @@ struct DNA
     template <size_t align>
     struct Align {};
 
+    struct Delete {};
+
     virtual void read(IStreamReader&)=0;
     virtual void write(IStreamWriter&) const=0;
 };
@@ -61,6 +63,12 @@ struct DNA
 #define DECL_DNA \
     void read(Athena::io::IStreamReader&); \
     void write(Athena::io::IStreamWriter&) const; \
+
+/** Macro to automatically declare read/write methods and prevent outputting implementation */
+#define DECL_EXPLICIT_DNA \
+    void read(Athena::io::IStreamReader&); \
+    void write(Athena::io::IStreamWriter&) const; \
+    Delete __dna_delete;
 
 /** Macro to supply count variable to atdna and mute it for other compilers */
 #ifdef __clang__

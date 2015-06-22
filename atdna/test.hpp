@@ -1,15 +1,30 @@
 #include <Athena/DNA.hpp>
 
 using namespace Athena;
+typedef io::DNA<BigEndian> BigDNA;
 
-struct ANCSSubFile : public io::DNA<BigEndian>
+struct TESTSubFile : public BigDNA
 {
     DECL_DNA
     Value<atUint32> sub1;
     Value<atUint32> sub2;
 };
 
-struct ANCSFile : public io::DNA<BigEndian>
+struct TESTSubClassFile : public TESTSubFile
+{
+    DECL_DNA
+    Value<atUint32> sub3;
+    Value<atUint32> sub4;
+};
+
+struct TESTSubSubClassFile : public TESTSubClassFile
+{
+    DECL_DNA
+    Value<atUint32> sub5;
+    Value<atUint32> sub6;
+};
+
+struct TESTFile : public BigDNA
 {
     DECL_DNA
     Value<bool> varBool;
@@ -18,27 +33,34 @@ struct ANCSFile : public io::DNA<BigEndian>
     Value<atVec3f> vec3;
     Value<atVec4f> vec4;
 
-    struct ANCSNestedSubFile : public io::DNA<BigEndian>
+    struct TESTNestedSubFile : public BigDNA
     {
         DECL_DNA
         Value<atUint32> nestSub1;
         Value<atUint32> nestSub2;
-    } nestedSubFile;
+    } nestedSubFile; 
 
-    ANCSSubFile subFile;
+    TESTSubFile subFile;
 
     Align<4> align;
 
+    struct TESTExplicitSubFile : public BigDNA
+    {
+        DECL_EXPLICIT_DNA
+        Value<atUint32> explSub1;
+        Value<atUint32> explSub2;
+    } explSubFile;
+
     Value<atUint32> arrCount[2];
-    Vector<atUint32, sizeof(arrCount[0])> array;
+    Vector<atUint32, DNA_COUNT(arrCount[0])> array;
 
     Seek<21, Current> seek;
 
     Value<atUint32> arrCount2;
-    Vector<ANCSSubFile, sizeof(arrCount[1] + arrCount2)> array2;
+    Vector<TESTSubFile, DNA_COUNT(arrCount[1] + arrCount2)> array2;
 
     Value<atUint32> bufSz;
-    Buffer<sizeof(bufSz)> buf;
+    Buffer<DNA_COUNT(bufSz)> buf;
 
     String<32> str;
     WString<64> wstr;
