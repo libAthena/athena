@@ -1,11 +1,11 @@
 # PKGBUILD for libAthena
 _pkgname=libathena
 pkgname=$_pkgname-git
-pkgver=1.1.0.43.g490c6d5
+pkgver=1.1.0.44.g071d91a
 pkgrel=1
 pkgdesc="Basic cross platform IO library"
 arch=('i686' 'x86_64')
-source=("${pkgname%-*}::git+https://github.com/Antidote/Athena.git")
+source=("${pkgname%-*}::git+https://github.com/libAthena/Athena.git")
 options=(staticlibs)
 license="MIT"
 makedepends=('git qt5-base sed')
