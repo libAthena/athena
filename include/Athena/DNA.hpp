@@ -36,16 +36,67 @@ struct DNA
     using Vector = std::vector<T>;
 
     template <size_t sizeVar>
-    using Buffer = std::unique_ptr<atUint8[]>;
+    struct Buffer : public DNA, public std::unique_ptr<atUint8[]>
+    {
+        Delete expl;
+        inline void read(IStreamReader& reader)
+        {
+            reset(new atUint8[sizeVar]);
+            reader.readUBytesToBuf(get(), sizeVar);
+        }
+        inline void write(IStreamWriter& writer) const
+        {
+            writer.writeUBytes(get(), sizeVar);
+        }
+    };
 
     template <atInt32 sizeVar = -1>
-    using String = std::string;
+    struct String : public DNA, public std::string
+    {
+        Delete expl;
+        inline void read(IStreamReader& reader)
+        {*this = reader.readString(sizeVar);}
+        inline void write(IStreamWriter& writer) const
+        {writer.writeString(*this, sizeVar);}
+        inline std::string& operator=(const std::string& __str)
+        {return this->assign(__str);}
+        inline std::string& operator=(std::string&& __str)
+        {this->swap(__str); return *this;}
+    };
 
     template <atInt32 sizeVar = -1, Endian VE = DNAE>
-    using WString = std::wstring;
+    struct WString : public DNA, public std::wstring
+    {
+        Delete expl;
+        inline void read(IStreamReader& reader)
+        {
+            reader.setEndian(VE);
+            *this = reader.readWString(sizeVar);
+        }
+        inline void write(IStreamWriter& writer) const
+        {
+            writer.setEndian(VE);
+            writer.writeWString(*this, sizeVar);
+        }
+        inline std::wstring& operator=(const std::wstring& __str)
+        {return this->assign(__str);}
+        inline std::wstring& operator=(std::wstring&& __str)
+        {this->swap(__str); return *this;}
+    };
 
     template <atInt32 sizeVar = -1>
-    using UTF8 = std::string;
+    struct UTF8 : public DNA, public std::string
+    {
+        Delete expl;
+        inline void read(IStreamReader& reader)
+        {*this = reader.readUTF8(sizeVar);}
+        inline void write(IStreamWriter& writer) const
+        {writer.writeUTF8(*this, sizeVar);}
+        inline std::string& operator=(const std::string& __str)
+        {return this->assign(__str);}
+        inline std::string& operator=(std::string&& __str)
+        {this->swap(__str); return *this;}
+    };
 
     template <off_t offset, SeekOrigin direction>
     struct Seek {};
