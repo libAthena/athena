@@ -33,26 +33,6 @@ FileWriter::~FileWriter()
         close();
 }
 
-void FileWriter::setEndian(Endian endian)
-{
-    m_endian = endian;
-}
-
-Endian FileWriter::endian() const
-{
-    return m_endian;
-}
-
-bool FileWriter::isBigEndian() const
-{
-    return (m_endian == Endian::BigEndian);
-}
-
-bool FileWriter::isLittleEndian() const
-{
-    return (m_endian == Endian::LittleEndian);
-}
-
 void FileWriter::open(bool overwrite)
 {
     if (overwrite)
@@ -75,11 +55,6 @@ void FileWriter::close()
     fclose(m_fileHandle);
     m_fileHandle = NULL;
     return;
-}
-
-bool FileWriter::isOpen() const
-{
-    return m_fileHandle != NULL;
 }
 
 void FileWriter::seek(atInt64 pos, SeekOrigin origin)
@@ -150,11 +125,6 @@ void FileWriter::writeUByte(atUint8 val)
         THROW_IO_EXCEPTION("Unable to write to stream");
 }
 
-void FileWriter::writeByte(atInt8 val)
-{
-    writeUByte(val);
-}
-
 void FileWriter::writeUBytes(const atUint8* data, atUint64 len)
 {
     if (!isOpen())
@@ -164,11 +134,6 @@ void FileWriter::writeUBytes(const atUint8* data, atUint64 len)
 
     if (fwrite(data, 1, len, m_fileHandle) != len)
         THROW_IO_EXCEPTION("Unable to write to stream");
-}
-
-void FileWriter::writeBytes(const atInt8* data, atUint64 len)
-{
-    writeUBytes((atUint8*)data, len);
 }
 
 void FileWriter::writeUint16(atUint16 val)
@@ -185,11 +150,6 @@ void FileWriter::writeUint16(atUint16 val)
         THROW_IO_EXCEPTION("Unable to write to stream");
 }
 
-void FileWriter::writeInt16(atInt16 val)
-{
-    writeUint16(val);
-}
-
 void FileWriter::writeUint32(atUint32 val)
 {
     if (!isOpen())
@@ -204,11 +164,6 @@ void FileWriter::writeUint32(atUint32 val)
         THROW_IO_EXCEPTION("Unable to write to stream");
 }
 
-void FileWriter::writeInt32(atInt32 val)
-{
-    writeUint32(val);
-}
-
 void FileWriter::writeUint64(atUint64 val)
 {
     if (!isOpen())
@@ -221,11 +176,6 @@ void FileWriter::writeUint64(atUint64 val)
 
     if (fwrite(&val, 1, sizeof(atUint64), m_fileHandle) != sizeof(atUint64))
         THROW_IO_EXCEPTION("Unable to write to stream");
-}
-
-void FileWriter::writeInt64(atInt64 val)
-{
-    writeUint64(val);
 }
 
 void FileWriter::writeDouble(double val)
@@ -254,11 +204,6 @@ void FileWriter::writeFloat(float val)
 
     if (fwrite(&val, 1, sizeof(float), m_fileHandle) != sizeof(float))
         THROW_IO_EXCEPTION("Unable to write to stream");
-}
-
-void FileWriter::writeBool(bool val)
-{
-    writeByte(val);
 }
 
 void FileWriter::writeVec3f(atVec3f vec)
@@ -418,11 +363,6 @@ void FileWriter::fill(atInt8 byte, atUint64 len)
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
 
     fwrite(&byte, 1, len, m_fileHandle);
-}
-
-void FileWriter::fill(atUint8 byte, atUint64 len)
-{
-    fill((atInt8)byte, len);
 }
 
 }

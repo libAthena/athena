@@ -40,31 +40,37 @@ public:
      *
      *  \param endian The Endianess to set \sa Endian
      */
-    void setEndian(Endian endian);
+    inline void setEndian(Endian endian)
+    {m_endian = endian;}
 
     /*! \brief Returns the current Endianness of the stream
      *
      *  \return Endian The current Stream Endianess
      */
-    Endian endian()      const;
+    inline Endian endian() const
+    {return m_endian;}
 
     /*! \brief Returns whether the stream is BigEndian
      *
      *  \return bool True for BigEndian; False for LittleEndian
      */
-    bool isBigEndian()   const;
+    inline bool isBigEndian() const
+    {return (m_endian == Endian::BigEndian);}
 
     /*! \brief Returns whether the stream is LittleEndian
      *
      *  \return bool True for LittleEndian; False for BigEndian
      */
-    bool isLittleEndian()const;
+    inline bool isLittleEndian() const
+    {return (m_endian == Endian::LittleEndian);}
 
     /*! \brief Retuns whether or not the Stream is open.
      *
      *  \return True if open; False otherwise.
      */
-    bool isOpen() const;
+    inline bool isOpen() const
+    {return m_data != nullptr;}
+
 
     /*! \brief Sets the buffers position relative to the specified position.<br />
      *         It seeks relative to the current position by default.
@@ -82,20 +88,23 @@ public:
      *
      *  \return bool True if at end; False otherwise.
      */
-    bool atEnd()         const;
+    inline bool atEnd()     const
+    {return m_position >= m_length;}
 
 
     /*! \brief Returns the current position in the stream.
      *
      *  \return Int64 The current position in the stream.
      */
-    atUint64 position()    const;
+    inline atUint64 position()    const
+    {return m_position;}
 
     /*! \brief Returns whether or not the stream is at the end.
      *
      *  \return bool True if at end; False otherwise.
      */
-    atUint64 length()      const;
+    inline atUint64 length()      const
+    {return m_length;}
 
     /*! \brief Sets the buffer to the given one, deleting the current one.<br />
      *         <b>BEWARE:</b> As this deletes the current buffer it WILL cause a loss of data
@@ -122,12 +131,15 @@ public:
      *
      *  \param filepath The path to write to.
      */
-    void setFilepath(const std::string& filepath);
+    inline void setFilepath(const std::string& filepath)
+    {m_filepath = filepath;}
 
     /*! \brief
      * Returns the target file
      */
-    std::string filepath() const;
+    inline std::string filepath() const
+    {return m_filepath;}
+
 
     /*! \brief Saves the file to the specified file.
      *
@@ -156,7 +168,8 @@ public:
      * \param byte The value to write
      * \throw IOException
      */
-    void writeByte(atInt8 val);
+    inline void writeByte(atInt8 val)
+    {MemoryWriter::writeUByte(val);}
 
     /*! \brief Writes the given buffer with the specified length, buffers can be bigger than the length
      *  however it's undefined behavior to try and write a buffer which is smaller than the given length.
@@ -172,7 +185,8 @@ public:
      * \param data The buffer to write
      * \param length The amount to write
      */
-    void writeBytes(const atInt8* data, atUint64 len);
+    inline void writeBytes(const atInt8* data, atUint64 len)
+    {MemoryWriter::writeUBytes((atUint8*)data, len);}
 
     /*! \brief Writes an Int16 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -188,7 +202,8 @@ public:
      *  \sa Endian
      *  \param val The value to write to the buffer
      */
-    void writeUint16(atUint16);
+    inline void writeUint16(atUint16 val)
+    {MemoryWriter::writeInt16(val);}
 
     /*! \brief Writes an Int32 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -204,7 +219,8 @@ public:
      *  \sa Endian
      *  \param val The value to write to the buffer
      */
-    void writeUint32(atUint32);
+    void writeUint32(atUint32 val)
+    {MemoryWriter::writeInt32(val);}
 
     /*! \brief Writes an Int64 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -220,7 +236,8 @@ public:
      *  \sa Endian
      *  \param val The value to write to the buffer
      */
-    void writeUint64(atUint64);
+    inline void writeUint64(atUint64 val)
+    {MemoryWriter::writeInt64(val);}
 
     /*! \brief Writes an float to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -289,9 +306,11 @@ public:
 
 
     void fill(atUint8 val, atUint64 length);
-    void fill(atInt8 val, atUint64 length);
+    inline void fill(atInt8 val, atUint64 length)
+    {MemoryWriter::fill((atUint8)val, length);}
 
-    void setProgressCallback(std::function<void(int)> cb);
+    inline void setProgressCallback(std::function<void(int)> cb)
+    {m_progressCallback = cb;}
 protected:
     void loadData();
     atUint8*      m_data;

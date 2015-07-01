@@ -56,31 +56,6 @@ MemoryWriter::~MemoryWriter()
     m_data = nullptr;
 }
 
-void MemoryWriter::setEndian(Endian endian)
-{
-    m_endian = endian;
-}
-
-Endian MemoryWriter::endian() const
-{
-    return m_endian;
-}
-
-bool MemoryWriter::isBigEndian() const
-{
-    return (m_endian == Endian::BigEndian);
-}
-
-bool MemoryWriter::isLittleEndian() const
-{
-    return (m_endian == Endian::LittleEndian);
-}
-
-bool MemoryWriter::isOpen() const
-{
-    return m_data != nullptr;
-}
-
 void MemoryWriter::seek(atInt64 position, SeekOrigin origin)
 {
     switch (origin)
@@ -115,31 +90,6 @@ void MemoryWriter::seek(atInt64 position, SeekOrigin origin)
             m_position = m_length - position;
             break;
     }
-}
-
-bool MemoryWriter::atEnd() const
-{
-    return m_position >= m_length;
-}
-
-atUint64 MemoryWriter::position() const
-{
-    return m_position;
-}
-
-atUint64 MemoryWriter::length() const
-{
-    return m_length;
-}
-
-void MemoryWriter::setFilepath(const std::string& filepath)
-{
-    m_filepath = filepath;
-}
-
-std::string MemoryWriter::filepath() const
-{
-    return m_filepath;
 }
 
 void MemoryWriter::setData(const atUint8* data, atUint64 length)
@@ -249,11 +199,6 @@ void MemoryWriter::writeUByte(atUint8 val)
     m_position++;
 }
 
-void MemoryWriter::writeByte(atInt8 val)
-{
-    writeUByte(val);
-}
-
 void MemoryWriter::writeUBytes(const atUint8* data, atUint64 length)
 {
     if (!isOpen())
@@ -274,11 +219,6 @@ void MemoryWriter::writeUBytes(const atUint8* data, atUint64 length)
     memcpy((atInt8*)(m_data + m_position), data, length);
 
     m_position += length;
-}
-
-void MemoryWriter::writeBytes(const atInt8* data, atUint64 length)
-{
-    writeUBytes((atUint8*)data, length);
 }
 
 void MemoryWriter::writeInt16(atInt16 val)
@@ -304,11 +244,6 @@ void MemoryWriter::writeInt16(atInt16 val)
     m_position += sizeof(atInt16);
 }
 
-void MemoryWriter::writeUint16(atUint16 val)
-{
-    writeInt16(val);
-}
-
 void MemoryWriter::writeInt32(atInt32 val)
 {
     if (!isOpen())
@@ -330,11 +265,6 @@ void MemoryWriter::writeInt32(atInt32 val)
 
     *(atInt32*)(m_data + m_position) = val;
     m_position += sizeof(atInt32);
-}
-
-void MemoryWriter::writeUint32(atUint32 val)
-{
-    writeInt32(val);
 }
 
 void MemoryWriter::writeInt64(atInt64 val)
@@ -359,11 +289,6 @@ void MemoryWriter::writeInt64(atInt64 val)
 
     *(atInt64*)(m_data + m_position) = val;
     m_position += sizeof(atInt64);
-}
-
-void MemoryWriter::writeUint64(atUint64 val)
-{
-    writeInt64(val);
 }
 
 void MemoryWriter::writeFloat(float val)
@@ -597,16 +522,6 @@ void MemoryWriter::fill(atUint8 val, atUint64 length)
 {
     while ((length--) > 0)
         writeUByte(val);
-}
-
-void MemoryWriter::fill(atInt8 val, atUint64 length)
-{
-    fill((atUint8)val, length);
-}
-
-void MemoryWriter::setProgressCallback(std::function<void (int)> cb)
-{
-    m_progressCallback = cb;
 }
 
 void MemoryWriter::resize(atUint64 newSize)

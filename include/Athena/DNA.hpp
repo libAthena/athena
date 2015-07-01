@@ -91,9 +91,9 @@ struct DNA
     {
         Delete expl;
         inline void read(IStreamReader& reader)
-        {*this = reader.readUTF8(sizeVar);}
+        {*this = reader.readUnicode(sizeVar);}
         inline void write(IStreamWriter& writer) const
-        {writer.writeUTF8(*this, sizeVar);}
+        {writer.writeUnicode(*this, sizeVar);}
         inline std::string& operator=(const std::string& __str)
         {return this->assign(__str);}
         inline std::string& operator=(std::string&& __str)

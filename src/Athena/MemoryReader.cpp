@@ -54,31 +54,6 @@ MemoryReader::~MemoryReader()
     m_data = NULL;
 }
 
-void MemoryReader::setEndian(Endian endian)
-{
-    m_endian = endian;
-}
-
-Endian MemoryReader::endian() const
-{
-    return m_endian;
-}
-
-bool MemoryReader::isBigEndian() const
-{
-    return (m_endian == Endian::BigEndian);
-}
-
-bool MemoryReader::isLittleEndian() const
-{
-    return (m_endian == Endian::LittleEndian);
-}
-
-bool MemoryReader::isOpen() const
-{
-    return m_data != nullptr;
-}
-
 void MemoryReader::seek(atInt64 position, SeekOrigin origin)
 {
     switch (origin)
@@ -106,21 +81,6 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin)
     }
 }
 
-bool MemoryReader::atEnd() const
-{
-    return m_position >= m_length;
-}
-
-atUint64 MemoryReader::position() const
-{
-    return m_position;
-}
-
-atUint64 MemoryReader::length() const
-{
-    return m_length;
-}
-
 void MemoryReader::setData(const atUint8* data, atUint64 length)
 {
     if (m_data)
@@ -138,16 +98,6 @@ atUint8* MemoryReader::data() const
     memset(ret, 0, m_length);
     memcpy(ret, m_data, m_length);
     return ret;
-}
-
-void MemoryReader::setFilepath(const std::string& filepath)
-{
-    m_filepath = filepath;
-}
-
-std::string MemoryReader::filepath() const
-{
-    return m_filepath;
 }
 
 void MemoryReader::seekBit(int bit)
@@ -285,11 +235,6 @@ atInt16 MemoryReader::readInt16()
     return ret;
 }
 
-atUint16 MemoryReader::readUint16()
-{
-    return readInt16();
-}
-
 atInt32 MemoryReader::readInt32()
 {
     if (!m_data)
@@ -315,10 +260,6 @@ atInt32 MemoryReader::readInt32()
     return ret;
 }
 
-atUint32 MemoryReader::readUint32()
-{
-    return readInt32();
-}
 
 atInt64 MemoryReader::readInt64()
 {
@@ -343,11 +284,6 @@ atInt64 MemoryReader::readInt64()
         utility::LittleInt64(ret);
 
     return ret;
-}
-
-atUint64 MemoryReader::readUint64()
-{
-    return readInt64();
 }
 
 float MemoryReader::readFloat()
@@ -564,11 +500,6 @@ std::wstring MemoryReader::readWString(atInt32 fixedLen)
         seek(fixedLen - i);
 
     return ret;
-}
-
-void MemoryReader::setProgressCallback(std::function<void (int)> cb)
-{
-    m_progressCallback = cb;
 }
 
 void MemoryReader::loadData()
