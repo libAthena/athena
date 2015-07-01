@@ -164,7 +164,7 @@ public:
      * \param data The buffer to write
      * \param length The amount to write
      */
-    void writeUBytes(atUint8* data, atUint64 len);
+    void writeUBytes(const atUint8* data, atUint64 len);
 
     /*! \brief Writes the given buffer with the specified length, buffers can be bigger than the length
      *  however it's undefined behavior to try and write a buffer which is smaller than the given length.
@@ -172,7 +172,7 @@ public:
      * \param data The buffer to write
      * \param length The amount to write
      */
-    void writeBytes(atInt8* data, atUint64 len);
+    void writeBytes(const atInt8* data, atUint64 len);
 
     /*! \brief Writes an Int16 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.

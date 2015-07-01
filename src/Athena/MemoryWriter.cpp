@@ -254,7 +254,7 @@ void MemoryWriter::writeByte(atInt8 val)
     writeUByte(val);
 }
 
-void MemoryWriter::writeUBytes(atUint8* data, atUint64 length)
+void MemoryWriter::writeUBytes(const atUint8* data, atUint64 length)
 {
     if (!isOpen())
         resize(sizeof(atUint8) * length);
@@ -276,7 +276,7 @@ void MemoryWriter::writeUBytes(atUint8* data, atUint64 length)
     m_position += length;
 }
 
-void MemoryWriter::writeBytes(atInt8* data, atUint64 length)
+void MemoryWriter::writeBytes(const atInt8* data, atUint64 length)
 {
     writeUBytes((atUint8*)data, length);
 }

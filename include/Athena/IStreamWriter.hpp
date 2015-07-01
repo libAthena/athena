@@ -25,8 +25,8 @@ public:
     virtual void writeBit(bool) = 0;
     virtual void writeUByte(atUint8) = 0;
     virtual void writeByte(atInt8) = 0;
-    virtual void writeUBytes(atUint8*, atUint64) = 0;
-    virtual void writeBytes(atInt8*, atUint64) = 0;
+    virtual void writeUBytes(const atUint8*, atUint64) = 0;
+    virtual void writeBytes(const atInt8*, atUint64) = 0;
     virtual void writeUint16(atUint16) = 0;
     virtual void writeInt16(atInt16) = 0;
     virtual void writeUint32(atUint32) = 0;

@@ -155,7 +155,7 @@ void FileWriter::writeByte(atInt8 val)
     writeUByte(val);
 }
 
-void FileWriter::writeUBytes(atUint8* data, atUint64 len)
+void FileWriter::writeUBytes(const atUint8* data, atUint64 len)
 {
     if (!isOpen())
         THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
@@ -166,7 +166,7 @@ void FileWriter::writeUBytes(atUint8* data, atUint64 len)
         THROW_IO_EXCEPTION("Unable to write to stream");
 }
 
-void FileWriter::writeBytes(atInt8* data, atUint64 len)
+void FileWriter::writeBytes(const atInt8* data, atUint64 len)
 {
     writeUBytes((atUint8*)data, len);
 }

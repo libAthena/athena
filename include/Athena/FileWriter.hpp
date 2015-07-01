@@ -31,8 +31,8 @@ public:
     void seekBit(int bit);
     void writeUByte(atUint8 val);
     void writeByte(atInt8 val);
-    void writeUBytes(atUint8* data, atUint64 len);
-    void writeBytes(atInt8* data, atUint64 len);
+    void writeUBytes(const atUint8* data, atUint64 len);
+    void writeBytes(const atInt8* data, atUint64 len);
     void writeUint16(atUint16 val);
     void writeInt16(atInt16 val);
     void writeUint32(atUint32 val);
