@@ -35,6 +35,8 @@ struct DNA
     template <typename T, size_t cntVar, Endian VE = DNAE>
     using Vector = std::vector<T>;
 
+    struct Delete {};
+
     template <size_t sizeVar>
     struct Buffer : public DNA, public std::unique_ptr<atUint8[]>
     {
@@ -103,8 +105,6 @@ struct DNA
 
     template <size_t align>
     struct Align {};
-
-    struct Delete {};
 
     virtual void read(IStreamReader&)=0;
     virtual void write(IStreamWriter&) const=0;
