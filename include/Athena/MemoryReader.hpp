@@ -39,31 +39,37 @@ public:
      *
      *  \param endian The Endianess to set \sa Endian
      */
-    void setEndian(Endian endian);
+    inline void setEndian(Endian endian)
+    {m_endian = endian;}
 
     /*! \brief Returns the current Endianness of the stream
      *
      *  \return Endian The current Stream Endianess
      */
-    Endian endian()      const;
+    inline Endian endian()      const
+    {return m_endian;}
 
     /*! \brief Returns whether the stream is BigEndian
      *
      *  \return bool True for BigEndian; False for LittleEndian
      */
-    bool isBigEndian()   const;
+    inline bool isBigEndian()   const
+    {return (m_endian == Endian::BigEndian);}
 
     /*! \brief Returns whether the stream is LittleEndian
      *
      *  \return bool True for LittleEndian; False for BigEndian
      */
-    bool isLittleEndian()const;
+    inline bool isLittleEndian()const
+    {return (m_endian == Endian::LittleEndian);}
 
     /*! \brief Retuns whether or not the Stream is open.
      *
      *  \return True if open; False otherwise.
      */
-    bool isOpen() const;
+    inline bool isOpen() const
+    {return m_data != nullptr;}
+
 
     /*! \brief Sets the buffers position relative to the specified position.<br />
      *         It seeks relative to the current position by default.
@@ -80,19 +86,23 @@ public:
      *
      *  \return bool True if at end; False otherwise.
      */
-    bool atEnd() const;
+    inline bool atEnd() const
+    {return m_position >= m_length;}
 
     /*! \brief Returns the current position in the stream.
      *
      *  \return Int64 The current position in the stream.
      */
-    atUint64 position() const;
+    inline atUint64 position() const
+    {return m_position;}
 
     /*! \brief Returns whether or not the stream is at the end.
      *
      *  \return bool True if at end; False otherwise.
      */
-    atUint64 length() const;
+    inline atUint64 length() const
+    {return m_length;}
+
 
     /*! \brief Sets the buffer to the given one, deleting the current one.<br />
      *         <b>BEWARE:</b> As this deletes the current buffer it WILL cause a loss of data
@@ -120,12 +130,15 @@ public:
      *  \sa Endian
      *  \param filepath The path to write to.
      */
-    void setFilepath(const std::string& filepath);
+    inline void setFilepath(const std::string& filepath)
+    {m_filepath = filepath;}
 
     /*! \brief Returns the target file
      *
      */
-    std::string filepath() const;
+    inline std::string filepath() const
+    {return m_filepath;}
+
 
     /*!
      * \brief Seeks to the specified bit within the current byte
@@ -184,7 +197,8 @@ public:
      *  \return Uint16 The value at the current address
      *  \throw IOException when address is out of range
      */
-    atUint16 readUint16();
+    inline atUint16 readUint16()
+    {return MemoryReader::readInt16();}
 
     /*! \brief Reads a Int32 and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position
@@ -204,7 +218,8 @@ public:
      *  \return Uint32 The value at the current address
      *  \throw IOException when address is out of range
      */
-    atUint32 readUint32();
+    inline atUint32 readUint32()
+    {return MemoryReader::readInt32();}
 
     /*! \brief Reads a Int64 and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position
@@ -224,7 +239,8 @@ public:
      *  \return Uint64 The value at the current address
      *  \throw IOException when address is out of range
      */
-    atUint64 readUint64();
+    inline atUint64 readUint64()
+    {return MemoryReader::readInt64();}
 
     /*! \brief Reads a float and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position
@@ -291,7 +307,8 @@ public:
      */
     std::wstring readWString(atInt32 fixedLen = -1);
 
-    void setProgressCallback(std::function<void(int)> cb);
+    inline void setProgressCallback(std::function<void(int)> cb)
+    {m_progressCallback = cb;}
 protected:
     void loadData();
     atUint8*      m_data;

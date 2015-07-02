@@ -14,18 +14,26 @@ class FileReader : public IStreamReader
 public:
     FileReader(const std::string& filename);
     virtual ~FileReader();
-    std::string filename() const;
+    inline const std::string& filename() const
+    {return m_filename;}
 
-    void setEndian(Endian endian);
-    Endian endian() const;
-    bool isBigEndian() const;
-    bool isLittleEndian() const;
+    inline void setEndian(Endian endian)
+    {m_endian = endian;}
+    inline Endian endian() const
+    {return m_endian;}
+    inline bool isBigEndian() const
+    {return (m_endian == Endian::BigEndian);}
+    inline bool isLittleEndian() const
+    {return (m_endian == Endian::LittleEndian);}
+
     void open();
     void close();
-    bool isOpen() const;
+    inline bool isOpen() const
+    {return m_fileHandle != NULL;}
     bool save();
     void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
-    inline void seekAlign32() {seek(ROUND_UP_32(position()), SeekOrigin::Begin);}
+    inline void seekAlign32()
+    {FileReader::seek(ROUND_UP_32(FileReader::position()), SeekOrigin::Begin);}
     bool atEnd() const;
     atUint64 position() const;
     atUint64 length() const;
@@ -34,20 +42,27 @@ public:
     void   seekBit(int);
     bool   readBit();
     atUint8  readUByte();
-    atInt8   readByte();
+    inline atInt8   readByte()
+    {return (atInt8)FileReader::readUByte();}
     atUint8* readUBytes(atUint64 len);
-    atInt8*  readBytes(atUint64 len);
-    atUint64 readBytesToBuf(void* buf, atUint64 len) {return readUBytesToBuf(buf, len);}
+    inline atInt8*  readBytes(atUint64 len)
+    {return (atInt8*)FileReader::readUBytes(len);}
+    atUint64 readBytesToBuf(void* buf, atUint64 len)
+    {return FileReader::readUBytesToBuf(buf, len);}
     atUint64 readUBytesToBuf(void* buf, atUint64 len);
     atUint16 readUint16();
-    atInt16  readInt16();
+    inline atInt16  readInt16()
+    {return (atInt16)FileReader::readUint16();}
     atUint32 readUint32();
-    atInt32  readInt32();
+    inline atInt32  readInt32()
+    {return (atInt32)FileReader::readUint32();}
     atUint64 readUint64();
-    atInt64  readInt64();
+    inline atInt64  readInt64()
+    {return (atInt64)FileReader::readUint64();}
     double readDouble();
     float  readFloat();
-    bool   readBool();
+    inline bool   readBool()
+    {return (FileReader::readByte() != 0);}
     atVec3f readVec3f();
     atVec4f readVec4f();
     std::string readString(atInt32 fixedLen = -1);
