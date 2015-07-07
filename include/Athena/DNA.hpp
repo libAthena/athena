@@ -29,6 +29,9 @@ namespace io
 template <Endian DNAE>
 struct DNA
 {
+    virtual void read(IStreamReader&)=0;
+    virtual void write(IStreamWriter&) const=0;
+
     template <typename T, Endian VE = DNAE>
     using Value = T;
 
@@ -106,8 +109,6 @@ struct DNA
     template <size_t align>
     struct Align {};
 
-    virtual void read(IStreamReader&)=0;
-    virtual void write(IStreamWriter&) const=0;
 };
 
 /** Macro to automatically declare read/write methods in subclasses */
