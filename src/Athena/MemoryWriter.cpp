@@ -31,8 +31,11 @@ MemoryWriter::MemoryWriter(atUint8* data, atUint64 length)
 }
 
 MemoryCopyWriter::MemoryCopyWriter(atUint8* data, atUint64 length)
-    : MemoryWriter(data, length)
 {
+    m_data = data;
+    m_length = length;
+    m_position = 0;
+
     if (length == 0)
         THROW_INVALID_OPERATION_EXCEPTION("length cannot be 0");
 
@@ -58,6 +61,42 @@ MemoryCopyWriter::MemoryCopyWriter(const std::string& filename)
 }
 
 void MemoryWriter::seek(atInt64 position, SeekOrigin origin)
+{
+    switch (origin)
+    {
+        case SeekOrigin::Begin:
+            if (position < 0)
+                THROW_IO_EXCEPTION("Position outside stream bounds");
+
+            if ((atUint64)position > m_length)
+                THROW_IO_EXCEPTION("data exceeds available buffer space");
+
+            m_position = position;
+            break;
+
+        case SeekOrigin::Current:
+            if ((((atInt64)m_position + position) < 0))
+                THROW_IO_EXCEPTION("Position outside stream bounds");
+
+            if (m_position + position > m_length)
+                THROW_IO_EXCEPTION("data exceeds available buffer space");
+
+            m_position += position;
+            break;
+
+        case SeekOrigin::End:
+            if (((atInt64)m_length - position) < 0)
+                THROW_IO_EXCEPTION("Position outside stream bounds");
+
+            if ((atUint64)position > m_length)
+                THROW_IO_EXCEPTION("data exceeds available buffer space");
+
+            m_position = m_length - position;
+            break;
+    }
+}
+
+void MemoryCopyWriter::seek(atInt64 position, SeekOrigin origin)
 {
     switch (origin)
     {
@@ -155,9 +194,19 @@ void MemoryWriter::save(const std::string& filename)
 
 void MemoryWriter::writeUBytes(const atUint8* data, atUint64 length)
 {
-    if (!isOpen())
-        resize(sizeof(atUint8) * length);
+    if (!data)
+        THROW_INVALID_DATA_EXCEPTION("data cannnot be NULL");
 
+    if (m_position + length > m_length)
+        THROW_IO_EXCEPTION("data length exceeds available buffer space");
+
+    memcpy((atInt8*)(m_data + m_position), data, length);
+
+    m_position += length;
+}
+
+void MemoryCopyWriter::writeUBytes(const atUint8* data, atUint64 length)
+{
     if (!data)
         THROW_INVALID_DATA_EXCEPTION("data cannnot be NULL");
 
@@ -169,7 +218,7 @@ void MemoryWriter::writeUBytes(const atUint8* data, atUint64 length)
     m_position += length;
 }
 
-void MemoryWriter::resize(atUint64 newSize)
+void MemoryCopyWriter::resize(atUint64 newSize)
 {
     if (newSize < m_length)
         THROW_INVALID_OPERATION_EXCEPTION("Stream::resize() -> New size cannot be less to the old size.");
@@ -178,13 +227,9 @@ void MemoryWriter::resize(atUint64 newSize)
     atUint8* newArray = new atUint8[newSize];
     memset(newArray, 0, newSize);
 
-    if (m_data)
-    {
-        memcpy(newArray, m_data, m_length);
-
-        // Delete the old one
-        delete[] m_data;
-    }
+    if (m_dataCopy)
+        memcpy(newArray, m_dataCopy.get(), m_length);
+    m_dataCopy.reset(newArray);
 
     // Swap the pointer and size out for the new ones.
     m_data = newArray;
