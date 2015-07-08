@@ -1,6 +1,20 @@
 cmake_minimum_required(VERSION 3.0)
 project(Athena)
 
+##################
+# Athena Version #
+##################
+
+set(ATHENA_MAJOR_VERSION 2)
+set(ATHENA_MINOR_VERSION 0)
+set(ATHENA_PATCH_VERSION 0)
+set(ATHENA_VERSION
+  ${ATHENA_MAJOR_VERSION}.${ATHENA_MINOR_VERSION}.${ATHENA_PATCH_VERSION})
+
+################
+# Athena Build #
+################
+
 add_subdirectory(extern)
 file(GLOB ATHENA_HEADERS include/Athena/*.hpp)
 
@@ -134,23 +148,79 @@ add_library(AthenaZelda
     include/Athena/SkywardSwordQuest.hpp
 )
 
+# Offer the user the choice of overriding the installation directories
+set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
+set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
+if(WIN32 AND NOT CYGWIN)
+  set(DEF_INSTALL_CMAKE_DIR cmake)
+else()
+  set(DEF_INSTALL_CMAKE_DIR lib/cmake/Athena)
+endif()
+set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH "Installation directory for CMake files")
 
-install(DIRECTORY include/ DESTINATION include/Athena)
+# Make relative paths absolute (needed later on)
+foreach(p LIB INCLUDE CMAKE)
+  set(var INSTALL_${p}_DIR)
+  if(NOT IS_ABSOLUTE "${${var}}")
+    set(${var} "${CMAKE_INSTALL_PREFIX}/${${var}}")
+  endif()
+endforeach()
+
+# Define installs
+install(DIRECTORY include/ DESTINATION ${INSTALL_INCLUDE_DIR}/Athena)
 install(TARGETS AthenaCore AthenaSakura AthenaWiiSave AthenaZelda
-        DESTINATION lib)
-if(WIN32 AND NOT UNIX)
-install(FILES Athena.ico)
+        DESTINATION ${INSTALL_LIB_DIR} EXPORT AthenaTargets)
+if(WIN32 AND NOT CYGWIN)
+install(FILES Athena.ico DESTINATION ${INSTALL_LIB_DIR})
 endif()
 
-# CPack settings
+##################
+# Package Export #
+##################
+
+# Add all targets to the build-tree export set
+export(TARGETS AthenaCore AthenaSakura AthenaWiiSave AthenaZelda
+  FILE "${PROJECT_BINARY_DIR}/AthenaTargets.cmake")
+
+# Export the package for use from the build-tree
+# (this registers the build-tree with a global CMake-registry)
+export(PACKAGE Athena)
+
+# Create the AthenaConfig.cmake
+# ... for the build tree
+set(CONF_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
+set(CONF_ICON_DIR "${PROJECT_SOURCE_DIR}/Athena.ico")
+configure_file(AthenaConfig.cmake.in "${PROJECT_BINARY_DIR}/AthenaConfig.cmake" @ONLY)
+# ... for the install tree
+file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}" "${INSTALL_INCLUDE_DIR}")
+file(RELATIVE_PATH REL_ICON_DIR "${INSTALL_CMAKE_DIR}" "${INSTALL_LIB_DIR}/Athena.ico")
+set(CONF_INCLUDE_DIR "\${ATHENA_CMAKE_DIR}/${REL_INCLUDE_DIR}")
+set(CONF_ICON_DIR "\${ATHENA_CMAKE_DIR}/${REL_ICON_DIR}")
+configure_file(AthenaConfig.cmake.in "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/AthenaConfig.cmake" @ONLY)
+# ... for both
+configure_file(AthenaConfigVersion.cmake.in "${PROJECT_BINARY_DIR}/AthenaConfigVersion.cmake" @ONLY)
+
+# Install AthenaConfig.cmake
+install(FILES
+  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/AthenaConfig.cmake"
+  "${PROJECT_BINARY_DIR}/AthenaConfigVersion.cmake"
+  DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT dev)
+
+# Install the export set for use with the install-tree
+install(EXPORT AthenaTargets DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT dev)
+
+#########
+# CPack #
+#########
+
 include(InstallRequiredSystemLibraries)
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Athena")
 set(CPACK_PACKAGE_VENDOR "2015 Antidote / Jackoalan")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-set(CPACK_PACKAGE_VERSION_MAJOR "2")
-set(CPACK_PACKAGE_VERSION_MINOR "0")
-set(CPACK_PACKAGE_VERSION_PATCH "0")
+set(CPACK_PACKAGE_VERSION_MAJOR ${ATHENA_MAJOR_VERSION})
+set(CPACK_PACKAGE_VERSION_MINOR ${ATHENA_MINOR_VERSION})
+set(CPACK_PACKAGE_VERSION_PATCH ${ATHENA_PATCH_VERSION})
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "Athena")
 if(WIN32 AND NOT UNIX)
     # There is a bug in NSI that does not handle full unix paths properly. Make
