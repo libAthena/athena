@@ -53,10 +53,6 @@ add_library(AthenaCore
     include/LZ77/LZLookupTable.hpp
     include/LZ77/LZType10.hpp
     include/LZ77/LZType11.hpp
-    include/utf8.h
-    include/utf8/checked.h
-    include/utf8/core.h
-    include/utf8/unchecked.h
     include/Athena/FileInfo.hpp
     include/Athena/Dir.hpp
     include/gekko_support.h
@@ -90,7 +86,7 @@ add_library(AthenaWiiSave
     src/ec.cpp
     src/md5.cpp
     src/sha1.cpp
-    src/aes.c
+    src/aes.cpp
 
     include/Athena/WiiBanner.hpp
     include/Athena/WiiFile.hpp
@@ -98,12 +94,13 @@ add_library(AthenaWiiSave
     include/Athena/WiiSave.hpp
     include/Athena/WiiSaveReader.hpp
     include/Athena/WiiSaveWriter.hpp
-    include/aes.h
+    include/aes.hpp
     include/bn.h
     include/ec.h
     include/md5.h
     include/sha1.h
 )
+set_source_files_properties(src/aes.cpp PROPERTIES COMPILE_FLAGS -maes)
 
 add_library(AthenaZelda
     src/Athena/ALTTPFile.cpp

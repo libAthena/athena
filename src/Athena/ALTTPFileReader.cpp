@@ -83,10 +83,11 @@ ALTTPFile* ALTTPFileReader::readFile()
         quest->setArrowUpgrades(base::readByte());
         quest->setHealthFiller(base::readByte());
         quest->setMagicFiller(base::readByte());
+        atUint8 pendantsByte = base::readUByte();
         ALTTPPendants pendants;
-        pendants.Courage = base::readBit();
-        pendants.Wisdom  = base::readBit();
-        pendants.Power   = base::readBit();
+        pendants.Courage = pendantsByte & 1;
+        pendants.Wisdom  = (pendantsByte >> 1) & 1;
+        pendants.Power   = (pendantsByte >> 2) & 1;
         pendants.Unused1 = false;
         pendants.Unused2 = false;
         pendants.Unused3 = false;
@@ -97,15 +98,16 @@ ALTTPFile* ALTTPFileReader::readFile()
         quest->setArrowFiller(base::readByte());
         quest->setArrows(base::readByte());
         base::seek(1);
+        atUint8 abilitiesByte = base::readUByte();
         ALTTPAbilities abilities;
-        abilities.Nothing = base::readBit();
-        abilities.Swim = base::readBit();
-        abilities.Dash = base::readBit();
-        abilities.Pull = base::readBit();
-        abilities.Unknown1 = base::readBit();
-        abilities.Talk = base::readBit();
-        abilities.Read = base::readBit();
-        abilities.Unknown2 = base::readBit();
+        abilities.Nothing = abilitiesByte & 1;
+        abilities.Swim = (abilitiesByte >> 1) & 1;
+        abilities.Dash = (abilitiesByte >> 2) & 1;
+        abilities.Pull = (abilitiesByte >> 3) & 1;
+        abilities.Unknown1 = (abilitiesByte >> 4) & 1;
+        abilities.Talk = (abilitiesByte >> 5) & 1;
+        abilities.Read = (abilitiesByte >> 6) & 1;
+        abilities.Unknown2 = (abilitiesByte >> 7) & 1;
         quest->setAbilityFlags(abilities);
         quest->setCrystals((ALTTPCrystals&)*base::readBytes(sizeof(ALTTPCrystals)));
         quest->setMagicUsage((ALTTPMagicUsage&)*base::readBytes(sizeof(ALTTPMagicUsage)));
@@ -186,22 +188,24 @@ ALTTPFile* ALTTPFileReader::readFile()
 ALTTPRoomFlags* ALTTPFileReader::readRoomFlags()
 {
     ALTTPRoomFlags* flags = new ALTTPRoomFlags;
-    flags->Chest1        = base::readBit();
-    flags->Chest2        = base::readBit();
-    flags->Chest3        = base::readBit();
-    flags->Chest4        = base::readBit();
-    flags->Quadrant1     = base::readBit();
-    flags->Quadrant2     = base::readBit();
-    flags->Quadrant3     = base::readBit();
-    flags->Quadrant4     = base::readBit();
-    flags->Door1         = base::readBit();
-    flags->Door2         = base::readBit();
-    flags->Door3         = base::readBit();
-    flags->Door4         = base::readBit();
-    flags->BossBattleWon = base::readBit();
-    flags->Key           = base::readBit();
-    flags->KeyOrChest    = base::readBit();
-    flags->ChestOrTile   = base::readBit();
+    atUint8 flagsByte    = base::readUByte();
+    flags->Chest1        = flagsByte & 1;
+    flags->Chest2        = (flagsByte >> 1) & 1;
+    flags->Chest3        = (flagsByte >> 2) & 1;
+    flags->Chest4        = (flagsByte >> 3) & 1;
+    flags->Quadrant1     = (flagsByte >> 4) & 1;
+    flags->Quadrant2     = (flagsByte >> 5) & 1;
+    flags->Quadrant3     = (flagsByte >> 6) & 1;
+    flags->Quadrant4     = (flagsByte >> 7) & 1;
+    flagsByte            = base::readUByte();
+    flags->Door1         = flagsByte & 1;
+    flags->Door2         = (flagsByte >> 1) & 1;
+    flags->Door3         = (flagsByte >> 2) & 1;
+    flags->Door4         = (flagsByte >> 3) & 1;
+    flags->BossBattleWon = (flagsByte >> 4) & 1;
+    flags->Key           = (flagsByte >> 5) & 1;
+    flags->KeyOrChest    = (flagsByte >> 6) & 1;
+    flags->ChestOrTile   = (flagsByte >> 7) & 1;
 
     return flags;
 }
@@ -209,36 +213,39 @@ ALTTPRoomFlags* ALTTPFileReader::readRoomFlags()
 ALTTPOverworldEvent* ALTTPFileReader::readOverworldEvent()
 {
     ALTTPOverworldEvent* event = new ALTTPOverworldEvent;
-    event->Unused1    = base::readBit();
-    event->HeartPiece = base::readBit();
-    event->Overlay    = base::readBit();
-    event->Unused2    = base::readBit();
-    event->Unused3    = base::readBit();
-    event->Unused4    = base::readBit();
-    event->Set        = base::readBit();
-    event->Unused5    = base::readBit();
+    atUint8 flagsByte = base::readUByte();
+    event->Unused1    = flagsByte & 1;
+    event->HeartPiece = (flagsByte >> 1) & 1;
+    event->Overlay    = (flagsByte >> 2) & 1;
+    event->Unused2    = (flagsByte >> 3) & 1;
+    event->Unused3    = (flagsByte >> 4) & 1;
+    event->Unused4    = (flagsByte >> 5) & 1;
+    event->Set        = (flagsByte >> 6) & 1;
+    event->Unused5    = (flagsByte >> 7) & 1;
     return event;
 }
 
 ALTTPDungeonItemFlags ALTTPFileReader::readDungeonFlags()
 {
     ALTTPDungeonItemFlags flags;
-    flags.Unused1         = base::readBit();
-    flags.Unused2         = base::readBit();
-    flags.GanonsTower     = base::readBit();
-    flags.TurtleRock      = base::readBit();
-    flags.GargoylesDomain = base::readBit();
-    flags.TowerOfHera     = base::readBit();
-    flags.IcePalace       = base::readBit();
-    flags.SkullWoods      = base::readBit();
-    flags.MiseryMire      = base::readBit();
-    flags.DarkPalace      = base::readBit();
-    flags.SwampPalace     = base::readBit();
-    flags.HyruleCastle2   = base::readBit();
-    flags.DesertPalace    = base::readBit();
-    flags.EasternPalace   = base::readBit();
-    flags.HyruleCastle    = base::readBit();
-    flags.SewerPassage    = base::readBit();
+    atUint8 flagsByte     = base::readUByte();
+    flags.Unused1         = flagsByte & 1;
+    flags.Unused2         = (flagsByte >> 1) & 1;
+    flags.GanonsTower     = (flagsByte >> 2) & 1;
+    flags.TurtleRock      = (flagsByte >> 3) & 1;
+    flags.GargoylesDomain = (flagsByte >> 4) & 1;
+    flags.TowerOfHera     = (flagsByte >> 5) & 1;
+    flags.IcePalace       = (flagsByte >> 6) & 1;
+    flags.SkullWoods      = (flagsByte >> 7) & 1;
+    flagsByte             = base::readUByte();
+    flags.MiseryMire      = flagsByte & 1;
+    flags.DarkPalace      = (flagsByte >> 1) & 1;
+    flags.SwampPalace     = (flagsByte >> 2) & 1;
+    flags.HyruleCastle2   = (flagsByte >> 3) & 1;
+    flags.DesertPalace    = (flagsByte >> 4) & 1;
+    flags.EasternPalace   = (flagsByte >> 5) & 1;
+    flags.HyruleCastle    = (flagsByte >> 6) & 1;
+    flags.SewerPassage    = (flagsByte >> 7) & 1;
 
     aDebug() << std::hex << flags.flags1 << " " << flags.flags2 << std::dec << std::endl;
     return flags;
