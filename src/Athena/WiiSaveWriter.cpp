@@ -27,7 +27,7 @@
 #include "Athena/InvalidOperationException.hpp"
 #include "Athena/InvalidDataException.hpp"
 
-#include "aes.h"
+#include "aes.hpp"
 #include "ec.h"
 #include "md5.h"
 #include "sha1.h"
@@ -146,12 +146,13 @@ void WiiSaveWriter::writeBanner(WiiBanner* banner)
     base::seek(0x0E, SeekOrigin::Begin);
     base::writeBytes((atInt8*)hash, 0x10);
 
-    aes_set_key(SD_KEY);
+    std::unique_ptr<IAES> aes = NewAES();
+    aes->setKey(SD_KEY);
     atUint8 data[0xF0C0];
     memcpy(data, base::data(), 0xF0C0);
     atUint8  tmpIV[26];
     memcpy(tmpIV, SD_IV, 16);
-    aes_encrypt(tmpIV, data, data, 0xF0C0);
+    aes->encrypt(tmpIV, data, data, 0xF0C0);
 
     base::seek(0, SeekOrigin::Begin);
     base::writeBytes((atInt8*)data, 0xF0C0);
@@ -187,8 +188,9 @@ atUint32 WiiSaveWriter::writeFile(WiiFile* file)
         atUint8* data = new atUint8[roundedSize];
         memset(data, 0, roundedSize);
 
-        aes_set_key(SD_KEY);
-        aes_encrypt(iv, file->data(), data, roundedSize);
+        std::unique_ptr<IAES> aes = NewAES();
+        aes->setKey(SD_KEY);
+        aes->encrypt(iv, file->data(), data, roundedSize);
 
         base::writeBytes((atInt8*)data, roundedSize);
         ret += roundedSize;

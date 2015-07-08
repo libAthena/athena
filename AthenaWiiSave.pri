@@ -14,7 +14,7 @@ SOURCES += \
     $$PWD/src/ec.cpp \
     $$PWD/src/md5.cpp \
     $$PWD/src/sha1.cpp \
-    $$PWD/src/aes.c
+    $$PWD/src/aes.cpp
 
 HEADERS += \
     $$PWD/include/Athena/WiiBanner.hpp \
@@ -23,7 +23,7 @@ HEADERS += \
     $$PWD/include/Athena/WiiSave.hpp \
     $$PWD/include/Athena/WiiSaveReader.hpp \
     $$PWD/include/Athena/WiiSaveWriter.hpp \
-    $$PWD/include/aes.h \
+    $$PWD/include/aes.hpp \
     $$PWD/include/bn.h \
     $$PWD/include/ec.h \
     $$PWD/include/md5.h \

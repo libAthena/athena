@@ -17,7 +17,9 @@
 #include "Athena/SkywardSwordQuest.hpp"
 #include "Athena/Checksums.hpp"
 #include <sstream>
-#include "utf8.h"
+#include <locale>
+#include <codecvt>
+
 namespace Athena
 {
 
@@ -79,8 +81,8 @@ void SkywardSwordQuest::setPlayerName(const std::string& name)
     if (name.length() > 8)
         aDebug() << "WARNING: name cannot be greater than 8 characters, automatically truncating" << std::endl;
 
-    std::vector<atUint16> val;
-    utf8::utf8to16(name.begin(), name.end(), std::back_inserter(val));
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+    std::wstring val = conv.from_bytes(name);
 
     for (atUint32 i = 0; i < 8; i++)
     {
@@ -99,7 +101,7 @@ void SkywardSwordQuest::setPlayerName(const std::string& name)
 
 std::string SkywardSwordQuest::playerName() const
 {
-    std::vector<atUint16> val;
+    std::wstring val;
 
     for (atUint32 i = 0; i < 8; i++)
     {
@@ -112,9 +114,8 @@ std::string SkywardSwordQuest::playerName() const
         val.push_back(c);
     }
 
-    std::string ret;
-    utf8::utf16to8(val.begin(), val.end(), std::back_inserter(ret));
-    return std::string(ret.c_str());
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+    return conv.to_bytes(val);
 }
 
 void SkywardSwordQuest::setRupeeCount(atUint16 value)

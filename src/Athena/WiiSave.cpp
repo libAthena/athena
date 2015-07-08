@@ -20,7 +20,7 @@
 #include "Athena/MemoryReader.hpp"
 #include "Athena/MemoryWriter.hpp"
 #include "Athena/Utility.hpp"
-#include "aes.h"
+#include "aes.hpp"
 #include "ec.h"
 #include "md5.h"
 #include "sha1.h"

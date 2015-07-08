@@ -1,9 +1,9 @@
 #ifndef GLOBAL_HPP
 #define GLOBAL_HPP
 
+#include <iostream>
 #include "Athena/Types.hpp"
 #include "Athena/Utility.hpp"
-#include <iostream>
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4996)
