@@ -13,7 +13,7 @@ LZType11::LZType11(atInt32 minimumOffset, atInt32 slidingWindow, atInt32 minimum
 
 atUint32 LZType11::compress(const atUint8* src, atUint8** dst, atUint32 srcLength)
 {
-    Athena::io::MemoryWriter outbuff("tmp");
+    Athena::io::MemoryCopyWriter outbuff("tmp");
 
     if (srcLength > 0xFFFFFF) // If length is greater than 24 bits or 16 Megs
     {

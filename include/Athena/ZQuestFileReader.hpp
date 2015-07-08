@@ -29,9 +29,9 @@ namespace io
 /*!
  * \brief The ZQuestFileReader class
  */
-class ZQuestFileReader : protected MemoryReader
+class ZQuestFileReader : protected MemoryCopyReader
 {
-    MEMORYREADER_BASE();
+    MEMORYCOPYREADER_BASE();
 
 public:
     /*!

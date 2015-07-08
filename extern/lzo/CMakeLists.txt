@@ -1,4 +1,6 @@
-add_library(lzo
+find_library(LZO_LIB lzo2)
+if(LZO_LIB STREQUAL LZO_LIB-NOTFOUND)
+add_library(lzo2
     src/lzo1.c
     src/lzo1_99.c
     src/lzo1a.c
@@ -71,3 +73,7 @@ add_library(lzo
     include/lzo/lzoconf.h
     include/lzo/lzodefs.h
     include/lzo/lzoutil.h)
+install(DIRECTORY include/lzo DESTINATION include/lzo)
+install(TARGETS lzo2 DESTINATION lib)
+set(LZO_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include CACHE PATH "LZO include path" FORCE)
+endif()

@@ -1,4 +1,6 @@
-add_library(zlib
+find_package(ZLIB)
+if(NOT ZLIB_FOUND)
+add_library(z
     adler32.c
     compress.c
     crc32.c
@@ -21,3 +23,7 @@ add_library(zlib
     zconf.h
     zlib.h
     zutil.h)
+install(FILES zconf.h zlib.h DESTINATION include)
+install(TARGETS z DESTINATION lib)
+set(ZLIB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "Zlib include path" FORCE)
+endif()

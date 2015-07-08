@@ -36,9 +36,6 @@ ATHENA_PRO=true
 include(Athena.pri)
 
 
-OTHER_FILES += \
-    .travis.yml
-
 unix {
     isEmpty(PREFIX) {
         PREFIX = /usr/local

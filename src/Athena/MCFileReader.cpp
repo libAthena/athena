@@ -39,7 +39,7 @@ MCFile* MCFileReader::readFile()
     base::m_position = 0;
 
     if (isScrambled)
-        MCFile::unscramble(base::m_data, base::m_length);
+        MCFile::unscramble(base::m_dataCopy.get(), base::m_length);
 
     return nullptr;
 }

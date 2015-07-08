@@ -29,9 +29,9 @@ namespace io
 /*!
  * \brief The ZQuestFileWriter class
  */
-class ZQuestFileWriter : protected MemoryWriter
+class ZQuestFileWriter : protected MemoryCopyWriter
 {
-    MEMORYWRITER_BASE();
+    MEMORYCOPYWRITER_BASE();
 
 public:
     /*!

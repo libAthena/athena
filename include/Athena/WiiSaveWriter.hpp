@@ -36,9 +36,9 @@ namespace io
  *  all work is done using a memory buffer, and not written directly to the disk.
  *  \sa BinaryReader
  */
-class WiiSaveWriter : protected MemoryWriter
+class WiiSaveWriter : protected MemoryCopyWriter
 {
-    MEMORYWRITER_BASE();
+    MEMORYCOPYWRITER_BASE();
 public:
     /*! \brief This constructor creates an instance from a file on disk.
      *
