@@ -19,7 +19,8 @@ namespace Athena
 namespace io
 {
 MemoryReader::MemoryReader(const atUint8* data, atUint64 length)
-    : m_length(length),
+    : m_data(data),
+      m_length(length),
       m_position(0)
 {
     if (!data)
@@ -27,24 +28,20 @@ MemoryReader::MemoryReader(const atUint8* data, atUint64 length)
 
     if (length == 0)
         THROW_INVALID_OPERATION_EXCEPTION("length cannot be 0");
-
-    m_data = new atUint8[m_length];
-    memcpy(m_data, data, m_length);
 }
 
-MemoryReader::MemoryReader(const std::string& filename)
-    : m_data(NULL),
-      m_length(0),
-      m_filepath(filename),
-      m_position(0)
+MemoryCopyReader::MemoryCopyReader(const atUint8* data, atUint64 length)
+    : MemoryReader(data, length)
 {
-    loadData();
-}
+    if (!data)
+        THROW_INVALID_DATA_EXCEPTION("data cannot be NULL");
 
-MemoryReader::~MemoryReader()
-{
-    delete[] m_data;
-    m_data = NULL;
+    if (length == 0)
+        THROW_INVALID_OPERATION_EXCEPTION("length cannot be 0");
+
+    m_dataCopy.reset(new atUint8[m_length]);
+    m_data = m_dataCopy.get();
+    memcpy(m_dataCopy.get(), data, m_length);
 }
 
 void MemoryReader::seek(atInt64 position, SeekOrigin origin)
@@ -76,10 +73,16 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin)
 
 void MemoryReader::setData(const atUint8* data, atUint64 length)
 {
-    if (m_data)
-        delete[] m_data;
-
     m_data = (atUint8*)data;
+    m_length = length;
+    m_position = 0;
+}
+
+void MemoryCopyReader::setData(const atUint8* data, atUint64 length)
+{
+    m_dataCopy.reset(new atUint8[length]);
+    m_data = m_dataCopy.get();
+    memcpy(m_dataCopy.get(), data, length);
     m_length = length;
     m_position = 0;
 }
@@ -94,9 +97,6 @@ atUint8* MemoryReader::data() const
 
 atUint64 MemoryReader::readUBytesToBuf(void* buf, atUint64 length)
 {
-    if (!m_data)
-        loadData();
-
     if (m_position + length > m_length)
         THROW_IO_EXCEPTION_RETURN(0, "Position %0.8X outside stream bounds ", m_position);
 
@@ -105,7 +105,7 @@ atUint64 MemoryReader::readUBytesToBuf(void* buf, atUint64 length)
     return length;
 }
 
-void MemoryReader::loadData()
+void MemoryCopyReader::loadData()
 {
     FILE* in;
     atUint64 length;
@@ -117,7 +117,8 @@ void MemoryReader::loadData()
     rewind(in);
 
     length = utility::fileSize(m_filepath);
-    m_data = new atUint8[length];
+    m_dataCopy.reset(new atUint8[length]);
+    m_data = m_dataCopy.get();
 
     atUint64 done = 0;
     atUint64 blocksize = BLOCKSZ;
@@ -127,7 +128,7 @@ void MemoryReader::loadData()
         if (blocksize > length - done)
             blocksize = length - done;
 
-        atInt64 ret = fread(m_data + done, 1, blocksize, in);
+        atInt64 ret = fread(m_dataCopy.get() + done, 1, blocksize, in);
 
         if (ret < 0)
             THROW_IO_EXCEPTION("Error reading data from disk");

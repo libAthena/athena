@@ -20,20 +20,12 @@ namespace io
 class MemoryReader : public IStreamReader
 {
 public:
-    ~MemoryReader();
-
-    /*! \brief This constructor takes an existing buffer to read from.
+    /*! \brief This constructor references an existing buffer to read from.
      *
      *   \param data The existing buffer
      *   \param length The length of the existing buffer
      */
     MemoryReader(const atUint8* data, atUint64 length);
-
-    /*! \brief This constructor creates an instance from a file on disk.
-     *
-     * \param filename The file to create the stream from
-     */
-    MemoryReader(const std::string& filename);
 
     /*! \brief Sets the buffers position relative to the specified position.<br />
      *         It seeks relative to the current position by default.
@@ -78,14 +70,44 @@ public:
      */
     atUint8* data() const;
 
+    /*! \brief Reads a specified number of bytes to user-allocated buffer
+     *  \param buf User-allocated buffer pointer
+     *  \param len Length to read
+     *  \return Number of bytes read
+     */
     atUint64 readUBytesToBuf(void* buf, atUint64 len);
 
 protected:
+    const atUint8*   m_data;
+    atUint64         m_length;
+    atUint64         m_position;
+};
+
+class MemoryCopyReader : public MemoryReader
+{
+public:
+    /*! \brief This constructor copies an existing buffer to read from.
+     *
+     *   \param data The existing buffer
+     *   \param length The length of the existing buffer
+     */
+    MemoryCopyReader(const atUint8* data, atUint64 length);
+
+    /*! \brief This constructor creates an instance from a file on disk.
+     *
+     * \param filename The file to create the stream from
+     */
+    MemoryCopyReader(const std::string& filename)
+    : MemoryReader(NULL, 0),
+      m_filepath(filename)
+    {loadData();}
+
+    void setData(const atUint8* data, atUint64 length);
+
+protected:
     void loadData();
-    atUint8*      m_data;
-    atUint64      m_length;
+    std::unique_ptr<atUint8[]> m_dataCopy;
     std::string   m_filepath; //!< Path to the target file
-    atUint64      m_position;
 };
 
 } // io
@@ -97,5 +119,12 @@ private: \
     typedef Athena::io::MemoryReader base
 
 #endif // MEMORYREADER_BASE
+
+#ifndef MEMORYCOPYREADER_BASE
+#define MEMORYCOPYREADER_BASE() \
+private: \
+    typedef Athena::io::MemoryCopyReader base
+
+#endif // MEMORYCOPYREADER_BASE
 
 #endif // MEMORYREADER_HPP

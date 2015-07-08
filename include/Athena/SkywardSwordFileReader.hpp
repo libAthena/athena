@@ -24,9 +24,9 @@ namespace Athena
 class SkywardSwordFile;
 namespace io
 {
-class SkywardSwordFileReader : public MemoryReader
+class SkywardSwordFileReader : public MemoryCopyReader
 {
-    MEMORYREADER_BASE();
+    MEMORYCOPYREADER_BASE();
 public:
 
     SkywardSwordFileReader(atUint8* data, atUint64 length);

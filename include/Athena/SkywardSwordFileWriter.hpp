@@ -26,9 +26,9 @@ class SkywardSwordFile;
 namespace io
 {
 
-class SkywardSwordFileWriter : public MemoryWriter
+class SkywardSwordFileWriter : public MemoryCopyWriter
 {
-    MEMORYWRITER_BASE();
+    MEMORYCOPYWRITER_BASE();
 public:
     SkywardSwordFileWriter(atUint8* data, atUint64 len);
     SkywardSwordFileWriter(const std::string& filename);

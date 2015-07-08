@@ -34,9 +34,9 @@ namespace io
  *  all work is done using a memory buffer, and not written directly to the disk.
  *  \sa BinaryReader
  */
-class ALTTPFileWriter : protected MemoryWriter
+class ALTTPFileWriter : protected MemoryCopyWriter
 {
-    MEMORYWRITER_BASE();
+    MEMORYCOPYWRITER_BASE();
 
 public:
     /*! \brief This constructor takes an existing buffer to write to.

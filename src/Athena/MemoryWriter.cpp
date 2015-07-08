@@ -23,29 +23,38 @@ MemoryWriter::MemoryWriter(atUint8* data, atUint64 length)
       m_length(length),
       m_position(0)
 {
-    if (!m_data && m_length > 0)
-        m_data = new atUint8[m_length];
+    if (!data)
+        THROW_INVALID_DATA_EXCEPTION("data cannot be NULL");
+
+    if (length == 0)
+        THROW_INVALID_OPERATION_EXCEPTION("length cannot be 0");
 }
 
-MemoryWriter::MemoryWriter(const std::string& filename, std::function<void(int)> progressFun)
-    : m_length(0),
-      m_filepath(filename),
-      m_position(0)
+MemoryCopyWriter::MemoryCopyWriter(atUint8* data, atUint64 length)
+    : MemoryWriter(data, length)
 {
+    if (length == 0)
+        THROW_INVALID_OPERATION_EXCEPTION("length cannot be 0");
+
+    m_dataCopy.reset(new atUint8[length]);
+    m_data = m_dataCopy.get();
+    if (data)
+        memcpy(m_data, data, length);
+}
+
+MemoryCopyWriter::MemoryCopyWriter(const std::string& filename)
+    : MemoryWriter(NULL, 0)
+{
+    m_filepath = filename;
     m_length = 0x10;
     m_position = 0;
-    m_data = new atUint8[m_length];
+    m_dataCopy.reset(new atUint8[m_length]);
+    m_data = m_dataCopy.get();
 
     if (!m_data)
         THROW_IO_EXCEPTION("Could not allocate memory!");
 
     memset(m_data, 0, m_length);
-}
-
-MemoryWriter::~MemoryWriter()
-{
-    delete[] m_data;
-    m_data = nullptr;
 }
 
 void MemoryWriter::seek(atInt64 position, SeekOrigin origin)
@@ -84,12 +93,18 @@ void MemoryWriter::seek(atInt64 position, SeekOrigin origin)
     }
 }
 
-void MemoryWriter::setData(const atUint8* data, atUint64 length)
+void MemoryWriter::setData(atUint8* data, atUint64 length)
 {
-    if (m_data)
-        delete[] m_data;
-
     m_data = (atUint8*)data;
+    m_length = length;
+    m_position = 0;
+}
+
+void MemoryCopyWriter::setData(const atUint8* data, atUint64 length)
+{
+    m_dataCopy.reset(new atUint8[length]);
+    m_data = m_dataCopy.get();
+    memcpy(m_data, data, length);
     m_length = length;
     m_position = 0;
 }
@@ -105,9 +120,6 @@ atUint8* MemoryWriter::data() const
 
 void MemoryWriter::save(const std::string& filename)
 {
-    if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
-
     if (filename.empty() && m_filepath.empty())
         THROW_INVALID_OPERATION_EXCEPTION("No file specified, cannot save.");
 

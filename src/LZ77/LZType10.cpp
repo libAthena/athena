@@ -16,7 +16,7 @@ atUint32 LZType10::compress(const atUint8* src, atUint8** dstBuf, atUint32 srcLe
     atUint32 encodeSize = (srcLength << 8) | (0x10);
     encodeSize = Athena::utility::LittleUint32(encodeSize); //File size needs to be written as little endian always
 
-    Athena::io::MemoryWriter outbuf("tmp");
+    Athena::io::MemoryCopyWriter outbuf("tmp");
     outbuf.writeUint32(encodeSize);
 
     atUint8* ptrStart = (atUint8*)src;

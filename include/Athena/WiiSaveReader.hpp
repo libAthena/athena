@@ -37,9 +37,9 @@ namespace io
  *  all work is done using a memory buffer, and not read directly from the disk.
  *  \sa BinaryReader
  */
-class WiiSaveReader : protected MemoryReader
+class WiiSaveReader : protected MemoryCopyReader
 {
-    MEMORYREADER_BASE();
+    MEMORYCOPYREADER_BASE();
 public:
     /*! \brief This constructor takes an existing buffer to read from.
      *

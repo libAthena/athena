@@ -35,9 +35,9 @@ namespace io
  *  all work is done using a memory buffer, and not written directly from the disk.
  *  \sa BinaryWriter
  */
-class MCFileWriter : protected MemoryWriter
+class MCFileWriter : protected MemoryCopyWriter
 {
-    MEMORYWRITER_BASE();
+    MEMORYCOPYWRITER_BASE();
 public:
     /*!
      * \brief This constructor takes an existing buffer to write to.

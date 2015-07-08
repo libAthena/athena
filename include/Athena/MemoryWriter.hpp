@@ -21,21 +21,13 @@ namespace io
 class MemoryWriter : public IStreamWriter
 {
 public:
-    ~MemoryWriter();
 
-    /*! \brief This constructor takes an existing buffer to write to.
+    /*! \brief This constructor references an existing buffer to write to in-place.
      *
      *   \param data The existing buffer
      *   \param length The length of the existing buffer
      */
     explicit MemoryWriter(atUint8* data = nullptr, atUint64 length = 0x10);
-
-    /*! \brief This constructor creates an instance from a file on disk.
-     *
-     * \param filename The file to create the stream from
-     */
-    MemoryWriter(const std::string& filename, std::function<void(int)> progressFun = nullptr);
-
 
     /*! \brief Sets the buffers position relative to the specified position.<br />
      *         It seeks relative to the current position by default.
@@ -70,7 +62,7 @@ public:
      *  \param length The length of the new buffer.
      *  \throw IOException
      */
-    void  setData(const atUint8* data, atUint64 length);
+    void  setData(atUint8* data, atUint64 length);
 
 
     /*! \brief Returns a copy of the current buffer.<br />
@@ -113,11 +105,35 @@ public:
 protected:
     atUint8*      m_data;
     atUint64      m_length;
-    std::string   m_filepath; //!< Path to the target file
     atUint64      m_position;
+    std::string   m_filepath; //!< Path to the target file
 private:
     void resize(atUint64 newSize);
 };
+
+class MemoryCopyWriter : public MemoryWriter
+{
+public:
+
+    /*! \brief This constructor copies an existing buffer to write to.
+     *
+     *   \param data The existing buffer
+     *   \param length The length of the existing buffer
+     */
+    explicit MemoryCopyWriter(atUint8* data, atUint64 length);
+
+    /*! \brief This constructor creates an instance from a file on disk.
+     *
+     * \param filename The file to create the stream from
+     */
+    MemoryCopyWriter(const std::string& filename);
+
+    void  setData(const atUint8* data, atUint64 length);
+
+protected:
+    std::unique_ptr<atUint8[]> m_dataCopy;
+};
+
 }
 }
 
@@ -126,4 +142,11 @@ private:
     private: \
         typedef Athena::io::MemoryWriter base
 #endif // BINARYWRITER_BASE
+
+#ifndef MEMORYCOPYWRITER_BASE
+#define MEMORYCOPYWRITER_BASE() \
+    private: \
+        typedef Athena::io::MemoryCopyWriter base
+#endif // BINARYWRITER_BASE
+
 #endif // MEMORYWRITER_HPP
