@@ -72,22 +72,26 @@ void ALTTPFileWriter::writeFile(ALTTPFile* file)
         base::writeByte(quest->healthFiller());
         base::writeByte(quest->magicFiller());
         ALTTPPendants pendants = quest->pendants();
-        base::writeBit(pendants.Courage);
-        base::writeBit(pendants.Wisdom);
-        base::writeBit(pendants.Power);
+        atUint8 pendantsByte = 0;
+        pendantsByte |= pendants.Courage;
+        pendantsByte |= pendants.Wisdom << 1;
+        pendantsByte |= pendants.Power << 2;
+        base::writeUByte(pendantsByte);
         base::writeByte(quest->bombFiller());
         base::writeByte(quest->arrowFiller());
         base::writeByte(quest->arrows());
         base::seek(1);
         ALTTPAbilities abilities = quest->abilityFlags();
-        base::writeBit(abilities.Nothing);
-        base::writeBit(abilities.Swim);
-        base::writeBit(abilities.Dash);
-        base::writeBit(abilities.Pull);
-        base::writeBit(abilities.Unknown1);
-        base::writeBit(abilities.Talk);
-        base::writeBit(abilities.Read);
-        base::writeBit(abilities.Unknown2);
+        atUint8 abilitiesByte = 0;
+        abilitiesByte |= abilities.Nothing;
+        abilitiesByte |= abilities.Swim << 1;
+        abilitiesByte |= abilities.Dash << 2;
+        abilitiesByte |= abilities.Pull << 3;
+        abilitiesByte |= abilities.Unknown1 << 4;
+        abilitiesByte |= abilities.Talk << 5;
+        abilitiesByte |= abilities.Read << 6;
+        abilitiesByte |= abilities.Unknown2 << 7;
+        base::writeUByte(abilitiesByte);
         ALTTPCrystals crystals = quest->crystals();
         base::writeBytes((atInt8*)&crystals, sizeof(ALTTPCrystals));
         ALTTPMagicUsage magicUsage = quest->magicUsage();
@@ -137,53 +141,63 @@ void ALTTPFileWriter::writeFile(ALTTPFile* file)
 
 void ALTTPFileWriter::writeRoomFlags(ALTTPRoomFlags* flags)
 {
-    base::writeBit(flags->Chest1);
-    base::writeBit(flags->Chest2);
-    base::writeBit(flags->Chest3);
-    base::writeBit(flags->Chest4);
-    base::writeBit(flags->Quadrant1);
-    base::writeBit(flags->Quadrant2);
-    base::writeBit(flags->Quadrant3);
-    base::writeBit(flags->Quadrant4);
-    base::writeBit(flags->Door1);
-    base::writeBit(flags->Door2);
-    base::writeBit(flags->Door3);
-    base::writeBit(flags->Door4);
-    base::writeBit(flags->BossBattleWon);
-    base::writeBit(flags->Key);
-    base::writeBit(flags->KeyOrChest);
-    base::writeBit(flags->ChestOrTile);
+    atUint8 flagsByte = 0;
+    flagsByte |= flags->Chest1;
+    flagsByte |= flags->Chest2 << 1;
+    flagsByte |= flags->Chest3 << 2;
+    flagsByte |= flags->Chest4 << 3;
+    flagsByte |= flags->Quadrant1 << 4;
+    flagsByte |= flags->Quadrant2 << 5;
+    flagsByte |= flags->Quadrant3 << 6;
+    flagsByte |= flags->Quadrant4 << 7;
+    base::writeUByte(flagsByte);
+    flagsByte = 0;
+    flagsByte |= flags->Door1;
+    flagsByte |= flags->Door2 << 1;
+    flagsByte |= flags->Door3 << 2;
+    flagsByte |= flags->Door4 << 3;
+    flagsByte |= flags->BossBattleWon << 4;
+    flagsByte |= flags->Key << 5;
+    flagsByte |= flags->KeyOrChest << 6;
+    flagsByte |= flags->ChestOrTile << 7;
+    base::writeUByte(flagsByte);
 }
 
 void ALTTPFileWriter::writeOverworldEvent(ALTTPOverworldEvent* event)
 {
-    base::writeBit(event->Unused1);
-    base::writeBit(event->HeartPiece);
-    base::writeBit(event->Overlay);
-    base::writeBit(event->Unused2);
-    base::writeBit(event->Unused3);
-    base::writeBit(event->Unused4);
-    base::writeBit(event->Set);
-    base::writeBit(event->Unused5);
+    atUint8 flagsByte = 0;
+    flagsByte |= event->Unused1;
+    flagsByte |= event->HeartPiece << 1;
+    flagsByte |= event->Overlay << 2;
+    flagsByte |= event->Unused2 << 3;
+    flagsByte |= event->Unused3 << 4;
+    flagsByte |= event->Unused4 << 5;
+    flagsByte |= event->Set << 6;
+    flagsByte |= event->Unused5 << 7;
+    base::writeUByte(flagsByte);
 }
 
 void ALTTPFileWriter::writeDungeonItems(ALTTPDungeonItemFlags flags)
 {
-    base::writeBit(flags.Unused1);
-    base::writeBit(flags.Unused2);
-    base::writeBit(flags.GanonsTower);
-    base::writeBit(flags.TurtleRock);
-    base::writeBit(flags.TowerOfHera);
-    base::writeBit(flags.IcePalace);
-    base::writeBit(flags.SkullWoods);
-    base::writeBit(flags.MiseryMire);
-    base::writeBit(flags.DarkPalace);
-    base::writeBit(flags.SwampPalace);
-    base::writeBit(flags.HyruleCastle2);
-    base::writeBit(flags.DesertPalace);
-    base::writeBit(flags.EasternPalace);
-    base::writeBit(flags.HyruleCastle);
-    base::writeBit(flags.SewerPassage);
+    atUint8 flagsByte = 0;
+    flagsByte |= flags.Unused1;
+    flagsByte |= flags.Unused2 << 1;
+    flagsByte |= flags.GanonsTower << 2;
+    flagsByte |= flags.TurtleRock << 3;
+    flagsByte |= flags.TowerOfHera << 4;
+    flagsByte |= flags.IcePalace << 5;
+    flagsByte |= flags.SkullWoods << 6;
+    flagsByte |= flags.MiseryMire << 7;
+    base::writeUByte(flagsByte);
+    flagsByte = 0;
+    flagsByte |= flags.DarkPalace;
+    flagsByte |= flags.SwampPalace << 1;
+    flagsByte |= flags.HyruleCastle2 << 2;
+    flagsByte |= flags.DesertPalace << 3;
+    flagsByte |= flags.EasternPalace << 4;
+    flagsByte |= flags.HyruleCastle << 5;
+    flagsByte |= flags.SewerPassage << 6;
+    base::writeUByte(flagsByte);
 }
 
 atUint16 ALTTPFileWriter::calculateChecksum(atUint32 game)

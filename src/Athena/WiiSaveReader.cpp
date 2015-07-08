@@ -25,7 +25,7 @@
 #include "Athena/InvalidDataException.hpp"
 #include "Athena/FileWriter.hpp"
 #include "md5.h"
-#include "aes.h"
+#include "aes.hpp"
 #include "ec.h"
 #include "sha1.h"
 #include <iostream>
@@ -129,8 +129,9 @@ WiiBanner* WiiSaveReader::readBanner()
     memcpy(tmpIV, SD_IV, 16);
 
     std::cout << "Decrypting: banner.bin...";
-    aes_set_key(SD_KEY);
-    aes_decrypt(tmpIV, data, dec, 0xF0C0);
+    std::unique_ptr<IAES> aes = NewAES();
+    aes->setKey(SD_KEY);
+    aes->decrypt(tmpIV, data, dec, 0xF0C0);
     std::cout << "done" << std::endl;
 
     memset(md5, 0, 16);
@@ -296,8 +297,9 @@ WiiFile* WiiSaveReader::readFile()
         // Decrypt file
         std::cout << "Decrypting: " << ret->filename() << "...";
         atUint8* decData = new atUint8[roundedLen];
-        aes_set_key(SD_KEY);
-        aes_decrypt(iv, filedata, decData, roundedLen);
+        std::unique_ptr<IAES> aes = NewAES();
+        aes->setKey(SD_KEY);
+        aes->decrypt(iv, filedata, decData, roundedLen);
         delete filedata;
         ret->setData(decData);
         ret->setLength(fileLen);
