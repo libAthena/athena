@@ -5,10 +5,10 @@ pkgver=1.1.0.59.g582d2ce
 pkgrel=1
 pkgdesc="Basic cross platform IO library"
 arch=('i686' 'x86_64')
-source=("${pkgname%-*}::git+https://github.com/libAthena/Athena.git")
+source=("${pkgname%-*}::git+https://github.com/libAthena/Athena.git#branch=copy-streamers")
 options=(staticlibs)
 license="MIT"
-makedepends=('git qt5-base sed')
+makedepends=('git cmake sed')
 md5sums=('SKIP')
 sha256sums=('SKIP')
 
@@ -19,11 +19,12 @@ pkgver() {
 
 build() {
     cd "$srcdir/$_pkgname"
-    qmake PREFIX="$pkgdir/usr" && make
+    cmake -DCMAKE_INSTALL_PREFIX="$pkgdir/usr"
+    make
 }
 
 package() {
     cd "$srcdir/$_pkgname"
-	qmake PREFIX="$pkgdir/usr" && make install
+	make install
 }
 

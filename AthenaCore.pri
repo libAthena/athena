@@ -56,10 +56,6 @@ HEADERS += \
     $$PWD/include/LZ77/LZLookupTable.hpp \
     $$PWD/include/LZ77/LZType10.hpp \
     $$PWD/include/LZ77/LZType11.hpp \
-    $$PWD/include/utf8.h \
-    $$PWD/include/utf8/checked.h \
-    $$PWD/include/utf8/core.h \
-    $$PWD/include/utf8/unchecked.h \
     $$PWD/include/Athena/FileInfo.hpp \
     $$PWD/include/Athena/Dir.hpp \
     $$PWD/include/gekko_support.h \

@@ -4,7 +4,7 @@ project(Athena)
 add_subdirectory(extern)
 file(GLOB ATHENA_HEADERS include/Athena/*.hpp)
 
-include_directories(include)
+include_directories(include ${LZO_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 if(WIN32)
@@ -135,7 +135,32 @@ add_library(AthenaZelda
 )
 
 
-install(DIRECTORY include DESTINATION include/Athena)
+install(DIRECTORY include/ DESTINATION include/Athena)
 install(TARGETS AthenaCore AthenaSakura AthenaWiiSave AthenaZelda
-        DESTINATION lib/Athena)
+        DESTINATION lib)
+if(WIN32 AND NOT UNIX)
+install(FILES Athena.ico)
+endif()
+
+# CPack settings
+include(InstallRequiredSystemLibraries)
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Athena")
+set(CPACK_PACKAGE_VENDOR "2015 Antidote / Jackoalan")
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_PACKAGE_VERSION_MAJOR "2")
+set(CPACK_PACKAGE_VERSION_MINOR "0")
+set(CPACK_PACKAGE_VERSION_PATCH "0")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "Athena")
+if(WIN32 AND NOT UNIX)
+    # There is a bug in NSI that does not handle full unix paths properly. Make
+    # sure there is at least one set of four (4) backlasshes.
+    set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/Athena.ico")
+    set(CPACK_NSIS_INSTALLED_ICON_NAME "Athena.ico")
+    set(CPACK_NSIS_DISPLAY_NAME "Athena")
+    set(CPACK_NSIS_URL_INFO_ABOUT "http://libathena.github.io")
+    set(CPACK_NSIS_CONTACT "antidote.crk@gmail.com")
+    set(CPACK_NSIS_MODIFY_PATH ON)
+endif()
+include(CPack)
 
