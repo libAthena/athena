@@ -192,13 +192,13 @@ export(PACKAGE Athena)
 
 # Create the AthenaConfig.cmake
 # ... for the build tree
-set(CONF_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
+set(CONF_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include/Athena")
 set(CONF_ICON_DIR "${PROJECT_SOURCE_DIR}/Athena.ico")
 configure_file(AthenaConfig.cmake.in "${PROJECT_BINARY_DIR}/AthenaConfig.cmake" @ONLY)
 # ... for the install tree
 file(RELATIVE_PATH REL_INCLUDE_DIR "${ABS_INSTALL_CMAKE_DIR}" "${ABS_INSTALL_INCLUDE_DIR}")
 file(RELATIVE_PATH REL_ICON_DIR "${ABS_INSTALL_CMAKE_DIR}" "${ABS_INSTALL_LIB_DIR}/Athena.ico")
-set(CONF_INCLUDE_DIR "\${ATHENA_CMAKE_DIR}/${REL_INCLUDE_DIR}")
+set(CONF_INCLUDE_DIR "\${ATHENA_CMAKE_DIR}/${REL_INCLUDE_DIR}/Athena")
 set(CONF_ICON_DIR "\${ATHENA_CMAKE_DIR}/${REL_ICON_DIR}")
 configure_file(AthenaConfig.cmake.in "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/AthenaConfig.cmake" @ONLY)
 # ... for both
