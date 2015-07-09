@@ -16,7 +16,6 @@ set(ATHENA_VERSION
 ################
 
 add_subdirectory(extern)
-file(GLOB ATHENA_HEADERS include/Athena/*.hpp)
 
 include_directories(include ${LZO_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
