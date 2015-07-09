@@ -400,7 +400,7 @@ void SoftwareAES::setKey(const uint8_t* key)
 }
 
 // CBC mode decryption
-void SoftwareAES::decrypt(const uint8_t* iv, const uint8_t* inbuf, uint8_t* outbuf, size_t len)
+void SoftwareAES::decrypt(const uint8_t* iv, const uint8_t* inbuf, uint8_t* outbuf, uint64_t len)
 {
     uint8_t block[16];
     const uint8_t* ctext_ptr;
