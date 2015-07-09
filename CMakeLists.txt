@@ -172,6 +172,9 @@ install(TARGETS AthenaCore AthenaSakura AthenaWiiSave AthenaZelda
         DESTINATION ${INSTALL_LIB_DIR} EXPORT AthenaTargets)
 if(WIN32 AND NOT CYGWIN)
 install(FILES Athena.ico DESTINATION ${INSTALL_LIB_DIR})
+elseif(UNIX)
+install(FILES lib/pkgconfig/libAthena.pc 
+        DESTINATION ${INSTALL_LIB_DIR}/pkgconfig)
 endif()
 
 ##################
