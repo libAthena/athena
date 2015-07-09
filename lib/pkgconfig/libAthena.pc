@@ -4,7 +4,7 @@ libdir=${prefix}/lib
 
 Name: libAthena
 Description: Basic cross platform IO library
-Version: 1.0.0
+Version: 2.0.0
 Cflags: -I${includedir}/Athena -std=c++11
 Libs: -L${libdir} -lAthenaCore -lAthenaSakura -lAthenaZelda -lAthenaWiiSave
 Requires: zlib
