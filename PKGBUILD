@@ -5,7 +5,7 @@ pkgver=1.1.0.60.g8ca7027
 pkgrel=1
 pkgdesc="Basic cross platform IO library"
 arch=('i686' 'x86_64')
-source=("${pkgname%-*}::git+https://github.com/libAthena/Athena.git#branch=copy-streamers")
+source=("${pkgname%-*}::git+https://github.com/libAthena/Athena.git")
 options=(staticlibs)
 license="MIT"
 makedepends=('git cmake sed')
@@ -19,12 +19,13 @@ pkgver() {
 
 build() {
     cd "$srcdir/$_pkgname"
-    cmake -DCMAKE_INSTALL_PREFIX="$pkgdir/usr"
+    mkdir build && cd build
+    cmake -DCMAKE_INSTALL_PREFIX="$pkgdir/usr" ..
     make
 }
 
 package() {
-    cd "$srcdir/$_pkgname"
+    cd "$srcdir/$_pkgname/build"
 	make install
 }
 
