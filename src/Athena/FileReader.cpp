@@ -14,7 +14,7 @@ namespace Athena
 {
 namespace io
 {
-FileReader::FileReader(const std::string& filename, atUint32 cacheSize)
+FileReader::FileReader(const std::string& filename, atInt32 cacheSize)
     : m_filename(filename),
       m_fileHandle(nullptr),
       m_cacheData(nullptr),
@@ -145,9 +145,13 @@ atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len)
     }
 }
 
-void FileReader::setCacheSize(const atUint32 blockSize)
+void FileReader::setCacheSize(const atInt32 blockSize)
 {
     m_blockSize = blockSize;
+
+    if (m_blockSize > length())
+        m_blockSize = length();
+
     m_curBlock = -1;
     if (m_blockSize > 0)
         m_cacheData.reset(new atUint8[m_blockSize]);
