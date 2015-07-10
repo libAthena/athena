@@ -1,9 +1,10 @@
 #ifndef FILESTREAM_HPP
 #define FILESTREAM_HPP
 
-#include "Athena/IStreamReader.hpp"
 #include <string>
+#include <memory>
 #include <stdio.h>
+#include "Athena/IStreamReader.hpp"
 
 namespace Athena
 {

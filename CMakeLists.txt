@@ -152,11 +152,10 @@ add_library(AthenaZelda
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
 set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
 if(WIN32 AND NOT CYGWIN)
-  set(DEF_INSTALL_CMAKE_DIR cmake)
+  set(INSTALL_CMAKE_DIR cmake)
 else()
-  set(DEF_INSTALL_CMAKE_DIR lib/cmake/Athena)
+  set(INSTALL_CMAKE_DIR lib/cmake/Athena)
 endif()
-set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH "Installation directory for CMake files")
 
 # Make relative paths absolute (needed later on)
 foreach(p LIB INCLUDE CMAKE)
@@ -169,14 +168,15 @@ foreach(p LIB INCLUDE CMAKE)
 endforeach()
 
 # Define installs
-install(DIRECTORY include/ DESTINATION ${INSTALL_INCLUDE_DIR}/Athena)
+install(DIRECTORY include/ DESTINATION ${INSTALL_INCLUDE_DIR}/Athena COMPONENT Athena)
 install(TARGETS AthenaCore AthenaSakura AthenaWiiSave AthenaZelda
-        DESTINATION ${INSTALL_LIB_DIR} EXPORT AthenaTargets)
+        DESTINATION ${INSTALL_LIB_DIR} EXPORT AthenaTargets COMPONENT Athena)
 if(WIN32 AND NOT CYGWIN)
-install(FILES Athena.ico DESTINATION ${INSTALL_LIB_DIR})
+install(FILES Athena.ico DESTINATION ${INSTALL_LIB_DIR} COMPONENT Athena)
 elseif(UNIX)
-install(FILES lib/pkgconfig/libAthena.pc 
-        DESTINATION ${INSTALL_LIB_DIR}/pkgconfig)
+configure_file(libAthena.pc.in libAthena.pc @ONLY)
+install(FILES ${PROJECT_BINARY_DIR}/libAthena.pc 
+        DESTINATION ${INSTALL_LIB_DIR}/pkgconfig COMPONENT Athena)
 endif()
 
 ##################
@@ -209,10 +209,18 @@ configure_file(AthenaConfigVersion.cmake.in "${PROJECT_BINARY_DIR}/AthenaConfigV
 install(FILES
   "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/AthenaConfig.cmake"
   "${PROJECT_BINARY_DIR}/AthenaConfigVersion.cmake"
-  DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT dev)
+  DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT Athena)
 
 # Install the export set for use with the install-tree
-install(EXPORT AthenaTargets DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT dev)
+install(EXPORT AthenaTargets DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT Athena)
+
+################
+# atdna import #
+################
+
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/atdna/")
+  add_subdirectory(atdna)
+endif()
 
 #########
 # CPack #
@@ -220,7 +228,7 @@ install(EXPORT AthenaTargets DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT dev)
 
 include(InstallRequiredSystemLibraries)
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Athena")
-set(CPACK_PACKAGE_VENDOR "2015 Antidote / Jackoalan")
+set(CPACK_PACKAGE_VENDOR "Antidote / Jackoalan")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_PACKAGE_VERSION_MAJOR ${ATHENA_MAJOR_VERSION})
@@ -230,12 +238,15 @@ set(CPACK_PACKAGE_INSTALL_DIRECTORY "Athena")
 if(WIN32 AND NOT UNIX)
     # There is a bug in NSI that does not handle full unix paths properly. Make
     # sure there is at least one set of four (4) backlasshes.
-    set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/Athena.ico")
-    set(CPACK_NSIS_INSTALLED_ICON_NAME "Athena.ico")
+    set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "Athena")
+    set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\AthenaNSIS.bmp")
+    set(CPACK_NSIS_MODIFY_PATH ON)
+    set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\Athena.ico")
+    set(CPACK_NSIS_MUI_UNIICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\Athena.ico")
+    set(CPACK_NSIS_INSTALLED_ICON_NAME "Uninstall.exe")
     set(CPACK_NSIS_DISPLAY_NAME "Athena")
     set(CPACK_NSIS_URL_INFO_ABOUT "http://libathena.github.io")
     set(CPACK_NSIS_CONTACT "antidote.crk@gmail.com")
-    set(CPACK_NSIS_MODIFY_PATH ON)
 endif()
 include(CPack)
 

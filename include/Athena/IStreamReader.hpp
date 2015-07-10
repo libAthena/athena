@@ -226,7 +226,7 @@ public:
      *  \return atVec2f The value at the current address
      *  \throw IOException when address is out of range
      */
-    inline atVec2f readVec3f()
+    inline atVec2f readVec2f()
     {
         atVec2f val;
         readUBytesToBuf(&val, 8);
