@@ -1,5 +1,8 @@
+if(NOT WIN32)
 find_package(ZLIB)
-if(NOT ZLIB_FOUND)
+endif()
+if(WIN32 OR NOT ZLIB_FOUND)
+message("-- Using Athena's built-in zlib")
 add_library(z
     adler32.c
     compress.c
@@ -23,7 +26,9 @@ add_library(z
     zconf.h
     zlib.h
     zutil.h)
-install(FILES zconf.h zlib.h DESTINATION include)
-install(TARGETS z DESTINATION lib)
+if(WIN32 AND NOT UNIX)
+install(FILES zconf.h zlib.h DESTINATION include COMPONENT zlib)
+install(TARGETS z DESTINATION lib COMPONENT zlib)
+endif()
 set(ZLIB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "Zlib include path" FORCE)
 endif()

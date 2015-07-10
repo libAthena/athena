@@ -1,9 +1,10 @@
 #ifndef MEMORYREADER_HPP
 #define MEMORYREADER_HPP
 
-#include "Athena/IStreamReader.hpp"
 #include <string>
+#include <memory>
 #include <functional>
+#include "Athena/IStreamReader.hpp"
 
 namespace Athena
 {

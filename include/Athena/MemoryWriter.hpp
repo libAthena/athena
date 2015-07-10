@@ -1,9 +1,10 @@
 #ifndef MEMORYWRITER_HPP
 #define MEMORYWRITER_HPP
 
-#include "Athena/IStreamWriter.hpp"
 #include <string>
+#include <memory>
 #include <functional>
+#include "Athena/IStreamWriter.hpp"
 
 namespace Athena
 {

@@ -1,5 +1,9 @@
+if(NOT WIN32)
 find_library(LZO_LIB lzo2)
-if(LZO_LIB STREQUAL LZO_LIB-NOTFOUND)
+endif()
+if(WIN32 OR LZO_LIB STREQUAL LZO_LIB-NOTFOUND)
+include_directories(include)
+message("-- Using Athena's built-in lzo")
 add_library(lzo2
     src/lzo1.c
     src/lzo1_99.c
@@ -73,7 +77,9 @@ add_library(lzo2
     include/lzo/lzoconf.h
     include/lzo/lzodefs.h
     include/lzo/lzoutil.h)
-install(DIRECTORY include/lzo DESTINATION include/lzo)
-install(TARGETS lzo2 DESTINATION lib)
+if(WIN32 AND NOT UNIX)
+install(DIRECTORY include/lzo DESTINATION include COMPONENT lzo2)
+install(TARGETS lzo2 DESTINATION lib COMPONENT lzo2)
+endif()
 set(LZO_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include CACHE PATH "LZO include path" FORCE)
 endif()
