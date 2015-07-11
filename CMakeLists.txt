@@ -218,7 +218,7 @@ install(EXPORT AthenaTargets DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT Athena)
 # atdna import #
 ################
 
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/atdna/")
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/atdna/CMakeLists.txt")
   add_subdirectory(atdna)
 endif()
 
