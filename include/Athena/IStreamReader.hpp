@@ -221,6 +221,28 @@ public:
         return val != 0;
     }
 
+    /*! \brief Reads an atVec2f (8 bytes) and advances the current position
+     *
+     *  \return atVec2f The value at the current address
+     *  \throw IOException when address is out of range
+     */
+    inline atVec2f readVec3f()
+    {
+        atVec2f val;
+        readUBytesToBuf(&val, 8);
+        if (m_endian == BigEndian)
+        {
+            utility::BigFloat(val.vec[0]);
+            utility::BigFloat(val.vec[1]);
+        }
+        else
+        {
+            utility::LittleFloat(val.vec[0]);
+            utility::LittleFloat(val.vec[1]);
+        }
+        return val;
+    }
+
     /*! \brief Reads an atVec3f (12 bytes) and advances the current position
      *
      *  \return atVec3f The value at the current address

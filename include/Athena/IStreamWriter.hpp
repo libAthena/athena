@@ -204,6 +204,27 @@ public:
      */
     inline void writeBool(bool val) {writeUBytes((atUint8*)&val, 1);}
 
+    /*! \brief Writes an atVec2f (8 bytes) to the buffer and advances the buffer.
+     *         It also swaps the bytes depending on the platform and Stream settings.
+     *
+     * \sa Endian
+     * \param vec The value to write to the buffer
+     */
+    inline void writeVec2f(atVec2f vec)
+    {
+        if (m_endian == BigEndian)
+        {
+            utility::BigFloat(vec.vec[0]);
+            utility::BigFloat(vec.vec[1]);
+        }
+        else
+        {
+            utility::LittleFloat(vec.vec[0]);
+            utility::LittleFloat(vec.vec[1]);
+        }
+        writeUBytes((atUint8*)&vec, 8);
+    }
+
     /*! \brief Writes an atVec3f (12 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *

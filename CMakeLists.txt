@@ -24,6 +24,8 @@ if(WIN32)
 list(APPEND CORE_EXTRA src/win32_largefilewrapper.c)
 elseif(APPLE)
 list(APPEND CORE_EXTRA src/osx_largefilewrapper.c)
+elseif(GEKKO)
+list(APPEND CORE_EXTRA src/gekko_support.c)
 endif()
 
 add_library(AthenaCore
@@ -41,7 +43,6 @@ add_library(AthenaCore
     src/LZ77/LZBase.cpp
     src/Athena/FileInfo.cpp
     src/Athena/Dir.cpp
-    src/gekko_support.c
     ${CORE_EXTRA}
 
     include/Athena/IStream.hpp

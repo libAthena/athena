@@ -49,6 +49,17 @@ typedef unsigned long long atUint64;
 typedef union
 {
 #if __clang__
+    float clangVec __attribute__((__vector_size__(8)));
+#endif
+#if __SSE__
+    __m128 mVec128;
+#endif
+    float vec[2];
+} atVec2f;
+
+typedef union
+{
+#if __clang__
     float clangVec __attribute__((__vector_size__(12)));
 #endif
 #if __SSE__
