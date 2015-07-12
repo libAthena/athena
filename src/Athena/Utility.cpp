@@ -23,12 +23,6 @@ namespace Athena
 namespace utility
 {
 
-bool isSystemBigEndian()
-{
-    static const atUint8* test = (atUint8*)"\xFE\xFF";
-    return (*(atUint16*)test == 0xFEFF);
-}
-
 void fillRandom(atUint8* rndArea, atUint64 count)
 {
     for (atUint64 i = 0; i < count; i++)

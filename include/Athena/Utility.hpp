@@ -13,7 +13,7 @@ namespace Athena
 namespace utility
 {
 inline bool isEmpty(atInt8* buf, atUint32 size) {return !memcmp(buf, buf + 1, size - 1);}
-bool isSystemBigEndian();
+inline bool isSystemBigEndian() {return (*(atUint16*)"\xFE\xFF" == 0xFEFF);}
 
 inline atInt16  swap16(atInt16 val)
 {
