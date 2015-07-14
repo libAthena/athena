@@ -13,16 +13,16 @@ class IStreamWriter : public IStream
 {
 public:
     virtual ~IStreamWriter() {}
-    /*! \brief Sets the Endianss of the stream
+    /*! \brief Sets the Endianness of the stream
      *
-     *  \param endian The Endianess to set \sa Endian
+     *  \param endian The Endianness to set \sa Endian
      */
     inline void setEndian(Endian endian)
     {m_endian = endian;}
 
     /*! \brief Returns the current Endianness of the stream
      *
-     *  \return Endian The current Stream Endianess
+     *  \return Endian The current Stream Endianness
      */
     inline Endian endian() const
     {return m_endian;}
