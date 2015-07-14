@@ -18,6 +18,20 @@ namespace Athena
 namespace io
 {
 
+/* forward-declaration dance for recursively-derived types */
+
+template <size_t sizeVar, Endian VE>
+struct Buffer;
+
+template <atInt32 sizeVar, Endian VE>
+struct String;
+
+template <atInt32 sizeVar, Endian VE>
+struct WString;
+
+template <atInt32 sizeVar, Endian VE>
+struct UTF8;
+
 /**
  * @brief Base DNA class used against 'atdna'
  *
@@ -38,70 +52,17 @@ struct DNA
     template <typename T, size_t cntVar, Endian VE = DNAE>
     using Vector = std::vector<T>;
 
-    struct Delete {};
-
     template <size_t sizeVar>
-    struct Buffer : public DNA, public std::unique_ptr<atUint8[]>
-    {
-        Delete expl;
-        inline void read(IStreamReader& reader)
-        {
-            reset(new atUint8[sizeVar]);
-            reader.readUBytesToBuf(get(), sizeVar);
-        }
-        inline void write(IStreamWriter& writer) const
-        {
-            writer.writeUBytes(get(), sizeVar);
-        }
-    };
+    using Buffer = struct Buffer<sizeVar, DNAE>;
 
     template <atInt32 sizeVar = -1>
-    struct String : public DNA, public std::string
-    {
-        Delete expl;
-        inline void read(IStreamReader& reader)
-        {*this = reader.readString(sizeVar);}
-        inline void write(IStreamWriter& writer) const
-        {writer.writeString(*this, sizeVar);}
-        inline std::string& operator=(const std::string& __str)
-        {return this->assign(__str);}
-        inline std::string& operator=(std::string&& __str)
-        {this->swap(__str); return *this;}
-    };
+    using String = struct String<sizeVar, DNAE>;
 
     template <atInt32 sizeVar = -1, Endian VE = DNAE>
-    struct WString : public DNA, public std::wstring
-    {
-        Delete expl;
-        inline void read(IStreamReader& reader)
-        {
-            reader.setEndian(VE);
-            *this = reader.readWString(sizeVar);
-        }
-        inline void write(IStreamWriter& writer) const
-        {
-            writer.setEndian(VE);
-            writer.writeWString(*this, sizeVar);
-        }
-        inline std::wstring& operator=(const std::wstring& __str)
-        {return this->assign(__str);}
-        inline std::wstring& operator=(std::wstring&& __str)
-        {this->swap(__str); return *this;}
-    };
+    using WString = struct WString<sizeVar, VE>;
 
     template <atInt32 sizeVar = -1>
-    struct UTF8 : public DNA, public std::string
-    {
-        Delete expl;
-        inline void read(IStreamReader& reader)
-        {*this = reader.readUnicode(sizeVar);}
-        inline void write(IStreamWriter& writer) const
-        {writer.writeUnicode(*this, sizeVar);}
-        inline std::string& operator=(const std::string& __str)
-        {return this->assign(__str);}
-        inline std::string& operator=(std::string&& __str)
-        {this->swap(__str); return *this;}
-    };
+    using UTF8 = struct UTF8<sizeVar, DNAE>;
 
     template <off_t offset, SeekOrigin direction>
     struct Seek {};
@@ -109,6 +70,72 @@ struct DNA
     template <size_t align>
     struct Align {};
 
+    struct Delete {};
+};
+
+/* Concrete DNA types */
+
+template <size_t sizeVar, Endian VE>
+struct Buffer : public DNA<VE>, public std::unique_ptr<atUint8[]>
+{
+    typename DNA<VE>::Delete expl;
+    inline void read(IStreamReader& reader)
+    {
+        reset(new atUint8[sizeVar]);
+        reader.readUBytesToBuf(get(), sizeVar);
+    }
+    inline void write(IStreamWriter& writer) const
+    {
+        writer.writeUBytes(get(), sizeVar);
+    }
+};
+
+template <atInt32 sizeVar, Endian VE>
+struct String : public DNA<VE>, public std::string
+{
+    typename DNA<VE>::Delete expl;
+    inline void read(IStreamReader& reader)
+    {*this = reader.readString(sizeVar);}
+    inline void write(IStreamWriter& writer) const
+    {writer.writeString(*this, sizeVar);}
+    inline std::string& operator=(const std::string& __str)
+    {return this->assign(__str);}
+    inline std::string& operator=(std::string&& __str)
+    {this->swap(__str); return *this;}
+};
+
+template <atInt32 sizeVar, Endian VE>
+struct WString : public DNA<VE>, public std::wstring
+{
+    typename DNA<VE>::Delete expl;
+    inline void read(IStreamReader& reader)
+    {
+        reader.setEndian(VE);
+        *this = reader.readWString(sizeVar);
+    }
+    inline void write(IStreamWriter& writer) const
+    {
+        writer.setEndian(VE);
+        writer.writeWString(*this, sizeVar);
+    }
+    inline std::wstring& operator=(const std::wstring& __str)
+    {return this->assign(__str);}
+    inline std::wstring& operator=(std::wstring&& __str)
+    {this->swap(__str); return *this;}
+};
+
+template <atInt32 sizeVar, Endian VE>
+struct UTF8 : public DNA<VE>, public std::string
+{
+    typename DNA<VE>::Delete expl;
+    inline void read(IStreamReader& reader)
+    {*this = reader.readUnicode(sizeVar);}
+    inline void write(IStreamWriter& writer) const
+    {writer.writeUnicode(*this, sizeVar);}
+    inline std::string& operator=(const std::string& __str)
+    {return this->assign(__str);}
+    inline std::string& operator=(std::string&& __str)
+    {this->swap(__str); return *this;}
 };
 
 /** Macro to automatically declare read/write methods in subclasses */
