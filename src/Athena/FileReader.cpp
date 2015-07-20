@@ -20,8 +20,8 @@ FileReader::FileReader(const std::string& filename, atInt32 cacheSize)
       m_cacheData(nullptr),
       m_offset(0)
 {
-    setCacheSize(cacheSize);
     open();
+    setCacheSize(cacheSize);
 }
 
 FileReader::~FileReader()
