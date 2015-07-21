@@ -273,14 +273,14 @@ public:
         writeUBytes((atUint8*)&vec, 16);
     }
 
-    /*! \brief Writes an unicode string to the buffer and advances the buffer.
+    /*! \brief Converts a UTF8 string to a wide-char string in the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
      *  \sa Endian
      *  \param str The string to write to the buffer
      *  \param fixedLen If not -1, the number of characters to zero-fill string to
      */
-    inline void writeUnicode(const std::string& str, atInt32 fixedLen = -1)
+    inline void writeStringAsWString(const std::string& str, atInt32 fixedLen = -1)
     {
         std::string tmpStr = "\xEF\xBB\xBF" + str;
 

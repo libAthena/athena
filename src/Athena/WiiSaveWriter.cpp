@@ -110,12 +110,12 @@ void WiiSaveWriter::writeBanner(WiiBanner* banner)
     base::writeInt16(banner->animationSpeed());
     base::seek(22);
 
-    base::writeUnicode(banner->title());
+    base::writeStringAsWString(banner->title());
 
     if (base::position() != 0x0080)
         base::seek(0x0080, SeekOrigin::Begin);
 
-    base::writeUnicode(banner->subtitle());
+    base::writeStringAsWString(banner->subtitle());
 
     if (base::position() != 0x00C0)
         base::seek(0x00C0, SeekOrigin::Begin);

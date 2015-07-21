@@ -30,7 +30,7 @@ template <atInt32 sizeVar, Endian VE>
 struct WString;
 
 template <atInt32 sizeVar, Endian VE>
-struct UTF8;
+struct WStringAsString;
 
 /**
  * @brief Base DNA class used against 'atdna'
@@ -62,7 +62,7 @@ struct DNA
     using WString = struct WString<sizeVar, VE>;
 
     template <atInt32 sizeVar = -1>
-    using UTF8 = struct UTF8<sizeVar, DNAE>;
+    using WStringAsString = struct WStringAsString<sizeVar, DNAE>;
 
     template <off_t offset, SeekOrigin direction>
     struct Seek {};
@@ -125,13 +125,13 @@ struct WString : public DNA<VE>, public std::wstring
 };
 
 template <atInt32 sizeVar, Endian VE>
-struct UTF8 : public DNA<VE>, public std::string
+struct WStringAsString : public DNA<VE>, public std::string
 {
     typename DNA<VE>::Delete expl;
     inline void read(IStreamReader& reader)
-    {*this = reader.readUnicode(sizeVar);}
+    {*this = reader.readWStringAsString(sizeVar);}
     inline void write(IStreamWriter& writer) const
-    {writer.writeUnicode(*this, sizeVar);}
+    {writer.writeStringAsWString(*this, sizeVar);}
     inline std::string& operator=(const std::string& __str)
     {return this->assign(__str);}
     inline std::string& operator=(std::string&& __str)

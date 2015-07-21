@@ -198,12 +198,12 @@ WiiBanner* WiiSaveReader::readBanner()
     animSpeed = base::readUint16();
     base::seek(22);
 
-    gameTitle = base::readUnicode();
+    gameTitle = base::readWStringAsString();
 
     if (base::position() != 0x0080)
         base::seek(0x0080, SeekOrigin::Begin);
 
-    subTitle = base::readUnicode();
+    subTitle = base::readWStringAsString();
 
     if (base::position() != 0x00C0)
         base::seek(0x00C0, SeekOrigin::Begin);

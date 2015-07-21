@@ -293,13 +293,13 @@ public:
         return val;
     }
 
-    /*! \brief Reads a Unicode string and advances the position in the file
+    /*! \brief Reads a wide-char string, converts to UTF8 and advances the position in the file
      *
      *  \param fixedLen If non-negative, this is a fixed-length string read
      *  \return std::string The value at the current address
      *  \throw IOException when address is out of range
      */
-    inline std::string readUnicode(atInt32 fixedLen = -1)
+    inline std::string readWStringAsString(atInt32 fixedLen = -1)
     {
         std::wstring tmp;
         atUint16 chr = readUint16();
