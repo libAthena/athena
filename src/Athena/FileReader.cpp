@@ -20,6 +20,18 @@ FileReader::FileReader(const std::string& filename, atInt32 cacheSize)
     setCacheSize(cacheSize);
 }
 
+#if _WIN32
+FileReader::FileReader(const std::wstring& filename, atInt32 cacheSize)
+    : m_wfilename(filename),
+    m_fileHandle(nullptr),
+    m_cacheData(nullptr),
+    m_offset(0)
+{
+    open();
+    setCacheSize(cacheSize);
+}
+#endif
+
 FileReader::~FileReader()
 {
     if (isOpen())
@@ -28,7 +40,14 @@ FileReader::~FileReader()
 
 void FileReader::open()
 {
+#if _WIN32
+    if (m_wfilename.size())
+        m_fileHandle = _wfopen(m_wfilename.c_str(), L"rb");
+    else
+        m_fileHandle = fopen(m_filename.c_str(), "rb");
+#else
     m_fileHandle = fopen(m_filename.c_str(), "rb");
+#endif
 
     if (!m_fileHandle)
     {
@@ -85,7 +104,7 @@ void FileReader::seek(atInt64 pos, SeekOrigin origin)
         {
             fseeko64(m_fileHandle, block * m_blockSize, SEEK_SET);
             fread(m_cacheData.get(), 1, m_blockSize, m_fileHandle);
-            m_curBlock = block;
+            m_curBlock = (atInt32)block;
         }
     }
     else if (fseeko64(m_fileHandle, pos, (int)origin) != 0)
@@ -142,7 +161,7 @@ atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len)
             {
                 fseeko64(m_fileHandle, block * m_blockSize, SEEK_SET);
                 fread(m_cacheData.get(), 1, m_blockSize, m_fileHandle);
-                m_curBlock = block;
+                m_curBlock = (atInt32)block;
             }
 
             cacheSize = rem;
@@ -165,7 +184,7 @@ void FileReader::setCacheSize(const atInt32 blockSize)
     m_blockSize = blockSize;
 
     if (m_blockSize > length())
-        m_blockSize = length();
+        m_blockSize = (atInt32)length();
 
     m_curBlock = -1;
     if (m_blockSize > 0)
