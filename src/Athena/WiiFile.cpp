@@ -15,7 +15,6 @@
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
 #include "Athena/WiiFile.hpp"
-#include "Athena/InvalidOperationException.hpp"
 #include <algorithm>
 
 namespace Athena
@@ -144,7 +143,10 @@ bool WiiFile::isFile() const
 void WiiFile::addChild(WiiFile* file)
 {
     if (!isDirectory())
-        THROW_INVALID_OPERATION_EXCEPTION("%s is not a directory", filename().c_str());
+    {
+        atWarning("%s is not a directory", filename().c_str());
+        return;
+    }
 
     if (std::find(m_children.begin(), m_children.end(), file) != m_children.end())
         return;

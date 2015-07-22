@@ -9,7 +9,6 @@
 #include <cstdio>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <Athena/Exception.hpp>
 #include <random>
 
 #ifdef _MSC_VER
@@ -25,8 +24,22 @@ namespace utility
 
 void fillRandom(atUint8* rndArea, atUint64 count)
 {
-    for (atUint64 i = 0; i < count; i++)
-        rndArea[i] = rand();
+    atUint8* buf = rndArea;
+    for (atUint64 i = 0; i < count / 4; i++)
+    {
+        *(atUint32*)(buf) = rand();
+        buf += 4;
+    }
+
+    atUint64 rem = count % 4;
+    if (rem)
+    {
+        for (atUint64 j = 0; j < rem; j++)
+        {
+            *buf = rand();
+            buf++;
+        }
+    }
 }
 
 std::vector<std::string>& split(const std::string& s, char delim, std::vector<std::string>& elems)

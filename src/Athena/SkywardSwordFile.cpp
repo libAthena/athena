@@ -16,7 +16,6 @@
 
 #include "Athena/SkywardSwordFile.hpp"
 #include "Athena/SkywardSwordQuest.hpp"
-#include "Athena/InvalidOperationException.hpp"
 
 namespace Athena
 {
@@ -48,7 +47,10 @@ void SkywardSwordFile::addQuest(Athena::SkywardSwordQuest* q)
 SkywardSwordQuest* SkywardSwordFile::quest(atUint32 id)
 {
     if (id > m_quests.size() - 1)
-        THROW_INVALID_OPERATION_EXCEPTION_RETURN(nullptr, "index out of range");
+    {
+        atWarning("index out of range");
+        return nullptr;
+    }
 
     return m_quests[id];
 }

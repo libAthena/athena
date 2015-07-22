@@ -247,7 +247,7 @@ ALTTPDungeonItemFlags ALTTPFileReader::readDungeonFlags()
     flags.HyruleCastle    = (flagsByte >> 6) & 1;
     flags.SewerPassage    = (flagsByte >> 7) & 1;
 
-    aDebug() << std::hex << flags.flags1 << " " << flags.flags2 << std::dec << std::endl;
+    atDebug("%x %x", flags.flags1, flags.flags2);
     return flags;
 }
 

@@ -15,7 +15,6 @@
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
 #include "Athena/ALTTPQuest.hpp"
-#include "Athena/InvalidOperationException.hpp"
 #include <iostream>
 
 namespace Athena
@@ -72,7 +71,10 @@ std::vector<ALTTPOverworldEvent*> ALTTPQuest::overworldEvents() const
 ALTTPOverworldEvent* ALTTPQuest::overworldEvent(atUint32 id) const
 {
     if (id > m_overworldEvents.size() - 1)
-        THROW_INVALID_OPERATION_EXCEPTION_RETURN(nullptr, "index out of range");
+    {
+        atWarning("index out of range");
+        return nullptr;
+    }
 
     return m_overworldEvents[id];
 }
@@ -303,7 +305,10 @@ void ALTTPQuest::setDungeonKeys(std::vector<atUint8> val)
 void ALTTPQuest::setDungeonKeys(atUint32 id, atUint8 val)
 {
     if (id > m_dungeonKeys.size() - 1)
-        THROW_INVALID_OPERATION_EXCEPTION("index out of range");
+    {
+        atWarning("index out of range");
+        return;
+    }
 
     m_dungeonKeys[id] = val;
 }
@@ -311,7 +316,10 @@ void ALTTPQuest::setDungeonKeys(atUint32 id, atUint8 val)
 atUint8 ALTTPQuest::dungeonKeys(atUint32 id) const
 {
     if (id > m_dungeonKeys.size() - 1)
-        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0, "index out of range");
+    {
+        atWarning("index out of range");
+        return 0;
+    }
 
     return m_dungeonKeys[id];
 }
@@ -400,7 +408,10 @@ void ALTTPQuest::setOldManFlags(std::vector<atUint8> flags)
 void ALTTPQuest::setOldManFlag(atUint32 id, atUint8 val)
 {
     if (id > m_oldManFlags.size() - 1)
-        THROW_INVALID_OPERATION_EXCEPTION("index out of range");
+    {
+        atWarning("index out of range");
+        return;
+    }
 
     m_oldManFlags[id] = val;
 }
@@ -408,8 +419,10 @@ void ALTTPQuest::setOldManFlag(atUint32 id, atUint8 val)
 atUint8 ALTTPQuest::oldManFlag(atUint32 id)
 {
     if (id > m_oldManFlags.size() - 1)
-        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0, "index out of range");
-
+    {
+        atWarning("index out of range");
+        return 0;
+    }
     return m_oldManFlags[id];
 }
 
@@ -436,7 +449,10 @@ void ALTTPQuest::setUnknown1(std::vector<atUint8> flags)
 void ALTTPQuest::setUnknown1(atUint32 id, atUint8 val)
 {
     if (id > m_unknown1.size())
-        THROW_INVALID_OPERATION_EXCEPTION("index out of range");
+    {
+        atWarning("index out of range");
+        return;
+    }
 
     m_unknown1[id] = val;
 }
@@ -444,7 +460,10 @@ void ALTTPQuest::setUnknown1(atUint32 id, atUint8 val)
 atUint8 ALTTPQuest::unknown1(atUint32 id)
 {
     if (id > m_unknown1.size())
-        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0, "index out of range");
+    {
+        atWarning("index out of range");
+        return 0;
+    }
 
     return m_unknown1[id];
 }
@@ -462,7 +481,10 @@ void ALTTPQuest::setPlayerName(std::vector<atUint16> playerName)
 void ALTTPQuest::setPlayerName(const std::string& playerName)
 {
     if (playerName == std::string() || playerName.size() > 6)
-        THROW_INVALID_OPERATION_EXCEPTION("index out of range");
+    {
+        atWarning("index out of range");
+        return;
+    }
 
     m_playerName.clear();
 
@@ -675,7 +697,10 @@ void ALTTPQuest::setDungeonDeathTotals(std::vector<atUint16> val)
 void ALTTPQuest::setDungeonDeathTotal(atUint32 id, atUint16 val)
 {
     if (id > m_dungeonDeathTotals.size())
-        THROW_INVALID_OPERATION_EXCEPTION("index out of range");
+    {
+        atWarning("index out of range");
+        return;
+    }
 
     m_dungeonDeathTotals[id] = val;
 }
@@ -683,7 +708,10 @@ void ALTTPQuest::setDungeonDeathTotal(atUint32 id, atUint16 val)
 atUint16 ALTTPQuest::dungeonDeathTotal(atUint32 id) const
 {
     if (id > m_dungeonDeathTotals.size())
-        THROW_INVALID_OPERATION_EXCEPTION_RETURN(0, "index out of range");
+    {
+        atWarning("index out of range");
+        return 0;
+    }
 
     return m_dungeonDeathTotals[id];
 }

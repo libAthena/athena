@@ -17,7 +17,7 @@
 #ifndef ALTTP_QUEST_HPP
 #define ALTTP_QUEST_HPP
 
-#include "Types.hpp"
+#include "Athena/Global.hpp"
 #include <string>
 #include <vector>
 #include "Athena/ALTTPStructs.hpp"

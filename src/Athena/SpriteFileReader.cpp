@@ -19,9 +19,6 @@
 #include "Athena/Sprite.hpp"
 #include "Athena/SpritePart.hpp"
 #include "Athena/SpriteFrame.hpp"
-#include "Athena/InvalidOperationException.hpp"
-#include "Athena/InvalidDataException.hpp"
-#include "Athena/IOException.hpp"
 #include "Athena/Utility.hpp"
 
 namespace Athena
@@ -48,13 +45,19 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
         atUint32 magic = base::readUint32();
 
         if (magic != Sakura::SpriteFile::Magic)
-            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr, "Not a valid Sakura Sprite container");
+        {
+            atError("Not a valid Sakura Sprite container");
+            return nullptr;
+        }
 
         atUint32 version = base::readUint32();
 
         // TODO: Make this more verbose
         if (version != Sakura::SpriteFile::Version)
-            THROW_INVALID_DATA_EXCEPTION_RETURN(nullptr, "Unsupported version");
+        {
+            atError("Unsupported version");
+            return nullptr;
+        }
 
         // After reading in the magic and version we need to load some
         // metadata about the file.
@@ -209,7 +212,10 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
 
 #endif
             else
-                THROW_IO_EXCEPTION_RETURN(nullptr, "Sprite names cannot be empty");
+            {
+                atError("Sprite names cannot be empty");
+                return nullptr;
+            }
         }
 
         ret->setSprites(sprites);

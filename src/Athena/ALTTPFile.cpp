@@ -17,8 +17,6 @@
 #include "Athena/ALTTPFile.hpp"
 #include "Athena/ALTTPQuest.hpp"
 
-#include "Athena/InvalidOperationException.hpp"
-
 namespace Athena
 {
 ALTTPFile::ALTTPFile()
@@ -33,7 +31,10 @@ ALTTPFile::ALTTPFile(std::vector<ALTTPQuest*> quests, std::vector<ALTTPQuest*> b
 void ALTTPFile::setQuest(atUint32 id, ALTTPQuest* val)
 {
     if (id > m_quests.size())
-        THROW_INVALID_OPERATION_EXCEPTION("index out of range");
+    {
+        atWarning("index out of range");
+        return;
+    }
 
     m_quests[id] = val;
 }
@@ -45,7 +46,10 @@ std::vector<ALTTPQuest*> ALTTPFile::questList() const
 ALTTPQuest* ALTTPFile::quest(atUint32 id) const
 {
     if (id > m_quests.size())
-        THROW_INVALID_OPERATION_EXCEPTION_RETURN(nullptr, "index out of range");
+    {
+        atWarning("index out of range");
+        return nullptr;
+    }
 
     return m_quests[id];
 }
