@@ -22,12 +22,14 @@ MemoryWriter::MemoryWriter(atUint8* data, atUint64 length)
     if (!data)
     {
         atError("data cannot be NULL");
+        setError();
         return;
     }
 
     if (length == 0)
     {
         atError("length cannot be 0");
+        setError();
         return;
     }
 }
@@ -41,6 +43,7 @@ MemoryCopyWriter::MemoryCopyWriter(atUint8* data, atUint64 length)
     if (length == 0)
     {
         atError("length cannot be 0");
+        setError();
         return;
     }
 
@@ -62,6 +65,7 @@ MemoryCopyWriter::MemoryCopyWriter(const std::string& filename)
     if (!m_data)
     {
         atError("Could not allocate memory!");
+        setError();
         return;
     }
 
@@ -76,12 +80,14 @@ void MemoryWriter::seek(atInt64 position, SeekOrigin origin)
             if (position < 0)
             {
                 atError("Position outside stream bounds");
+                setError();
                 return;
             }
 
             if ((atUint64)position > m_length)
             {
                 atError("data exceeds available buffer space");
+                setError();
                 return;
             }
 
@@ -92,12 +98,14 @@ void MemoryWriter::seek(atInt64 position, SeekOrigin origin)
             if ((((atInt64)m_position + position) < 0))
             {
                 atError("Position outside stream bounds");
+                setError();
                 return;
             }
 
             if (m_position + position > m_length)
             {
                 atError("data exceeds available buffer space");
+                setError();
                 return;
             }
 
@@ -108,12 +116,14 @@ void MemoryWriter::seek(atInt64 position, SeekOrigin origin)
             if (((atInt64)m_length - position) < 0)
             {
                 atError("Position outside stream bounds");
+                setError();
                 return;
             }
 
             if ((atUint64)position > m_length)
             {
                 atError("data exceeds available buffer space");
+                setError();
                 return;
             }
 
@@ -130,6 +140,7 @@ void MemoryCopyWriter::seek(atInt64 position, SeekOrigin origin)
             if (position < 0)
             {
                 atError("Position outside stream bounds");
+                setError();
                 return;
             }
 
@@ -143,6 +154,7 @@ void MemoryCopyWriter::seek(atInt64 position, SeekOrigin origin)
             if ((((atInt64)m_position + position) < 0))
             {
                 atError("Position outside stream bounds");
+                setError();
                 return;
             }
 
@@ -156,6 +168,7 @@ void MemoryCopyWriter::seek(atInt64 position, SeekOrigin origin)
             if (((atInt64)m_length - position) < 0)
             {
                 atError("Position outside stream bounds");
+                setError();
                 return;
             }
 
@@ -197,6 +210,7 @@ void MemoryWriter::save(const std::string& filename)
     if (filename.empty() && m_filepath.empty())
     {
         atError("No file specified, cannot save.");
+        setError();
         return;
     }
 
@@ -208,6 +222,7 @@ void MemoryWriter::save(const std::string& filename)
     if (!out)
     {
         atError("Unable to open file '%s'", m_filepath.c_str());
+        setError();
         return;
     }
 
@@ -224,6 +239,7 @@ void MemoryWriter::save(const std::string& filename)
         if (ret < 0)
         {
             atError("Error writing data to disk");
+            setError();
             return;
         }
         else if (ret == 0)
@@ -241,12 +257,14 @@ void MemoryWriter::writeUBytes(const atUint8* data, atUint64 length)
     if (!data)
     {
         atError("data cannnot be NULL");
+        setError();
         return;
     }
 
     if (m_position + length > m_length)
     {
         atError("data length exceeds available buffer space");
+        setError();
         return;
     }
 
@@ -260,6 +278,7 @@ void MemoryCopyWriter::writeUBytes(const atUint8* data, atUint64 length)
     if (!data)
     {
         atError("data cannnot be NULL");
+        setError();
         return;
     }
 

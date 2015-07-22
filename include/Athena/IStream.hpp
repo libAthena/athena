@@ -12,6 +12,7 @@ std::ostream& operator<<(std::ostream& os, Endian& endian);
 class IStream
 {
 public:
+    IStream() : m_hasError(false) {}
     virtual ~IStream() {}
 
     virtual void setEndian(Endian)    = 0;
@@ -22,6 +23,10 @@ public:
     virtual bool atEnd()         const = 0;
     virtual atUint64 position()    const = 0;
     virtual atUint64 length()      const = 0;
+    bool hasError() const { return m_hasError; }
+protected:
+    void setError() { m_hasError = true; }
+    bool m_hasError;
 };
 }
 }

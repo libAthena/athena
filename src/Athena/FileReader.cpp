@@ -33,6 +33,7 @@ void FileReader::open()
     if (!m_fileHandle)
     {
         atError("File not found '%s'", m_filename.c_str());
+        setError();
         return;
     }
 
@@ -45,6 +46,7 @@ void FileReader::close()
     if (!m_fileHandle)
     {
         atError("Cannot close an unopened stream");
+        setError();
         return;
     }
 
@@ -120,6 +122,7 @@ atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len)
     if (!isOpen())
     {
         atError("File not open for reading");
+        setError();
         return 0;
     }
 
