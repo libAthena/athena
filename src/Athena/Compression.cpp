@@ -98,7 +98,7 @@ atInt32 decompressLZO(const atUint8* source, const atInt32 sourceSize, atUint8* 
     int srcSize = sourceSize;
     lzo_uint size = dstSize;
     int result = lzo1x_decompress_safe(source, srcSize, dst, &size, NULL);
-    dstSize -= size;
+    dstSize -= (atInt32)size;
 
     return result;
 }

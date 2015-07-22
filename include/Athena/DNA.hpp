@@ -53,16 +53,16 @@ struct DNA
     using Vector = std::vector<T>;
 
     template <size_t sizeVar>
-    using Buffer = struct Buffer<sizeVar, DNAE>;
+    using Buffer = struct Athena::io::Buffer<sizeVar, DNAE>;
 
     template <atInt32 sizeVar = -1>
-    using String = struct String<sizeVar, DNAE>;
+    using String = struct Athena::io::String<sizeVar, DNAE>;
 
     template <atInt32 sizeVar = -1, Endian VE = DNAE>
-    using WString = struct WString<sizeVar, VE>;
+    using WString = struct Athena::io::WString<sizeVar, VE>;
 
     template <atInt32 sizeVar = -1>
-    using WStringAsString = struct WStringAsString<sizeVar, DNAE>;
+    using WStringAsString = struct Athena::io::WStringAsString<sizeVar, DNAE>;
 
     template <off_t offset, SeekOrigin direction>
     struct Seek {};
