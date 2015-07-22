@@ -51,16 +51,10 @@ add_library(AthenaCore
     include/Athena/Types.hpp
     include/Athena/Utility.hpp
     include/Athena/Global.hpp
-    include/Athena/Exception.hpp
-    include/Athena/FileNotFoundException.hpp
-    include/Athena/IOException.hpp
-    include/Athena/InvalidDataException.hpp
-    include/Athena/InvalidOperationException.hpp
     include/Athena/FileReader.hpp
     include/Athena/FileWriter.hpp
     include/Athena/MemoryReader.hpp
     include/Athena/MemoryWriter.hpp
-    include/Athena/NotImplementedException.hpp
     include/Athena/Checksums.hpp
     include/Athena/Compression.hpp
     include/LZ77/LZBase.hpp

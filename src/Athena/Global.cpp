@@ -1,4 +1,7 @@
 #include "Athena/Global.hpp"
+#include <stdio.h>
+#include <stdarg.h>
+#include <stdlib.h>
 
 std::ostream& operator<<(std::ostream& os, const Athena::SeekOrigin& origin)
 {
@@ -38,7 +41,31 @@ std::ostream& operator<<(std::ostream& os, const Athena::Endian& endian)
 }
 
 
-static atEXCEPTION_HANDLER g_atExceptionHandler = nullptr;
+static void __defaultExceptionHandler(const Athena::error::Level& level, const std::string& file, const std::string& function, int line, const char* fmt, ...)
+{
+    std::string levelStr;
+    switch(level)
+    {
+        case Athena::error::WARNING:
+            levelStr = "[WARNING] ";
+            break;
+        case Athena::error::ERROR:
+            levelStr = "[ERROR  ] ";
+            break;
+        case Athena::error::FATAL:
+            levelStr = "[FATAL  ] ";
+            break;
+        default: break;
+    }
+
+    va_list vl;
+    va_start(vl, fmt);
+    std::string msg = Athena::utility::vsprintf(fmt, vl);
+    va_end(vl);
+    std::cerr << levelStr << " " << file << " " << function << "(" << line << "): " << msg << std::endl;
+}
+
+static atEXCEPTION_HANDLER g_atExceptionHandler = __defaultExceptionHandler;
 
 atEXCEPTION_HANDLER atGetExceptionHandler()
 {
@@ -48,5 +75,8 @@ atEXCEPTION_HANDLER atGetExceptionHandler()
 
 void atSetExceptionHandler(atEXCEPTION_HANDLER func)
 {
-    g_atExceptionHandler = func;
+    if (func)
+        g_atExceptionHandler = func;
+    else
+        g_atExceptionHandler = __defaultExceptionHandler;
 }

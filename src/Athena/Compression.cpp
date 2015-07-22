@@ -1,5 +1,4 @@
 #include "Athena/Compression.hpp"
-#include "Athena/Exception.hpp"
 #include <lzo/lzo1x.h>
 #include <iostream>
 #include <zlib.h>

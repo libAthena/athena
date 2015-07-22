@@ -15,7 +15,6 @@
 // along with libAthena.  If not, see <http://www.gnu.org/licenses/>
 
 #include "Athena/ZQuestFileWriter.hpp"
-#include "Athena/InvalidOperationException.hpp"
 #include "Athena/ZQuestFile.hpp"
 #include "Athena/Compression.hpp"
 #include "Athena/Checksums.hpp"
@@ -38,7 +37,10 @@ ZQuestFileWriter::ZQuestFileWriter(const std::string& filename)
 void ZQuestFileWriter::write(ZQuestFile* quest, bool compress)
 {
     if (!quest)
-        THROW_INVALID_OPERATION_EXCEPTION("quest cannot be NULL");
+    {
+        atError("quest cannot be NULL");
+        return;
+    }
 
     base::writeUint32(ZQuestFile::Magic);
     base::writeUint32(ZQuestFile::Version);

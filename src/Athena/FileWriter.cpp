@@ -1,8 +1,4 @@
 #include "Athena/FileWriter.hpp"
-#include "Athena/FileNotFoundException.hpp"
-#include "Athena/InvalidDataException.hpp"
-#include "Athena/InvalidOperationException.hpp"
-#include "Athena/IOException.hpp"
 
 #if _WIN32
 #include "win32_largefilewrapper.h"
@@ -36,7 +32,10 @@ void FileWriter::open(bool overwrite)
         m_fileHandle = fopen(m_filename.c_str(), "r+b");
 
     if (!m_fileHandle)
-        THROW_FILE_NOT_FOUND_EXCEPTION(m_filename);
+    {
+        atError("Unable to open file '%s'", m_filename.c_str());
+        return;
+    }
 
     // ensure we're at the beginning of the file
     rewind(m_fileHandle);
@@ -45,7 +44,10 @@ void FileWriter::open(bool overwrite)
 void FileWriter::close()
 {
     if (!m_fileHandle)
-        THROW_INVALID_OPERATION_EXCEPTION("Cannot close an unopened stream");
+    {
+        atError("Cannot close an unopened stream");
+        return;
+    }
 
     fclose(m_fileHandle);
     m_fileHandle = NULL;
@@ -55,7 +57,7 @@ void FileWriter::close()
 void FileWriter::seek(atInt64 pos, SeekOrigin origin)
 {
     if (fseeko64(m_fileHandle, pos, (int)origin) != 0)
-        THROW_IO_EXCEPTION("Unable to seek in file");
+        atError("Unable to seek in file");
 }
 
 atUint64 FileWriter::position() const
@@ -71,10 +73,13 @@ atUint64 FileWriter::length() const
 void FileWriter::writeUBytes(const atUint8* data, atUint64 len)
 {
     if (!isOpen())
-        THROW_INVALID_OPERATION_EXCEPTION("File not open for writing");
+    {
+        atError("File not open for writing");
+        return;
+    }
 
     if (fwrite(data, 1, len, m_fileHandle) != len)
-        THROW_IO_EXCEPTION("Unable to write to stream");
+        atError("Unable to write to stream");
 }
 
 }

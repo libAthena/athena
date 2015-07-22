@@ -19,8 +19,6 @@
 #include "Athena/Sprite.hpp"
 #include "Athena/SpritePart.hpp"
 #include "Athena/SpriteFrame.hpp"
-#include "Athena/InvalidOperationException.hpp"
-#include "Athena/InvalidDataException.hpp"
 
 namespace Athena
 {
@@ -39,7 +37,10 @@ SpriteFileWriter::SpriteFileWriter(const std::string& filepath)
 void SpriteFileWriter::writeFile(Sakura::SpriteFile* file)
 {
     if (!file)
-        THROW_INVALID_OPERATION_EXCEPTION("SSpriteFileWriter::writeFile -> file cannot be NULL");
+    {
+        atError("file cannot be NULL");
+        return;
+    }
 
     base::writeUint32(Sakura::SpriteFile::Magic);
     base::writeUint32(Sakura::SpriteFile::Version);

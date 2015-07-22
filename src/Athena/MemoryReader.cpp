@@ -1,8 +1,4 @@
 #include "Athena/MemoryReader.hpp"
-#include "Athena/IOException.hpp"
-#include "Athena/FileNotFoundException.hpp"
-#include "Athena/InvalidDataException.hpp"
-#include "Athena/InvalidOperationException.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,20 +20,32 @@ MemoryReader::MemoryReader(const atUint8* data, atUint64 length)
       m_position(0)
 {
     if (!data)
-        THROW_INVALID_DATA_EXCEPTION("data cannot be NULL");
+    {
+        atError("data cannot be NULL");
+        return;
+    }
 
     if (length == 0)
-        THROW_INVALID_OPERATION_EXCEPTION("length cannot be 0");
+    {
+        atError("length cannot be 0");
+        return;
+    }
 }
 
 MemoryCopyReader::MemoryCopyReader(const atUint8* data, atUint64 length)
     : MemoryReader(data, length)
 {
     if (!data)
-        THROW_INVALID_DATA_EXCEPTION("data cannot be NULL");
+    {
+        atError("data cannot be NULL");
+        return;
+    }
 
     if (length == 0)
-        THROW_INVALID_OPERATION_EXCEPTION("length cannot be 0");
+    {
+        atError("length cannot be 0");
+        return;
+    }
 
     m_dataCopy.reset(new atUint8[m_length]);
     m_data = m_dataCopy.get();
@@ -50,21 +58,30 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin)
     {
         case SeekOrigin::Begin:
             if ((position < 0 || (atInt64)position > (atInt64)m_length))
-                THROW_IO_EXCEPTION("Position %0.8X outside stream bounds ", position);
+            {
+                atError("Position %0.8X outside stream bounds ", position);
+                return;
+            }
 
             m_position = position;
             break;
 
         case SeekOrigin::Current:
             if ((((atInt64)m_position + position) < 0 || (m_position + position) > m_length))
-                THROW_IO_EXCEPTION("Position %0.8X outside stream bounds ", position);
+            {
+                atError("Position %0.8X outside stream bounds ", position);
+                return;
+            }
 
             m_position += position;
             break;
 
         case SeekOrigin::End:
             if ((((atInt64)m_length - position < 0) || (m_length - position) > m_length))
-                THROW_IO_EXCEPTION("Position %0.8X outside stream bounds ", position);
+            {
+                atError("Position %0.8X outside stream bounds ", position);
+                return;
+            }
 
             m_position = m_length - position;
             break;
@@ -98,7 +115,10 @@ atUint8* MemoryReader::data() const
 atUint64 MemoryReader::readUBytesToBuf(void* buf, atUint64 length)
 {
     if (m_position + length > m_length)
-        THROW_IO_EXCEPTION_RETURN(0, "Position %0.8X outside stream bounds ", m_position);
+    {
+        atError("Position %0.8X outside stream bounds ", m_position);
+        return 0;
+    }
 
     memcpy(buf, (const atUint8*)(m_data + m_position), length);
     m_position += length;
@@ -112,7 +132,10 @@ void MemoryCopyReader::loadData()
     in = fopen(m_filepath.c_str(), "rb");
 
     if (!in)
-        THROW_FILE_NOT_FOUND_EXCEPTION(m_filepath);
+    {
+        atError("Unable to open file '%s'", m_filepath.c_str());
+        return;
+    }
 
     rewind(in);
 
@@ -131,7 +154,10 @@ void MemoryCopyReader::loadData()
         atInt64 ret = fread(m_dataCopy.get() + done, 1, blocksize, in);
 
         if (ret < 0)
-            THROW_IO_EXCEPTION("Error reading data from disk");
+        {
+            atError("Error reading data from disk");
+            return;
+        }
         else if (ret == 0)
             break;
 
