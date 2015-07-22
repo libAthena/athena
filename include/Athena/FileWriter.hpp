@@ -12,6 +12,9 @@ class FileWriter : public IStreamWriter
 {
 public:
     FileWriter(const std::string& filename, bool overwrite = true);
+#if _WIN32
+    FileWriter(const std::wstring& filename, bool overwrite = true);
+#endif
     virtual ~FileWriter();
 
     void open(bool overwrite = true);
@@ -25,6 +28,9 @@ public:
 
 private:
     std::string  m_filename;
+#if _WIN32
+    std::wstring m_wfilename;
+#endif
     FILE*        m_fileHandle;
     atUint8      m_currentByte;
     atUint64     m_bytePosition;
