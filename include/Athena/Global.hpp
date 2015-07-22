@@ -51,21 +51,6 @@ typedef struct _stat64 stat64_t;
 typedef struct stat64 stat64_t;
 #endif
 
-#ifndef aDebug
-#define aDebug() \
-    std::cout << __FILE__ << "(" << __LINE__ << ") " << AT_PRETTY_FUNCTION << ": "
-#endif
-#ifndef aError
-#define aError() \
-    std::cerr << __FILE__ << "(" << __LINE__ << ") " << AT_PRETTY_FUNCTION << ": "
-#endif
-
-#ifndef aPrint
-#define aPrint() std::cout
-#endif
-
-#define aEnd() '\n'
-
 #ifndef BLOCKSZ
 #define BLOCKSZ 512
 #endif
@@ -75,6 +60,16 @@ typedef struct stat64 stat64_t;
 
 namespace Athena
 {
+namespace error
+{
+enum Level
+{
+    MESSAGE,
+    WARNING,
+    ERROR,
+    FATAL
+};
+}
 enum SeekOrigin
 {
     Begin,
@@ -91,7 +86,6 @@ enum Endian
 #ifndef ATHENA_NO_SAKURA
 namespace Sakura
 {
-
 template <typename T>
 class Vector2D
 {
@@ -118,11 +112,83 @@ typedef Vector2D<float> Vector2Df;
 #endif // ATHENA_NO_SAKURA
 } // Athena
 
-typedef void (*atEXCEPTION_HANDLER)(const std::string& file, const std::string& function, int line, const std::string&, ...);
+typedef void (*atEXCEPTION_HANDLER)(const Athena::error::Level& level, const std::string& file, const std::string& function, int line, const char* fmt, ...);
 
 atEXCEPTION_HANDLER atGetExceptionHandler();
 void atSetExceptionHandler(atEXCEPTION_HANDLER func);
 
 std::ostream& operator<<(std::ostream& os, const Athena::SeekOrigin& origin);
 std::ostream& operator<<(std::ostream& os, const Athena::Endian& endian);
+
+#ifdef _MSC_VER
+#ifndef NDEBUG
+#define atDebug(fmt, ...) \
+    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
+    if (__handler) \
+        __handler(Athena::error::MESSAGE, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
+} while(0)
+#else
+#define atDebug(fmt, ...)
+#endif
+
+#define atMessage(fmt, ...) \
+    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
+    if (__handler) \
+        __handler(Athena::error::MESSAGE, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
+} while(0)
+
+#define atWarning(fmt, ...) \
+    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
+    if (__handler) \
+        __handler(Athena::error::WARNING, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
+} while(0)
+
+#define atError(fmt, ...) \
+    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
+    if (__handler) \
+        __handler(Athena::error::ERROR, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
+} while(0)
+
+#define atFatal(fmt, ...) \
+    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
+    if (__handler) \
+        __handler(Athena::error::FATAL, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
+} while(0)
+#elif defined(__GNUC__)
+
+#ifndef NDEBUG
+#define atDebug(fmt...) \
+    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
+    if (__handler) \
+        __handler(Athena::error::MESSAGE, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
+} while(0)
+#else // _MSC_VER
+#define atDebug(fmt, ...)
+#endif // NDEBUG
+
+#define atMessage(fmt...) \
+    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
+    if (__handler) \
+        __handler(Athena::error::MESSAGE, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
+} while(0)
+
+#define atWarning(fmt...) \
+    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
+    if (__handler) \
+        __handler(Athena::error::WARNING, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
+} while(0)
+
+#define atError(fmt...) \
+    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
+    if (__handler) \
+        __handler(Athena::error::ERROR, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
+} while(0)
+
+#define atFatal(fmt...) \
+    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
+    if (__handler) \
+        __handler(Athena::error::FATAL, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
+} while(0)
+#endif // defined(__GNUC__)
+
 #endif // GLOBAL_HPP

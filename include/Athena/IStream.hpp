@@ -2,7 +2,6 @@
 #define STREAM_HPP
 
 #include "Global.hpp"
-#include "Athena/NotImplementedException.hpp"
 
 namespace Athena
 {

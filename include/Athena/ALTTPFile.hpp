@@ -17,7 +17,7 @@
 #ifndef ALTTP_FILE_HPP
 #define ALTTP_FILE_HPP
 
-#include "Athena/Types.hpp"
+#include "Athena/Global.hpp"
 #include <vector>
 
 namespace Athena

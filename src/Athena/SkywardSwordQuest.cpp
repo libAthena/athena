@@ -79,7 +79,7 @@ atUint8* SkywardSwordQuest::skipData() const
 void SkywardSwordQuest::setPlayerName(const std::string& name)
 {
     if (name.length() > 8)
-        aDebug() << "WARNING: name cannot be greater than 8 characters, automatically truncating" << std::endl;
+        atDebug("WARNING: name cannot be greater than 8 characters, automatically truncating");
 
     std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
     std::wstring val = conv.from_bytes(name);

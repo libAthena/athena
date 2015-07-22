@@ -17,8 +17,6 @@
 #include "Athena/SkywardSwordFileWriter.hpp"
 #include "Athena/SkywardSwordFile.hpp"
 #include "Athena/SkywardSwordQuest.hpp"
-#include "Athena/InvalidOperationException.hpp"
-#include "Athena/InvalidDataException.hpp"
 
 namespace Athena
 {
@@ -40,7 +38,10 @@ SkywardSwordFileWriter::SkywardSwordFileWriter(const std::string& filename)
 void SkywardSwordFileWriter::write(SkywardSwordFile* file)
 {
     if (!file)
-        THROW_INVALID_OPERATION_EXCEPTION("file cannot be NULL");
+    {
+        atError("file cannot be NULL");
+        return;
+    }
 
     atUint32 magic = (file->region() == Region::NTSC ? SkywardSwordFile::USMagic :
                       (file->region() == Region::NTSCJ ? SkywardSwordFile::JAMagic : SkywardSwordFile::EUMagic));
@@ -55,7 +56,10 @@ void SkywardSwordFileWriter::write(SkywardSwordFile* file)
     for (SkywardSwordQuest* q : quests)
     {
         if (q->length() != 0x53C0)
-            THROW_INVALID_DATA_EXCEPTION("q->data() not 0x53C0 bytes in length");
+        {
+            atError("q->data() not 0x53C0 bytes in length");
+            return;
+        }
 
         // Update the checksums
         q->fixChecksums();

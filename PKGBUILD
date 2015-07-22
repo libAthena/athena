@@ -1,7 +1,7 @@
 # PKGBUILD for libAthena
 _pkgname=libathena
 pkgname=$_pkgname-git
-pkgver=2.0.0.9.gf3ba881
+pkgver=2.1.0
 pkgrel=1
 pkgdesc="Basic cross platform IO library"
 arch=('i686' 'x86_64')
