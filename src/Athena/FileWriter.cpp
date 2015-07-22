@@ -34,6 +34,7 @@ void FileWriter::open(bool overwrite)
     if (!m_fileHandle)
     {
         atError("Unable to open file '%s'", m_filename.c_str());
+        setError();
         return;
     }
 
@@ -46,6 +47,7 @@ void FileWriter::close()
     if (!m_fileHandle)
     {
         atError("Cannot close an unopened stream");
+        setError();
         return;
     }
 
@@ -57,7 +59,10 @@ void FileWriter::close()
 void FileWriter::seek(atInt64 pos, SeekOrigin origin)
 {
     if (fseeko64(m_fileHandle, pos, (int)origin) != 0)
+    {
         atError("Unable to seek in file");
+        setError();
+    }
 }
 
 atUint64 FileWriter::position() const
@@ -75,11 +80,15 @@ void FileWriter::writeUBytes(const atUint8* data, atUint64 len)
     if (!isOpen())
     {
         atError("File not open for writing");
+        setError();
         return;
     }
 
     if (fwrite(data, 1, len, m_fileHandle) != len)
+    {
         atError("Unable to write to stream");
+        setError();
+    }
 }
 
 }

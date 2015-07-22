@@ -22,12 +22,14 @@ MemoryReader::MemoryReader(const atUint8* data, atUint64 length)
     if (!data)
     {
         atError("data cannot be NULL");
+        setError();
         return;
     }
 
     if (length == 0)
     {
         atError("length cannot be 0");
+        setError();
         return;
     }
 }
@@ -38,12 +40,14 @@ MemoryCopyReader::MemoryCopyReader(const atUint8* data, atUint64 length)
     if (!data)
     {
         atError("data cannot be NULL");
+        setError();
         return;
     }
 
     if (length == 0)
     {
         atError("length cannot be 0");
+        setError();
         return;
     }
 
@@ -60,6 +64,7 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin)
             if ((position < 0 || (atInt64)position > (atInt64)m_length))
             {
                 atError("Position %0.8X outside stream bounds ", position);
+                setError();
                 return;
             }
 
@@ -70,6 +75,7 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin)
             if ((((atInt64)m_position + position) < 0 || (m_position + position) > m_length))
             {
                 atError("Position %0.8X outside stream bounds ", position);
+                setError();
                 return;
             }
 
@@ -80,6 +86,7 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin)
             if ((((atInt64)m_length - position < 0) || (m_length - position) > m_length))
             {
                 atError("Position %0.8X outside stream bounds ", position);
+                setError();
                 return;
             }
 
@@ -117,6 +124,7 @@ atUint64 MemoryReader::readUBytesToBuf(void* buf, atUint64 length)
     if (m_position + length > m_length)
     {
         atError("Position %0.8X outside stream bounds ", m_position);
+        setError();
         return 0;
     }
 
@@ -134,6 +142,7 @@ void MemoryCopyReader::loadData()
     if (!in)
     {
         atError("Unable to open file '%s'", m_filepath.c_str());
+        setError();
         return;
     }
 
@@ -156,6 +165,7 @@ void MemoryCopyReader::loadData()
         if (ret < 0)
         {
             atError("Error reading data from disk");
+            setError();
             return;
         }
         else if (ret == 0)
