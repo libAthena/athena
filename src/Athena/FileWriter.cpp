@@ -18,6 +18,16 @@ FileWriter::FileWriter(const std::string& filename, bool overwrite)
     open(overwrite);
 }
 
+#if _WIN32
+FileWriter::FileWriter(const std::wstring& filename, bool overwrite)
+    : m_wfilename(filename),
+    m_fileHandle(NULL),
+    m_bytePosition(0)
+{
+    open(overwrite);
+}
+#endif
+
 FileWriter::~FileWriter()
 {
     if (isOpen())
@@ -26,10 +36,29 @@ FileWriter::~FileWriter()
 
 void FileWriter::open(bool overwrite)
 {
+#if _WIN32
+    if (m_wfilename.size())
+    {
+        if (overwrite)
+            m_fileHandle = _wfopen(m_wfilename.c_str(), L"w+b");
+        else
+            m_fileHandle = _wfopen(m_wfilename.c_str(), L"r+b");
+    }
+    else
+    {
+        if (overwrite)
+            m_fileHandle = fopen(m_filename.c_str(), "w+b");
+        else
+            m_fileHandle = fopen(m_filename.c_str(), "r+b");
+    }
+#else
     if (overwrite)
         m_fileHandle = fopen(m_filename.c_str(), "w+b");
     else
-        m_fileHandle = fopen(m_filename.c_str(), "r+b");
+        m_fileHandle = fopen(m_filename.c_str(), "r+b"); 
+#endif
+
+
 
     if (!m_fileHandle)
     {

@@ -18,7 +18,9 @@ set(ATHENA_VERSION
 add_subdirectory(extern)
 
 include_directories(include ${LZO_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
+if (NOT WIN32)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+endif()
 
 if(WIN32)
 list(APPEND CORE_EXTRA src/win32_largefilewrapper.c)
@@ -108,7 +110,9 @@ add_library(AthenaWiiSave
     include/md5.h
     include/sha1.h
 )
+if(NOT WIN32)
 set_source_files_properties(src/aes.cpp PROPERTIES COMPILE_FLAGS -maes)
+endif()
 
 add_library(AthenaZelda
     src/Athena/ALTTPFile.cpp
