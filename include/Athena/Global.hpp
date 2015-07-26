@@ -112,7 +112,7 @@ typedef Vector2D<float> Vector2Df;
 #endif // ATHENA_NO_SAKURA
 } // Athena
 
-typedef void (*atEXCEPTION_HANDLER)(const Athena::error::Level& level, const std::string& file, const std::string& function, int line, const char* fmt, ...);
+typedef void (*atEXCEPTION_HANDLER)(const Athena::error::Level& level, const char* file, const char* function, int line, const char* fmt, ...);
 
 atEXCEPTION_HANDLER atGetExceptionHandler();
 void atSetExceptionHandler(atEXCEPTION_HANDLER func);
