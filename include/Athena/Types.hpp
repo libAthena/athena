@@ -44,37 +44,54 @@ typedef unsigned long long atUint64;
 // Vector types
 #if __SSE__
 #include <xmmintrin.h>
+#ifndef _WIN32
+#include <mm_malloc.h>
+#endif
 #endif
 
-typedef union
+#include <new>
+#define AT_ALIGNED_ALLOCATOR \
+void* operator new(size_t bytes) noexcept \
+{return _mm_malloc(bytes, 16);} \
+void* operator new[](size_t bytes) noexcept \
+{return _mm_malloc(bytes, 16);} \
+void operator delete(void* buf) noexcept \
+{_mm_free(buf);} \
+void operator delete[](void* buf) noexcept \
+{_mm_free(buf);} \
+
+typedef union alignas(16)
 {
 #if __clang__
     float clangVec __attribute__((__vector_size__(8)));
 #endif
 #if __SSE__
     __m128 mVec128;
+    AT_ALIGNED_ALLOCATOR
 #endif
     float vec[2];
 } atVec2f;
 
-typedef union
+typedef union alignas(16)
 {
 #if __clang__
     float clangVec __attribute__((__vector_size__(12)));
 #endif
 #if __SSE__
     __m128 mVec128;
+    AT_ALIGNED_ALLOCATOR
 #endif
     float vec[3];
 } atVec3f;
 
-typedef union
+typedef union alignas(16)
 {
 #if __clang__
     float clangVec __attribute__((__vector_size__(16)));
 #endif
 #if __SSE__
     __m128 mVec128;
+    AT_ALIGNED_ALLOCATOR
 #endif
     float vec[4];
 } atVec4f;
