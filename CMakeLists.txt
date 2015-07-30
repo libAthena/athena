@@ -17,7 +17,7 @@ set(ATHENA_VERSION
 
 add_subdirectory(extern)
 
-include_directories(include ${LZO_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
+include_directories(include ${LZO_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR} ${YAML_INCLUDE_DIR})
 if (NOT MSVC)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
@@ -45,6 +45,7 @@ add_library(AthenaCore
     src/LZ77/LZBase.cpp
     src/Athena/FileInfo.cpp
     src/Athena/Dir.cpp
+    src/Athena/DNAYaml.cpp
     ${CORE_EXTRA}
 
     include/Athena/IStream.hpp
@@ -67,6 +68,7 @@ add_library(AthenaCore
     include/Athena/Dir.hpp
     include/gekko_support.h
     include/Athena/DNA.hpp
+    include/Athena/DNAYaml.hpp
 )
 
 add_library(AthenaSakura

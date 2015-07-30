@@ -1,11 +1,11 @@
 # PKGBUILD for libAthena
 _pkgname=libathena
 pkgname=$_pkgname-git
-pkgver=2.2.0.3.g4a688a1
+pkgver=2.2.0.8.g2490fef
 pkgrel=1
 pkgdesc="Basic cross platform IO library"
 arch=('i686' 'x86_64')
-source=("${pkgname%-*}::git+https://github.com/libAthena/Athena.git")
+source=("${pkgname%-*}::git+https://github.com/libAthena/Athena.git#branch=yaml")
 options=(staticlibs)
 license="MIT"
 makedepends=('git cmake sed')
