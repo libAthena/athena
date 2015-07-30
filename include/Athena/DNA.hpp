@@ -73,8 +73,6 @@ struct DNA
     struct Delete {};
 };
 
-/* Concrete DNA types */
-
 template <size_t sizeVar, Endian VE>
 struct Buffer : public DNA<VE>, public std::unique_ptr<atUint8[]>
 {
@@ -95,7 +93,7 @@ struct String : public DNA<VE>, public std::string
 {
     typename DNA<VE>::Delete expl;
     inline void read(IStreamReader& reader)
-    {*this = reader.readString(sizeVar);}
+    {this->assign(std::move(reader.readString(sizeVar)));}
     inline void write(IStreamWriter& writer) const
     {writer.writeString(*this, sizeVar);}
     inline std::string& operator=(const std::string& __str)
@@ -111,7 +109,7 @@ struct WString : public DNA<VE>, public std::wstring
     inline void read(IStreamReader& reader)
     {
         reader.setEndian(VE);
-        *this = reader.readWString(sizeVar);
+        this->assign(std::move(reader.readWString(sizeVar)));
     }
     inline void write(IStreamWriter& writer) const
     {
