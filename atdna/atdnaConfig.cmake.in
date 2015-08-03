@@ -1,0 +1,52 @@
+# - Config file for the atdna package
+ 
+# Compute paths
+get_filename_component(ATHENA_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+ 
+# Our library dependencies (contains definitions for IMPORTED targets)
+if(NOT TARGET atdna AND NOT atdna_BINARY_DIR)
+  include("${ATHENA_CMAKE_DIR}/atdnaTargets.cmake")
+endif()
+
+# Find Athena
+find_package(Athena REQUIRED)
+
+# Super handy macro for adding atdna target
+macro(atdna out)
+  # Make input files source-relative
+  set(ins "")
+  foreach(arg ${ARGN})
+    list(APPEND ins ${CMAKE_CURRENT_SOURCE_DIR}/${arg})
+  endforeach()
+
+  # Get local include directories for atdna
+  get_property(incdirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+  set(inccli "")
+  foreach(dir ${incdirs})
+    list(APPEND inccli "-I${dir}")
+  endforeach()
+
+  # Get local defines for atdna
+  get_property(cdefs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_DEFINITIONS)
+  set(cdefcli "")
+  foreach(def ${cdefs})
+    list(APPEND cdefcli "-D${def}")
+  endforeach()
+
+  # MS extra
+  unset(extraargs)
+  if(MSVC)
+    list(APPEND extraargs -fms-compatibility -fexceptions)
+    if(MSVC_VERSION EQUAL 1800)
+      list(APPEND extraargs -fms-compatibility-version=18.00)
+    elseif(MSVC_VERSION EQUAL 1900)
+      list(APPEND extraargs -fms-compatibility-version=19.00)
+    endif()
+  endif()
+  
+  # Make target
+  add_custom_command(OUTPUT ${out} COMMAND $<TARGET_FILE:atdna> 
+                     ARGS ${extraargs} -o ${out} ${cdefcli} ${inccli} "-I${ATHENA_INCLUDE_DIR}" -isystem "@CONF_CLANG_INCLUDE_DIR@" ${ins}
+                     DEPENDS ${ins} COMMENT "Generating DNA ${out}")
+endmacro()
+
