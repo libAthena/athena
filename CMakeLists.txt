@@ -148,6 +148,9 @@ add_library(AthenaZelda
     include/Athena/SkywardSwordQuest.hpp
 )
 
+# Icon
+set(ATHENA_ICO ${CMAKE_CURRENT_SOURCE_DIR}/Athena.ico)
+
 # Offer the user the choice of overriding the installation directories
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
 set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")

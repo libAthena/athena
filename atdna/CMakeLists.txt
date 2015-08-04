@@ -49,9 +49,6 @@ foreach(p BIN INCLUDE CMAKE)
   endif()
 endforeach()
 
-# Icon
-set(ATHENA_ICO ${CMAKE_CURRENT_SOURCE_DIR}/Athena.ico)
-
 # Windows resource
 if(WIN32)
   configure_file(main.rc.in main.rc @ONLY)

@@ -177,7 +177,11 @@ inline std::unique_ptr<YAMLNode> ValToNode(const atUint32& val)
 template <>
 inline atInt64 NodeToVal(const YAMLNode* node)
 {
+#if _WIN32
+    return _strtoi64(node->m_scalarString.c_str(), NULL, 0);
+#else
     return strtoq(node->m_scalarString.c_str(), NULL, 0);
+#endif
 }
 
 template <>
@@ -193,7 +197,11 @@ inline std::unique_ptr<YAMLNode> ValToNode(const atInt64& val)
 template <>
 inline atUint64 NodeToVal(const YAMLNode* node)
 {
+#if _WIN32
+    return _strtoui64(node->m_scalarString.c_str(), NULL, 0);
+#else
     return strtouq(node->m_scalarString.c_str(), NULL, 0);
+#endif
 }
 
 template <>
