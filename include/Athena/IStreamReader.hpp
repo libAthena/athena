@@ -89,14 +89,23 @@ public:
      *
      * \return Uint8* The buffer at the current position from the given length.
      */
-    inline atInt8* readBytes(atUint64 length)
-    {atInt8* buf = new atInt8[length]; readUBytesToBuf(buf, length); return buf;}
+    inline std::unique_ptr<atInt8[]> readBytes(atUint64 length)
+    {
+        atInt8* buf = new atInt8[length];
+        readUBytesToBuf(buf, length);
+        return std::unique_ptr<atInt8[]>(buf);
+    }
 
     /*! \brief Reads a byte at the current position and advances the current position.
      *
      * \return Int8* The buffer at the current position from the given length.
      */
-    inline atUint8* readUBytes(atUint64 length) {return (atUint8*)readBytes(length);}
+    inline std::unique_ptr<atUint8[]> readUBytes(atUint64 length)
+    {
+        atUint8* buf = new atUint8[length];
+        readUBytesToBuf(buf, length);
+        return std::unique_ptr<atUint8[]>(buf);
+    }
 
     inline atUint64 readBytesToBuf(void* buf, atUint64 len) {return readUBytesToBuf(buf, len);}
     virtual atUint64 readUBytesToBuf(void* buf, atUint64 len)=0;

@@ -71,7 +71,7 @@ SkywardSwordFile* SkywardSwordFileReader::read()
 
         for (int i = 0; i < 3; i++)
         {
-            SkywardSwordQuest* q = new SkywardSwordQuest((atUint8*)base::readBytes(0x53C0), 0x53C0);
+            SkywardSwordQuest* q = new SkywardSwordQuest(base::readUBytes(0x53C0), 0x53C0);
             atUint64 pos = base::position();
             // seek to the skip data for this particular quest
             base::seek(0xFB60 + (i * 0x24), SeekOrigin::Begin);

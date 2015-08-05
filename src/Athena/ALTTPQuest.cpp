@@ -79,12 +79,12 @@ ALTTPOverworldEvent* ALTTPQuest::overworldEvent(atUint32 id) const
     return m_overworldEvents[id];
 }
 
-void ALTTPQuest::setInventory(ALTTPInventory* inv)
+void ALTTPQuest::setInventory(const ALTTPInventory& inv)
 {
     m_inventory = inv;
 }
 
-ALTTPInventory* ALTTPQuest::inventory() const
+const ALTTPInventory& ALTTPQuest::inventory() const
 {
     return m_inventory;
 }

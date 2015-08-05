@@ -56,30 +56,22 @@ const atUint32 ZQuestFile::Magic   = 'Z' | ('Q' << 8) | ('S' << 16) | (('0' + ZQ
 ZQuestFile::ZQuestFile()
     : m_game(NoGame),
       m_endian(Endian::LittleEndian),
-      m_data(NULL),
       m_length(0)
 {
     initGameStrings();
 }
 
-ZQuestFile::ZQuestFile(ZQuestFile::Game game, Endian endian, atUint8* data, atUint32 length, const std::string& gameString)
+ZQuestFile::ZQuestFile(ZQuestFile::Game game, Endian endian, std::unique_ptr<atUint8[]>&& data, atUint32 length, const std::string& gameString)
     : m_game(game),
       m_gameString(gameString),
       m_endian(endian),
-      m_data(data),
+      m_data(std::move(data)),
       m_length(length)
 {
     initGameStrings();
 
     if (gameString.empty() && (m_game < GameStrings.size() - 1))
         m_gameString = GameStrings[m_game];
-}
-
-ZQuestFile::~ZQuestFile()
-{
-    delete[] m_data;
-    m_data = NULL;
-    m_length = 0;
 }
 
 void ZQuestFile::setGame(ZQuestFile::Game game)
@@ -107,24 +99,15 @@ Endian ZQuestFile::endian() const
     return m_endian;
 }
 
-void ZQuestFile::setData(atUint8* data, atUint32 length)
+void ZQuestFile::setData(std::unique_ptr<atUint8[]>&& data, atUint32 length)
 {
-    // ensure we're not overwritting our data without freeing first
-    // or assigning unnecessisarily
-    if (!m_data || m_data != data)
-    {
-        delete[] m_data;
-        m_data = new atUint8[length];
-        // Why is this memcpy needed?
-        // I get SIGABRT without it, need to research
-        memcpy(m_data, data, length);
-        m_length = length;
-    }
+    m_data = std::move(data);
+    m_length = length;
 }
 
 atUint8* ZQuestFile::data() const
 {
-    return m_data;
+    return m_data.get();
 }
 
 

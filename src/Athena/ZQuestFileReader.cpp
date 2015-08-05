@@ -45,7 +45,6 @@ ZQuestFile* ZQuestFileReader::read()
     std::string gameString;
     atUint16 BOM;
     atUint32 checksum = 0;
-    atUint8* data;
 
     magic = base::readUint32();
 
@@ -68,7 +67,7 @@ ZQuestFile* ZQuestFileReader::read()
 
     if (version >= ZQUEST_VERSION_CHECK(2, 0, 0))
     {
-        gameString = std::string((const char*)base::readBytes(0x0A), 0x0A);
+        gameString = std::string((const char*)base::readBytes(0x0A).get(), 0x0A);
 
         for (size_t i = 0; i <  ZQuestFile::gameStringList().size(); i++)
         {
@@ -90,13 +89,12 @@ ZQuestFile* ZQuestFileReader::read()
         base::seek(0x0A);
     }
 
-    data = (atUint8*)base::readBytes(compressedLen); // compressedLen is always the total file size
+    std::unique_ptr<atUint8[]> data = base::readUBytes(compressedLen); // compressedLen is always the total file size
 
     if (version >= ZQUEST_VERSION_CHECK(2, 0, 0))
     {
-        if (checksum != Athena::Checksums::crc32(data, compressedLen))
+        if (checksum != Athena::Checksums::crc32(data.get(), compressedLen))
         {
-            delete[] data;
             atError("Checksum mismatch, data corrupt");
             return nullptr;
         }
@@ -110,21 +108,19 @@ ZQuestFile* ZQuestFileReader::read()
     if (compressedLen != uncompressedLen)
     {
         atUint8* dst = new atUint8[uncompressedLen];
-        atUint32 dstLen = io::Compression::decompressZlib(data, compressedLen, dst, uncompressedLen);
+        atUint32 dstLen = io::Compression::decompressZlib(data.get(), compressedLen, dst, uncompressedLen);
 
         if (dstLen != uncompressedLen)
         {
             delete[] dst;
-            delete[] data;
             atError("Error decompressing data");
             return nullptr;
         }
 
-        delete[] data;
-        data = dst;
+        data.reset(dst);
     }
 
-    return new ZQuestFile(game, BOM == 0xFEFF ? Endian::BigEndian : Endian::LittleEndian, data, uncompressedLen, gameString);
+    return new ZQuestFile(game, BOM == 0xFEFF ? Endian::BigEndian : Endian::LittleEndian, std::move(data), uncompressedLen, gameString);
 }
 
 } // io

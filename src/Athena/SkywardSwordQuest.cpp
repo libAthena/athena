@@ -54,26 +54,19 @@ union AmmoValues
     atUint32 value;
 };
 
-SkywardSwordQuest::SkywardSwordQuest(atUint8* data, atUint32 len)
-    : ZQuestFile(ZQuestFile::SS, Endian::BigEndian, data, len),
-      m_skipData(nullptr)
+SkywardSwordQuest::SkywardSwordQuest(std::unique_ptr<atUint8[]>&& data, atUint32 len)
+    : ZQuestFile(ZQuestFile::SS, Endian::BigEndian, std::move(data), len)
 {
 }
 
-void SkywardSwordQuest::setSkipData(const atUint8* data)
+void SkywardSwordQuest::setSkipData(std::unique_ptr<atUint8[]>&& data)
 {
-    if (m_skipData)
-    {
-        delete[] m_skipData;
-        m_skipData = nullptr;
-    }
-
-    m_skipData = (atUint8*)data;
+    m_skipData = std::move(data);
 }
 
 atUint8* SkywardSwordQuest::skipData() const
 {
-    return m_skipData;
+    return m_skipData.get();
 }
 
 void SkywardSwordQuest::setPlayerName(const std::string& name)
@@ -86,7 +79,7 @@ void SkywardSwordQuest::setPlayerName(const std::string& name)
 
     for (atUint32 i = 0; i < 8; i++)
     {
-        atUint16& c = *(atUint16*)(m_data + priv::NAME_OFFSET + (i * 2));
+        atUint16& c = *(atUint16*)(m_data.get() + priv::NAME_OFFSET + (i * 2));
 
         if (i >= val.size())
         {
@@ -105,7 +98,7 @@ std::string SkywardSwordQuest::playerName() const
 
     for (atUint32 i = 0; i < 8; i++)
     {
-        atUint16 c = *(atUint16*)(m_data + priv::NAME_OFFSET + (i * 2));
+        atUint16 c = *(atUint16*)(m_data.get() + priv::NAME_OFFSET + (i * 2));
 
         if (c == 0)
             break;
@@ -120,20 +113,20 @@ std::string SkywardSwordQuest::playerName() const
 
 void SkywardSwordQuest::setRupeeCount(atUint16 value)
 {
-    atUint16& tmp = *(atUint16*)(m_data + priv::RUPEE_COUNT_OFFSET);
+    atUint16& tmp = *(atUint16*)(m_data.get() + priv::RUPEE_COUNT_OFFSET);
     tmp = value;
     utility::BigUint16(tmp);
 }
 
 atUint16 SkywardSwordQuest::rupeeCount()
 {
-    atUint16 ret = *(atUint16*)(m_data + priv::RUPEE_COUNT_OFFSET);
+    atUint16 ret = *(atUint16*)(m_data.get() + priv::RUPEE_COUNT_OFFSET);
     return utility::BigUint16(ret);
 }
 
 void SkywardSwordQuest::setAmmoCount(SkywardSwordQuest::AmmoType type, atUint32 count)
 {
-    AmmoValues& values = *(AmmoValues*)(m_data + priv::AMMO_COUNT_OFFSET);
+    AmmoValues& values = *(AmmoValues*)(m_data.get() + priv::AMMO_COUNT_OFFSET);
     utility::BigUint32(values.value);
 
     switch (type)
@@ -156,7 +149,7 @@ void SkywardSwordQuest::setAmmoCount(SkywardSwordQuest::AmmoType type, atUint32 
 
 atUint32 SkywardSwordQuest::ammoCount(AmmoType type)
 {
-    AmmoValues values = *(AmmoValues*)(m_data + priv::AMMO_COUNT_OFFSET);
+    AmmoValues values = *(AmmoValues*)(m_data.get() + priv::AMMO_COUNT_OFFSET);
     utility::BigUint32(values.value);
 
     switch (type)
@@ -177,12 +170,12 @@ atUint32 SkywardSwordQuest::ammoCount(AmmoType type)
 
 void SkywardSwordQuest::setMaxHP(atUint16 val)
 {
-    *(atUint16*)(m_data + priv::MAX_HP_OFFSET) = utility::BigUint16(val);
+    *(atUint16*)(m_data.get() + priv::MAX_HP_OFFSET) = utility::BigUint16(val);
 }
 
 atUint16 SkywardSwordQuest::maxHP()
 {
-    atUint16 ret = *(atUint16*)(m_data + priv::MAX_HP_OFFSET);
+    atUint16 ret = *(atUint16*)(m_data.get() + priv::MAX_HP_OFFSET);
     return utility::BigUint16(ret);
 }
 
@@ -193,12 +186,12 @@ float SkywardSwordQuest::maxHearts()
 
 void SkywardSwordQuest::setSpawnHP(atUint16 val)
 {
-    *(atUint16*)(m_data + priv::SPAWN_HP_OFFSET) = utility::BigUint16(val);
+    *(atUint16*)(m_data.get() + priv::SPAWN_HP_OFFSET) = utility::BigUint16(val);
 }
 
 atUint16 SkywardSwordQuest::spawnHP()
 {
-    atUint16 ret = *(atUint16*)(m_data + priv::SPAWN_HP_OFFSET);
+    atUint16 ret = *(atUint16*)(m_data.get() + priv::SPAWN_HP_OFFSET);
     return utility::BigUint16(ret);
 }
 
@@ -209,12 +202,12 @@ float SkywardSwordQuest::spawnHearts()
 
 void SkywardSwordQuest::setCurrentHP(atUint16 val)
 {
-    *(atUint16*)(m_data + priv::CURRENT_HP_OFFSET) = utility::BigUint16(val);
+    *(atUint16*)(m_data.get() + priv::CURRENT_HP_OFFSET) = utility::BigUint16(val);
 }
 
 atUint16 SkywardSwordQuest::currentHP()
 {
-    atUint16 ret = *(atUint16*)(m_data + priv::CURRENT_HP_OFFSET);
+    atUint16 ret = *(atUint16*)(m_data.get() + priv::CURRENT_HP_OFFSET);
     return utility::BigUint16(ret);
 }
 
@@ -225,22 +218,22 @@ float SkywardSwordQuest::currentHearts()
 
 std::string SkywardSwordQuest::currentLocation()
 {
-    return std::string((char*)m_data + priv::CURRENT_LOCATION_OFFSET);
+    return std::string((char*)m_data.get() + priv::CURRENT_LOCATION_OFFSET);
 }
 
 std::string SkywardSwordQuest::currentArea()
 {
-    return std::string((char*)m_data + priv::CURRENT_AREA_OFFSET);
+    return std::string((char*)m_data.get() + priv::CURRENT_AREA_OFFSET);
 }
 
 std::string SkywardSwordQuest::currentLocationCopy()
 {
-    return std::string((char*)m_data + priv::CURRENT_LOCATION_COPY_OFFSET);
+    return std::string((char*)m_data.get() + priv::CURRENT_LOCATION_COPY_OFFSET);
 }
 
 atUint32 SkywardSwordQuest::slotChecksum()
 {
-    atUint32 ret = *(atUint32*)(m_data + priv::CHECKSUM_OFFSET);
+    atUint32 ret = *(atUint32*)(m_data.get() + priv::CHECKSUM_OFFSET);
     utility::BigUint32(ret);
 
     return ret;
@@ -248,7 +241,7 @@ atUint32 SkywardSwordQuest::slotChecksum()
 
 atUint32 SkywardSwordQuest::skipChecksum()
 {
-    atUint32 ret = *(atUint32*)(m_skipData + priv::SKIP_CHECKSUM_OFFSET);
+    atUint32 ret = *(atUint32*)(m_skipData.get() + priv::SKIP_CHECKSUM_OFFSET);
     utility::BigUint32(ret);
 
     return ret;
@@ -256,23 +249,23 @@ atUint32 SkywardSwordQuest::skipChecksum()
 
 void SkywardSwordQuest::fixChecksums()
 {
-    atUint32 checksum = Checksums::crc32(m_data, priv::CHECKSUM_OFFSET);
+    atUint32 checksum = Checksums::crc32(m_data.get(), priv::CHECKSUM_OFFSET);
     utility::BigUint32(checksum);
-    *(atUint32*)(m_data + priv::CHECKSUM_OFFSET) = checksum;
+    *(atUint32*)(m_data.get() + priv::CHECKSUM_OFFSET) = checksum;
 
-    checksum = Checksums::crc32(m_skipData, priv::SKIP_CHECKSUM_OFFSET);
+    checksum = Checksums::crc32(m_skipData.get(), priv::SKIP_CHECKSUM_OFFSET);
     utility::BigUint32(checksum);
-    *(atUint32*)(m_skipData + priv::SKIP_CHECKSUM_OFFSET) = checksum;
+    *(atUint32*)(m_skipData.get() + priv::SKIP_CHECKSUM_OFFSET) = checksum;
 }
 
 void SkywardSwordQuest::setNew(bool isNew)
 {
-    *(bool*)(m_data + priv::ISNEW_OFFSET) = isNew;
+    *(bool*)(m_data.get() + priv::ISNEW_OFFSET) = isNew;
 }
 
 bool SkywardSwordQuest::isNew() const
 {
-    return *(bool*)(m_data + priv::ISNEW_OFFSET);
+    return *(bool*)(m_data.get() + priv::ISNEW_OFFSET);
 }
 
 } // zelda

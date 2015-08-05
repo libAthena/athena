@@ -34,7 +34,7 @@
             Seeds
         };
 
-        SkywardSwordQuest(atUint8* data, atUint32 len);
+        SkywardSwordQuest(std::unique_ptr<atUint8[]>&& data, atUint32 len);
 
         void setPlayerName(const std::string& name);
         std::string playerName() const;
@@ -56,7 +56,7 @@
         std::string currentArea();
         std::string currentLocationCopy();
 
-        void setSkipData(const atUint8* data);
+        void setSkipData(std::unique_ptr<atUint8[]>&& data);
         atUint8* skipData() const;
 
 
@@ -67,7 +67,7 @@
         void setNew(bool isNew);
         bool isNew() const;
     private:
-        atUint8* m_skipData;
+        std::unique_ptr<atUint8[]> m_skipData;
     };
 
 

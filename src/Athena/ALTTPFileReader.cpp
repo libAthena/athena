@@ -68,7 +68,7 @@ ALTTPFile* ALTTPFileReader::readFile()
 
         quest->setOverworldEvents(owEvents);
 
-        quest->setInventory((ALTTPInventory*)base::readBytes(sizeof(ALTTPInventory)));
+        quest->setInventory(*(ALTTPInventory*)base::readBytes(sizeof(ALTTPInventory)).get());
         quest->setRupeeMax(base::readUint16());
         quest->setRupeeCurrent(base::readUint16());
         quest->setCompasses(readDungeonFlags());
@@ -109,8 +109,8 @@ ALTTPFile* ALTTPFileReader::readFile()
         abilities.Read = (abilitiesByte >> 6) & 1;
         abilities.Unknown2 = (abilitiesByte >> 7) & 1;
         quest->setAbilityFlags(abilities);
-        quest->setCrystals((ALTTPCrystals&)*base::readBytes(sizeof(ALTTPCrystals)));
-        quest->setMagicUsage((ALTTPMagicUsage&)*base::readBytes(sizeof(ALTTPMagicUsage)));
+        quest->setCrystals(*(ALTTPCrystals*)base::readBytes(sizeof(ALTTPCrystals)).get());
+        quest->setMagicUsage(*(ALTTPMagicUsage*)base::readBytes(sizeof(ALTTPMagicUsage)).get());
 
         j = 0x10;
 
@@ -122,11 +122,11 @@ ALTTPFile* ALTTPFileReader::readFile()
         quest->setDungeonKeys(dungeonKeys);
         base::seek(0x039);
         quest->setProgressIndicator((ALTTPProgressIndicator)base::readByte());
-        quest->setProgressFlags1((ALTTPProgressFlags1&)*base::readBytes(sizeof(ALTTPProgressFlags1)));
+        quest->setProgressFlags1(*(ALTTPProgressFlags1*)base::readBytes(sizeof(ALTTPProgressFlags1)).get());
         quest->setMapIcon((ALTTPMapIcon)base::readByte());
         quest->setStartLocation((ALTTPStartLocation)base::readByte());
-        quest->setProgressFlags2((ALTTPProgressFlags2&)*base::readBytes(sizeof(ALTTPProgressFlags2)));
-        quest->setLightDarkWorldIndicator((ALTTPLightDarkWorldIndicator&)*base::readBytes(1));
+        quest->setProgressFlags2(*(ALTTPProgressFlags2*)base::readBytes(sizeof(ALTTPProgressFlags2)).get());
+        quest->setLightDarkWorldIndicator(*(ALTTPLightDarkWorldIndicator*)base::readBytes(1).get());
         base::seek(1);
         quest->setTagAlong((ALTTPTagAlong)base::readByte());
 

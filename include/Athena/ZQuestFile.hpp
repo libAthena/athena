@@ -21,6 +21,7 @@
 #include "Athena/Global.hpp"
 #include <string>
 #include <vector>
+#include <memory>
 
 #define ZQUEST_VERSION_CHECK(major, minor, revision) \
     (major | (minor << 8) | (revision << 16))
@@ -98,8 +99,7 @@ public:
      * \param data
      * \param length
      */
-    ZQuestFile(Game game, Endian endian, atUint8* data, atUint32 length, const std::string& gameString = std::string());
-    ~ZQuestFile();
+    ZQuestFile(Game game, Endian endian, std::unique_ptr<atUint8[]>&& data, atUint32 length, const std::string& gameString = std::string());
 
     /*!
      * \brief setGame
@@ -130,7 +130,7 @@ public:
      * \param data   The data to assign
      * \param length The length of the data
      */
-    void setData(atUint8* data, atUint32 length);
+    void setData(std::unique_ptr<atUint8[]>&& data, atUint32 length);
 
     /*!
      * \brief data
@@ -156,7 +156,7 @@ protected:
     Game        m_game;
     std::string m_gameString;
     Endian      m_endian;
-    atUint8*    m_data;
+    std::unique_ptr<atUint8[]> m_data;
     atUint32    m_length;
 
     // Game strings support

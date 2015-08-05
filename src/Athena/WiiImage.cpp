@@ -22,24 +22,16 @@
 namespace Athena
 {
 
-WiiImage::WiiImage(atUint32 width, atUint32 height, atUint8* data) :
+WiiImage::WiiImage(atUint32 width, atUint32 height, std::unique_ptr<atUint8[]>&& data) :
     m_width(width),
     m_height(height),
-    m_data(data)
+    m_data(std::move(data))
 {
-}
-
-WiiImage::~WiiImage()
-{
-    if (m_data)
-        delete[] m_data;
-
-    m_data = NULL;
 }
 
 atUint8* WiiImage::data()
 {
-    return m_data;
+    return m_data.get();
 }
 
 atUint32 WiiImage::width() const
@@ -72,7 +64,7 @@ atUint8* WiiImage::toRGBA()
             {
                 for (x = x1; x < (x1 + 4); x++)
                 {
-                    atUint16 oldpixel = *(atUint16*)(m_data + ((iv++) * 2));
+                    atUint16 oldpixel = *(atUint16*)(m_data.get() + ((iv++) * 2));
                     //if((x >= m_width) || (y >= m_height))
                     //        continue;
                     oldpixel = utility::swapU16(oldpixel);
