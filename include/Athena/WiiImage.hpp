@@ -17,6 +17,7 @@
 #ifndef WIIIMAGE_HPP
 #define WIIIMAGE_HPP
 
+#include <memory>
 #include "Athena/Types.hpp"
 
 namespace Athena
@@ -38,12 +39,7 @@ public:
      * \param height
      * \param data
      */
-    WiiImage(atUint32 width, atUint32 height, atUint8* data);
-
-    /*!
-     * \brief ~WiiImage
-     */
-    ~WiiImage();
+    WiiImage(atUint32 width, atUint32 height, std::unique_ptr<atUint8[]>&& data);
 
     /*!
      * \brief setWidth
@@ -90,7 +86,7 @@ public:
 private:
     atUint32 m_width;
     atUint32 m_height;
-    atUint8* m_data;
+    std::unique_ptr<atUint8[]> m_data;
 };
 
 } // zelda

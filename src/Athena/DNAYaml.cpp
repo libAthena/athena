@@ -122,8 +122,7 @@ std::unique_ptr<YAMLNode> YAMLDocReader::ParseEvents(yaml_parser_t* doc)
             if (nodeStack.empty())
             {
                 atWarning("YAML parser stack empty; skipping scalar node");
-                yaml_event_delete(&event);
-                continue;
+                break;
             }
             std::unique_ptr<YAMLNode> newScalar(new YAMLNode(YAML_SCALAR_NODE));
             newScalar->m_scalarString.assign((char*)event.data.scalar.value, event.data.scalar.length);
@@ -236,7 +235,7 @@ bool YAMLDocWriter::RecursiveFinish(yaml_emitter_t* doc, const YAMLNode& node)
             goto err;
         for (const auto& item : node.m_seqChildren)
         {
-            if (!RecursiveFinish(doc, *item.get()))
+            if (!RecursiveFinish(doc, *item))
                 goto err;
         }
         if (!yaml_sequence_end_event_initialize(&event) ||
@@ -252,7 +251,7 @@ bool YAMLDocWriter::RecursiveFinish(yaml_emitter_t* doc, const YAMLNode& node)
         {
             if (!EmitKeyScalar(doc, item.first.c_str()))
                 goto err;
-            if (!RecursiveFinish(doc, *item.second.get()))
+            if (!RecursiveFinish(doc, *item.second))
                 goto err;
         }
         event.type = YAML_MAPPING_END_EVENT;

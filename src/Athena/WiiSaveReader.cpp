@@ -125,7 +125,7 @@ WiiBanner* WiiSaveReader::readBanner()
 {
     atUint8* dec = new atUint8[0xF0C0];
     memset(dec, 0, 0xF0C0);
-    atUint8* data = (atUint8*)base::readBytes(0xF0C0);
+    std::unique_ptr<atUint8[]> data = base::readUBytes(0xF0C0);
     atUint8* oldData = base::data();
     atUint64 oldPos = base::position();
     atUint64 oldLen = base::length();
@@ -140,7 +140,7 @@ WiiBanner* WiiSaveReader::readBanner()
     std::cout << "Decrypting: banner.bin...";
     std::unique_ptr<IAES> aes = NewAES();
     aes->setKey(SD_KEY);
-    aes->decrypt(tmpIV, data, dec, 0xF0C0);
+    aes->decrypt(tmpIV, data.get(), dec, 0xF0C0);
     std::cout << "done" << std::endl;
 
     memset(md5, 0, 16);
@@ -260,10 +260,10 @@ WiiBanner* WiiSaveReader::readBanner()
 
 WiiImage* WiiSaveReader::readImage(atUint32 width, atUint32 height)
 {
-    atUint8* image = (atUint8*)base::readBytes(width * height * 2);
+    std::unique_ptr<atUint8[]> image = base::readUBytes(width * height * 2);
 
-    if (!utility::isEmpty((atInt8*)image, width * height * 2))
-        return new WiiImage(width, height, image);
+    if (!utility::isEmpty((atInt8*)image.get(), width * height * 2))
+        return new WiiImage(width, height, std::move(image));
 
     return NULL;
 }
@@ -276,7 +276,6 @@ WiiFile* WiiSaveReader::readFile()
     atUint8 attributes;
     atUint8 type;
     std::string name;
-    atUint8* filedata;
     WiiFile* ret;
 
     atUint32 magic = base::readUint32();
@@ -291,27 +290,26 @@ WiiFile* WiiSaveReader::readFile()
     permissions = base::readByte();
     attributes  = base::readByte();
     type        = (WiiFile::Type)base::readByte();
-    name        = std::string((const char*)base::readBytes(0x45));
+    name        = std::string((const char*)base::readBytes(0x45).get());
     ret         = new WiiFile(std::string(name));
     ret->setPermissions(permissions);
     ret->setAttributes(attributes);
     ret->setType((WiiFile::Type)type);
-    atUint8* iv = (atUint8*)base::readBytes(0x10);
+    std::unique_ptr<atUint8[]> iv = base::readUBytes(0x10);
     base::seek(0x20);
 
     if (type == WiiFile::File)
     {
         // Read file data
         int roundedLen = (fileLen + 63) & ~63;
-        filedata = (atUint8*)base::readBytes(roundedLen);
+        std::unique_ptr<atUint8[]> filedata = base::readUBytes(roundedLen);
 
         // Decrypt file
         std::cout << "Decrypting: " << ret->filename() << "...";
         atUint8* decData = new atUint8[roundedLen];
         std::unique_ptr<IAES> aes = NewAES();
         aes->setKey(SD_KEY);
-        aes->decrypt(iv, filedata, decData, roundedLen);
-        delete filedata;
+        aes->decrypt(iv.get(), filedata.get(), decData, roundedLen);
         ret->setData(decData);
         ret->setLength(fileLen);
         std::cout << "done" << std::endl;
@@ -325,18 +323,18 @@ void WiiSaveReader::readCerts(atUint32 totalSize)
 {
     std::cout << "Reading certs..." << std::endl;
     atUint32 dataSize = totalSize - 0x340;
-    atUint8* sig    = (atUint8*)base::readBytes(0x40);
-    atUint8* ngCert = (atUint8*)base::readBytes(0x180);
-    atUint8* apCert = (atUint8*)base::readBytes(0x180);
+    std::unique_ptr<atUint8[]> sig    = base::readUBytes(0x40);
+    std::unique_ptr<atUint8[]> ngCert = base::readUBytes(0x180);
+    std::unique_ptr<atUint8[]> apCert = base::readUBytes(0x180);
     base::seek(0xF0C0, SeekOrigin::Begin);
-    atUint8* data   = (atUint8*)base::readBytes(dataSize);
+    std::unique_ptr<atUint8[]> data   = base::readUBytes(dataSize);
     atUint8* hash;
 
-    hash = getSha1(data, dataSize);
+    hash = getSha1(data.get(), dataSize);
     atUint8* hash2 = getSha1(hash, 20);
 
     std::cout << "validating..." << std::endl;
-    std::cout << (check_ec(ngCert, apCert, sig, hash2) ? "ok" : "invalid") << "...";
+    std::cout << (check_ec(ngCert.get(), apCert.get(), sig.get(), hash2) ? "ok" : "invalid") << "...";
     std::cout << "done" << std::endl;
 }
 

@@ -97,13 +97,13 @@ public:
      * \brief setInventory
      * \param inv
      */
-    void setInventory(ALTTPInventory* inv);
+    void setInventory(const ALTTPInventory& inv);
 
     /*!
      * \brief inventory
      * \return
      */
-    ALTTPInventory* inventory() const;
+    const ALTTPInventory& inventory() const;
 
     /*!
      * \brief setRupeeMax
@@ -641,7 +641,7 @@ public:
 private:
     std::vector<ALTTPRoomFlags*>      m_roomFlags;
     std::vector<ALTTPOverworldEvent*> m_overworldEvents;
-    ALTTPInventory*                   m_inventory;
+    ALTTPInventory                    m_inventory;
     atUint16                          m_rupeeMax;
     atUint16                          m_rupeeCurrent;
     ALTTPDungeonItemFlags             m_compasses;

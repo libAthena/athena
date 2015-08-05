@@ -9,7 +9,7 @@ namespace Athena
 class MCSlot : public ZQuestFile
 {
 public:
-    MCSlot(atUint8* data, atUint32 length);
+    MCSlot(std::unique_ptr<atUint8[]>&& data, atUint32 length);
 };
 
 } // Athena

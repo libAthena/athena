@@ -56,7 +56,7 @@ void ALTTPFileWriter::writeFile(ALTTPFile* file)
             writeOverworldEvent(quest->overworldEvent(j));
         }
 
-        base::writeBytes((atInt8*)quest->inventory(), sizeof(ALTTPInventory));
+        base::writeBytes((atInt8*)&quest->inventory(), sizeof(ALTTPInventory));
         base::writeUint16(quest->rupeeMax());
         base::writeUint16(quest->rupeeCurrent());
         writeDungeonItems(quest->compasses());
