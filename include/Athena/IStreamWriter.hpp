@@ -74,12 +74,14 @@ public:
      * \param byte The value to write
      */
     inline void writeUByte(atUint8 val) {writeUBytes(&val, 1);}
+    inline void writeVal(atUint8 val) {return writeUByte(val);}
 
     /*! \brief Writes a byte at the current position and advances the position by one byte.
      * \param byte The value to write
      * \throw IOException
      */
     inline void writeByte(atInt8 val) {writeUByte(val);}
+    inline void writeVal(atInt8 val) {return writeByte(val);}
 
     /*! \brief Writes the given buffer with the specified length, buffers can be bigger than the length
      *  however it's undefined behavior to try and write a buffer which is smaller than the given length.
@@ -111,6 +113,7 @@ public:
             utility::LittleInt16(val);
         writeUBytes((atUint8*)&val, 2);
     }
+    inline void writeVal(atInt16 val) {return writeInt16(val);}
 
     /*! \brief Writes an Uint16 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings
@@ -119,6 +122,7 @@ public:
      *  \param val The value to write to the buffer
      */
     inline void writeUint16(atUint16 val) {writeInt16(val);}
+    inline void writeVal(atUint16 val) {return writeUint16(val);}
 
     /*! \brief Writes an Int32 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -134,6 +138,7 @@ public:
             utility::LittleInt32(val);
         writeUBytes((atUint8*)&val, 4);
     }
+    inline void writeVal(atInt32 val) {return writeInt32(val);}
 
     /*! \brief Writes an Uint32 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -142,6 +147,7 @@ public:
      *  \param val The value to write to the buffer
      */
     inline void writeUint32(atUint32 val) {writeInt32(val);}
+    inline void writeVal(atUint32 val) {return writeUint32(val);}
 
     /*! \brief Writes an Int64 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -157,6 +163,7 @@ public:
             utility::LittleInt64(val);
         writeUBytes((atUint8*)&val, 8);
     }
+    inline void writeVal(atInt64 val) {return writeInt64(val);}
 
     /*! \brief Writes an Uint64 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -165,6 +172,7 @@ public:
      *  \param val The value to write to the buffer
      */
     inline void writeUint64(atUint64 val) {writeInt64(val);}
+    inline void writeVal(atUint64 val) {return writeUint64(val);}
 
     /*! \brief Writes an float to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -180,6 +188,7 @@ public:
             utility::LittleFloat(val);
         writeUBytes((atUint8*)&val, 4);
     }
+    inline void writeVal(float val) {return writeFloat(val);}
 
     /*! \brief Writes an double to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -195,6 +204,7 @@ public:
             utility::LittleDouble(val);
         writeUBytes((atUint8*)&val, 8);
     }
+    inline void writeVal(double val) {return writeDouble(val);}
 
     /*! \brief Writes an bool to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -203,6 +213,7 @@ public:
      *  \param val The value to write to the buffer
      */
     inline void writeBool(bool val) {writeUBytes((atUint8*)&val, 1);}
+    inline void writeVal(bool val) {return writeBool(val);}
 
     /*! \brief Writes an atVec2f (8 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -224,6 +235,7 @@ public:
         }
         writeUBytes((atUint8*)&vec, 8);
     }
+    inline void writeVal(atVec2f val) {return writeVec2f(val);}
 
     /*! \brief Writes an atVec3f (12 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -247,6 +259,7 @@ public:
         }
         writeUBytes((atUint8*)&vec, 12);
     }
+    inline void writeVal(atVec3f val) {return writeVec3f(val);}
 
     /*! \brief Writes an atVec4f (16 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -272,6 +285,7 @@ public:
         }
         writeUBytes((atUint8*)&vec, 16);
     }
+    inline void writeVal(atVec4f val) {return writeVec4f(val);}
 
     /*! \brief Converts a UTF8 string to a wide-char string in the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -351,6 +365,7 @@ public:
             }
         }
     }
+    inline void writeVal(const std::string& val) {return writeString(val);}
 
     /*! \brief Writes an wstring to the buffer and advances the buffer.
      *
@@ -385,11 +400,34 @@ public:
             }
         }
     }
+    inline void writeVal(const std::wstring& val) {return writeWString(val);}
 
     inline void fill(atUint8 val, atUint64 length)
     {for (atUint64 l=0 ; l<length ; ++l) writeUBytes(&val, 1);}
     inline void fill(atInt8 val, atUint64 length)
     {fill((atUint8)val, length);}
+
+    template <class T>
+    void enumerate(const std::vector<T>& vector,
+                   typename std::enable_if<std::is_arithmetic<T>::value ||
+                                           std::is_same<T, atVec2f>::value ||
+                                           std::is_same<T, atVec3f>::value ||
+                                           std::is_same<T, atVec4f>::value>::type* = 0)
+    {
+        for (const T& item : vector)
+            writeVal(item);
+    }
+
+    template <class T>
+    void enumerate(const std::vector<T>& vector,
+                   typename std::enable_if<!std::is_arithmetic<T>::value &&
+                                           !std::is_same<T, atVec2f>::value &&
+                                           !std::is_same<T, atVec3f>::value &&
+                                           !std::is_same<T, atVec4f>::value>::type* = 0)
+    {
+        for (const T& item : vector)
+            item.write(*this);
+    }
 
 protected:
     Endian      m_endian;

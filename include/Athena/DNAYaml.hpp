@@ -434,6 +434,14 @@ public:
             m_subStack.pop_back();
     }
 
+    template <class T>
+    void enumerate(const char* name, T& record)
+    {
+        enterSubRecord(name);
+        record.fromYAML(*this);
+        leaveSubRecord();
+    }
+
     void enterSubVector(const char* name)
     {
         YAMLNode* curSub = m_subStack.back();
@@ -456,6 +464,58 @@ public:
             m_subStack.pop_back();
             m_seqTrackerStack.pop_back();
         }
+    }
+
+    template <class T>
+    void enumerate(const char* name, std::vector<T>& vector, size_t count,
+                   typename std::enable_if<!std::is_arithmetic<T>::value &&
+                                           !std::is_same<T, atVec2f>::value &&
+                                           !std::is_same<T, atVec3f>::value &&
+                                           !std::is_same<T, atVec4f>::value>::type* = 0)
+    {
+        vector.clear();
+        vector.reserve(count);
+        enterSubVector(name);
+        for (int i=0 ; i<count ; ++i)
+        {
+            vector.emplace_back();
+            enterSubRecord(nullptr);
+            vector.back().fromYAML(*this);
+            leaveSubRecord();
+        }
+        leaveSubVector();
+    }
+
+    template <class T>
+    void enumerate(const char* name, std::vector<T>& vector, size_t count,
+                   typename std::enable_if<std::is_arithmetic<T>::value ||
+                                           std::is_same<T, atVec2f>::value ||
+                                           std::is_same<T, atVec3f>::value ||
+                                           std::is_same<T, atVec4f>::value>::type* = 0)
+    {
+        vector.clear();
+        vector.reserve(count);
+        enterSubVector(name);
+        for (int i=0 ; i<count ; ++i)
+            vector.emplace_back(readVal<T>(name));
+        leaveSubVector();
+    }
+
+    template <class T>
+    void enumerate(const char* name, std::vector<T>& vector, size_t count,
+                   std::function<void(YAMLDocReader&, T&)> readf)
+    {
+        vector.clear();
+        vector.reserve(count);
+        enterSubVector(name);
+        for (int i=0 ; i<count ; ++i)
+        {
+            vector.emplace_back();
+            enterSubRecord(nullptr);
+            readf(*this, vector.back());
+            leaveSubRecord();
+        }
+        leaveSubVector();
     }
 
     template <typename RETURNTYPE>
@@ -621,6 +681,14 @@ public:
         }
     }
 
+    template <class T>
+    void enumerate(const char* name, T& record)
+    {
+        enterSubRecord(name);
+        record.toYAML(*this);
+        leaveSubRecord();
+    }
+
     void enterSubVector(const char* name)
     {
         YAMLNode* curSub = m_subStack.back();
@@ -639,6 +707,50 @@ public:
     {
         if (m_subStack.size() > 1)
             m_subStack.pop_back();
+    }
+
+    template <class T>
+    void enumerate(const char* name, const std::vector<T>& vector,
+                   typename std::enable_if<!std::is_arithmetic<T>::value &&
+                                           !std::is_same<T, atVec2f>::value &&
+                                           !std::is_same<T, atVec3f>::value &&
+                                           !std::is_same<T, atVec4f>::value>::type* = 0)
+    {
+        enterSubVector(name);
+        for (const T& item : vector)
+        {
+            enterSubRecord(nullptr);
+            item.toYAML(*this);
+            leaveSubRecord();
+        }
+        leaveSubVector();
+    }
+
+    template <class T>
+    void enumerate(const char* name, const std::vector<T>& vector,
+                   typename std::enable_if<std::is_arithmetic<T>::value ||
+                                           std::is_same<T, atVec2f>::value ||
+                                           std::is_same<T, atVec3f>::value ||
+                                           std::is_same<T, atVec4f>::value>::type* = 0)
+    {
+        enterSubVector(name);
+        for (T item : vector)
+            writeVal<T>(nullptr, item);
+        leaveSubVector();
+    }
+
+    template <class T>
+    void enumerate(const char* name, const std::vector<T>& vector,
+                   std::function<void(YAMLDocWriter&, const T&)> writef)
+    {
+        enterSubVector(name);
+        for (const T& item : vector)
+        {
+            enterSubRecord(nullptr);
+            writef(*this, item);
+            leaveSubRecord();
+        }
+        leaveSubVector();
     }
 
     bool finish(yaml_emitter_t* docOut)
