@@ -718,27 +718,9 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
 
                             fileOut << "    /* " << fieldName << " */\n";
                             if (!p)
-                            {
-                                fileOut << "    " << fieldName << ".clear();\n"
-                                           "    " << fieldName << ".reserve(" << sizeExpr << ");\n";
-                                if (isDNAType)
-                                    fileOut << "    for (size_t i=0 ; i<(" << sizeExpr << ") ; ++i)\n"
-                                               "    {\n"
-                                               "        " << fieldName << ".emplace_back();\n"
-                                               "        " << fieldName << ".back()." << ioOp << "\n"
-                                               "    }\n";
-                                else
-                                    fileOut << "    for (size_t i=0 ; i<(" << sizeExpr << ") ; ++i)\n"
-                                               "        " << fieldName << ".push_back(" << ioOp << ");\n";
-                            }
+                                fileOut << "    " ATHENA_DNA_READER ".enumerate(" << fieldName << ", " << sizeExpr << ");\n";
                             else
-                            {
-                                fileOut << "    for (const auto& elem : " << fieldName << ")\n";
-                                if (isDNAType)
-                                    fileOut << "        elem." << ioOp << "\n";
-                                else
-                                    fileOut << "        " << ioOp << "\n";
-                            }
+                                fileOut << "    " ATHENA_DNA_WRITER ".enumerate(" << fieldName << ");\n";
 
                         }
                         else if (!tsDecl->getName().compare("Buffer"))
@@ -1357,42 +1339,9 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
 
                             fileOut << "    /* " << fieldName << " */\n";
                             if (!p)
-                            {
-                                fileOut << "    " << fieldName << ".clear();\n"
-                                           "    " << fieldName << ".reserve(" << sizeExpr << ");\n"
-                                           "    " ATHENA_YAML_READER ".enterSubVector(\"" << fieldNameBare << "\");\n";
-                                if (isDNAType)
-                                    fileOut << "    for (size_t i=0 ; i<(" << sizeExpr << ") ; ++i)\n"
-                                               "    {\n"
-                                               "        " << fieldName << ".emplace_back();\n"
-                                               "        " ATHENA_YAML_READER ".enterSubRecord(nullptr);\n"
-                                               "        " << fieldName << ".back()." << ioOp << "\n"
-                                               "        " ATHENA_YAML_READER ".leaveSubRecord();\n"
-                                               "    }\n";
-                                else
-                                    fileOut << "    for (size_t i=0 ; i<(" << sizeExpr << ") ; ++i)\n"
-                                               "        " << fieldName << ".push_back(" << ioOp << ");\n";
-                                fileOut << "    " ATHENA_YAML_READER ".leaveSubVector();\n";
-                            }
+                                fileOut << "    " ATHENA_YAML_READER ".enumerate(\"" << fieldNameBare << "\", " << fieldName << ", " << sizeExpr << ");\n";
                             else
-                            {
-                                fileOut << "    " ATHENA_YAML_WRITER ".enterSubVector(\"" << fieldNameBare << "\");\n";
-                                if (isDNAType)
-                                {
-                                    fileOut << "    for (const auto& elem : " << fieldName << ")\n"
-                                               "    {\n"
-                                               "        " ATHENA_YAML_WRITER ".enterSubRecord(nullptr);\n"
-                                               "        elem." << ioOp << "\n"
-                                               "        " ATHENA_YAML_WRITER ".leaveSubRecord();\n"
-                                               "    }\n";
-                                }
-                                else
-                                {
-                                    fileOut << "    for (const auto& elem : " << fieldName << ")\n"
-                                               "        " << ioOp << "\n";
-                                }
-                                fileOut << "    " ATHENA_YAML_WRITER ".leaveSubVector();\n";
-                            }
+                                fileOut << "    " ATHENA_YAML_WRITER ".enumerate(\"" << fieldNameBare << "\", " << fieldName << ");\n";
 
                         }
                         else if (!tsDecl->getName().compare("Buffer"))
@@ -1496,16 +1445,12 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                             if (!p)
                             {
                                 fileOut << "    /* " << fieldName << " */\n"
-                                           "    " ATHENA_YAML_READER ".enterSubRecord(\"" << fieldNameBare << "\");\n"
-                                           "    " << fieldName << ".fromYAML(" ATHENA_YAML_READER ");\n"
-                                           "    " ATHENA_YAML_READER ".leaveSubRecord();\n";
+                                           "    " ATHENA_YAML_READER ".enumerate(\"" << fieldNameBare << "\", " << fieldName << ");\n";
                             }
                             else
                             {
                                 fileOut << "    /* " << fieldName << " */\n"
-                                           "    " ATHENA_YAML_WRITER ".enterSubRecord(\"" << fieldNameBare << "\");\n"
-                                           "    " << fieldName << ".toYAML(" ATHENA_YAML_WRITER ");\n"
-                                           "    " ATHENA_YAML_WRITER ".leaveSubRecord();\n";
+                                           "    " ATHENA_YAML_WRITER ".enumerate(\"" << fieldNameBare << "\", " << fieldName << ");\n";
                             }
                             break;
                         }
