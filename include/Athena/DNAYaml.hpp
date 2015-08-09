@@ -45,6 +45,13 @@ struct YAMLNode
     std::vector<std::unique_ptr<YAMLNode>> m_seqChildren;
     std::vector<std::pair<std::string, std::unique_ptr<YAMLNode>>> m_mapChildren;
     YAMLNode(yaml_node_type_t type) : m_type(type) {}
+    inline const YAMLNode* findMapChild(const char* key) const
+    {
+        for (const auto& item : m_mapChildren)
+            if (!item.first.compare(key))
+                return item.second.get();
+        return nullptr;
+    }
 };
 
 template <typename RETURNTYPE>
