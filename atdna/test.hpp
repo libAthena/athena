@@ -5,7 +5,6 @@ typedef io::DNAYaml<BigEndian> BigDNA;
 
 struct TESTSubFile : public BigDNA
 {
-    DECL_DNA
     DECL_YAML
     Value<atUint32> sub1;
     Value<atUint32> sub2;
@@ -13,7 +12,6 @@ struct TESTSubFile : public BigDNA
 
 struct TESTSubClassFile : public TESTSubFile
 {
-    DECL_DNA
     DECL_YAML
     Value<atUint32> sub3;
     Value<atUint32> sub4;
@@ -21,7 +19,6 @@ struct TESTSubClassFile : public TESTSubFile
 
 struct TESTSubSubClassFile : public TESTSubClassFile
 {
-    DECL_DNA
     DECL_YAML
     Value<atUint32> sub5;
     Value<atUint32> sub6;
@@ -29,7 +26,6 @@ struct TESTSubSubClassFile : public TESTSubClassFile
 
 struct TESTFile : public BigDNA
 {
-    DECL_DNA
     DECL_YAML
     Value<bool> varBool;
     Value<atUint32> var32;
@@ -39,25 +35,24 @@ struct TESTFile : public BigDNA
 
     struct TESTNestedSubFile : public BigDNA
     {
-        DECL_DNA
         DECL_YAML
         Value<atUint32> nestSub1;
         Value<atUint32> nestSub2;
     } nestedSubFile; 
 
-    TESTSubFile subFile;
+    using TESTSubFileUsing = TESTSubFile;
+    TESTSubFileUsing subFile;
 
     Align<4> align;
 
     struct TESTExplicitSubFile : public BigDNA
     {
-        DECL_EXPLICIT_DNA
         DECL_YAML
         Value<atUint32> explSub1;
         Value<atUint32> explSub2;
     } explSubFile;
 
-    Value<atUint32> arrCount[2];
+    Value<atUint32, LittleEndian> arrCount[2];
     Vector<atUint32, DNA_COUNT(arrCount[0])> array;
 
     Seek<21, Current> seek;

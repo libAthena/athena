@@ -115,6 +115,20 @@ public:
     }
     inline void writeVal(atInt16 val) {return writeInt16(val);}
 
+    inline void writeInt16Little(atInt16 val)
+    {
+        utility::LittleInt16(val);
+        writeUBytes((atUint8*)&val, 2);
+    }
+    inline void writeValLittle(atInt16 val) {return writeInt16Little(val);}
+
+    inline void writeInt16Big(atInt16 val)
+    {
+        utility::BigInt16(val);
+        writeUBytes((atUint8*)&val, 2);
+    }
+    inline void writeValBig(atInt16 val) {return writeInt16Big(val);}
+
     /*! \brief Writes an Uint16 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings
      *
@@ -123,6 +137,12 @@ public:
      */
     inline void writeUint16(atUint16 val) {writeInt16(val);}
     inline void writeVal(atUint16 val) {return writeUint16(val);}
+
+    inline void writeUint16Little(atUint16 val) {writeInt16Little(val);}
+    inline void writeValLittle(atUint16 val) {return writeUint16Little(val);}
+
+    inline void writeUint16Big(atUint16 val) {writeInt16Big(val);}
+    inline void writeValBig(atUint16 val) {return writeUint16Big(val);}
 
     /*! \brief Writes an Int32 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -140,6 +160,20 @@ public:
     }
     inline void writeVal(atInt32 val) {return writeInt32(val);}
 
+    inline void writeInt32Little(atInt32 val)
+    {
+        utility::LittleInt32(val);
+        writeUBytes((atUint8*)&val, 4);
+    }
+    inline void writeValLittle(atInt32 val) {return writeInt32Little(val);}
+
+    inline void writeInt32Big(atInt32 val)
+    {
+        utility::BigInt32(val);
+        writeUBytes((atUint8*)&val, 4);
+    }
+    inline void writeValBig(atInt32 val) {return writeInt32Big(val);}
+
     /*! \brief Writes an Uint32 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
@@ -148,6 +182,12 @@ public:
      */
     inline void writeUint32(atUint32 val) {writeInt32(val);}
     inline void writeVal(atUint32 val) {return writeUint32(val);}
+
+    inline void writeUint32Little(atUint32 val) {writeInt32Little(val);}
+    inline void writeValLittle(atUint32 val) {return writeUint32Little(val);}
+
+    inline void writeUint32Big(atUint32 val) {writeInt32Big(val);}
+    inline void writeValBig(atUint32 val) {return writeUint32Big(val);}
 
     /*! \brief Writes an Int64 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -165,6 +205,20 @@ public:
     }
     inline void writeVal(atInt64 val) {return writeInt64(val);}
 
+    inline void writeInt64Little(atInt64 val)
+    {
+        utility::LittleInt64(val);
+        writeUBytes((atUint8*)&val, 8);
+    }
+    inline void writeValLittle(atInt64 val) {return writeInt64Little(val);}
+
+    inline void writeInt64Big(atInt64 val)
+    {
+        utility::BigInt64(val);
+        writeUBytes((atUint8*)&val, 8);
+    }
+    inline void writeValBig(atInt64 val) {return writeInt64Big(val);}
+
     /*! \brief Writes an Uint64 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
@@ -173,6 +227,12 @@ public:
      */
     inline void writeUint64(atUint64 val) {writeInt64(val);}
     inline void writeVal(atUint64 val) {return writeUint64(val);}
+
+    inline void writeUint64Little(atUint64 val) {writeInt64Little(val);}
+    inline void writeValLittle(atUint64 val) {return writeUint64Little(val);}
+
+    inline void writeUint64Big(atUint64 val) {writeInt64Big(val);}
+    inline void writeValBig(atUint64 val) {return writeUint64Big(val);}
 
     /*! \brief Writes an float to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -190,6 +250,20 @@ public:
     }
     inline void writeVal(float val) {return writeFloat(val);}
 
+    inline void writeFloatLittle(float val)
+    {
+        utility::LittleFloat(val);
+        writeUBytes((atUint8*)&val, 4);
+    }
+    inline void writeValLittle(float val) {return writeFloatLittle(val);}
+
+    inline void writeFloatBig(float val)
+    {
+        utility::BigFloat(val);
+        writeUBytes((atUint8*)&val, 4);
+    }
+    inline void writeValBig(float val) {return writeFloatBig(val);}
+
     /*! \brief Writes an double to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
@@ -205,6 +279,20 @@ public:
         writeUBytes((atUint8*)&val, 8);
     }
     inline void writeVal(double val) {return writeDouble(val);}
+
+    inline void writeDoubleLittle(double val)
+    {
+        utility::LittleDouble(val);
+        writeUBytes((atUint8*)&val, 8);
+    }
+    inline void writeValLittle(double val) {return writeDoubleLittle(val);}
+
+    inline void writeDoubleBig(double val)
+    {
+        utility::BigDouble(val);
+        writeUBytes((atUint8*)&val, 8);
+    }
+    inline void writeValBig(double val) {return writeDoubleBig(val);}
 
     /*! \brief Writes an bool to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -237,6 +325,22 @@ public:
     }
     inline void writeVal(atVec2f val) {return writeVec2f(val);}
 
+    inline void writeVec2fLittle(atVec2f vec)
+    {
+        utility::LittleFloat(vec.vec[0]);
+        utility::LittleFloat(vec.vec[1]);
+        writeUBytes((atUint8*)&vec, 8);
+    }
+    inline void writeValLittle(atVec2f val) {return writeVec2fLittle(val);}
+
+    inline void writeVec2fBig(atVec2f vec)
+    {
+        utility::BigFloat(vec.vec[0]);
+        utility::BigFloat(vec.vec[1]);
+        writeUBytes((atUint8*)&vec, 8);
+    }
+    inline void writeValBig(atVec2f val) {return writeVec2fBig(val);}
+
     /*! \brief Writes an atVec3f (12 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
@@ -260,6 +364,24 @@ public:
         writeUBytes((atUint8*)&vec, 12);
     }
     inline void writeVal(atVec3f val) {return writeVec3f(val);}
+
+    inline void writeVec3fLittle(atVec3f vec)
+    {
+        utility::LittleFloat(vec.vec[0]);
+        utility::LittleFloat(vec.vec[1]);
+        utility::LittleFloat(vec.vec[2]);
+        writeUBytes((atUint8*)&vec, 12);
+    }
+    inline void writeValLittle(atVec3f val) {return writeVec3fLittle(val);}
+
+    inline void writeVec3fBig(atVec3f vec)
+    {
+        utility::BigFloat(vec.vec[0]);
+        utility::BigFloat(vec.vec[1]);
+        utility::BigFloat(vec.vec[2]);
+        writeUBytes((atUint8*)&vec, 12);
+    }
+    inline void writeValBig(atVec3f val) {return writeVec3fBig(val);}
 
     /*! \brief Writes an atVec4f (16 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -286,6 +408,26 @@ public:
         writeUBytes((atUint8*)&vec, 16);
     }
     inline void writeVal(atVec4f val) {return writeVec4f(val);}
+
+    inline void writeVec4fLittle(atVec4f vec)
+    {
+        utility::LittleFloat(vec.vec[0]);
+        utility::LittleFloat(vec.vec[1]);
+        utility::LittleFloat(vec.vec[2]);
+        utility::LittleFloat(vec.vec[3]);
+        writeUBytes((atUint8*)&vec, 16);
+    }
+    inline void writeValLittle(atVec4f val) {return writeVec4fLittle(val);}
+
+    inline void writeVec4fBig(atVec4f vec)
+    {
+        utility::BigFloat(vec.vec[0]);
+        utility::BigFloat(vec.vec[1]);
+        utility::BigFloat(vec.vec[2]);
+        utility::BigFloat(vec.vec[3]);
+        writeUBytes((atUint8*)&vec, 16);
+    }
+    inline void writeValBig(atVec4f val) {return writeVec4fBig(val);}
 
     /*! \brief Converts a UTF8 string to a wide-char string in the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
@@ -328,6 +470,82 @@ public:
                 }
 
                 writeUint16(chr);
+            }
+        }
+    }
+
+    inline void writeStringAsWStringLittle(const std::string& str, atInt32 fixedLen = -1)
+    {
+        std::string tmpStr = "\xEF\xBB\xBF" + str;
+
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+        std::wstring tmp = conv.from_bytes(tmpStr);
+
+        if (fixedLen < 0)
+        {
+            for (atUint16 chr : tmp)
+            {
+                if (chr != 0xFEFF)
+                    writeUint16Little(chr);
+            }
+            writeUint16Little(0);
+        }
+        else
+        {
+            auto it = tmp.begin();
+            for (atInt32 i=0 ; i<fixedLen ; ++i)
+            {
+                atUint16 chr;
+                if (it == tmp.end())
+                    chr = 0;
+                else
+                    chr = *it++;
+
+                if (chr == 0xFEFF)
+                {
+                    --i;
+                    continue;
+                }
+
+                writeUint16Little(chr);
+            }
+        }
+    }
+
+    inline void writeStringAsWStringBig(const std::string& str, atInt32 fixedLen = -1)
+    {
+        std::string tmpStr = "\xEF\xBB\xBF" + str;
+
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+        std::wstring tmp = conv.from_bytes(tmpStr);
+
+        if (fixedLen < 0)
+        {
+            for (atUint16 chr : tmp)
+            {
+                if (chr != 0xFEFF)
+                    writeUint16Big(chr);
+            }
+            writeUint16Big(0);
+        }
+        else
+        {
+            auto it = tmp.begin();
+            for (atInt32 i=0 ; i<fixedLen ; ++i)
+            {
+                atUint16 chr;
+                if (it == tmp.end())
+                    chr = 0;
+                else
+                    chr = *it++;
+
+                if (chr == 0xFEFF)
+                {
+                    --i;
+                    continue;
+                }
+
+                writeUint16Big(chr);
             }
         }
     }
@@ -402,6 +620,64 @@ public:
     }
     inline void writeVal(const std::wstring& val) {return writeWString(val);}
 
+    inline void writeWStringLittle(const std::wstring& str, atInt32 fixedLen = -1)
+    {
+        if (fixedLen < 0)
+        {
+            for (atUint16 c : str)
+            {
+                writeUint16Little(c);
+
+                if (c == L'\0')
+                    break;
+            }
+            writeUint16Little(0);
+        }
+        else
+        {
+            auto it = str.begin();
+            for (atInt32 i=0 ; i<fixedLen ; ++i)
+            {
+                atUint16 chr;
+                if (it == str.end())
+                    chr = 0;
+                else
+                    chr = *it++;
+                writeUint16Little(chr);
+            }
+        }
+    }
+    inline void writeValLittle(const std::wstring& val) {return writeWStringLittle(val);}
+
+    inline void writeWStringBig(const std::wstring& str, atInt32 fixedLen = -1)
+    {
+        if (fixedLen < 0)
+        {
+            for (atUint16 c : str)
+            {
+                writeUint16Big(c);
+
+                if (c == L'\0')
+                    break;
+            }
+            writeUint16Big(0);
+        }
+        else
+        {
+            auto it = str.begin();
+            for (atInt32 i=0 ; i<fixedLen ; ++i)
+            {
+                atUint16 chr;
+                if (it == str.end())
+                    chr = 0;
+                else
+                    chr = *it++;
+                writeUint16Big(chr);
+            }
+        }
+    }
+    inline void writeValBig(const std::wstring& val) {return writeWStringBig(val);}
+
     inline void fill(atUint8 val, atUint64 length)
     {for (atUint64 l=0 ; l<length ; ++l) writeUBytes(&val, 1);}
     inline void fill(atInt8 val, atUint64 length)
@@ -416,6 +692,28 @@ public:
     {
         for (const T& item : vector)
             writeVal(item);
+    }
+
+    template <class T>
+    void enumerateLittle(const std::vector<T>& vector,
+                         typename std::enable_if<std::is_arithmetic<T>::value ||
+                                                 std::is_same<T, atVec2f>::value ||
+                                                 std::is_same<T, atVec3f>::value ||
+                                                 std::is_same<T, atVec4f>::value>::type* = 0)
+    {
+        for (const T& item : vector)
+            writeValLittle(item);
+    }
+
+    template <class T>
+    void enumerateBig(const std::vector<T>& vector,
+                      typename std::enable_if<std::is_arithmetic<T>::value ||
+                                              std::is_same<T, atVec2f>::value ||
+                                              std::is_same<T, atVec3f>::value ||
+                                              std::is_same<T, atVec4f>::value>::type* = 0)
+    {
+        for (const T& item : vector)
+            writeValBig(item);
     }
 
     template <class T>
