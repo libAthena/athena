@@ -178,6 +178,7 @@ if(WIN32 AND NOT CYGWIN)
 install(FILES Athena.ico DESTINATION ${INSTALL_LIB_DIR} COMPONENT Athena)
 elseif(UNIX)
 configure_file(libAthena.pc.in libAthena.pc @ONLY)
+configure_file(PKGBUILD.in ${CMAKE_CURRENT_SOURCE_DIR}/PKGBUILD @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/libAthena.pc 
         DESTINATION ${INSTALL_LIB_DIR}/pkgconfig COMPONENT Athena)
 endif()
