@@ -135,6 +135,26 @@ public:
     inline atInt16 readVal(typename std::enable_if<std::is_same<T, atInt16>::value>::type* = 0)
     {return readInt16();}
 
+    inline atInt16 readInt16Little()
+    {
+        atInt16 val;
+        readUBytesToBuf(&val, 2);
+        return utility::LittleInt16(val);
+    }
+    template <class T>
+    inline atInt16 readValLittle(typename std::enable_if<std::is_same<T, atInt16>::value>::type* = 0)
+    {return readInt16Little();}
+
+    inline atInt16 readInt16Big()
+    {
+        atInt16 val;
+        readUBytesToBuf(&val, 2);
+        return utility::BigInt16(val);
+    }
+    template <class T>
+    inline atInt16 readValBig(typename std::enable_if<std::is_same<T, atInt16>::value>::type* = 0)
+    {return readInt16Big();}
+
     /*! \brief Reads a Uint16 and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position
      *
@@ -148,6 +168,26 @@ public:
     template <class T>
     inline atUint16 readVal(typename std::enable_if<std::is_same<T, atUint16>::value>::type* = 0)
     {return readUint16();}
+
+    inline atUint16 readUint16Little()
+    {
+        atUint16 val;
+        readUBytesToBuf(&val, 2);
+        return utility::LittleUint16(val);
+    }
+    template <class T>
+    inline atUint16 readValLittle(typename std::enable_if<std::is_same<T, atUint16>::value>::type* = 0)
+    {return readUint16Little();}
+
+    inline atUint16 readUint16Big()
+    {
+        atUint16 val;
+        readUBytesToBuf(&val, 2);
+        return utility::BigUint16(val);
+    }
+    template <class T>
+    inline atUint16 readValBig(typename std::enable_if<std::is_same<T, atUint16>::value>::type* = 0)
+    {return readUint16Big();}
 
     /*! \brief Reads a Int32 and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position
@@ -167,6 +207,26 @@ public:
     inline atInt32 readVal(typename std::enable_if<std::is_same<T, atInt32>::value>::type* = 0)
     {return readInt32();}
 
+    inline atInt32 readInt32Little()
+    {
+        atInt32 val;
+        readUBytesToBuf(&val, 4);
+        return utility::LittleInt32(val);
+    }
+    template <class T>
+    inline atInt32 readValLittle(typename std::enable_if<std::is_same<T, atInt32>::value>::type* = 0)
+    {return readInt32Little();}
+
+    inline atInt32 readInt32Big()
+    {
+        atInt32 val;
+        readUBytesToBuf(&val, 4);
+        return utility::BigInt32(val);
+    }
+    template <class T>
+    inline atInt32 readValBig(typename std::enable_if<std::is_same<T, atInt32>::value>::type* = 0)
+    {return readInt32Big();}
+
     /*! \brief Reads a Uint32 and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position
      *
@@ -180,6 +240,26 @@ public:
     template <class T>
     inline atUint32 readVal(typename std::enable_if<std::is_same<T, atUint32>::value>::type* = 0)
     {return readUint32();}
+
+    inline atUint32 readUint32Little()
+    {
+        atUint32 val;
+        readUBytesToBuf(&val, 4);
+        return utility::LittleUint32(val);
+    }
+    template <class T>
+    inline atInt32 readValLittle(typename std::enable_if<std::is_same<T, atUint32>::value>::type* = 0)
+    {return readUint32Little();}
+
+    inline atUint32 readUint32Big()
+    {
+        atUint32 val;
+        readUBytesToBuf(&val, 4);
+        return utility::BigUint32(val);
+    }
+    template <class T>
+    inline atUint32 readValBig(typename std::enable_if<std::is_same<T, atUint32>::value>::type* = 0)
+    {return readUint32Big();}
 
     /*! \brief Reads a Int64 and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position
@@ -199,6 +279,26 @@ public:
     inline atInt64 readVal(typename std::enable_if<std::is_same<T, atInt64>::value>::type* = 0)
     {return readInt64();}
 
+    inline atInt64 readInt64Little()
+    {
+        atInt64 val;
+        readUBytesToBuf(&val, 8);
+        return utility::LittleInt64(val);
+    }
+    template <class T>
+    inline atInt64 readValLittle(typename std::enable_if<std::is_same<T, atInt64>::value>::type* = 0)
+    {return readInt64Little();}
+
+    inline atInt64 readInt64Big()
+    {
+        atInt64 val;
+        readUBytesToBuf(&val, 8);
+        return utility::BigInt64(val);
+    }
+    template <class T>
+    inline atInt64 readValBig(typename std::enable_if<std::is_same<T, atInt64>::value>::type* = 0)
+    {return readInt64Big();}
+
     /*! \brief Reads a Uint64 and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position
      *
@@ -212,6 +312,26 @@ public:
     template <class T>
     inline atUint64 readVal(typename std::enable_if<std::is_same<T, atUint64>::value>::type* = 0)
     {return readUint64();}
+
+    inline atUint64 readUint64Little()
+    {
+        atUint64 val;
+        readUBytesToBuf(&val, 8);
+        return utility::LittleUint64(val);
+    }
+    template <class T>
+    inline atUint64 readValLittle(typename std::enable_if<std::is_same<T, atUint64>::value>::type* = 0)
+    {return readUint64Little();}
+
+    inline atUint64 readUint64Big()
+    {
+        atUint64 val;
+        readUBytesToBuf(&val, 8);
+        return utility::BigUint64(val);
+    }
+    template <class T>
+    inline atUint64 readValBig(typename std::enable_if<std::is_same<T, atUint64>::value>::type* = 0)
+    {return readUint64Big();}
 
     /*! \brief Reads a float and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position
@@ -231,6 +351,26 @@ public:
     inline float readVal(typename std::enable_if<std::is_same<T, float>::value>::type* = 0)
     {return readFloat();}
 
+    inline float readFloatLittle()
+    {
+        float val;
+        readUBytesToBuf(&val, 4);
+        return utility::LittleFloat(val);
+    }
+    template <class T>
+    inline float readValLittle(typename std::enable_if<std::is_same<T, float>::value>::type* = 0)
+    {return readFloatLittle();}
+
+    inline float readFloatBig()
+    {
+        float val;
+        readUBytesToBuf(&val, 4);
+        return utility::BigFloat(val);
+    }
+    template <class T>
+    inline float readValBig(typename std::enable_if<std::is_same<T, float>::value>::type* = 0)
+    {return readFloatBig();}
+
     /*! \brief Reads a double and swaps to proper endianness depending on platform
      *  and Stream settings, and advances the current position
      *
@@ -248,6 +388,26 @@ public:
     template <class T>
     inline double readVal(typename std::enable_if<std::is_same<T, double>::value>::type* = 0)
     {return readDouble();}
+
+    inline double readDoubleLittle()
+    {
+        double val;
+        readUBytesToBuf(&val, 8);
+        return utility::LittleDouble(val);
+    }
+    template <class T>
+    inline double readValLittle(typename std::enable_if<std::is_same<T, double>::value>::type* = 0)
+    {return readDoubleLittle();}
+
+    inline double readDoubleBig()
+    {
+        double val;
+        readUBytesToBuf(&val, 8);
+        return utility::BigDouble(val);
+    }
+    template <class T>
+    inline double readValBig(typename std::enable_if<std::is_same<T, double>::value>::type* = 0)
+    {return readDoubleBig();}
 
     /*! \brief Reads a bool and advances the current position
      *
@@ -289,6 +449,30 @@ public:
     inline atVec2f readVal(typename std::enable_if<std::is_same<T, atVec2f>::value>::type* = 0)
     {return readVec2f();}
 
+    inline atVec2f readVec2fLittle()
+    {
+        atVec2f val;
+        readUBytesToBuf(&val, 8);
+        utility::LittleFloat(val.vec[0]);
+        utility::LittleFloat(val.vec[1]);
+        return val;
+    }
+    template <class T>
+    inline atVec2f readValLittle(typename std::enable_if<std::is_same<T, atVec2f>::value>::type* = 0)
+    {return readVec2fLittle();}
+
+    inline atVec2f readVec2fBig()
+    {
+        atVec2f val;
+        readUBytesToBuf(&val, 8);
+        utility::BigFloat(val.vec[0]);
+        utility::BigFloat(val.vec[1]);
+        return val;
+    }
+    template <class T>
+    inline atVec2f readValBig(typename std::enable_if<std::is_same<T, atVec2f>::value>::type* = 0)
+    {return readVec2fBig();}
+
     /*! \brief Reads an atVec3f (12 bytes) and advances the current position
      *
      *  \return atVec3f The value at the current address
@@ -315,6 +499,32 @@ public:
     template <class T>
     inline atVec3f readVal(typename std::enable_if<std::is_same<T, atVec3f>::value>::type* = 0)
     {return readVec3f();}
+
+    inline atVec3f readVec3fLittle()
+    {
+        atVec3f val;
+        readUBytesToBuf(&val, 12);
+        utility::LittleFloat(val.vec[0]);
+        utility::LittleFloat(val.vec[1]);
+        utility::LittleFloat(val.vec[2]);
+        return val;
+    }
+    template <class T>
+    inline atVec3f readValLittle(typename std::enable_if<std::is_same<T, atVec3f>::value>::type* = 0)
+    {return readVec3fLittle();}
+
+    inline atVec3f readVec3fBig()
+    {
+        atVec3f val;
+        readUBytesToBuf(&val, 12);
+        utility::BigFloat(val.vec[0]);
+        utility::BigFloat(val.vec[1]);
+        utility::BigFloat(val.vec[2]);
+        return val;
+    }
+    template <class T>
+    inline atVec3f readValBig(typename std::enable_if<std::is_same<T, atVec3f>::value>::type* = 0)
+    {return readVec3fBig();}
 
     /*! \brief Reads an atVec4f (16 bytes) and advances the current position
      *
@@ -345,6 +555,34 @@ public:
     inline atVec4f readVal(typename std::enable_if<std::is_same<T, atVec4f>::value>::type* = 0)
     {return readVec4f();}
 
+    inline atVec4f readVec4fLittle()
+    {
+        atVec4f val;
+        readUBytesToBuf(&val, 16);
+        utility::LittleFloat(val.vec[0]);
+        utility::LittleFloat(val.vec[1]);
+        utility::LittleFloat(val.vec[2]);
+        utility::LittleFloat(val.vec[3]);
+        return val;
+    }
+    template <class T>
+    inline atVec4f readValLittle(typename std::enable_if<std::is_same<T, atVec4f>::value>::type* = 0)
+    {return readVec4fLittle();}
+
+    inline atVec4f readVec4fBig()
+    {
+        atVec4f val;
+        readUBytesToBuf(&val, 16);
+        utility::BigFloat(val.vec[0]);
+        utility::BigFloat(val.vec[1]);
+        utility::BigFloat(val.vec[2]);
+        utility::BigFloat(val.vec[3]);
+        return val;
+    }
+    template <class T>
+    inline atVec4f readValBig(typename std::enable_if<std::is_same<T, atVec4f>::value>::type* = 0)
+    {return readVec4fBig();}
+
     /*! \brief Reads a wide-char string, converts to UTF8 and advances the position in the file
      *
      *  \param fixedLen If non-negative, this is a fixed-length string read
@@ -367,6 +605,56 @@ public:
 
             tmp.push_back(chr);
             chr = readUint16();
+        }
+
+        if (fixedLen >= 0 && i < fixedLen)
+            seek(fixedLen - i);
+
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+        return conv.to_bytes(tmp);
+    }
+
+    inline std::string readWStringAsStringLittle(atInt32 fixedLen = -1)
+    {
+        std::wstring tmp;
+        atUint16 chr = readUint16Little();
+
+        atInt32 i;
+        for (i = 0 ;; ++i)
+        {
+            if (fixedLen >= 0 && i >= fixedLen - 1)
+                break;
+
+            if (!chr)
+                break;
+
+            tmp.push_back(chr);
+            chr = readUint16Little();
+        }
+
+        if (fixedLen >= 0 && i < fixedLen)
+            seek(fixedLen - i);
+
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+        return conv.to_bytes(tmp);
+    }
+
+    inline std::string readWStringAsStringBig(atInt32 fixedLen = -1)
+    {
+        std::wstring tmp;
+        atUint16 chr = readUint16Big();
+
+        atInt32 i;
+        for (i = 0 ;; ++i)
+        {
+            if (fixedLen >= 0 && i >= fixedLen - 1)
+                break;
+
+            if (!chr)
+                break;
+
+            tmp.push_back(chr);
+            chr = readUint16Big();
         }
 
         if (fixedLen >= 0 && i < fixedLen)
@@ -438,6 +726,56 @@ public:
     inline std::wstring readVal(typename std::enable_if<std::is_same<T, std::wstring>::value>::type* = 0)
     {return readWString();}
 
+    inline std::wstring readWStringLittle(atInt32 fixedLen = -1)
+    {
+        std::wstring ret;
+        atUint16 chr = readUint16Little();
+
+        atInt32 i;
+        for (i = 1 ; chr != 0 ; ++i)
+        {
+            ret += chr;
+
+            if (fixedLen >= 0 && i >= fixedLen)
+                break;
+
+            chr = readUint16Little();
+        }
+
+        if (fixedLen >= 0 && i < fixedLen)
+            seek(fixedLen - i);
+
+        return ret;
+    }
+    template <class T>
+    inline std::wstring readValLittle(typename std::enable_if<std::is_same<T, std::wstring>::value>::type* = 0)
+    {return readWStringLittle();}
+
+    inline std::wstring readWStringBig(atInt32 fixedLen = -1)
+    {
+        std::wstring ret;
+        atUint16 chr = readUint16Big();
+
+        atInt32 i;
+        for (i = 1 ; chr != 0 ; ++i)
+        {
+            ret += chr;
+
+            if (fixedLen >= 0 && i >= fixedLen)
+                break;
+
+            chr = readUint16Big();
+        }
+
+        if (fixedLen >= 0 && i < fixedLen)
+            seek(fixedLen - i);
+
+        return ret;
+    }
+    template <class T>
+    inline std::wstring readValBig(typename std::enable_if<std::is_same<T, std::wstring>::value>::type* = 0)
+    {return readWStringBig();}
+
     template<class T>
     void enumerate(std::vector<T>& vector, size_t count,
                    typename std::enable_if<std::is_arithmetic<T>::value ||
@@ -449,6 +787,32 @@ public:
         vector.reserve(count);
         for (size_t i=0 ; i<count ; ++i)
             vector.emplace_back(readVal<T>());
+    }
+
+    template<class T>
+    void enumerateLittle(std::vector<T>& vector, size_t count,
+                         typename std::enable_if<std::is_arithmetic<T>::value ||
+                                                 std::is_same<T, atVec2f>::value ||
+                                                 std::is_same<T, atVec3f>::value ||
+                                                 std::is_same<T, atVec4f>::value>::type* = 0)
+    {
+        vector.clear();
+        vector.reserve(count);
+        for (size_t i=0 ; i<count ; ++i)
+            vector.emplace_back(readValLittle<T>());
+    }
+
+    template<class T>
+    void enumerateBig(std::vector<T>& vector, size_t count,
+                      typename std::enable_if<std::is_arithmetic<T>::value ||
+                                              std::is_same<T, atVec2f>::value ||
+                                              std::is_same<T, atVec3f>::value ||
+                                              std::is_same<T, atVec4f>::value>::type* = 0)
+    {
+        vector.clear();
+        vector.reserve(count);
+        for (size_t i=0 ; i<count ; ++i)
+            vector.emplace_back(readValBig<T>());
     }
 
     template<class T>

@@ -123,7 +123,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
 
     std::string GetOpString(const clang::Type* theType, unsigned width,
                             const std::string& fieldName, bool writerPass,
-                            bool& isDNATypeOut)
+                            const std::string& funcPrefix, bool& isDNATypeOut)
     {
         isDNATypeOut = false;
         if (writerPass)
@@ -140,29 +140,29 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                     if (width == 8)
                         return ATHENA_DNA_WRITER ".writeUByte(" + fieldName + ");";
                     else if (width == 16)
-                        return ATHENA_DNA_WRITER ".writeUint16(" + fieldName + ");";
+                        return ATHENA_DNA_WRITER ".writeUint16" + funcPrefix + "(" + fieldName + ");";
                     else if (width == 32)
-                        return ATHENA_DNA_WRITER ".writeUint32(" + fieldName + ");";
+                        return ATHENA_DNA_WRITER ".writeUint32" + funcPrefix + "(" + fieldName + ");";
                     else if (width == 64)
-                        return ATHENA_DNA_WRITER ".writeUint64(" + fieldName + ");";
+                        return ATHENA_DNA_WRITER ".writeUint64" + funcPrefix + "(" + fieldName + ");";
                 }
                 else if (bType->isSignedInteger())
                 {
                     if (width == 8)
                         return ATHENA_DNA_WRITER ".writeByte(" + fieldName + ");";
                     else if (width == 16)
-                        return ATHENA_DNA_WRITER ".writeInt16(" + fieldName + ");";
+                        return ATHENA_DNA_WRITER ".writeInt16" + funcPrefix + "(" + fieldName + ");";
                     else if (width == 32)
-                        return ATHENA_DNA_WRITER ".writeInt32(" + fieldName + ");";
+                        return ATHENA_DNA_WRITER ".writeInt32" + funcPrefix + "(" + fieldName + ");";
                     else if (width == 64)
-                        return ATHENA_DNA_WRITER ".writeInt64(" + fieldName + ");";
+                        return ATHENA_DNA_WRITER ".writeInt64" + funcPrefix + "(" + fieldName + ");";
                 }
                 else if (bType->isFloatingPoint())
                 {
                     if (width == 32)
-                        return ATHENA_DNA_WRITER ".writeFloat(" + fieldName + ");";
+                        return ATHENA_DNA_WRITER ".writeFloat" + funcPrefix + "(" + fieldName + ");";
                     else if (width == 64)
-                        return ATHENA_DNA_WRITER ".writeDouble(" + fieldName + ");";
+                        return ATHENA_DNA_WRITER ".writeDouble" + funcPrefix + "(" + fieldName + ");";
                 }
             }
             else if (theType->isRecordType())
@@ -180,11 +180,11 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                 context.getTypeInfo(eType).Width != 32)
                                 continue;
                             if (vType->getNumElements() == 2)
-                                return ATHENA_DNA_WRITER ".writeVec2f(" + fieldName + ");";
+                                return ATHENA_DNA_WRITER ".writeVec2f" + funcPrefix + "(" + fieldName + ");";
                             else if (vType->getNumElements() == 3)
-                                return ATHENA_DNA_WRITER ".writeVec3f(" + fieldName + ");";
+                                return ATHENA_DNA_WRITER ".writeVec3f" + funcPrefix + "(" + fieldName + ");";
                             else if (vType->getNumElements() == 4)
-                                return ATHENA_DNA_WRITER ".writeVec4f(" + fieldName + ");";
+                                return ATHENA_DNA_WRITER ".writeVec4f" + funcPrefix + "(" + fieldName + ");";
                         }
                     }
                 }
@@ -211,29 +211,29 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                     if (width == 8)
                         return ATHENA_DNA_READER ".readUByte()";
                     else if (width == 16)
-                        return ATHENA_DNA_READER ".readUint16()";
+                        return ATHENA_DNA_READER ".readUint16" + funcPrefix + "()";
                     else if (width == 32)
-                        return ATHENA_DNA_READER ".readUint32()";
+                        return ATHENA_DNA_READER ".readUint32" + funcPrefix + "()";
                     else if (width == 64)
-                        return ATHENA_DNA_READER ".readUint64()";
+                        return ATHENA_DNA_READER ".readUint64" + funcPrefix + "()";
                 }
                 else if (bType->isSignedInteger())
                 {
                     if (width == 8)
                         return ATHENA_DNA_READER ".readByte()";
                     else if (width == 16)
-                        return ATHENA_DNA_READER ".readInt16()";
+                        return ATHENA_DNA_READER ".readInt16" + funcPrefix + "()";
                     else if (width == 32)
-                        return ATHENA_DNA_READER ".readInt32()";
+                        return ATHENA_DNA_READER ".readInt32" + funcPrefix + "()";
                     else if (width == 64)
-                        return ATHENA_DNA_READER ".readInt64()";
+                        return ATHENA_DNA_READER ".readInt64" + funcPrefix + "()";
                 }
                 else if (bType->isFloatingPoint())
                 {
                     if (width == 32)
-                        return ATHENA_DNA_READER ".readFloat()";
+                        return ATHENA_DNA_READER ".readFloat" + funcPrefix + "()";
                     else if (width == 64)
-                        return ATHENA_DNA_READER ".readDouble()";
+                        return ATHENA_DNA_READER ".readDouble" + funcPrefix + "()";
                 }
             }
             else if (theType->isRecordType())
@@ -251,11 +251,11 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                 context.getTypeInfo(eType).Width != 32)
                                 continue;
                             if (vType->getNumElements() == 2)
-                                return ATHENA_DNA_READER ".readVec2f()";
+                                return ATHENA_DNA_READER ".readVec2f" + funcPrefix + "()";
                             else if (vType->getNumElements() == 3)
-                                return ATHENA_DNA_READER ".readVec3f()";
+                                return ATHENA_DNA_READER ".readVec3f" + funcPrefix + "()";
                             else if (vType->getNumElements() == 4)
-                                return ATHENA_DNA_READER ".readVec4f()";
+                                return ATHENA_DNA_READER ".readVec4f" + funcPrefix + "()";
                         }
                     }
                 }
@@ -430,7 +430,6 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 fileOut << "void " << decl->getQualifiedNameAsString() << "::write(Athena::io::IStreamWriter& " ATHENA_DNA_WRITER ") const\n{\n";
             else
                 fileOut << "void " << decl->getQualifiedNameAsString() << "::read(Athena::io::IStreamReader& " ATHENA_DNA_READER ")\n{\n";
-            int currentEndian = -1;
 
             if (baseDNA.size())
             {
@@ -445,7 +444,8 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 clang::QualType qualType = field->getType();
                 clang::TypeInfo regTypeInfo = context.getTypeInfo(qualType);
                 const clang::Type* regType = qualType.getTypePtrOrNull();
-                if (regType->getTypeClass() == clang::Type::Elaborated)
+                while (regType->getTypeClass() == clang::Type::Elaborated ||
+                       regType->getTypeClass() == clang::Type::Typedef)
                     regType = regType->getUnqualifiedDesugaredType();
 
                 /* Resolve constant array */
@@ -506,24 +506,13 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                 }
                             }
 
-                            clang::QualType templateType;
-                            std::string ioOp;
-                            bool isDNAType = false;
-                            const clang::TemplateArgument* typeArg = nullptr;
                             for (const clang::TemplateArgument& arg : *tsType)
                             {
-                                if (arg.getKind() == clang::TemplateArgument::Type)
-                                {
-                                    typeArg = &arg;
-                                    templateType = arg.getAsType().getCanonicalType();
-                                    const clang::Type* type = arg.getAsType().getCanonicalType().getTypePtr();
-                                    ioOp = GetOpString(type, regTypeInfo.Width, fieldName, p, isDNAType);
-                                }
-                                else if (arg.getKind() == clang::TemplateArgument::Expression)
+                                if (arg.getKind() == clang::TemplateArgument::Expression)
                                 {
                                     const clang::Expr* expr = arg.getAsExpr();
                                     endianExpr = expr;
-                                    if (expr->isIntegerConstantExpr(endian, context))
+                                    if (!expr->isIntegerConstantExpr(endian, context))
                                     {
                                         if (!p)
                                         {
@@ -557,6 +546,27 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                 continue;
                             }
 
+                            std::string funcPrefix;
+                            if (endianVal == 0)
+                                funcPrefix = "Little";
+                            else if (endianVal == 1)
+                                funcPrefix = "Big";
+
+                            clang::QualType templateType;
+                            std::string ioOp;
+                            bool isDNAType = false;
+                            const clang::TemplateArgument* typeArg = nullptr;
+                            for (const clang::TemplateArgument& arg : *tsType)
+                            {
+                                if (arg.getKind() == clang::TemplateArgument::Type)
+                                {
+                                    typeArg = &arg;
+                                    templateType = arg.getAsType().getCanonicalType();
+                                    const clang::Type* type = arg.getAsType().getCanonicalType().getTypePtr();
+                                    ioOp = GetOpString(type, regTypeInfo.Width, fieldName, p, funcPrefix, isDNAType);
+                                }
+                            }
+
                             if (ioOp.empty())
                             {
                                 if (!p)
@@ -566,15 +576,6 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                     diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
                                 }
                                 continue;
-                            }
-
-                            if (currentEndian != endianVal)
-                            {
-                                if (endianVal == 0)
-                                    fileOut << (p ? "    " ATHENA_DNA_WRITER ".setEndian(Athena::LittleEndian);\n" : "    " ATHENA_DNA_READER ".setEndian(Athena::LittleEndian);\n");
-                                else if (endianVal == 1)
-                                    fileOut << (p ? "    " ATHENA_DNA_WRITER ".setEndian(Athena::BigEndian);\n" : "    " ATHENA_DNA_READER ".setEndian(Athena::BigEndian);\n");
-                                currentEndian = endianVal;
                             }
 
                             fileOut << "    /* " << fieldName << " */\n";
@@ -608,25 +609,13 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                 }
                             }
 
-                            clang::QualType templateType;
-                            std::string ioOp;
-                            bool isDNAType = false;
                             std::string sizeExpr;
-                            const clang::TemplateArgument* typeArg = nullptr;
                             const clang::TemplateArgument* sizeArg = nullptr;
                             size_t idx = 0;
                             bool bad = false;
                             for (const clang::TemplateArgument& arg : *tsType)
                             {
-                                if (arg.getKind() == clang::TemplateArgument::Type)
-                                {
-                                    typeArg = &arg;
-                                    templateType = arg.getAsType().getCanonicalType();
-                                    clang::TypeInfo typeInfo = context.getTypeInfo(templateType);
-                                    static const std::string elemStr = "elem";
-                                    ioOp = GetOpString(templateType.getTypePtr(), typeInfo.Width, elemStr, p, isDNAType);
-                                }
-                                else if (arg.getKind() == clang::TemplateArgument::Expression)
+                                if (arg.getKind() == clang::TemplateArgument::Expression)
                                 {
                                     const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
                                     if (idx == 1)
@@ -685,6 +674,28 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                 continue;
                             }
 
+                            std::string funcPrefix;
+                            if (endianVal == 0)
+                                funcPrefix = "Little";
+                            else if (endianVal == 1)
+                                funcPrefix = "Big";
+
+                            clang::QualType templateType;
+                            std::string ioOp;
+                            bool isDNAType = false;
+                            const clang::TemplateArgument* typeArg = nullptr;
+                            for (const clang::TemplateArgument& arg : *tsType)
+                            {
+                                if (arg.getKind() == clang::TemplateArgument::Type)
+                                {
+                                    typeArg = &arg;
+                                    templateType = arg.getAsType().getCanonicalType();
+                                    clang::TypeInfo typeInfo = context.getTypeInfo(templateType);
+                                    static const std::string elemStr = "elem";
+                                    ioOp = GetOpString(templateType.getTypePtr(), typeInfo.Width, elemStr, p, funcPrefix, isDNAType);
+                                }
+                            }
+
                             if (ioOp.empty())
                             {
                                 if (!p)
@@ -707,20 +718,14 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                 continue;
                             }
 
-                            if (currentEndian != endianVal)
-                            {
-                                if (endianVal == 0)
-                                    fileOut << (p ? "    " ATHENA_DNA_WRITER ".setEndian(Athena::LittleEndian);\n" : "    " ATHENA_DNA_READER ".setEndian(Athena::LittleEndian);\n");
-                                else if (endianVal == 1)
-                                    fileOut << (p ? "    " ATHENA_DNA_WRITER ".setEndian(Athena::BigEndian);\n" : "    " ATHENA_DNA_READER ".setEndian(Athena::BigEndian);\n");
-                                currentEndian = endianVal;
-                            }
+                            if (isDNAType)
+                                funcPrefix.clear();
 
                             fileOut << "    /* " << fieldName << " */\n";
                             if (!p)
-                                fileOut << "    " ATHENA_DNA_READER ".enumerate(" << fieldName << ", " << sizeExpr << ");\n";
+                                fileOut << "    " ATHENA_DNA_READER ".enumerate" << funcPrefix << "(" << fieldName << ", " << sizeExpr << ");\n";
                             else
-                                fileOut << "    " ATHENA_DNA_WRITER ".enumerate(" << fieldName << ");\n";
+                                fileOut << "    " ATHENA_DNA_WRITER ".enumerate" << funcPrefix << "(" << fieldName << ");\n";
 
                         }
                         else if (!tsDecl->getName().compare("Buffer"))
@@ -909,21 +914,18 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                 continue;
                             }
 
-                            if (currentEndian != endianVal)
-                            {
-                                if (endianVal == 0)
-                                    fileOut << (p ? "    " ATHENA_DNA_WRITER ".setEndian(Athena::LittleEndian);\n" : "    " ATHENA_DNA_READER ".setEndian(Athena::LittleEndian);\n");
-                                else if (endianVal == 1)
-                                    fileOut << (p ? "    " ATHENA_DNA_WRITER ".setEndian(Athena::BigEndian);\n" : "    " ATHENA_DNA_READER ".setEndian(Athena::BigEndian);\n");
-                                currentEndian = endianVal;
-                            }
+                            std::string funcPrefix;
+                            if (endianVal == 0)
+                                funcPrefix = "Little";
+                            else if (endianVal == 1)
+                                funcPrefix = "Big";
 
                             fileOut << "    /* " << fieldName << " */\n";
                             if (!p)
-                                fileOut << "    " << fieldName << " = " ATHENA_DNA_READER ".readWString(" << sizeExprStr << ");\n";
+                                fileOut << "    " << fieldName << " = " ATHENA_DNA_READER ".readWString" << funcPrefix << "(" << sizeExprStr << ");\n";
                             else
                             {
-                                fileOut << "    " ATHENA_DNA_WRITER ".writeWString(" << fieldName;
+                                fileOut << "    " ATHENA_DNA_WRITER ".writeWString" << funcPrefix << "(" << fieldName;
                                 if (sizeExprStr.size())
                                     fileOut << ", " << sizeExprStr;
                                 fileOut << ");\n";
@@ -931,6 +933,29 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         }
                         else if (!tsDecl->getName().compare("WStringAsString"))
                         {
+                            llvm::APSInt endian(64, -1);
+                            const clang::Expr* endianExpr = nullptr;
+                            if (classParms->size() >= 2)
+                            {
+                                const clang::NamedDecl* endianParm = classParms->getParam(1);
+                                if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
+                                {
+                                    const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
+                                    const clang::Expr* defArg = nttParm->getDefaultArgument();
+                                    endianExpr = defArg;
+                                    if (!defArg->isIntegerConstantExpr(endian, context))
+                                    {
+                                        if (!p)
+                                        {
+                                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
+                                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                            diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
+                                        }
+                                        continue;
+                                    }
+                                }
+                            }
+
                             const clang::Expr* sizeExpr = nullptr;
                             std::string sizeExprStr;
                             for (const clang::TemplateArgument& arg : *tsType)
@@ -957,12 +982,40 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                 }
                             }
 
+
+                            int endianVal = endian.getSExtValue();
+                            if (endianVal != 0 && endianVal != 1)
+                            {
+                                if (!p)
+                                {
+                                    if (endianExpr)
+                                    {
+                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
+                                        diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                        diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
+                                    }
+                                    else
+                                    {
+                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                                        diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                        diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                                    }
+                                }
+                                continue;
+                            }
+
+                            std::string funcPrefix;
+                            if (endianVal == 0)
+                                funcPrefix = "Little";
+                            else if (endianVal == 1)
+                                funcPrefix = "Big";
+
                             fileOut << "    /* " << fieldName << " */\n";
                             if (!p)
-                                fileOut << "    " << fieldName << " = " ATHENA_DNA_READER ".readWStringAsString(" << sizeExprStr << ");\n";
+                                fileOut << "    " << fieldName << " = " ATHENA_DNA_READER ".readWStringAsString" << funcPrefix << "(" << sizeExprStr << ");\n";
                             else
                             {
-                                fileOut << "    " ATHENA_DNA_WRITER ".writeStringAsWString(" << fieldName;
+                                fileOut << "    " ATHENA_DNA_WRITER ".writeStringAsWString" << funcPrefix << "(" << fieldName;
                                 if (sizeExprStr.size())
                                     fileOut << ", " << sizeExprStr;
                                 fileOut << ");\n";
@@ -1131,7 +1184,6 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         {
                             fileOut << "    /* " << fieldName << " */\n"
                                        "    " << fieldName << (p ? ".write(" ATHENA_DNA_WRITER ");\n" : ".read(" ATHENA_DNA_READER ");\n");
-                            currentEndian = -1;
                             break;
                         }
                     }
@@ -1167,7 +1219,8 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 clang::QualType qualType = field->getType();
                 clang::TypeInfo regTypeInfo = context.getTypeInfo(qualType);
                 const clang::Type* regType = qualType.getTypePtrOrNull();
-                if (regType->getTypeClass() == clang::Type::Elaborated)
+                while (regType->getTypeClass() == clang::Type::Elaborated ||
+                       regType->getTypeClass() == clang::Type::Typedef)
                     regType = regType->getUnqualifiedDesugaredType();
 
                 /* Resolve constant array */
