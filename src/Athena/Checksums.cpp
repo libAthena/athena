@@ -8,7 +8,7 @@ namespace Athena
 namespace Checksums
 {
 
-atUint32 crc32(const atUint8* data, atUint64 length, atUint32 seed)
+atUint32 crc32(const atUint8* data, atUint64 length, atUint32 mask, atUint32 seed)
 {
     static const atUint32 crc32Table[256] =
     {
@@ -55,7 +55,7 @@ atUint32 crc32(const atUint8* data, atUint64 length, atUint32 seed)
     while (length--)
         checksum = (checksum >> 8) ^ crc32Table[(checksum & 0xFF) ^ data[pos++]];
 
-    return checksum ^ seed;
+    return checksum ^ mask;
 }
 
 atUint16 crc16CCITT(const atUint8* data, atUint64 length, atUint16 seed, atUint16 final)
