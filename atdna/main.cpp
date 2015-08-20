@@ -126,6 +126,12 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                             const std::string& funcPrefix, bool& isDNATypeOut)
     {
         isDNATypeOut = false;
+        if (theType->isEnumeralType())
+        {
+            clang::EnumType* eType = (clang::EnumType*)theType;
+            clang::EnumDecl* eDecl = eType->getDecl();
+            theType = eDecl->getIntegerType().getCanonicalType().getTypePtr();
+        }
         if (writerPass)
         {
             if (theType->isBuiltinType())
@@ -276,6 +282,12 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                               bool writerPass, bool& isDNATypeOut)
     {
         isDNATypeOut = false;
+        if (theType->isEnumeralType())
+        {
+            clang::EnumType* eType = (clang::EnumType*)theType;
+            clang::EnumDecl* eDecl = eType->getDecl();
+            theType = eDecl->getIntegerType().getCanonicalType().getTypePtr();
+        }
         if (writerPass)
         {
             if (theType->isBuiltinType())
