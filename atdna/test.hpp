@@ -6,6 +6,14 @@ typedef io::DNAYaml<BigEndian> BigDNA;
 struct TESTSubFile : public BigDNA
 {
     DECL_YAML
+    enum ETest : atUint8
+    {
+        ZERO,
+        ONE,
+        TWO,
+        THREE
+    };
+    Value<ETest> varE;
     Value<atUint32> sub1;
     Value<atUint32> sub2;
 };
