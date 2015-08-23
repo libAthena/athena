@@ -21,12 +21,15 @@ namespace io
 class MemoryReader : public IStreamReader
 {
 public:
+    virtual ~MemoryReader();
+
     /*! \brief This constructor references an existing buffer to read from.
      *
      *   \param data The existing buffer
      *   \param length The length of the existing buffer
+     *   \param takeOwnership Memory will be freed with the reader if set
      */
-    MemoryReader(const atUint8* data, atUint64 length);
+    MemoryReader(const atUint8* data, atUint64 length, bool takeOwnership=false);
 
     /*! \brief Sets the buffers position relative to the specified position.<br />
      *         It seeks relative to the current position by default.
@@ -57,9 +60,10 @@ public:
      *         as Stream now owns the address, this is done to keep memory usage down.
      *  \param data The new buffer.
      *  \param length The length of the new buffer.
+     *  \param takeOwnership Memory will be freed with the reader if set
      *  \throw IOException
      */
-    void setData(const atUint8* data, atUint64 length);
+    void setData(const atUint8* data, atUint64 length, bool takeOwnership=false);
 
 
     /*! \brief Returns a copy of the current buffer.<br />
@@ -82,6 +86,7 @@ protected:
     const atUint8*   m_data;
     atUint64         m_length;
     atUint64         m_position;
+    bool             m_owns;
 };
 
 class MemoryCopyReader : public MemoryReader

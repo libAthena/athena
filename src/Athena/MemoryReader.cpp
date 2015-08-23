@@ -14,10 +14,11 @@ namespace Athena
 {
 namespace io
 {
-MemoryReader::MemoryReader(const atUint8* data, atUint64 length)
+MemoryReader::MemoryReader(const atUint8* data, atUint64 length, bool takeOwnership)
     : m_data(data),
       m_length(length),
-      m_position(0)
+      m_position(0),
+      m_owns(takeOwnership)
 {
     if (!data)
     {
@@ -34,8 +35,14 @@ MemoryReader::MemoryReader(const atUint8* data, atUint64 length)
     }
 }
 
+MemoryReader::~MemoryReader()
+{
+    if (m_owns)
+        delete[] m_data;
+}
+
 MemoryCopyReader::MemoryCopyReader(const atUint8* data, atUint64 length)
-    : MemoryReader(data, length)
+    : MemoryReader(data, length, false)
 {
     if (!data)
     {
@@ -95,11 +102,14 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin)
     }
 }
 
-void MemoryReader::setData(const atUint8* data, atUint64 length)
+void MemoryReader::setData(const atUint8* data, atUint64 length, bool takeOwnership)
 {
+    if (m_owns && m_data)
+        delete[] m_data;
     m_data = (atUint8*)data;
     m_length = length;
     m_position = 0;
+    m_owns = takeOwnership;
 }
 
 void MemoryCopyReader::setData(const atUint8* data, atUint64 length)
