@@ -60,6 +60,13 @@ typedef struct stat64 stat64_t;
 
 namespace Athena
 {
+struct StlTraits
+{
+    template<typename T> using Vector = std::vector<T>;
+    using String = std::string;
+    using WString = std::wstring;
+};
+
 namespace error
 {
 enum Level

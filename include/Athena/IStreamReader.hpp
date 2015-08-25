@@ -1,8 +1,7 @@
 #ifndef ISTREAMREADER_HPP
 #define ISTREAMREADER_HPP
 
-#include <locale>
-#include <codecvt>
+#include <memory>
 #include <functional>
 #include "IStream.hpp"
 
@@ -10,6 +9,7 @@ namespace Athena
 {
 namespace io
 {
+template<typename STLTRAITS = StlTraits>
 class IStreamReader : public IStream
 {
 public:
@@ -589,9 +589,9 @@ public:
      *  \return std::string The value at the current address
      *  \throw IOException when address is out of range
      */
-    inline std::string readWStringAsString(atInt32 fixedLen = -1)
+    inline typename STLTRAITS::String readWStringAsString(atInt32 fixedLen = -1)
     {
-        std::wstring tmp;
+        typename STLTRAITS::String retval;
         atUint16 chr = readUint16();
 
         atInt32 i;
@@ -603,20 +603,21 @@ public:
             if (!chr)
                 break;
 
-            tmp.push_back(chr);
+            char mb[4];
+            int c = std::wctomb(mb, chr);
+            retval.append(mb, c);
             chr = readUint16();
         }
 
         if (fixedLen >= 0 && i < fixedLen)
             seek(fixedLen - i);
 
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-        return conv.to_bytes(tmp);
+        return retval;
     }
 
-    inline std::string readWStringAsStringLittle(atInt32 fixedLen = -1)
+    inline typename STLTRAITS::String readWStringAsStringLittle(atInt32 fixedLen = -1)
     {
-        std::wstring tmp;
+        typename STLTRAITS::String retval;
         atUint16 chr = readUint16Little();
 
         atInt32 i;
@@ -628,20 +629,21 @@ public:
             if (!chr)
                 break;
 
-            tmp.push_back(chr);
+            char mb[4];
+            int c = std::wctomb(mb, chr);
+            retval.append(mb, c);
             chr = readUint16Little();
         }
 
         if (fixedLen >= 0 && i < fixedLen)
             seek(fixedLen - i);
 
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-        return conv.to_bytes(tmp);
+        return retval;
     }
 
-    inline std::string readWStringAsStringBig(atInt32 fixedLen = -1)
+    inline typename STLTRAITS::String readWStringAsStringBig(atInt32 fixedLen = -1)
     {
-        std::wstring tmp;
+        typename STLTRAITS::String retval;
         atUint16 chr = readUint16Big();
 
         atInt32 i;
@@ -653,15 +655,16 @@ public:
             if (!chr)
                 break;
 
-            tmp.push_back(chr);
+            char mb[4];
+            int c = std::wctomb(mb, chr);
+            retval.append(mb, c);
             chr = readUint16Big();
         }
 
         if (fixedLen >= 0 && i < fixedLen)
             seek(fixedLen - i);
 
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-        return conv.to_bytes(tmp);
+        return retval;
     }
 
     /*! \brief Reads a string and advances the position in the file
@@ -670,9 +673,9 @@ public:
      *  \return std::string The value at the current address
      *  \throw IOException when address is out of range
      */
-    inline std::string readString(atInt32 fixedLen = -1)
+    inline typename STLTRAITS::String readString(atInt32 fixedLen = -1)
     {
-        std::string ret;
+        typename STLTRAITS::String ret;
         atUint8 chr = readByte();
 
         atInt32 i;
@@ -692,18 +695,18 @@ public:
         return ret;
     }
     template <class T>
-    inline std::string readVal(typename std::enable_if<std::is_same<T, std::string>::value>::type* = 0)
+    inline typename STLTRAITS::String readVal(typename std::enable_if<std::is_same<T, typename STLTRAITS::String>::value>::type* = 0)
     {return readString();}
 
     /*! \brief Reads a wstring and advances the position in the file
      *
      *  \param fixedLen If non-negative, this is a fixed-length string read
-     *  \return std::wstring The value at the current address
+     *  \return The value at the current address
      *  \throw IOException when address is out of range
      */
-    inline std::wstring readWString(atInt32 fixedLen = -1)
+    inline typename STLTRAITS::WString readWString(atInt32 fixedLen = -1)
     {
-        std::wstring ret;
+        typename STLTRAITS::WString ret;
         atUint16 chr = readUint16();
 
         atInt32 i;
@@ -723,12 +726,12 @@ public:
         return ret;
     }
     template <class T>
-    inline std::wstring readVal(typename std::enable_if<std::is_same<T, std::wstring>::value>::type* = 0)
+    inline typename STLTRAITS::WString readVal(typename std::enable_if<std::is_same<T, typename STLTRAITS::WString>::value>::type* = 0)
     {return readWString();}
 
-    inline std::wstring readWStringLittle(atInt32 fixedLen = -1)
+    inline typename STLTRAITS::WString readWStringLittle(atInt32 fixedLen = -1)
     {
-        std::wstring ret;
+        typename STLTRAITS::WString ret;
         atUint16 chr = readUint16Little();
 
         atInt32 i;
@@ -748,12 +751,12 @@ public:
         return ret;
     }
     template <class T>
-    inline std::wstring readValLittle(typename std::enable_if<std::is_same<T, std::wstring>::value>::type* = 0)
+    inline typename STLTRAITS::WString readValLittle(typename std::enable_if<std::is_same<T, typename STLTRAITS::WString>::value>::type* = 0)
     {return readWStringLittle();}
 
-    inline std::wstring readWStringBig(atInt32 fixedLen = -1)
+    inline typename STLTRAITS::WString readWStringBig(atInt32 fixedLen = -1)
     {
-        std::wstring ret;
+        typename STLTRAITS::WString ret;
         atUint16 chr = readUint16Big();
 
         atInt32 i;
@@ -773,11 +776,11 @@ public:
         return ret;
     }
     template <class T>
-    inline std::wstring readValBig(typename std::enable_if<std::is_same<T, std::wstring>::value>::type* = 0)
+    inline typename STLTRAITS::WString readValBig(typename std::enable_if<std::is_same<T, typename STLTRAITS::WString>::value>::type* = 0)
     {return readWStringBig();}
 
     template<class T>
-    void enumerate(std::vector<T>& vector, size_t count,
+    void enumerate(typename STLTRAITS::template Vector<T>& vector, size_t count,
                    typename std::enable_if<std::is_arithmetic<T>::value ||
                                            std::is_same<T, atVec2f>::value ||
                                            std::is_same<T, atVec3f>::value ||
@@ -790,7 +793,7 @@ public:
     }
 
     template<class T>
-    void enumerateLittle(std::vector<T>& vector, size_t count,
+    void enumerateLittle(typename STLTRAITS::template Vector<T>& vector, size_t count,
                          typename std::enable_if<std::is_arithmetic<T>::value ||
                                                  std::is_same<T, atVec2f>::value ||
                                                  std::is_same<T, atVec3f>::value ||
@@ -803,7 +806,7 @@ public:
     }
 
     template<class T>
-    void enumerateBig(std::vector<T>& vector, size_t count,
+    void enumerateBig(typename STLTRAITS::template Vector<T>& vector, size_t count,
                       typename std::enable_if<std::is_arithmetic<T>::value ||
                                               std::is_same<T, atVec2f>::value ||
                                               std::is_same<T, atVec3f>::value ||
@@ -816,7 +819,7 @@ public:
     }
 
     template<class T>
-    void enumerate(std::vector<T>& vector, size_t count,
+    void enumerate(typename STLTRAITS::template Vector<T>& vector, size_t count,
                    typename std::enable_if<!std::is_arithmetic<T>::value &&
                                            !std::is_same<T, atVec2f>::value &&
                                            !std::is_same<T, atVec3f>::value &&
@@ -832,7 +835,8 @@ public:
     }
 
     template<class T>
-    void enumerate(std::vector<T>& vector, size_t count, std::function<void(IStreamReader&, T&)> readf)
+    void enumerate(typename STLTRAITS::template Vector<T>& vector,
+                   size_t count, std::function<void(IStreamReader&, T&)> readf)
     {
         vector.clear();
         vector.reserve(count);

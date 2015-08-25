@@ -9,6 +9,7 @@ namespace Athena
 {
 namespace io
 {
+template<typename STLTRAITS = StlTraits>
 class IStreamWriter : public IStream
 {
 public:
@@ -436,116 +437,107 @@ public:
      *  \param str The string to write to the buffer
      *  \param fixedLen If not -1, the number of characters to zero-fill string to
      */
-    inline void writeStringAsWString(const std::string& str, atInt32 fixedLen = -1)
+    inline void writeStringAsWString(const typename STLTRAITS::String& str, atInt32 fixedLen = -1)
     {
-        std::string tmpStr = "\xEF\xBB\xBF" + str;
-
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-        std::wstring tmp = conv.from_bytes(tmpStr);
+        typename STLTRAITS::String tmpStr = "\xEF\xBB\xBF" + str;
+        const char* buf = tmpStr.c_str();
 
         if (fixedLen < 0)
         {
-            for (atUint16 chr : tmp)
+            while (*buf)
             {
-                if (chr != 0xFEFF)
-                    writeUint16(chr);
+                wchar_t wc;
+                buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
+                if (wc != 0xFEFF)
+                    writeUint16(wc);
             }
             writeUint16(0);
         }
         else
         {
-            auto it = tmp.begin();
             for (atInt32 i=0 ; i<fixedLen ; ++i)
             {
-                atUint16 chr;
-                if (it == tmp.end())
-                    chr = 0;
-                else
-                    chr = *it++;
+                wchar_t wc = 0;
+                if (*buf)
+                    buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
 
-                if (chr == 0xFEFF)
+                if (wc == 0xFEFF)
                 {
                     --i;
                     continue;
                 }
 
-                writeUint16(chr);
+                writeUint16(wc);
             }
         }
     }
 
-    inline void writeStringAsWStringLittle(const std::string& str, atInt32 fixedLen = -1)
+    inline void writeStringAsWStringLittle(const typename STLTRAITS::String& str, atInt32 fixedLen = -1)
     {
-        std::string tmpStr = "\xEF\xBB\xBF" + str;
-
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-        std::wstring tmp = conv.from_bytes(tmpStr);
+        typename STLTRAITS::String tmpStr = "\xEF\xBB\xBF" + str;
+        const char* buf = tmpStr.c_str();
 
         if (fixedLen < 0)
         {
-            for (atUint16 chr : tmp)
+            while (*buf)
             {
-                if (chr != 0xFEFF)
-                    writeUint16Little(chr);
+                wchar_t wc;
+                buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
+                if (wc != 0xFEFF)
+                    writeUint16Little(wc);
             }
             writeUint16Little(0);
         }
         else
         {
-            auto it = tmp.begin();
             for (atInt32 i=0 ; i<fixedLen ; ++i)
             {
-                atUint16 chr;
-                if (it == tmp.end())
-                    chr = 0;
-                else
-                    chr = *it++;
+                wchar_t wc = 0;
+                if (*buf)
+                    buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
 
-                if (chr == 0xFEFF)
+                if (wc == 0xFEFF)
                 {
                     --i;
                     continue;
                 }
 
-                writeUint16Little(chr);
+                writeUint16Little(wc);
             }
         }
     }
 
-    inline void writeStringAsWStringBig(const std::string& str, atInt32 fixedLen = -1)
+    inline void writeStringAsWStringBig(const typename STLTRAITS::String& str, atInt32 fixedLen = -1)
     {
-        std::string tmpStr = "\xEF\xBB\xBF" + str;
-
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-        std::wstring tmp = conv.from_bytes(tmpStr);
+        typename STLTRAITS::String tmpStr = "\xEF\xBB\xBF" + str;
+        const char* buf = tmpStr.c_str();
 
         if (fixedLen < 0)
         {
-            for (atUint16 chr : tmp)
+            while (*buf)
             {
-                if (chr != 0xFEFF)
-                    writeUint16Big(chr);
+                wchar_t wc;
+                buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
+                if (wc != 0xFEFF)
+                    writeUint16Big(wc);
             }
             writeUint16Big(0);
         }
         else
         {
-            auto it = tmp.begin();
             for (atInt32 i=0 ; i<fixedLen ; ++i)
             {
-                atUint16 chr;
-                if (it == tmp.end())
-                    chr = 0;
-                else
-                    chr = *it++;
+                wchar_t wc = 0;
+                if (*buf)
+                    buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
 
-                if (chr == 0xFEFF)
+                if (wc == 0xFEFF)
                 {
                     --i;
                     continue;
                 }
 
-                writeUint16Big(chr);
+                writeUint16Big(wc);
             }
         }
     }
@@ -556,7 +548,7 @@ public:
      *  \param str The string to write to the buffer
      *  \param fixedLen If not -1, the number of characters to zero-fill string to
      */
-    inline void writeString(const std::string& str, atInt32 fixedLen = -1)
+    inline void writeString(const typename STLTRAITS::String& str, atInt32 fixedLen = -1)
     {
         if (fixedLen < 0)
         {
@@ -583,7 +575,7 @@ public:
             }
         }
     }
-    inline void writeVal(const std::string& val) {return writeString(val);}
+    inline void writeVal(const typename STLTRAITS::String& val) {return writeString(val);}
 
     /*! \brief Writes an wstring to the buffer and advances the buffer.
      *
@@ -591,7 +583,7 @@ public:
      *  \param str The string to write to the buffer
      *  \param fixedLen If not -1, the number of characters to zero-fill string to
      */
-    inline void writeWString(const std::wstring& str, atInt32 fixedLen = -1)
+    inline void writeWString(const typename STLTRAITS::WString& str, atInt32 fixedLen = -1)
     {
         if (fixedLen < 0)
         {
@@ -618,9 +610,9 @@ public:
             }
         }
     }
-    inline void writeVal(const std::wstring& val) {return writeWString(val);}
+    inline void writeVal(const typename STLTRAITS::WString& val) {return writeWString(val);}
 
-    inline void writeWStringLittle(const std::wstring& str, atInt32 fixedLen = -1)
+    inline void writeWStringLittle(const typename STLTRAITS::WString& str, atInt32 fixedLen = -1)
     {
         if (fixedLen < 0)
         {
@@ -647,9 +639,9 @@ public:
             }
         }
     }
-    inline void writeValLittle(const std::wstring& val) {return writeWStringLittle(val);}
+    inline void writeValLittle(const typename STLTRAITS::WString& val) {return writeWStringLittle(val);}
 
-    inline void writeWStringBig(const std::wstring& str, atInt32 fixedLen = -1)
+    inline void writeWStringBig(const typename STLTRAITS::WString& str, atInt32 fixedLen = -1)
     {
         if (fixedLen < 0)
         {
@@ -676,7 +668,7 @@ public:
             }
         }
     }
-    inline void writeValBig(const std::wstring& val) {return writeWStringBig(val);}
+    inline void writeValBig(const typename STLTRAITS::WString& val) {return writeWStringBig(val);}
 
     inline void fill(atUint8 val, atUint64 length)
     {for (atUint64 l=0 ; l<length ; ++l) writeUBytes(&val, 1);}
@@ -684,7 +676,7 @@ public:
     {fill((atUint8)val, length);}
 
     template <class T>
-    void enumerate(const std::vector<T>& vector,
+    void enumerate(const typename STLTRAITS::template Vector<T>& vector,
                    typename std::enable_if<std::is_arithmetic<T>::value ||
                                            std::is_same<T, atVec2f>::value ||
                                            std::is_same<T, atVec3f>::value ||
@@ -695,7 +687,7 @@ public:
     }
 
     template <class T>
-    void enumerateLittle(const std::vector<T>& vector,
+    void enumerateLittle(const typename STLTRAITS::template Vector<T>& vector,
                          typename std::enable_if<std::is_arithmetic<T>::value ||
                                                  std::is_same<T, atVec2f>::value ||
                                                  std::is_same<T, atVec3f>::value ||
@@ -706,7 +698,7 @@ public:
     }
 
     template <class T>
-    void enumerateBig(const std::vector<T>& vector,
+    void enumerateBig(const typename STLTRAITS::template Vector<T>& vector,
                       typename std::enable_if<std::is_arithmetic<T>::value ||
                                               std::is_same<T, atVec2f>::value ||
                                               std::is_same<T, atVec3f>::value ||
@@ -717,7 +709,7 @@ public:
     }
 
     template <class T>
-    void enumerate(const std::vector<T>& vector,
+    void enumerate(const typename STLTRAITS::template Vector<T>& vector,
                    typename std::enable_if<!std::is_arithmetic<T>::value &&
                                            !std::is_same<T, atVec2f>::value &&
                                            !std::is_same<T, atVec3f>::value &&
