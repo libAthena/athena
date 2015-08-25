@@ -117,7 +117,7 @@ bool FileInfo::touch() const
 #if defined(__GNUC__) && !(defined(HW_DOL) || defined(HW_RVL) || defined(GEKKO))
     stat64_t st;
     if (stat64(m_path.c_str(), &st) < 0) {
-        (void)Athena::io::FileWriter(m_path);
+        (void)Athena::io::FileWriter<>(m_path);
         return true;
     }
     if (utimes(m_path.c_str(), NULL) < 0) {

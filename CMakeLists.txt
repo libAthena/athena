@@ -32,10 +32,6 @@ endif()
 
 add_library(AthenaCore
     src/Athena/Utility.cpp
-    src/Athena/FileReader.cpp
-    src/Athena/FileWriter.cpp
-    src/Athena/MemoryReader.cpp
-    src/Athena/MemoryWriter.cpp
     src/Athena/Global.cpp
     src/Athena/Checksums.cpp
     src/Athena/Compression.cpp

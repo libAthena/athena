@@ -20,16 +20,16 @@ namespace io
 
 /* forward-declaration dance for recursively-derived types */
 
-template <size_t sizeVar, Endian VE>
+template <size_t sizeVar, Endian VE, typename STLTRAITS>
 struct Buffer;
 
-template <atInt32 sizeVar, Endian VE>
+template <atInt32 sizeVar, Endian VE, typename STLTRAITS>
 struct String;
 
-template <atInt32 sizeVar, Endian VE>
+template <atInt32 sizeVar, Endian VE, typename STLTRAITS>
 struct WString;
 
-template <atInt32 sizeVar, Endian VE>
+template <atInt32 sizeVar, Endian VE, typename STLTRAITS>
 struct WStringAsString;
 
 /**
@@ -40,9 +40,17 @@ struct WStringAsString;
  * with all read/write calls necessary to marshal the DNA structure to/from
  * a streamed medium
  */
-template <Endian DNAE>
+template <Endian DNAE, typename STLTRAITS = StlTraits>
 struct DNA
 {
+    using IStreamReader = IStreamReader<STLTRAITS>;
+    using IStreamWriter = IStreamWriter<STLTRAITS>;
+    using StlTraits = STLTRAITS;
+
+    using StlString = typename STLTRAITS::String;
+    using StlWString = typename STLTRAITS::WString;
+    template<typename T> using StlVector = typename STLTRAITS::template Vector<T>;
+
     virtual void read(IStreamReader&)=0;
     virtual void write(IStreamWriter&) const=0;
 
@@ -50,19 +58,19 @@ struct DNA
     using Value = T;
 
     template <typename T, size_t cntVar, Endian VE = DNAE>
-    using Vector = std::vector<T>;
+    using Vector = typename STLTRAITS::template Vector<T>;
 
     template <size_t sizeVar>
-    using Buffer = struct Athena::io::Buffer<sizeVar, DNAE>;
+    using Buffer = struct Athena::io::Buffer<sizeVar, DNAE, STLTRAITS>;
 
     template <atInt32 sizeVar = -1>
-    using String = struct Athena::io::String<sizeVar, DNAE>;
+    using String = struct Athena::io::String<sizeVar, DNAE, STLTRAITS>;
 
     template <atInt32 sizeVar = -1, Endian VE = DNAE>
-    using WString = struct Athena::io::WString<sizeVar, VE>;
+    using WString = struct Athena::io::WString<sizeVar, VE, STLTRAITS>;
 
     template <atInt32 sizeVar = -1>
-    using WStringAsString = struct Athena::io::WStringAsString<sizeVar, DNAE>;
+    using WStringAsString = struct Athena::io::WStringAsString<sizeVar, DNAE, STLTRAITS>;
 
     template <off_t offset, SeekOrigin direction>
     struct Seek {};
@@ -73,78 +81,78 @@ struct DNA
     struct Delete {};
 };
 
-template <size_t sizeVar, Endian VE>
-struct Buffer : public DNA<VE>, public std::unique_ptr<atUint8[]>
+template <size_t sizeVar, Endian VE, typename STLTRAITS>
+struct Buffer : public DNA<VE, STLTRAITS>, public std::unique_ptr<atUint8[]>
 {
     typename DNA<VE>::Delete expl;
-    inline void read(IStreamReader& reader)
+    inline void read(typename DNA<VE, STLTRAITS>::IStreamReader& reader)
     {
         reset(new atUint8[sizeVar]);
         reader.readUBytesToBuf(get(), sizeVar);
     }
-    inline void write(IStreamWriter& writer) const
+    inline void write(typename DNA<VE, STLTRAITS>::IStreamWriter& writer) const
     {
         writer.writeUBytes(get(), sizeVar);
     }
 };
 
-template <atInt32 sizeVar, Endian VE>
-struct String : public DNA<VE>, public std::string
+template <atInt32 sizeVar, Endian VE, typename STLTRAITS>
+struct String : public DNA<VE, STLTRAITS>, public STLTRAITS::String
 {
     typename DNA<VE>::Delete expl;
-    inline void read(IStreamReader& reader)
+    inline void read(typename DNA<VE, STLTRAITS>::IStreamReader& reader)
     {this->assign(std::move(reader.readString(sizeVar)));}
-    inline void write(IStreamWriter& writer) const
+    inline void write(typename DNA<VE, STLTRAITS>::IStreamWriter& writer) const
     {writer.writeString(*this, sizeVar);}
-    inline std::string& operator=(const std::string& __str)
+    inline typename STLTRAITS::String& operator=(const typename STLTRAITS::String& __str)
     {return this->assign(__str);}
-    inline std::string& operator=(std::string&& __str)
+    inline typename STLTRAITS::String& operator=(typename STLTRAITS::String&& __str)
     {this->swap(__str); return *this;}
 };
 
-template <atInt32 sizeVar, Endian VE>
-struct WString : public DNA<VE>, public std::wstring
+template <atInt32 sizeVar, Endian VE, typename STLTRAITS>
+struct WString : public DNA<VE, STLTRAITS>, public STLTRAITS::WString
 {
     typename DNA<VE>::Delete expl;
-    inline void read(IStreamReader& reader)
+    inline void read(typename DNA<VE, STLTRAITS>::IStreamReader& reader)
     {
         reader.setEndian(VE);
         this->assign(std::move(reader.readWString(sizeVar)));
     }
-    inline void write(IStreamWriter& writer) const
+    inline void write(typename DNA<VE, STLTRAITS>::IStreamWriter& writer) const
     {
         writer.setEndian(VE);
         writer.writeWString(*this, sizeVar);
     }
-    inline std::wstring& operator=(const std::wstring& __str)
+    inline typename STLTRAITS::WString& operator=(const typename STLTRAITS::WString& __str)
     {return this->assign(__str);}
-    inline std::wstring& operator=(std::wstring&& __str)
+    inline typename STLTRAITS::WString& operator=(typename STLTRAITS::WString&& __str)
     {this->swap(__str); return *this;}
 };
 
-template <atInt32 sizeVar, Endian VE>
-struct WStringAsString : public DNA<VE>, public std::string
+template <atInt32 sizeVar, Endian VE, typename STLTRAITS>
+struct WStringAsString : public DNA<VE, STLTRAITS>, public STLTRAITS::String
 {
     typename DNA<VE>::Delete expl;
-    inline void read(IStreamReader& reader)
+    inline void read(typename DNA<VE, STLTRAITS>::IStreamReader& reader)
     {*this = reader.readWStringAsString(sizeVar);}
-    inline void write(IStreamWriter& writer) const
+    inline void write(typename DNA<VE, STLTRAITS>::IStreamWriter& writer) const
     {writer.writeStringAsWString(*this, sizeVar);}
-    inline std::string& operator=(const std::string& __str)
+    inline typename STLTRAITS::String& operator=(const typename STLTRAITS::String& __str)
     {return this->assign(__str);}
-    inline std::string& operator=(std::string&& __str)
+    inline typename STLTRAITS::String& operator=(typename STLTRAITS::String&& __str)
     {this->swap(__str); return *this;}
 };
 
 /** Macro to automatically declare read/write methods in subclasses */
 #define DECL_DNA \
-    void read(Athena::io::IStreamReader&); \
-    void write(Athena::io::IStreamWriter&) const; \
+    void read(IStreamReader&); \
+    void write(IStreamWriter&) const; \
 
 /** Macro to automatically declare read/write methods and prevent outputting implementation */
 #define DECL_EXPLICIT_DNA \
-    void read(Athena::io::IStreamReader&); \
-    void write(Athena::io::IStreamWriter&) const; \
+    void read(IStreamReader&); \
+    void write(IStreamWriter&) const; \
     Delete __dna_delete;
 
 /** Macro to supply count variable to atdna and mute it for other compilers */
