@@ -1,8 +1,6 @@
 #ifndef ISTREAMWRITER_HPP
 #define ISTREAMWRITER_HPP
 
-#include <locale>
-#include <codecvt>
 #include "IStream.hpp"
 
 namespace Athena
@@ -438,76 +436,70 @@ public:
      */
     inline void writeStringAsWString(const std::string& str, atInt32 fixedLen = -1)
     {
-        std::string tmpStr = "\xEF\xBB\xBF" + str;
+       std::string tmpStr = "\xEF\xBB\xBF" + str;
+       const char* buf = tmpStr.c_str();
 
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-        std::wstring tmp = conv.from_bytes(tmpStr);
+       if (fixedLen < 0)
+       {
+           while (*buf)
+           {
+               wchar_t wc;
+               buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
+               if (wc != 0xFEFF)
+                   writeUint16(wc);
+           }
+           writeUint16(0);
+       }
+       else
+       {
+           for (atInt32 i=0 ; i<fixedLen ; ++i)
+           {
+               wchar_t wc = 0;
+               if (*buf)
+                   buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
 
-        if (fixedLen < 0)
-        {
-            for (atUint16 chr : tmp)
-            {
-                if (chr != 0xFEFF)
-                    writeUint16(chr);
-            }
-            writeUint16(0);
-        }
-        else
-        {
-            auto it = tmp.begin();
-            for (atInt32 i=0 ; i<fixedLen ; ++i)
-            {
-                atUint16 chr;
-                if (it == tmp.end())
-                    chr = 0;
-                else
-                    chr = *it++;
+               if (wc == 0xFEFF)
+               {
+                   --i;
+                   continue;
+               }
 
-                if (chr == 0xFEFF)
-                {
-                    --i;
-                    continue;
-                }
-
-                writeUint16(chr);
-            }
-        }
+               writeUint16(wc);
+           }
+       }
     }
 
     inline void writeStringAsWStringLittle(const std::string& str, atInt32 fixedLen = -1)
     {
         std::string tmpStr = "\xEF\xBB\xBF" + str;
-
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-        std::wstring tmp = conv.from_bytes(tmpStr);
+        const char* buf = tmpStr.c_str();
 
         if (fixedLen < 0)
         {
-            for (atUint16 chr : tmp)
+            while (*buf)
             {
-                if (chr != 0xFEFF)
-                    writeUint16Little(chr);
+                wchar_t wc;
+                buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
+                if (wc != 0xFEFF)
+                    writeUint16Little(wc);
             }
             writeUint16Little(0);
         }
         else
         {
-            auto it = tmp.begin();
             for (atInt32 i=0 ; i<fixedLen ; ++i)
             {
-                atUint16 chr;
-                if (it == tmp.end())
-                    chr = 0;
-                else
-                    chr = *it++;
+                wchar_t wc = 0;
+                if (*buf)
+                    buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
 
-                if (chr == 0xFEFF)
+                if (wc == 0xFEFF)
                 {
                     --i;
                     continue;
                 }
 
-                writeUint16Little(chr);
+                writeUint16Little(wc);
             }
         }
     }
@@ -515,37 +507,34 @@ public:
     inline void writeStringAsWStringBig(const std::string& str, atInt32 fixedLen = -1)
     {
         std::string tmpStr = "\xEF\xBB\xBF" + str;
-
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-        std::wstring tmp = conv.from_bytes(tmpStr);
+        const char* buf = tmpStr.c_str();
 
         if (fixedLen < 0)
         {
-            for (atUint16 chr : tmp)
+            while (*buf)
             {
-                if (chr != 0xFEFF)
-                    writeUint16Big(chr);
+                wchar_t wc;
+                buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
+                if (wc != 0xFEFF)
+                    writeUint16Big(wc);
             }
             writeUint16Big(0);
         }
         else
         {
-            auto it = tmp.begin();
             for (atInt32 i=0 ; i<fixedLen ; ++i)
             {
-                atUint16 chr;
-                if (it == tmp.end())
-                    chr = 0;
-                else
-                    chr = *it++;
+                wchar_t wc = 0;
+                if (*buf)
+                    buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
 
-                if (chr == 0xFEFF)
+                if (wc == 0xFEFF)
                 {
                     --i;
                     continue;
                 }
 
-                writeUint16Big(chr);
+                writeUint16Big(wc);
             }
         }
     }

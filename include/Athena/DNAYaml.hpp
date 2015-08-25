@@ -7,8 +7,6 @@
  * Any changes to the types or namespacing must be reflected in 'atdna/main.cpp'
  */
 
-#include <locale>
-#include <codecvt>
 #include <string.h>
 #include <yaml.h>
 #include "DNA.hpp"
@@ -376,16 +374,29 @@ inline std::unique_ptr<YAMLNode> ValToNode(const char* val)
 template <>
 inline std::wstring NodeToVal(const YAMLNode* node)
 {
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-    return conv.from_bytes(node->m_scalarString);
+    std::wstring retval;
+    retval.reserve(node->m_scalarString.length());
+    const char* buf = node->m_scalarString.c_str();
+    while (*buf)
+    {
+        wchar_t wc;
+        buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
+        retval += wc;
+    }
+    return retval;
 }
 
 template <>
 inline std::unique_ptr<YAMLNode> ValToNode(const std::wstring& val)
 {
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
     YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString = conv.to_bytes(val);
+    ret->m_scalarString.reserve(val.length());
+    for (wchar_t ch : val)
+    {
+        char mb[4];
+        int c = std::wctomb(mb, ch);
+        ret->m_scalarString.append(mb, c);
+    }
     return std::unique_ptr<YAMLNode>(ret);
 }
 
