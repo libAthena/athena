@@ -1,8 +1,7 @@
 #ifndef ISTREAMREADER_HPP
 #define ISTREAMREADER_HPP
 
-#include <locale>
-#include <codecvt>
+#include <memory>
 #include <functional>
 #include "IStream.hpp"
 
@@ -591,7 +590,7 @@ public:
      */
     inline std::string readWStringAsString(atInt32 fixedLen = -1)
     {
-        std::wstring tmp;
+        std::string retval;
         atUint16 chr = readUint16();
 
         atInt32 i;
@@ -603,20 +602,21 @@ public:
             if (!chr)
                 break;
 
-            tmp.push_back(chr);
+            char mb[4];
+            int c = std::wctomb(mb, chr);
+            retval.append(mb, c);
             chr = readUint16();
         }
 
         if (fixedLen >= 0 && i < fixedLen)
             seek(fixedLen - i);
 
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-        return conv.to_bytes(tmp);
+        return retval;
     }
 
     inline std::string readWStringAsStringLittle(atInt32 fixedLen = -1)
     {
-        std::wstring tmp;
+        std::string retval;
         atUint16 chr = readUint16Little();
 
         atInt32 i;
@@ -628,20 +628,21 @@ public:
             if (!chr)
                 break;
 
-            tmp.push_back(chr);
+            char mb[4];
+            int c = std::wctomb(mb, chr);
+            retval.append(mb, c);
             chr = readUint16Little();
         }
 
         if (fixedLen >= 0 && i < fixedLen)
             seek(fixedLen - i);
 
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-        return conv.to_bytes(tmp);
+        return retval;
     }
 
     inline std::string readWStringAsStringBig(atInt32 fixedLen = -1)
     {
-        std::wstring tmp;
+        std::string retval;
         atUint16 chr = readUint16Big();
 
         atInt32 i;
@@ -653,15 +654,16 @@ public:
             if (!chr)
                 break;
 
-            tmp.push_back(chr);
+            char mb[4];
+            int c = std::wctomb(mb, chr);
+            retval.append(mb, c);
             chr = readUint16Big();
         }
 
         if (fixedLen >= 0 && i < fixedLen)
             seek(fixedLen - i);
 
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-        return conv.to_bytes(tmp);
+        return retval;
     }
 
     /*! \brief Reads a string and advances the position in the file
