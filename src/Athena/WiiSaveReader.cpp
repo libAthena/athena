@@ -51,73 +51,63 @@ WiiSave* WiiSaveReader::readSave()
 {
     WiiSave* ret = new WiiSave;
 
-    try
+    if (length() < 0xF0C0)
     {
-        if (length() < 0xF0C0)
-        {
-            atError("Not a valid WiiSave");
-            return nullptr;
-        }
-
-        WiiBanner* banner = this->readBanner();
-
-        if (!banner)
-        {
-            atError("Invalid banner");
-            return nullptr;
-        }
-
-        ret->setBanner(banner);
-        atUint32 bkVer = base::readUint32();
-
-        if (bkVer != 0x00000070)
-        {
-            atError("Invalid BacKup header size");
-            return nullptr;
-        }
-
-        atUint32 bkMagic = base::readUint32();
-
-        if (bkMagic != 0x426B0001)
-        {
-            atError("Invalid BacKup header magic");
-            return nullptr;
-        }
-
-        /*atUint32 ngId =*/ base::readUint32();
-        atUint32 numFiles = base::readUint32();
-
-        /*int fileSize =*/ base::readUint32();
-        base::seek(8); // skip unknown data;
-
-        atUint32 totalSize = base::readUint32();
-        base::seek(64); // Unknown (Most likely padding)
-        base::seek(8);
-        base::seek(6);
-        base::seek(2);
-        base::seek(0x10);
-
-        std::vector<WiiFile*> files;
-
-        for (atUint32 i = 0; i < numFiles; ++i)
-        {
-            WiiFile* file = readFile();
-
-            if (file)
-                files.push_back(file);
-        }
-
-        ret->setRoot(buildTree(files));
-
-        readCerts(totalSize);
-    }
-    catch (...)
-    {
-        delete ret;
-        ret = NULL;
-        throw;
+        atError("Not a valid WiiSave");
+        return nullptr;
     }
 
+    WiiBanner* banner = this->readBanner();
+
+    if (!banner)
+    {
+        atError("Invalid banner");
+        return nullptr;
+    }
+
+    ret->setBanner(banner);
+    atUint32 bkVer = base::readUint32();
+
+    if (bkVer != 0x00000070)
+    {
+        atError("Invalid BacKup header size");
+        return nullptr;
+    }
+
+    atUint32 bkMagic = base::readUint32();
+
+    if (bkMagic != 0x426B0001)
+    {
+        atError("Invalid BacKup header magic");
+        return nullptr;
+    }
+
+    /*atUint32 ngId =*/ base::readUint32();
+    atUint32 numFiles = base::readUint32();
+
+    /*int fileSize =*/ base::readUint32();
+    base::seek(8); // skip unknown data;
+
+    atUint32 totalSize = base::readUint32();
+    base::seek(64); // Unknown (Most likely padding)
+    base::seek(8);
+    base::seek(6);
+    base::seek(2);
+    base::seek(0x10);
+
+    std::vector<WiiFile*> files;
+
+    for (atUint32 i = 0; i < numFiles; ++i)
+    {
+        WiiFile* file = readFile();
+
+        if (file)
+            files.push_back(file);
+    }
+
+    ret->setRoot(buildTree(files));
+
+    readCerts(totalSize);
     return ret;
 }
 
