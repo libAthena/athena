@@ -1,6 +1,11 @@
 #ifndef ISTREAMREADER_HPP
 #define ISTREAMREADER_HPP
 
+#if _WIN32
+#define WIN32_LEAN_AND_MEAN 1
+#include <windows.h>
+#endif
+
 #include <memory>
 #include <functional>
 #include "IStream.hpp"
@@ -590,11 +595,12 @@ public:
      */
     inline std::string readWStringAsString(atInt32 fixedLen = -1)
     {
-        std::string retval;
+#if _WIN32
+        std::wstring wstr;
         atUint16 chr = readUint16();
 
         atInt32 i;
-        for (i = 0 ;; ++i)
+        for (i=0 ;; ++i)
         {
             if (fixedLen >= 0 && i >= fixedLen - 1)
                 break;
@@ -602,12 +608,33 @@ public:
             if (!chr)
                 break;
 
-            char mb[4];
-            int c = std::wctomb(mb, chr);
-            retval.append(mb, c);
+            wstr += chr;
             chr = readUint16();
         }
 
+        int len = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), wstr.size(), nullptr, 0, nullptr, nullptr);
+        std::string retval(len, '\0');
+        WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), wstr.size(), &retval[0], len, nullptr, nullptr);
+#else
+        std::string retval;
+        atUint16 chr = readUint16();
+
+        atInt32 i;
+        std::mbstate_t state = {};
+        for (i=0 ;; ++i)
+        {
+            if (fixedLen >= 0 && i >= fixedLen - 1)
+                break;
+
+            if (!chr)
+                break;
+
+            char mb[MB_LEN_MAX];
+            int c = std::wcrtomb(mb, chr, &state);
+            retval.append(mb, c);
+            chr = readUint16();
+        }
+#endif
         if (fixedLen >= 0 && i < fixedLen)
             seek(fixedLen - i);
 
@@ -616,11 +643,12 @@ public:
 
     inline std::string readWStringAsStringLittle(atInt32 fixedLen = -1)
     {
-        std::string retval;
+#if _WIN32
+        std::wstring wstr;
         atUint16 chr = readUint16Little();
 
         atInt32 i;
-        for (i = 0 ;; ++i)
+        for (i=0 ;; ++i)
         {
             if (fixedLen >= 0 && i >= fixedLen - 1)
                 break;
@@ -628,12 +656,33 @@ public:
             if (!chr)
                 break;
 
-            char mb[4];
-            int c = std::wctomb(mb, chr);
-            retval.append(mb, c);
+            wstr += chr;
             chr = readUint16Little();
         }
 
+        int len = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), wstr.size(), nullptr, 0, nullptr, nullptr);
+        std::string retval(len, '\0');
+        WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), wstr.size(), &retval[0], len, nullptr, nullptr);
+#else
+        std::string retval;
+        atUint16 chr = readUint16Little();
+
+        atInt32 i;
+        std::mbstate_t state = {};
+        for (i=0 ;; ++i)
+        {
+            if (fixedLen >= 0 && i >= fixedLen - 1)
+                break;
+
+            if (!chr)
+                break;
+
+            char mb[MB_LEN_MAX];
+            int c = std::wcrtomb(mb, chr, &state);
+            retval.append(mb, c);
+            chr = readUint16Little();
+        }
+#endif
         if (fixedLen >= 0 && i < fixedLen)
             seek(fixedLen - i);
 
@@ -642,10 +691,32 @@ public:
 
     inline std::string readWStringAsStringBig(atInt32 fixedLen = -1)
     {
+#if _WIN32
+        std::wstring wstr;
+        atUint16 chr = readUint16Big();
+
+        atInt32 i;
+        for (i=0 ;; ++i)
+        {
+            if (fixedLen >= 0 && i >= fixedLen - 1)
+                break;
+
+            if (!chr)
+                break;
+
+            wstr += chr;
+            chr = readUint16Big();
+        }
+
+        int len = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), wstr.size(), nullptr, 0, nullptr, nullptr);
+        std::string retval(len, '\0');
+        WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), wstr.size(), &retval[0], len, nullptr, nullptr);
+#else
         std::string retval;
         atUint16 chr = readUint16Big();
 
         atInt32 i;
+        std::mbstate_t state = {};
         for (i = 0 ;; ++i)
         {
             if (fixedLen >= 0 && i >= fixedLen - 1)
@@ -654,12 +725,12 @@ public:
             if (!chr)
                 break;
 
-            char mb[4];
-            int c = std::wctomb(mb, chr);
+            char mb[MB_LEN_MAX];
+            int c = std::wcrtomb(mb, chr, &state);
             retval.append(mb, c);
             chr = readUint16Big();
         }
-
+#endif
         if (fixedLen >= 0 && i < fixedLen)
             seek(fixedLen - i);
 
