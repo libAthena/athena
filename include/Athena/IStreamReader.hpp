@@ -1,15 +1,9 @@
 #ifndef ISTREAMREADER_HPP
 #define ISTREAMREADER_HPP
 
-#if _WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN 1
-#endif
-#include <windows.h>
-#endif
-
 #include <memory>
 #include <functional>
+#include "utf8proc.h"
 #include "IStream.hpp"
 
 namespace Athena
@@ -597,32 +591,10 @@ public:
      */
     inline std::string readWStringAsString(atInt32 fixedLen = -1)
     {
-#if _WIN32
-        std::wstring wstr;
-        atUint16 chr = readUint16();
-
-        atInt32 i;
-        for (i=0 ;; ++i)
-        {
-            if (fixedLen >= 0 && i >= fixedLen - 1)
-                break;
-
-            if (!chr)
-                break;
-
-            wstr += chr;
-            chr = readUint16();
-        }
-
-        int len = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), wstr.size(), nullptr, 0, nullptr, nullptr);
-        std::string retval(len, '\0');
-        WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), wstr.size(), &retval[0], len, nullptr, nullptr);
-#else
         std::string retval;
         atUint16 chr = readUint16();
 
         atInt32 i;
-        std::mbstate_t state = {};
         for (i=0 ;; ++i)
         {
             if (fixedLen >= 0 && i >= fixedLen - 1)
@@ -631,12 +603,18 @@ public:
             if (!chr)
                 break;
 
-            char mb[MB_LEN_MAX];
-            int c = std::wcrtomb(mb, chr, &state);
-            retval.append(mb, c);
+            utf8proc_uint8_t mb[4];
+            utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(chr), mb);
+            if (c < 0)
+            {
+                atWarning("invalid UTF-8 character while encoding");
+                return retval;
+            }
+
+            retval.append(reinterpret_cast<char*>(mb), c);
             chr = readUint16();
         }
-#endif
+
         if (fixedLen >= 0 && i < fixedLen)
             seek(fixedLen - i);
 
@@ -645,32 +623,10 @@ public:
 
     inline std::string readWStringAsStringLittle(atInt32 fixedLen = -1)
     {
-#if _WIN32
-        std::wstring wstr;
-        atUint16 chr = readUint16Little();
-
-        atInt32 i;
-        for (i=0 ;; ++i)
-        {
-            if (fixedLen >= 0 && i >= fixedLen - 1)
-                break;
-
-            if (!chr)
-                break;
-
-            wstr += chr;
-            chr = readUint16Little();
-        }
-
-        int len = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), wstr.size(), nullptr, 0, nullptr, nullptr);
-        std::string retval(len, '\0');
-        WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), wstr.size(), &retval[0], len, nullptr, nullptr);
-#else
         std::string retval;
         atUint16 chr = readUint16Little();
 
         atInt32 i;
-        std::mbstate_t state = {};
         for (i=0 ;; ++i)
         {
             if (fixedLen >= 0 && i >= fixedLen - 1)
@@ -679,12 +635,18 @@ public:
             if (!chr)
                 break;
 
-            char mb[MB_LEN_MAX];
-            int c = std::wcrtomb(mb, chr, &state);
-            retval.append(mb, c);
+            utf8proc_uint8_t mb[4];
+            utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(chr), mb);
+            if (c < 0)
+            {
+                atWarning("invalid UTF-8 character while encoding");
+                return retval;
+            }
+
+            retval.append(reinterpret_cast<char*>(mb), c);
             chr = readUint16Little();
         }
-#endif
+
         if (fixedLen >= 0 && i < fixedLen)
             seek(fixedLen - i);
 
@@ -693,32 +655,10 @@ public:
 
     inline std::string readWStringAsStringBig(atInt32 fixedLen = -1)
     {
-#if _WIN32
-        std::wstring wstr;
-        atUint16 chr = readUint16Big();
-
-        atInt32 i;
-        for (i=0 ;; ++i)
-        {
-            if (fixedLen >= 0 && i >= fixedLen - 1)
-                break;
-
-            if (!chr)
-                break;
-
-            wstr += chr;
-            chr = readUint16Big();
-        }
-
-        int len = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), wstr.size(), nullptr, 0, nullptr, nullptr);
-        std::string retval(len, '\0');
-        WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), wstr.size(), &retval[0], len, nullptr, nullptr);
-#else
         std::string retval;
         atUint16 chr = readUint16Big();
 
         atInt32 i;
-        std::mbstate_t state = {};
         for (i = 0 ;; ++i)
         {
             if (fixedLen >= 0 && i >= fixedLen - 1)
@@ -727,12 +667,18 @@ public:
             if (!chr)
                 break;
 
-            char mb[MB_LEN_MAX];
-            int c = std::wcrtomb(mb, chr, &state);
-            retval.append(mb, c);
+            utf8proc_uint8_t mb[4];
+            utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(chr), mb);
+            if (c < 0)
+            {
+                atWarning("invalid UTF-8 character while encoding");
+                return retval;
+            }
+
+            retval.append(reinterpret_cast<char*>(mb), c);
             chr = readUint16Big();
         }
-#endif
+
         if (fixedLen >= 0 && i < fixedLen)
             seek(fixedLen - i);
 

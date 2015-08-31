@@ -7,15 +7,9 @@
  * Any changes to the types or namespacing must be reflected in 'atdna/main.cpp'
  */
 
-#if _WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN 1
-#endif
-#include <windows.h>
-#endif
-
 #include <string.h>
 #include <yaml.h>
+#include <utf8proc.h>
 #include "DNA.hpp"
 
 namespace Athena
@@ -381,44 +375,40 @@ inline std::unique_ptr<YAMLNode> ValToNode(const char* val)
 template <>
 inline std::wstring NodeToVal(const YAMLNode* node)
 {
-#if _WIN32
-    int len = MultiByteToWideChar(CP_UTF8, 0, node->m_scalarString.c_str(), node->m_scalarString.size(), nullptr, 0);
-    std::wstring retval(len, L'\0');
-    MultiByteToWideChar(CP_UTF8, 0, node->m_scalarString.c_str(), node->m_scalarString.size(), &retval[0], len);
-    return retval;
-#else
     std::wstring retval;
     retval.reserve(node->m_scalarString.length());
-    const char* buf = node->m_scalarString.c_str();
-    std::mbstate_t state = {};
+    const utf8proc_uint8_t* buf = reinterpret_cast<const utf8proc_uint8_t*>(node->m_scalarString.c_str());
     while (*buf)
     {
-        wchar_t wc;
-        buf += std::mbrtowc(&wc, buf, MB_LEN_MAX, &state);
-        retval += wc;
+        utf8proc_int32_t wc;
+        utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
+        if (len < 0)
+        {
+            atWarning("invalid UTF-8 character while decoding");
+            return retval;
+        }
+        buf += len;
+        retval += wchar_t(wc);
     }
     return retval;
-#endif
 }
 
 template <>
 inline std::unique_ptr<YAMLNode> ValToNode(const std::wstring& val)
 {
     YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-#if _WIN32
-    int len = WideCharToMultiByte(CP_UTF8, 0, val.c_str(), val.size(), nullptr, 0, nullptr, nullptr);
-    ret->m_scalarString.assign(len, '\0');
-    WideCharToMultiByte(CP_UTF8, 0, val.c_str(), val.size(), &ret->m_scalarString[0], len, nullptr, nullptr);
-#else
     ret->m_scalarString.reserve(val.length());
-    std::mbstate_t state = {};
     for (wchar_t ch : val)
     {
-        char mb[MB_LEN_MAX];
-        int c = std::wcrtomb(mb, ch, &state);
-        ret->m_scalarString.append(mb, c);
+        utf8proc_uint8_t mb[4];
+        utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(ch), mb);
+        if (c < 0)
+        {
+            atWarning("invalid UTF-8 character while encoding");
+            return std::unique_ptr<YAMLNode>(ret);
+        }
+        ret->m_scalarString.append(reinterpret_cast<char*>(mb), c);
     }
-#endif
     return std::unique_ptr<YAMLNode>(ret);
 }
 

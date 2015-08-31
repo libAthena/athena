@@ -16,6 +16,7 @@
 
 #include "Athena/SkywardSwordQuest.hpp"
 #include "Athena/Checksums.hpp"
+#include "utf8proc.h"
 #include <sstream>
 
 namespace Athena
@@ -72,7 +73,7 @@ void SkywardSwordQuest::setPlayerName(const std::string& name)
     if (name.length() > 8)
         atDebug("WARNING: name cannot be greater than 8 characters, automatically truncating");
 
-    const char* buf = name.c_str();
+    const utf8proc_uint8_t* buf = reinterpret_cast<const utf8proc_uint8_t*>(name.c_str());
     for (atUint32 i = 0; i < 8; i++)
     {
         atUint16& c = *(atUint16*)(m_data.get() + priv::NAME_OFFSET + (i * 2));
@@ -83,9 +84,15 @@ void SkywardSwordQuest::setPlayerName(const std::string& name)
             continue;
         }
 
-        wchar_t wc;
-        buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
-        c = wc;
+        utf8proc_int32_t wc;
+        utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
+        if (len < 0)
+        {
+            atError("invalid UTF-8 string");
+            return;
+        }
+        buf += len;
+        c = atUint16(wc);
         utility::BigUint16(c);
     }
 }
@@ -102,9 +109,10 @@ std::string SkywardSwordQuest::playerName() const
             break;
 
         utility::BigUint16(c);
-        char mb[4];
-        int cs = std::wctomb(mb, c);
-        val.append(mb, cs);
+        utf8proc_uint8_t mb[4];
+        utf8proc_ssize_t cs = utf8proc_encode_char(utf8proc_int32_t(c), mb);
+        if (cs)
+            val.append(reinterpret_cast<char*>(mb), cs);
     }
 
     return val;

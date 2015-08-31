@@ -17,7 +17,7 @@ set(ATHENA_VERSION
 
 add_subdirectory(extern)
 
-include_directories(include ${LZO_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR} ${YAML_INCLUDE_DIR})
+include_directories(include ${LZO_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
 if (NOT MSVC)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
@@ -69,6 +69,8 @@ add_library(AthenaCore
     include/gekko_support.h
     include/Athena/DNA.hpp
     include/Athena/DNAYaml.hpp
+    include/yaml.h
+    include/utf8proc.h
 )
 
 add_library(AthenaSakura
