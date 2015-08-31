@@ -6,9 +6,8 @@ set(YAML_VERSION_STRING "${YAML_VERSION_MAJOR}.${YAML_VERSION_MINOR}.${YAML_VERS
 file(GLOB SRC src/*.c)
 
 include_directories(include win32)
-add_definitions(-DYAML_DECLARE_STATIC)
 add_library(AthenaLibYaml STATIC ${SRC} include/yaml.h)
 
 set(YAML_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include CACHE PATH "YAML include path" FORCE)
-install(DIRECTORY include/ DESTINATION include/Athena COMPONENT yaml)
+#install(DIRECTORY include/ DESTINATION include/Athena COMPONENT yaml)
 install(TARGETS AthenaLibYaml DESTINATION lib COMPONENT yaml)

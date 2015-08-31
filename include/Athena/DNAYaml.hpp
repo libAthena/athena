@@ -7,6 +7,13 @@
  * Any changes to the types or namespacing must be reflected in 'atdna/main.cpp'
  */
 
+#if _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN 1
+#endif
+#include <windows.h>
+#endif
+
 #include <string.h>
 #include <yaml.h>
 #include "DNA.hpp"
@@ -374,29 +381,44 @@ inline std::unique_ptr<YAMLNode> ValToNode(const char* val)
 template <>
 inline std::wstring NodeToVal(const YAMLNode* node)
 {
+#if _WIN32
+    int len = MultiByteToWideChar(CP_UTF8, 0, node->m_scalarString.c_str(), node->m_scalarString.size(), nullptr, 0);
+    std::wstring retval(len, L'\0');
+    MultiByteToWideChar(CP_UTF8, 0, node->m_scalarString.c_str(), node->m_scalarString.size(), &retval[0], len);
+    return retval;
+#else
     std::wstring retval;
     retval.reserve(node->m_scalarString.length());
     const char* buf = node->m_scalarString.c_str();
+    std::mbstate_t state = {};
     while (*buf)
     {
         wchar_t wc;
-        buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
+        buf += std::mbrtowc(&wc, buf, MB_LEN_MAX, &state);
         retval += wc;
     }
     return retval;
+#endif
 }
 
 template <>
 inline std::unique_ptr<YAMLNode> ValToNode(const std::wstring& val)
 {
     YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+#if _WIN32
+    int len = WideCharToMultiByte(CP_UTF8, 0, val.c_str(), val.size(), nullptr, 0, nullptr, nullptr);
+    ret->m_scalarString.assign(len, '\0');
+    WideCharToMultiByte(CP_UTF8, 0, val.c_str(), val.size(), &ret->m_scalarString[0], len, nullptr, nullptr);
+#else
     ret->m_scalarString.reserve(val.length());
+    std::mbstate_t state = {};
     for (wchar_t ch : val)
     {
-        char mb[4];
-        int c = std::wctomb(mb, ch);
+        char mb[MB_LEN_MAX];
+        int c = std::wcrtomb(mb, ch, &state);
         ret->m_scalarString.append(mb, c);
     }
+#endif
     return std::unique_ptr<YAMLNode>(ret);
 }
 

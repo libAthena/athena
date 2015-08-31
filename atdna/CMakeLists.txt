@@ -2,6 +2,12 @@
 # ATDNA Build #
 ###############
 
+# Force this binary to Release flags (to make MSVC happy)
+if(MSVC)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_RELEASE}")
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
+endif()
+
 # Find dependencies
 include(FindLLVM.cmake)
 if(NOT LLVM_FOUND)

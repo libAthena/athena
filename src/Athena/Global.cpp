@@ -46,13 +46,13 @@ static void __defaultExceptionHandler(const Athena::error::Level& level, const c
     std::string levelStr;
     switch(level)
     {
-        case Athena::error::WARNING:
+        case Athena::error::LevelWarning:
             levelStr = "[WARNING] ";
             break;
-        case Athena::error::ERROR:
+        case Athena::error::LevelError:
             levelStr = "[ERROR  ] ";
             break;
-        case Athena::error::FATAL:
+        case Athena::error::LevelFatal:
             levelStr = "[FATAL  ] ";
             break;
         default: break;

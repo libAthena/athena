@@ -1,6 +1,13 @@
 #ifndef ISTREAMWRITER_HPP
 #define ISTREAMWRITER_HPP
 
+#if _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN 1
+#endif
+#include <windows.h>
+#endif
+
 #include "IStream.hpp"
 
 namespace Athena
@@ -437,14 +444,42 @@ public:
     inline void writeStringAsWString(const std::string& str, atInt32 fixedLen = -1)
     {
        std::string tmpStr = "\xEF\xBB\xBF" + str;
-       const char* buf = tmpStr.c_str();
 
+#if _WIN32
+       int len = MultiByteToWideChar(CP_UTF8, 0, tmpStr.c_str(), tmpStr.size(), nullptr, 0);
+       std::wstring retval(len, L'\0');
+       MultiByteToWideChar(CP_UTF8, 0, tmpStr.c_str(), tmpStr.size(), &retval[0], len);
+       if (fixedLen < 0)
+       {
+           for (wchar_t ch : retval)
+           {
+               if (ch != 0xFEFF)
+                   writeUint16(ch);
+           }
+           writeUint16(0);
+       }
+       else
+       {
+           for (atInt32 i=0 ; i<fixedLen ; ++i)
+           {
+               wchar_t wc = retval[i];
+               if (wc == 0xFEFF)
+               {
+                   --i;
+                   continue;
+               }
+               writeUint16(wc);
+           }
+       }
+#else
+       const char* buf = tmpStr.c_str();
+       std::mbstate_t state = {};
        if (fixedLen < 0)
        {
            while (*buf)
            {
                wchar_t wc;
-               buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
+               buf += std::mbrtowc(&wc, buf, MB_LEN_MAX, &state);
                if (wc != 0xFEFF)
                    writeUint16(wc);
            }
@@ -456,7 +491,7 @@ public:
            {
                wchar_t wc = 0;
                if (*buf)
-                   buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
+                   buf += std::mbrtowc(&wc, buf, MB_LEN_MAX, &state);
 
                if (wc == 0xFEFF)
                {
@@ -467,19 +502,48 @@ public:
                writeUint16(wc);
            }
        }
+#endif
     }
 
     inline void writeStringAsWStringLittle(const std::string& str, atInt32 fixedLen = -1)
     {
         std::string tmpStr = "\xEF\xBB\xBF" + str;
-        const char* buf = tmpStr.c_str();
 
+#if _WIN32
+        int len = MultiByteToWideChar(CP_UTF8, 0, tmpStr.c_str(), tmpStr.size(), nullptr, 0);
+        std::wstring retval(len, L'\0');
+        MultiByteToWideChar(CP_UTF8, 0, tmpStr.c_str(), tmpStr.size(), &retval[0], len);
+        if (fixedLen < 0)
+        {
+            for (wchar_t ch : retval)
+            {
+                if (ch != 0xFEFF)
+                    writeUint16(ch);
+            }
+            writeUint16Little(0);
+        }
+        else
+        {
+            for (atInt32 i = 0; i<fixedLen; ++i)
+            {
+                wchar_t wc = retval[i];
+                if (wc == 0xFEFF)
+                {
+                    --i;
+                    continue;
+                }
+                writeUint16Little(wc);
+            }
+        }
+#else
+        const char* buf = tmpStr.c_str();
+        std::mbstate_t state = {};
         if (fixedLen < 0)
         {
             while (*buf)
             {
                 wchar_t wc;
-                buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
+                buf += std::mbrtowc(&wc, buf, MB_LEN_MAX, &state);
                 if (wc != 0xFEFF)
                     writeUint16Little(wc);
             }
@@ -491,7 +555,7 @@ public:
             {
                 wchar_t wc = 0;
                 if (*buf)
-                    buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
+                    buf += std::mbrtowc(&wc, buf, MB_LEN_MAX, &state);
 
                 if (wc == 0xFEFF)
                 {
@@ -502,19 +566,48 @@ public:
                 writeUint16Little(wc);
             }
         }
+#endif
     }
 
     inline void writeStringAsWStringBig(const std::string& str, atInt32 fixedLen = -1)
     {
         std::string tmpStr = "\xEF\xBB\xBF" + str;
-        const char* buf = tmpStr.c_str();
 
+#if _WIN32
+        int len = MultiByteToWideChar(CP_UTF8, 0, tmpStr.c_str(), tmpStr.size(), nullptr, 0);
+        std::wstring retval(len, L'\0');
+        MultiByteToWideChar(CP_UTF8, 0, tmpStr.c_str(), tmpStr.size(), &retval[0], len);
+        if (fixedLen < 0)
+        {
+            for (wchar_t ch : retval)
+            {
+                if (ch != 0xFEFF)
+                    writeUint16(ch);
+            }
+            writeUint16Big(0);
+        }
+        else
+        {
+            for (atInt32 i = 0; i<fixedLen; ++i)
+            {
+                wchar_t wc = retval[i];
+                if (wc == 0xFEFF)
+                {
+                    --i;
+                    continue;
+                }
+                writeUint16Big(wc);
+            }
+        }
+#else
+        const char* buf = tmpStr.c_str();
+        std::mbstate_t state = {};
         if (fixedLen < 0)
         {
             while (*buf)
             {
                 wchar_t wc;
-                buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
+                buf += std::mbrtowc(&wc, buf, MB_LEN_MAX, &state);
                 if (wc != 0xFEFF)
                     writeUint16Big(wc);
             }
@@ -526,7 +619,7 @@ public:
             {
                 wchar_t wc = 0;
                 if (*buf)
-                    buf += std::mbtowc(&wc, buf, MB_CUR_MAX);
+                    buf += std::mbrtowc(&wc, buf, MB_LEN_MAX, &state);
 
                 if (wc == 0xFEFF)
                 {
@@ -537,6 +630,7 @@ public:
                 writeUint16Big(wc);
             }
         }
+#endif
     }
 
     /*! \brief Writes an string to the buffer and advances the buffer.

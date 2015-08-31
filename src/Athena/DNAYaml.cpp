@@ -175,7 +175,7 @@ static inline bool EmitKeyScalar(yaml_emitter_t* doc, const char* val)
     if (!yaml_scalar_event_initialize(&event, nullptr, nullptr, (yaml_char_t*)val,
                                       strlen(val), true, true, YAML_PLAIN_SCALAR_STYLE))
         return false;
-    return yaml_emitter_emit(doc, &event);
+    return yaml_emitter_emit(doc, &event) != 0;
 }
 
 static inline yaml_scalar_style_t ScalarStyle(const YAMLNode& node)
