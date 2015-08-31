@@ -160,7 +160,7 @@ std::ostream& operator<<(std::ostream& os, const Athena::Endian& endian);
 #define atDebug(fmt...) \
     do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
     if (__handler) \
-        __handler(Athena::error::MESSAGE, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
+        __handler(Athena::error::LevelMessage, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
 } while(0)
 #else // _MSC_VER
 #define atDebug(fmt, ...)
@@ -169,7 +169,7 @@ std::ostream& operator<<(std::ostream& os, const Athena::Endian& endian);
 #define atMessage(fmt...) \
     do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
     if (__handler) \
-        __handler(Athena::error::MESSAGE, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
+        __handler(Athena::error::LevelMessage, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
 } while(0)
 
 #define atWarning(fmt...) \
