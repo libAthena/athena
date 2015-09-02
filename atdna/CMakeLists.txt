@@ -30,7 +30,8 @@ list(APPEND LLVM_LIBS
      LLVMBitReader
      LLVMMC
      LLVMSupport)
-set(CLANG_INCLUDE_DIR ${LLVM_LIBRARY_DIRS}/clang/${LLVM_VERSION_STRING}/include)
+set(CLANG_INCLUDE_DIR ${LLVM_LIBRARY_DIRS}/clang/${LLVM_VERSION_STRING}/include
+    CACHE PATH "Clang include dir" FORCE)
 
 if(UNIX)
 list(APPEND PLAT_LIBS z pthread curses dl)
@@ -123,3 +124,50 @@ add_test(NAME test-dna COMMAND $<TARGET_FILE:atdna> -o test.cpp
 
 endif()
 
+#######################
+# In-tree atdna macro #
+#######################
+
+# Super handy macro for adding atdna target
+macro(atdna out)
+  # Make input files source-relative
+  set(ins "")
+  foreach(arg ${ARGN})
+    list(APPEND ins ${CMAKE_CURRENT_SOURCE_DIR}/${arg})
+  endforeach()
+
+  # Get local include directories for atdna
+  get_property(incdirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+  set(inccli "")
+  foreach(dir ${incdirs})
+    list(APPEND inccli "-I${dir}")
+  endforeach()
+
+  # Get local defines for atdna
+  get_property(cdefs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_DEFINITIONS)
+  set(cdefcli "")
+  foreach(def ${cdefs})
+    list(APPEND cdefcli "-D${def}")
+  endforeach()
+
+  # MS extra
+  unset(extraargs)
+  if(MSVC)
+    list(APPEND extraargs -fms-compatibility -fexceptions)
+    if(MSVC_VERSION EQUAL 1800)
+      list(APPEND extraargs -fms-compatibility-version=18.00)
+    elseif(MSVC_VERSION EQUAL 1900)
+      list(APPEND extraargs -fms-compatibility-version=19.00)
+    endif()
+
+  # OSX Extra
+  elseif(APPLE)
+    list(APPEND extraargs -isysroot ${CMAKE_OSX_SYSROOT} -isysroot /)
+  endif()
+
+  # Make target
+  add_custom_command(OUTPUT ${out} COMMAND $<TARGET_FILE:atdna> 
+                     ARGS ${extraargs} -o ${out} ${cdefcli} ${inccli} "-I${ATHENA_INCLUDE_DIR}"
+                     -isystem "${CLANG_INCLUDE_DIR}" ${ins}
+                     DEPENDS ${ins} COMMENT "Generating DNA ${out}")
+endmacro()

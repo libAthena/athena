@@ -42,11 +42,16 @@ macro(atdna out)
     elseif(MSVC_VERSION EQUAL 1900)
       list(APPEND extraargs -fms-compatibility-version=19.00)
     endif()
+
+  # OSX Extra
+  elseif(APPLE)
+    list(APPEND extraargs -isysroot ${CMAKE_OSX_SYSROOT} -isysroot /)
   endif()
-  
+
   # Make target
   add_custom_command(OUTPUT ${out} COMMAND $<TARGET_FILE:atdna> 
-                     ARGS ${extraargs} -o ${out} ${cdefcli} ${inccli} "-I${ATHENA_INCLUDE_DIR}" -isystem "@CONF_CLANG_INCLUDE_DIR@" ${ins}
+                     ARGS ${extraargs} -o ${out} ${cdefcli} ${inccli} "-I${ATHENA_INCLUDE_DIR}"
+                     -isystem "@CONF_CLANG_INCLUDE_DIR@" ${ins}
                      DEPENDS ${ins} COMMENT "Generating DNA ${out}")
 endmacro()
 

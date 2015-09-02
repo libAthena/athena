@@ -1,5 +1,7 @@
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 cmake_minimum_required(VERSION 3.0)
 project(Athena)
+endif()
 
 ##################
 # Athena Version #
@@ -73,7 +75,7 @@ add_library(AthenaCore
     include/utf8proc.h
 )
 
-add_library(AthenaSakura
+add_library(AthenaSakura EXCLUDE_FROM_ALL
     src/Athena/Sprite.cpp
     src/Athena/SpriteFile.cpp
     src/Athena/SpriteFileReader.cpp
@@ -89,7 +91,7 @@ add_library(AthenaSakura
     include/Athena/SpritePart.hpp
 )
 
-add_library(AthenaWiiSave
+add_library(AthenaWiiSave EXCLUDE_FROM_ALL
     src/Athena/WiiBanner.cpp
     src/Athena/WiiFile.cpp
     src/Athena/WiiImage.cpp
@@ -118,7 +120,7 @@ if(NOT MSVC)
 set_source_files_properties(src/aes.cpp PROPERTIES COMPILE_FLAGS -maes)
 endif()
 
-add_library(AthenaZelda
+add_library(AthenaZelda EXCLUDE_FROM_ALL
     src/Athena/ALTTPFile.cpp
     src/Athena/ALTTPFileReader.cpp
     src/Athena/ALTTPFileWriter.cpp
@@ -174,7 +176,7 @@ endforeach()
 
 # Define installs
 install(DIRECTORY include/ DESTINATION ${INSTALL_INCLUDE_DIR}/Athena COMPONENT Athena)
-install(TARGETS AthenaCore AthenaSakura AthenaWiiSave AthenaZelda
+install(TARGETS AthenaCore
         DESTINATION ${INSTALL_LIB_DIR} EXPORT AthenaTargets COMPONENT Athena)
 if(WIN32 AND NOT CYGWIN)
 install(FILES Athena.ico DESTINATION ${INSTALL_LIB_DIR} COMPONENT Athena)
@@ -190,7 +192,7 @@ endif()
 ##################
 
 # Add all targets to the build-tree export set
-export(TARGETS AthenaCore AthenaSakura AthenaWiiSave AthenaZelda
+export(TARGETS AthenaCore 
   FILE "${PROJECT_BINARY_DIR}/AthenaTargets.cmake")
 
 # Export the package for use from the build-tree

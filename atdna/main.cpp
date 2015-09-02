@@ -29,6 +29,8 @@ static unsigned AthenaError = 0;
 
 static llvm::cl::opt<bool> Help("h", llvm::cl::desc("Alias for -help"), llvm::cl::Hidden);
 
+static llvm::cl::opt<bool> Verbose("v", llvm::cl::desc("verbose mode"));
+
 static llvm::cl::OptionCategory ATDNAFormatCategory("atdna options");
 
 static llvm::cl::opt<std::string> OutputFilename("o",
@@ -53,6 +55,12 @@ static llvm::cl::list<std::string> IncludeSearchPaths("I",
 
 static llvm::cl::list<std::string> SystemIncludeSearchPaths("isystem",
                                                             llvm::cl::desc("System Header search path"));
+
+static llvm::cl::opt<std::string> StandardCXXLib("stdlib",
+                                                 llvm::cl::desc("Standard C++ library"));
+
+static llvm::cl::list<std::string> SystemIncRoot("isysroot",
+                                                 llvm::cl::desc("System include root"));
 
 static llvm::cl::list<std::string> PreprocessorDefines("D",
                                                        llvm::cl::desc("Preprocessor define"),
