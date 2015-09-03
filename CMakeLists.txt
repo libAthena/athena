@@ -83,6 +83,7 @@ add_library(AthenaSakura EXCLUDE_FROM_ALL
     src/Athena/SpriteFrame.cpp
     src/Athena/SpritePart.cpp
 
+    include/Athena/SakuraGlobal.hpp
     include/Athena/Sprite.hpp
     include/Athena/SpriteFile.hpp
     include/Athena/SpriteFileReader.hpp
