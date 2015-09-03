@@ -1,7 +1,7 @@
-if(NOT WIN32)
+if(NOT WIN32 AND NOT APPLE)
 find_library(LZO_LIB lzo2)
 endif()
-if(WIN32 OR LZO_LIB STREQUAL LZO_LIB-NOTFOUND)
+if(WIN32 OR APPLE OR LZO_LIB STREQUAL LZO_LIB-NOTFOUND)
 include_directories(include)
 message("-- Using Athena's built-in lzo")
 add_library(lzo2
