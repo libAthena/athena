@@ -12,97 +12,95 @@ class IStreamWriter : public IStream
 {
 public:
     virtual ~IStreamWriter() {}
-    /*! \brief Sets the Endianness of the stream
+    /** @brief Sets the Endianness of the stream
      *
-     *  \param endian The Endianness to set \sa Endian
+     *  @param endian The Endianness to set
      */
     inline void setEndian(Endian endian)
     {m_endian = endian;}
 
-    /*! \brief Returns the current Endianness of the stream
+    /** @brief Returns the current Endianness of the stream
      *
-     *  \return Endian The current Stream Endianness
+     *  @return The current Stream Endianness
      */
     inline Endian endian() const
     {return m_endian;}
 
-    /*! \brief Returns whether the stream is BigEndian
+    /** @brief Returns whether the stream is BigEndian
      *
-     *  \return bool True for BigEndian; False for LittleEndian
+     *  @return True for BigEndian; False for LittleEndian
      */
     inline bool isBigEndian() const
     {return (m_endian == Endian::BigEndian);}
 
-    /*! \brief Returns whether the stream is LittleEndian
+    /** @brief Returns whether the stream is LittleEndian
      *
-     *  \return bool True for LittleEndian; False for BigEndian
+     *  @return True for LittleEndian; False for BigEndian
      */
     inline bool isLittleEndian() const
     {return (m_endian == Endian::LittleEndian);}
 
-    /*! \brief Sets the buffers position relative to the specified position.<br />
+    /** @brief Sets the buffers position relative to the specified position.<br />
      *         It seeks relative to the current position by default.
-     *  \param position where in the buffer to seek
-     *  \param origin The Origin to seek \sa SeekOrigin
+     *  @param position where in the buffer to seek
+     *  @param origin The location to seek relative to
      */
     virtual void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current)=0;
 
-    /*! \brief Sets the buffers position relative to the next 32-byte aligned position.<br />
+    /** @brief Sets the buffers position relative to the next 32-byte aligned position.<br />
      */
     inline void seekAlign32() {seek(ROUND_UP_32(position()), SeekOrigin::Begin);}
 
-    /*! \brief Returns whether or not the stream is at the end.
+    /** @brief Returns whether or not the stream is at the end.
      *
-     *  \return bool True if at end; False otherwise.
+     *  @return True if at end; False otherwise.
      */
     inline bool atEnd() const {return position() >= length();}
 
-    /*! \brief Returns the current position in the stream.
+    /** @brief Returns the current position in the stream.
      *
-     *  \return Int64 The current position in the stream.
+     *  @return The current position in the stream.
      */
     virtual atUint64 position() const=0;
 
-    /*! \brief Returns whether or not the stream is at the end.
+    /** @brief Returns whether or not the stream is at the end.
      *
-     *  \return bool True if at end; False otherwise.
+     *  @return True if at end; False otherwise.
      */
     virtual atUint64 length() const=0;
 
-    /*! \brief Writes a byte at the current position and advances the position by one byte.
-     * \param byte The value to write
+    /** @brief Writes a byte at the current position and advances the position by one byte.
+     *  @param val The value to write
      */
     inline void writeUByte(atUint8 val) {writeUBytes(&val, 1);}
     inline void writeVal(atUint8 val) {return writeUByte(val);}
 
-    /*! \brief Writes a byte at the current position and advances the position by one byte.
-     * \param byte The value to write
-     * \throw IOException
+    /** @brief Writes a byte at the current position and advances the position by one byte.
+     *  @param val The value to write
      */
     inline void writeByte(atInt8 val) {writeUByte(val);}
     inline void writeVal(atInt8 val) {return writeByte(val);}
 
-    /*! \brief Writes the given buffer with the specified length, buffers can be bigger than the length
+    /** @brief Writes the given buffer with the specified length, buffers can be bigger than the length
      *  however it's undefined behavior to try and write a buffer which is smaller than the given length.
      *
-     * \param data The buffer to write
-     * \param length The amount to write
+     *  @param data The buffer to write
+     *  @param length The amount to write
      */
     virtual void writeUBytes(const atUint8* data, atUint64 len)=0;
 
-    /*! \brief Writes the given buffer with the specified length, buffers can be bigger than the length
+    /** @brief Writes the given buffer with the specified length, buffers can be bigger than the length
      *  however it's undefined behavior to try and write a buffer which is smaller than the given length.
      *
-     * \param data The buffer to write
-     * \param length The amount to write
+     *  @param data The buffer to write
+     *  @param length The amount to write
      */
     inline void writeBytes(const atInt8* data, atUint64 len) {writeUBytes((atUint8*)data, len);}
 
-    /*! \brief Writes an Int16 to the buffer and advances the buffer.
+    /** @brief Writes an Int16 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
-     *  \sa Endian
-     *  \param val The value to write to the buffer
+     *  @param val The value to write to the buffer
      */
     inline void writeInt16(atInt16 val)
     {
@@ -114,6 +112,11 @@ public:
     }
     inline void writeVal(atInt16 val) {return writeInt16(val);}
 
+    /** @brief Writes an Int16 to the buffer and advances the buffer.
+     *         It also swaps the bytes against little depending on the platform.
+     *
+     *  @param val The value to write to the buffer
+     */
     inline void writeInt16Little(atInt16 val)
     {
         utility::LittleInt16(val);
@@ -121,6 +124,11 @@ public:
     }
     inline void writeValLittle(atInt16 val) {return writeInt16Little(val);}
 
+    /** @brief Writes an Int16 to the buffer and advances the buffer.
+     *         It also swaps the bytes against big depending on the platform.
+     *
+     *  @param val The value to write to the buffer
+     */
     inline void writeInt16Big(atInt16 val)
     {
         utility::BigInt16(val);
@@ -128,26 +136,34 @@ public:
     }
     inline void writeValBig(atInt16 val) {return writeInt16Big(val);}
 
-    /*! \brief Writes an Uint16 to the buffer and advances the buffer.
+    /** @brief Writes an Uint16 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings
      *
-     *  \sa Endian
-     *  \param val The value to write to the buffer
+     *  @param val The value to write to the buffer
      */
     inline void writeUint16(atUint16 val) {writeInt16(val);}
     inline void writeVal(atUint16 val) {return writeUint16(val);}
 
+    /** @brief Writes an Uint16 to the buffer and advances the buffer.
+     *         It also swaps the bytes against little depending on the platform
+     *
+     *  @param val The value to write to the buffer
+     */
     inline void writeUint16Little(atUint16 val) {writeInt16Little(val);}
     inline void writeValLittle(atUint16 val) {return writeUint16Little(val);}
 
+    /** @brief Writes an Uint16 to the buffer and advances the buffer.
+     *         It also swaps the bytes against big depending on the platform
+     *
+     *  @param val The value to write to the buffer
+     */
     inline void writeUint16Big(atUint16 val) {writeInt16Big(val);}
     inline void writeValBig(atUint16 val) {return writeUint16Big(val);}
 
-    /*! \brief Writes an Int32 to the buffer and advances the buffer.
+    /** @brief Writes an Int32 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
-     *  \sa Endian
-     *  \param val The value to write to the buffer
+     *  @param val The value to write to the buffer
      */
     inline void writeInt32(atInt32 val)
     {
@@ -159,6 +175,11 @@ public:
     }
     inline void writeVal(atInt32 val) {return writeInt32(val);}
 
+    /** @brief Writes an Int32 to the buffer and advances the buffer.
+     *         It also swaps the bytes against little depending on the platform.
+     *
+     *  @param val The value to write to the buffer
+     */
     inline void writeInt32Little(atInt32 val)
     {
         utility::LittleInt32(val);
@@ -166,6 +187,11 @@ public:
     }
     inline void writeValLittle(atInt32 val) {return writeInt32Little(val);}
 
+    /** @brief Writes an Int32 to the buffer and advances the buffer.
+     *         It also swaps the bytes against big depending on the platform.
+     *
+     *  @param val The value to write to the buffer
+     */
     inline void writeInt32Big(atInt32 val)
     {
         utility::BigInt32(val);
@@ -173,26 +199,34 @@ public:
     }
     inline void writeValBig(atInt32 val) {return writeInt32Big(val);}
 
-    /*! \brief Writes an Uint32 to the buffer and advances the buffer.
+    /** @brief Writes an Uint32 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
-     *  \sa Endian
-     *  \param val The value to write to the buffer
+     *  @param val The value to write to the buffer
      */
     inline void writeUint32(atUint32 val) {writeInt32(val);}
     inline void writeVal(atUint32 val) {return writeUint32(val);}
 
+    /** @brief Writes an Uint32 to the buffer and advances the buffer.
+     *         It also swaps the bytes against little depending on the platform.
+     *
+     *  @param val The value to write to the buffer
+     */
     inline void writeUint32Little(atUint32 val) {writeInt32Little(val);}
     inline void writeValLittle(atUint32 val) {return writeUint32Little(val);}
 
+    /** @brief Writes an Uint32 to the buffer and advances the buffer.
+     *         It also swaps the bytes against big depending on the platform.
+     *
+     *  @param val The value to write to the buffer
+     */
     inline void writeUint32Big(atUint32 val) {writeInt32Big(val);}
     inline void writeValBig(atUint32 val) {return writeUint32Big(val);}
 
-    /*! \brief Writes an Int64 to the buffer and advances the buffer.
+    /** @brief Writes an Int64 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
-     *  \sa Endian
-     *  \param val The value to write to the buffer
+     *  @param val The value to write to the buffer
      */
     inline void writeInt64(atInt64 val)
     {
@@ -204,6 +238,11 @@ public:
     }
     inline void writeVal(atInt64 val) {return writeInt64(val);}
 
+    /** @brief Writes an Int64 to the buffer and advances the buffer.
+     *         It also swaps the bytes against little depending on the platform.
+     *
+     *  @param val The value to write to the buffer
+     */
     inline void writeInt64Little(atInt64 val)
     {
         utility::LittleInt64(val);
@@ -211,6 +250,11 @@ public:
     }
     inline void writeValLittle(atInt64 val) {return writeInt64Little(val);}
 
+    /** @brief Writes an Int64 to the buffer and advances the buffer.
+     *         It also swaps the bytes against big depending on the platform.
+     *
+     *  @param val The value to write to the buffer
+     */
     inline void writeInt64Big(atInt64 val)
     {
         utility::BigInt64(val);
@@ -218,26 +262,34 @@ public:
     }
     inline void writeValBig(atInt64 val) {return writeInt64Big(val);}
 
-    /*! \brief Writes an Uint64 to the buffer and advances the buffer.
+    /** @brief Writes an Uint64 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
-     *  \sa Endian
-     *  \param val The value to write to the buffer
+     *  @param val The value to write to the buffer
      */
     inline void writeUint64(atUint64 val) {writeInt64(val);}
     inline void writeVal(atUint64 val) {return writeUint64(val);}
 
+    /** @brief Writes an Uint64 to the buffer and advances the buffer.
+     *         It also swaps the bytes against little depending on the platform.
+     *
+     *  @param val The value to write to the buffer
+     */
     inline void writeUint64Little(atUint64 val) {writeInt64Little(val);}
     inline void writeValLittle(atUint64 val) {return writeUint64Little(val);}
 
+    /** @brief Writes an Uint64 to the buffer and advances the buffer.
+     *         It also swaps the bytes against big depending on the platform.
+     *
+     *  @param val The value to write to the buffer
+     */
     inline void writeUint64Big(atUint64 val) {writeInt64Big(val);}
     inline void writeValBig(atUint64 val) {return writeUint64Big(val);}
 
-    /*! \brief Writes an float to the buffer and advances the buffer.
+    /** @brief Writes an float to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
-     *  \sa Endian
-     *  \param val The value to write to the buffer
+     *  @param val The value to write to the buffer
      */
     inline void writeFloat(float val)
     {
@@ -249,6 +301,11 @@ public:
     }
     inline void writeVal(float val) {return writeFloat(val);}
 
+    /** @brief Writes an float to the buffer and advances the buffer.
+     *         It also swaps the bytes against little depending on the platform.
+     *
+     *  @param val The value to write to the buffer
+     */
     inline void writeFloatLittle(float val)
     {
         utility::LittleFloat(val);
@@ -256,6 +313,11 @@ public:
     }
     inline void writeValLittle(float val) {return writeFloatLittle(val);}
 
+    /** @brief Writes an float to the buffer and advances the buffer.
+     *         It also swaps the bytes against big depending on the platform.
+     *
+     *  @param val The value to write to the buffer
+     */
     inline void writeFloatBig(float val)
     {
         utility::BigFloat(val);
@@ -263,11 +325,10 @@ public:
     }
     inline void writeValBig(float val) {return writeFloatBig(val);}
 
-    /*! \brief Writes an double to the buffer and advances the buffer.
+    /** @brief Writes an double to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
-     *  \sa Endian
-     *  \param val The value to write to the buffer
+     *  @param val The value to write to the buffer
      */
     inline void writeDouble(double val)
     {
@@ -279,6 +340,11 @@ public:
     }
     inline void writeVal(double val) {return writeDouble(val);}
 
+    /** @brief Writes an double to the buffer and advances the buffer.
+     *         It also swaps the bytes against little depending on the platform.
+     *
+     *  @param val The value to write to the buffer
+     */
     inline void writeDoubleLittle(double val)
     {
         utility::LittleDouble(val);
@@ -286,6 +352,11 @@ public:
     }
     inline void writeValLittle(double val) {return writeDoubleLittle(val);}
 
+    /** @brief Writes an double to the buffer and advances the buffer.
+     *         It also swaps the bytes against big depending on the platform.
+     *
+     *  @param val The value to write to the buffer
+     */
     inline void writeDoubleBig(double val)
     {
         utility::BigDouble(val);
@@ -293,20 +364,18 @@ public:
     }
     inline void writeValBig(double val) {return writeDoubleBig(val);}
 
-    /*! \brief Writes an bool to the buffer and advances the buffer.
+    /** @brief Writes an bool to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
-     *  \sa Endian
-     *  \param val The value to write to the buffer
+     *  @param val The value to write to the buffer
      */
     inline void writeBool(bool val) {writeUBytes((atUint8*)&val, 1);}
     inline void writeVal(bool val) {return writeBool(val);}
 
-    /*! \brief Writes an atVec2f (8 bytes) to the buffer and advances the buffer.
+    /** @brief Writes an atVec2f (8 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
-     * \sa Endian
-     * \param vec The value to write to the buffer
+     * @param vec The value to write to the buffer
      */
     inline void writeVec2f(atVec2f vec)
     {
@@ -324,6 +393,11 @@ public:
     }
     inline void writeVal(atVec2f val) {return writeVec2f(val);}
 
+    /** @brief Writes an atVec2f (8 bytes) to the buffer and advances the buffer.
+     *         It also swaps the bytes against little depending on the platform.
+     *
+     * @param vec The value to write to the buffer
+     */
     inline void writeVec2fLittle(atVec2f vec)
     {
         utility::LittleFloat(vec.vec[0]);
@@ -332,6 +406,11 @@ public:
     }
     inline void writeValLittle(atVec2f val) {return writeVec2fLittle(val);}
 
+    /** @brief Writes an atVec2f (8 bytes) to the buffer and advances the buffer.
+     *         It also swaps the bytes against big depending on the platform.
+     *
+     * @param vec The value to write to the buffer
+     */
     inline void writeVec2fBig(atVec2f vec)
     {
         utility::BigFloat(vec.vec[0]);
@@ -340,11 +419,10 @@ public:
     }
     inline void writeValBig(atVec2f val) {return writeVec2fBig(val);}
 
-    /*! \brief Writes an atVec3f (12 bytes) to the buffer and advances the buffer.
+    /** @brief Writes an atVec3f (12 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
-     * \sa Endian
-     * \param vec The value to write to the buffer
+     *  @param vec The value to write to the buffer
      */
     inline void writeVec3f(atVec3f vec)
     {
@@ -364,6 +442,11 @@ public:
     }
     inline void writeVal(atVec3f val) {return writeVec3f(val);}
 
+    /** @brief Writes an atVec3f (12 bytes) to the buffer and advances the buffer.
+     *         It also swaps the bytes against little depending on the platform.
+     *
+     *  @param vec The value to write to the buffer
+     */
     inline void writeVec3fLittle(atVec3f vec)
     {
         utility::LittleFloat(vec.vec[0]);
@@ -373,6 +456,11 @@ public:
     }
     inline void writeValLittle(atVec3f val) {return writeVec3fLittle(val);}
 
+    /** @brief Writes an atVec3f (12 bytes) to the buffer and advances the buffer.
+     *         It also swaps the bytes against big depending on the platform.
+     *
+     *  @param vec The value to write to the buffer
+     */
     inline void writeVec3fBig(atVec3f vec)
     {
         utility::BigFloat(vec.vec[0]);
@@ -382,11 +470,10 @@ public:
     }
     inline void writeValBig(atVec3f val) {return writeVec3fBig(val);}
 
-    /*! \brief Writes an atVec4f (16 bytes) to the buffer and advances the buffer.
+    /** @brief Writes an atVec4f (16 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
-     * \sa Endian
-     * \param vec The value to write to the buffer
+     *  @param vec The value to write to the buffer
      */
     inline void writeVec4f(atVec4f vec)
     {
@@ -408,6 +495,11 @@ public:
     }
     inline void writeVal(atVec4f val) {return writeVec4f(val);}
 
+    /** @brief Writes an atVec4f (16 bytes) to the buffer and advances the buffer.
+     *         It also swaps the bytes against little depending on the platform.
+     *
+     *  @param vec The value to write to the buffer
+     */
     inline void writeVec4fLittle(atVec4f vec)
     {
         utility::LittleFloat(vec.vec[0]);
@@ -418,6 +510,11 @@ public:
     }
     inline void writeValLittle(atVec4f val) {return writeVec4fLittle(val);}
 
+    /** @brief Writes an atVec4f (16 bytes) to the buffer and advances the buffer.
+     *         It also swaps the bytes against big depending on the platform.
+     *
+     *  @param vec The value to write to the buffer
+     */
     inline void writeVec4fBig(atVec4f vec)
     {
         utility::BigFloat(vec.vec[0]);
@@ -428,12 +525,13 @@ public:
     }
     inline void writeValBig(atVec4f val) {return writeVec4fBig(val);}
 
-    /*! \brief Converts a UTF8 string to a wide-char string in the buffer and advances the buffer.
+    /** @brief Converts a UTF8 string to a wide-char string in the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
-     *  \sa Endian
-     *  \param str The string to write to the buffer
-     *  \param fixedLen If not -1, the number of characters to zero-fill string to
+     *  @param str The string to write to the buffer
+     *  @param fixedLen If not -1, the number of characters to zero-fill string to
+     *
+     *  Endianness is set with setEndian
      */
     inline void writeStringAsWString(const std::string& str, atInt32 fixedLen = -1)
     {
@@ -483,6 +581,14 @@ public:
        }
     }
 
+    /** @brief Converts a UTF8 string to a wide-char string in the buffer and advances the buffer.
+     *         It also swaps the bytes depending on the platform and Stream settings.
+     *
+     *  @param str The string to write to the buffer
+     *  @param fixedLen If not -1, the number of characters to zero-fill string to
+     *
+     *  Endianness is little
+     */
     inline void writeStringAsWStringLittle(const std::string& str, atInt32 fixedLen = -1)
     {
         std::string tmpStr = "\xEF\xBB\xBF" + str;
@@ -531,6 +637,14 @@ public:
         }
     }
 
+    /** @brief Converts a UTF8 string to a wide-char string in the buffer and advances the buffer.
+     *         It also swaps the bytes depending on the platform and Stream settings.
+     *
+     *  @param str The string to write to the buffer
+     *  @param fixedLen If not -1, the number of characters to zero-fill string to
+     *
+     *  Endianness is big
+     */
     inline void writeStringAsWStringBig(const std::string& str, atInt32 fixedLen = -1)
     {
         std::string tmpStr = "\xEF\xBB\xBF" + str;
@@ -579,11 +693,10 @@ public:
         }
     }
 
-    /*! \brief Writes an string to the buffer and advances the buffer.
+    /** @brief Writes an string to the buffer and advances the buffer.
      *
-     *  \sa Endian
-     *  \param str The string to write to the buffer
-     *  \param fixedLen If not -1, the number of characters to zero-fill string to
+     *  @param str The string to write to the buffer
+     *  @param fixedLen If not -1, the number of characters to zero-fill string to
      */
     inline void writeString(const std::string& str, atInt32 fixedLen = -1)
     {
@@ -614,11 +727,12 @@ public:
     }
     inline void writeVal(const std::string& val) {return writeString(val);}
 
-    /*! \brief Writes an wstring to the buffer and advances the buffer.
+    /** @brief Writes an wstring to the buffer and advances the buffer.
      *
-     *  \sa Endian
-     *  \param str The string to write to the buffer
-     *  \param fixedLen If not -1, the number of characters to zero-fill string to
+     *  @param str The string to write to the buffer
+     *  @param fixedLen If not -1, the number of characters to zero-fill string to
+     *
+     *  Endianness is set with setEndian
      */
     inline void writeWString(const std::wstring& str, atInt32 fixedLen = -1)
     {
@@ -649,6 +763,13 @@ public:
     }
     inline void writeVal(const std::wstring& val) {return writeWString(val);}
 
+    /** @brief Writes an wstring to the buffer and advances the buffer.
+     *
+     *  @param str The string to write to the buffer
+     *  @param fixedLen If not -1, the number of characters to zero-fill string to
+     *
+     *  Endianness is little
+     */
     inline void writeWStringLittle(const std::wstring& str, atInt32 fixedLen = -1)
     {
         if (fixedLen < 0)
@@ -678,6 +799,13 @@ public:
     }
     inline void writeValLittle(const std::wstring& val) {return writeWStringLittle(val);}
 
+    /** @brief Writes an wstring to the buffer and advances the buffer.
+     *
+     *  @param str The string to write to the buffer
+     *  @param fixedLen If not -1, the number of characters to zero-fill string to
+     *
+     *  Endianness is big
+     */
     inline void writeWStringBig(const std::wstring& str, atInt32 fixedLen = -1)
     {
         if (fixedLen < 0)
@@ -712,6 +840,11 @@ public:
     inline void fill(atInt8 val, atUint64 length)
     {fill((atUint8)val, length);}
 
+    /** @brief Performs automatic std::vector enumeration writes using numeric type T
+     *  @param vector The std::vector read from when writing data
+     *
+     *  Endianness is set with setEndian
+     */
     template <class T>
     void enumerate(const std::vector<T>& vector,
                    typename std::enable_if<std::is_arithmetic<T>::value ||
@@ -723,6 +856,11 @@ public:
             writeVal(item);
     }
 
+    /** @brief Performs automatic std::vector enumeration writes using numeric type T
+     *  @param vector The std::vector read from when writing data
+     *
+     *  Endianness is little
+     */
     template <class T>
     void enumerateLittle(const std::vector<T>& vector,
                          typename std::enable_if<std::is_arithmetic<T>::value ||
@@ -734,6 +872,11 @@ public:
             writeValLittle(item);
     }
 
+    /** @brief Performs automatic std::vector enumeration writes using numeric type T
+     *  @param vector The std::vector read from when writing data
+     *
+     *  Endianness is big
+     */
     template <class T>
     void enumerateBig(const std::vector<T>& vector,
                       typename std::enable_if<std::is_arithmetic<T>::value ||
@@ -745,6 +888,9 @@ public:
             writeValBig(item);
     }
 
+    /** @brief Performs automatic std::vector enumeration writes using non-numeric type T
+     *  @param vector The std::vector read from when writing data
+     */
     template <class T>
     void enumerate(const std::vector<T>& vector,
                    typename std::enable_if<!std::is_arithmetic<T>::value &&

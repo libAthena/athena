@@ -15,86 +15,86 @@ class IStreamReader : public IStream
 public:
     virtual ~IStreamReader() {}
 
-    /*! \brief Sets the Endianness of the stream
+    /** @brief Sets the Endianness of the stream
      *
-     *  \param endian The Endianness to set \sa Endian
+     *  @param endian The Endianness to set
      */
     inline void setEndian(Endian endian)
     {m_endian = endian;}
 
-    /*! \brief Returns the current Endianness of the stream
+    /** @brief Returns the current Endianness of the stream
      *
-     *  \return Endian The current Stream Endianness
+     *  @return The current Stream Endianness
      */
     inline Endian endian()      const
     {return m_endian;}
 
-    /*! \brief Returns whether the stream is BigEndian
+    /** @brief Returns whether the stream is BigEndian
      *
-     *  \return bool True for BigEndian; False for LittleEndian
+     *  @return bool True for BigEndian; False for LittleEndian
      */
     inline bool isBigEndian()   const
     {return (m_endian == Endian::BigEndian);}
 
-    /*! \brief Returns whether the stream is LittleEndian
+    /** @brief Returns whether the stream is LittleEndian
      *
-     *  \return bool True for LittleEndian; False for BigEndian
+     *  @return True for LittleEndian; False for BigEndian
      */
     inline bool isLittleEndian()const
     {return (m_endian == Endian::LittleEndian);}
 
 
-    /*! \brief Sets the buffers position relative to the specified position.<br />
+    /** @brief Sets the buffers position relative to the specified position.<br />
      *         It seeks relative to the current position by default.
-     *  \param position where in the buffer to seek
-     *  \param origin The Origin to seek \sa SeekOrigin
+     *  @param position where in the buffer to seek
+     *  @param origin The Origin to seek relative to
      */
     virtual void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current)=0;
 
-    /*! \brief Sets the buffers position relative to the next 32-byte aligned position.<br />
+    /** @brief Sets the buffers position relative to the next 32-byte aligned position.<br />
      */
     inline void seekAlign32() {seek(ROUND_UP_32(position()), SeekOrigin::Begin);}
 
-    /*! \brief Returns whether or not the stream is at the end.
+    /** @brief Returns whether or not the stream is at the end.
      *
-     *  \return bool True if at end; False otherwise.
+     *  @return True if at end; False otherwise.
      */
     inline bool atEnd() const
     {return position() >= length();}
 
-    /*! \brief Returns the current position in the stream.
+    /** @brief Returns the current position in the stream.
      *
-     *  \return Int64 The current position in the stream.
+     *  @return The current position in the stream.
      */
     virtual atUint64 position() const=0;
 
-    /*! \brief Returns whether or not the stream is at the end.
+    /** @brief Returns whether or not the stream is at the end.
      *
-     *  \return bool True if at end; False otherwise.
+     *  @return True if at end; False otherwise.
      */
     virtual atUint64 length() const=0;
 
-    /*! \brief Reads a byte at the current position and advances the current position
+    /** @brief Reads a byte at the current position and advances the current position
      *
-     * \return Int8 The value at the current position
+     * @return The value at the current position
      */
     inline atInt8 readByte() {atInt8 val; readUBytesToBuf(&val, 1); return val;}
     template <class T>
     inline atInt8 readVal(typename std::enable_if<std::is_same<T, atInt8>::value>::type* = 0)
     {return readByte();}
 
-    /*! \brief Reads a byte at the current position and advances the current position
+    /** @brief Reads a byte at the current position and advances the current position
      *
-     * \return Uint8 The value at the current position
+     * @return The value at the current position
      */
     inline atUint8 readUByte() {return readByte();}
     template <class T>
     inline atUint8 readVal(typename std::enable_if<std::is_same<T, atUint8>::value>::type* = 0)
     {return readUByte();}
 
-    /*! \brief Reads a byte at the current position and advances the current position.
+    /** @brief Reads a byte at the current position and advances the current position.
      *
-     * \return Uint8* The buffer at the current position from the given length.
+     * @return The buffer at the current position from the given length.
      */
     inline std::unique_ptr<atInt8[]> readBytes(atUint64 length)
     {
@@ -103,9 +103,9 @@ public:
         return std::unique_ptr<atInt8[]>(buf);
     }
 
-    /*! \brief Reads a byte at the current position and advances the current position.
+    /** @brief Reads a byte at the current position and advances the current position.
      *
-     * \return Int8* The buffer at the current position from the given length.
+     * @return The buffer at the current position from the given length.
      */
     inline std::unique_ptr<atUint8[]> readUBytes(atUint64 length)
     {
@@ -117,13 +117,10 @@ public:
     inline atUint64 readBytesToBuf(void* buf, atUint64 len) {return readUBytesToBuf(buf, len);}
     virtual atUint64 readUBytesToBuf(void* buf, atUint64 len)=0;
 
-    /*! \brief Reads a Int16 and swaps to proper endianness depending on platform
-     *  and Stream settings, and advances the current position
+    /** @brief Reads a Int16 and swaps to endianness specified by setEndian depending on platform
+     *  and advances the current position
      *
-     *  \sa Endian
-     *
-     *  \return Int16 The value at the current address
-     *  \throw IOException when address is out of range
+     *  @return The value at the current address
      */
     inline atInt16 readInt16()
     {
@@ -135,6 +132,11 @@ public:
     inline atInt16 readVal(typename std::enable_if<std::is_same<T, atInt16>::value>::type* = 0)
     {return readInt16();}
 
+    /** @brief Reads a Int16 and swaps against little endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline atInt16 readInt16Little()
     {
         atInt16 val;
@@ -145,6 +147,11 @@ public:
     inline atInt16 readValLittle(typename std::enable_if<std::is_same<T, atInt16>::value>::type* = 0)
     {return readInt16Little();}
 
+    /** @brief Reads a Int16 and swaps against big endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline atInt16 readInt16Big()
     {
         atInt16 val;
@@ -155,13 +162,10 @@ public:
     inline atInt16 readValBig(typename std::enable_if<std::is_same<T, atInt16>::value>::type* = 0)
     {return readInt16Big();}
 
-    /*! \brief Reads a Uint16 and swaps to proper endianness depending on platform
-     *  and Stream settings, and advances the current position
+    /** @brief Reads a Uint16 and swaps to endianness specified by setEndian depending on platform
+     *  and advances the current position
      *
-     *  \sa Endian
-     *
-     *  \return Uint16 The value at the current address
-     *  \throw IOException when address is out of range
+     *  @return The value at the current address
      */
     inline atUint16 readUint16()
     {return readInt16();}
@@ -169,6 +173,11 @@ public:
     inline atUint16 readVal(typename std::enable_if<std::is_same<T, atUint16>::value>::type* = 0)
     {return readUint16();}
 
+    /** @brief Reads a Uint16 and swaps against little endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline atUint16 readUint16Little()
     {
         atUint16 val;
@@ -179,6 +188,11 @@ public:
     inline atUint16 readValLittle(typename std::enable_if<std::is_same<T, atUint16>::value>::type* = 0)
     {return readUint16Little();}
 
+    /** @brief Reads a Uint16 and swaps against big endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline atUint16 readUint16Big()
     {
         atUint16 val;
@@ -189,13 +203,10 @@ public:
     inline atUint16 readValBig(typename std::enable_if<std::is_same<T, atUint16>::value>::type* = 0)
     {return readUint16Big();}
 
-    /*! \brief Reads a Int32 and swaps to proper endianness depending on platform
-     *  and Stream settings, and advances the current position
+    /** @brief Reads a Int32 and swaps to endianness specified by setEndian depending on platform
+     *  and advances the current position
      *
-     *  \sa Endian
-     *
-     *  \return Int32 The value at the current address
-     *  \throw IOException when address is out of range
+     *  @return The value at the current address
      */
     inline atInt32 readInt32()
     {
@@ -207,6 +218,11 @@ public:
     inline atInt32 readVal(typename std::enable_if<std::is_same<T, atInt32>::value>::type* = 0)
     {return readInt32();}
 
+    /** @brief Reads a Int32 and swaps against little endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline atInt32 readInt32Little()
     {
         atInt32 val;
@@ -217,6 +233,11 @@ public:
     inline atInt32 readValLittle(typename std::enable_if<std::is_same<T, atInt32>::value>::type* = 0)
     {return readInt32Little();}
 
+    /** @brief Reads a Int32 and swaps against big endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline atInt32 readInt32Big()
     {
         atInt32 val;
@@ -227,13 +248,10 @@ public:
     inline atInt32 readValBig(typename std::enable_if<std::is_same<T, atInt32>::value>::type* = 0)
     {return readInt32Big();}
 
-    /*! \brief Reads a Uint32 and swaps to proper endianness depending on platform
-     *  and Stream settings, and advances the current position
+    /** @brief Reads a Uint32 and swaps to endianness specified by setEndian depending on platform
+     *  and advances the current position
      *
-     *  \sa Endian
-     *
-     *  \return Uint32 The value at the current address
-     *  \throw IOException when address is out of range
+     *  @return The value at the current address
      */
     inline atUint32 readUint32()
     {return readInt32();}
@@ -241,6 +259,11 @@ public:
     inline atUint32 readVal(typename std::enable_if<std::is_same<T, atUint32>::value>::type* = 0)
     {return readUint32();}
 
+    /** @brief Reads a Uint32 and swaps against little endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline atUint32 readUint32Little()
     {
         atUint32 val;
@@ -251,6 +274,11 @@ public:
     inline atInt32 readValLittle(typename std::enable_if<std::is_same<T, atUint32>::value>::type* = 0)
     {return readUint32Little();}
 
+    /** @brief Reads a Uint32 and swaps against big endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline atUint32 readUint32Big()
     {
         atUint32 val;
@@ -261,13 +289,10 @@ public:
     inline atUint32 readValBig(typename std::enable_if<std::is_same<T, atUint32>::value>::type* = 0)
     {return readUint32Big();}
 
-    /*! \brief Reads a Int64 and swaps to proper endianness depending on platform
-     *  and Stream settings, and advances the current position
+    /** @brief Reads a Int64 and swaps to endianness specified by setEndian depending on platform
+     *  and advances the current position
      *
-     *  \sa Endian
-     *
-     *  \return Int64 The value at the current address
-     *  \throw IOException when address is out of range
+     *  @return The value at the current address
      */
     inline atInt64 readInt64()
     {
@@ -279,6 +304,11 @@ public:
     inline atInt64 readVal(typename std::enable_if<std::is_same<T, atInt64>::value>::type* = 0)
     {return readInt64();}
 
+    /** @brief Reads a Int64 and swaps against little endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline atInt64 readInt64Little()
     {
         atInt64 val;
@@ -289,6 +319,11 @@ public:
     inline atInt64 readValLittle(typename std::enable_if<std::is_same<T, atInt64>::value>::type* = 0)
     {return readInt64Little();}
 
+    /** @brief Reads a Int64 and swaps against big endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline atInt64 readInt64Big()
     {
         atInt64 val;
@@ -299,13 +334,10 @@ public:
     inline atInt64 readValBig(typename std::enable_if<std::is_same<T, atInt64>::value>::type* = 0)
     {return readInt64Big();}
 
-    /*! \brief Reads a Uint64 and swaps to proper endianness depending on platform
-     *  and Stream settings, and advances the current position
+    /** @brief Reads a Uint64 and swaps to endianness specified by setEndian depending on platform
+     *  and advances the current position
      *
-     *  \sa Endian
-     *
-     *  \return Uint64 The value at the current address
-     *  \throw IOException when address is out of range
+     *  @return The value at the current address
      */
     inline atUint64 readUint64()
     {return readInt64();}
@@ -313,6 +345,11 @@ public:
     inline atUint64 readVal(typename std::enable_if<std::is_same<T, atUint64>::value>::type* = 0)
     {return readUint64();}
 
+    /** @brief Reads a Uint64 and swaps against little endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline atUint64 readUint64Little()
     {
         atUint64 val;
@@ -323,6 +360,11 @@ public:
     inline atUint64 readValLittle(typename std::enable_if<std::is_same<T, atUint64>::value>::type* = 0)
     {return readUint64Little();}
 
+    /** @brief Reads a Uint64 and swaps against big endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline atUint64 readUint64Big()
     {
         atUint64 val;
@@ -333,13 +375,10 @@ public:
     inline atUint64 readValBig(typename std::enable_if<std::is_same<T, atUint64>::value>::type* = 0)
     {return readUint64Big();}
 
-    /*! \brief Reads a float and swaps to proper endianness depending on platform
-     *  and Stream settings, and advances the current position
+    /** @brief Reads a float and swaps to endianness specified by setEndian depending on platform
+     *  and advances the current position
      *
-     *  \sa Endian
-     *
-     *  \return float The value at the current address
-     *  \throw IOException when address is out of range
+     *  @return The value at the current address
      */
     inline float readFloat()
     {
@@ -351,6 +390,11 @@ public:
     inline float readVal(typename std::enable_if<std::is_same<T, float>::value>::type* = 0)
     {return readFloat();}
 
+    /** @brief Reads a float and swaps against little endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline float readFloatLittle()
     {
         float val;
@@ -361,6 +405,11 @@ public:
     inline float readValLittle(typename std::enable_if<std::is_same<T, float>::value>::type* = 0)
     {return readFloatLittle();}
 
+    /** @brief Reads a float and swaps against big endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline float readFloatBig()
     {
         float val;
@@ -371,13 +420,10 @@ public:
     inline float readValBig(typename std::enable_if<std::is_same<T, float>::value>::type* = 0)
     {return readFloatBig();}
 
-    /*! \brief Reads a double and swaps to proper endianness depending on platform
-     *  and Stream settings, and advances the current position
+    /** @brief Reads a double and swaps to endianness specified by setEndian depending on platform
+     *  and advances the current position
      *
-     *  \sa Endian
-     *
-     *  \return double The value at the current address
-     *  \throw IOException when address is out of range
+     *  @return The value at the current address
      */
     inline double readDouble()
     {
@@ -389,6 +435,11 @@ public:
     inline double readVal(typename std::enable_if<std::is_same<T, double>::value>::type* = 0)
     {return readDouble();}
 
+    /** @brief Reads a double and swaps against little endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline double readDoubleLittle()
     {
         double val;
@@ -399,6 +450,11 @@ public:
     inline double readValLittle(typename std::enable_if<std::is_same<T, double>::value>::type* = 0)
     {return readDoubleLittle();}
 
+    /** @brief Reads a double and swaps against big endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline double readDoubleBig()
     {
         double val;
@@ -409,10 +465,9 @@ public:
     inline double readValBig(typename std::enable_if<std::is_same<T, double>::value>::type* = 0)
     {return readDoubleBig();}
 
-    /*! \brief Reads a bool and advances the current position
+    /** @brief Reads a bool and advances the current position
      *
-     *  \return bool The value at the current address
-     *  \throw IOException when address is out of range
+     *  @return The value at the current address
      */
     inline bool readBool()
     {
@@ -424,10 +479,10 @@ public:
     inline bool readVal(typename std::enable_if<std::is_same<T, bool>::value>::type* = 0)
     {return readBool();}
 
-    /*! \brief Reads an atVec2f (8 bytes) and advances the current position
+    /** @brief Reads an atVec2f (8 bytes), swaps to endianness specified by setEndian depending on platform
+     *  and advances the current position
      *
-     *  \return atVec2f The value at the current address
-     *  \throw IOException when address is out of range
+     *  @return The value at the current address
      */
     inline atVec2f readVec2f()
     {
@@ -449,6 +504,11 @@ public:
     inline atVec2f readVal(typename std::enable_if<std::is_same<T, atVec2f>::value>::type* = 0)
     {return readVec2f();}
 
+    /** @brief Reads an atVec2f (8 bytes), swaps against little endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline atVec2f readVec2fLittle()
     {
         atVec2f val;
@@ -461,6 +521,11 @@ public:
     inline atVec2f readValLittle(typename std::enable_if<std::is_same<T, atVec2f>::value>::type* = 0)
     {return readVec2fLittle();}
 
+    /** @brief Reads an atVec2f (8 bytes), swaps against big endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline atVec2f readVec2fBig()
     {
         atVec2f val;
@@ -473,10 +538,10 @@ public:
     inline atVec2f readValBig(typename std::enable_if<std::is_same<T, atVec2f>::value>::type* = 0)
     {return readVec2fBig();}
 
-    /*! \brief Reads an atVec3f (12 bytes) and advances the current position
+    /** @brief Reads an atVec3f (12 bytes), swaps to endianness specified by setEndian depending on platform
+     *  and advances the current position
      *
-     *  \return atVec3f The value at the current address
-     *  \throw IOException when address is out of range
+     *  @return The value at the current address
      */
     inline atVec3f readVec3f()
     {
@@ -500,6 +565,11 @@ public:
     inline atVec3f readVal(typename std::enable_if<std::is_same<T, atVec3f>::value>::type* = 0)
     {return readVec3f();}
 
+    /** @brief Reads an atVec3f (12 bytes), swaps against little endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline atVec3f readVec3fLittle()
     {
         atVec3f val;
@@ -513,6 +583,11 @@ public:
     inline atVec3f readValLittle(typename std::enable_if<std::is_same<T, atVec3f>::value>::type* = 0)
     {return readVec3fLittle();}
 
+    /** @brief Reads an atVec3f (12 bytes), swaps against big endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline atVec3f readVec3fBig()
     {
         atVec3f val;
@@ -526,10 +601,10 @@ public:
     inline atVec3f readValBig(typename std::enable_if<std::is_same<T, atVec3f>::value>::type* = 0)
     {return readVec3fBig();}
 
-    /*! \brief Reads an atVec4f (16 bytes) and advances the current position
+    /** @brief Reads an atVec4f (16 bytes), swaps to endianness specified by setEndian depending on platform
+     *  and advances the current position
      *
-     *  \return atVec4f The value at the current address
-     *  \throw IOException when address is out of range
+     *  @return The value at the current address
      */
     inline atVec4f readVec4f()
     {
@@ -555,6 +630,11 @@ public:
     inline atVec4f readVal(typename std::enable_if<std::is_same<T, atVec4f>::value>::type* = 0)
     {return readVec4f();}
 
+    /** @brief Reads an atVec4f (16 bytes), swaps against little endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline atVec4f readVec4fLittle()
     {
         atVec4f val;
@@ -569,6 +649,11 @@ public:
     inline atVec4f readValLittle(typename std::enable_if<std::is_same<T, atVec4f>::value>::type* = 0)
     {return readVec4fLittle();}
 
+    /** @brief Reads an atVec4f (16 bytes), swaps against big endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
     inline atVec4f readVec4fBig()
     {
         atVec4f val;
@@ -583,11 +668,11 @@ public:
     inline atVec4f readValBig(typename std::enable_if<std::is_same<T, atVec4f>::value>::type* = 0)
     {return readVec4fBig();}
 
-    /*! \brief Reads a wide-char string, converts to UTF8 and advances the position in the file
+    /** @brief Reads a wide-char string (using endianness from setEndian),
+     *         converts to UTF8 and advances the position in the file
      *
-     *  \param fixedLen If non-negative, this is a fixed-length string read
-     *  \return std::string The value at the current address
-     *  \throw IOException when address is out of range
+     *  @param fixedLen If non-negative, this is a fixed-length string read
+     *  @return The read string
      */
     inline std::string readWStringAsString(atInt32 fixedLen = -1)
     {
@@ -621,6 +706,12 @@ public:
         return retval;
     }
 
+    /** @brief Reads a wide-char string (against little-endian),
+     *         converts to UTF8 and advances the position in the file
+     *
+     *  @param fixedLen If non-negative, this is a fixed-length string read
+     *  @return The read string
+     */
     inline std::string readWStringAsStringLittle(atInt32 fixedLen = -1)
     {
         std::string retval;
@@ -653,6 +744,12 @@ public:
         return retval;
     }
 
+    /** @brief Reads a wide-char string (against big-endian),
+     *         converts to UTF8 and advances the position in the file
+     *
+     *  @param fixedLen If non-negative, this is a fixed-length string read
+     *  @return The read string
+     */
     inline std::string readWStringAsStringBig(atInt32 fixedLen = -1)
     {
         std::string retval;
@@ -685,11 +782,10 @@ public:
         return retval;
     }
 
-    /*! \brief Reads a string and advances the position in the file
+    /** @brief Reads a string and advances the position in the file
      *
-     *  \param fixedLen If non-negative, this is a fixed-length string read
-     *  \return std::string The value at the current address
-     *  \throw IOException when address is out of range
+     *  @param fixedLen If non-negative, this is a fixed-length string read
+     *  @return The read string
      */
     inline std::string readString(atInt32 fixedLen = -1)
     {
@@ -716,11 +812,10 @@ public:
     inline std::string readVal(typename std::enable_if<std::is_same<T, std::string>::value>::type* = 0)
     {return readString();}
 
-    /*! \brief Reads a wstring and advances the position in the file
+    /** @brief Reads a wstring and advances the position in the file
      *
-     *  \param fixedLen If non-negative, this is a fixed-length string read
-     *  \return std::wstring The value at the current address
-     *  \throw IOException when address is out of range
+     *  @param fixedLen If non-negative, this is a fixed-length string read
+     *  @return The read wstring
      */
     inline std::wstring readWString(atInt32 fixedLen = -1)
     {
@@ -747,6 +842,12 @@ public:
     inline std::wstring readVal(typename std::enable_if<std::is_same<T, std::wstring>::value>::type* = 0)
     {return readWString();}
 
+    /** @brief Reads a wstring assuming little-endian characters
+     *         and advances the position in the file
+     *
+     *  @param fixedLen If non-negative, this is a fixed-length string read
+     *  @return The read wstring
+     */
     inline std::wstring readWStringLittle(atInt32 fixedLen = -1)
     {
         std::wstring ret;
@@ -772,6 +873,12 @@ public:
     inline std::wstring readValLittle(typename std::enable_if<std::is_same<T, std::wstring>::value>::type* = 0)
     {return readWStringLittle();}
 
+    /** @brief Reads a wstring assuming big-endian characters
+     *         and advances the position in the file
+     *
+     *  @param fixedLen If non-negative, this is a fixed-length string read
+     *  @return The read wstring
+     */
     inline std::wstring readWStringBig(atInt32 fixedLen = -1)
     {
         std::wstring ret;
@@ -797,6 +904,13 @@ public:
     inline std::wstring readValBig(typename std::enable_if<std::is_same<T, std::wstring>::value>::type* = 0)
     {return readWStringBig();}
 
+    /** @brief Performs automatic std::vector enumeration reads using numeric type T
+     *
+     *  @param vector The std::vector to clear and populate using read data
+     *  @param count The number of elements to read into vector
+     *
+     *  Endianness is set with setEndian
+     */
     template<class T>
     void enumerate(std::vector<T>& vector, size_t count,
                    typename std::enable_if<std::is_arithmetic<T>::value ||
@@ -810,6 +924,13 @@ public:
             vector.emplace_back(readVal<T>());
     }
 
+    /** @brief Performs automatic std::vector enumeration reads using numeric type T
+     *
+     *  @param vector The std::vector to clear and populate using read data
+     *  @param count The number of elements to read into vector
+     *
+     *  Endianness is little
+     */
     template<class T>
     void enumerateLittle(std::vector<T>& vector, size_t count,
                          typename std::enable_if<std::is_arithmetic<T>::value ||
@@ -823,6 +944,13 @@ public:
             vector.emplace_back(readValLittle<T>());
     }
 
+    /** @brief Performs automatic std::vector enumeration reads using numeric type T
+     *
+     *  @param vector The std::vector to clear and populate using read data
+     *  @param count The number of elements to read into vector
+     *
+     *  Endianness is big
+     */
     template<class T>
     void enumerateBig(std::vector<T>& vector, size_t count,
                       typename std::enable_if<std::is_arithmetic<T>::value ||
@@ -836,6 +964,11 @@ public:
             vector.emplace_back(readValBig<T>());
     }
 
+    /** @brief Performs automatic std::vector enumeration reads using non-numeric type T
+     *
+     *  @param vector The std::vector to clear and populate using read data
+     *  @param count The number of elements to read into vector
+     */
     template<class T>
     void enumerate(std::vector<T>& vector, size_t count,
                    typename std::enable_if<!std::is_arithmetic<T>::value &&
@@ -852,6 +985,13 @@ public:
         }
     }
 
+    /** @brief Performs lambda-assisted std::vector enumeration reads using type T
+     *
+     *  @param vector The std::vector to clear and populate using read data
+     *  @param count The number of elements to read into vector
+     *  @param readf Function (e.g. a lambda) that reads *one* element and
+     *               assigns the value through the second argument
+     */
     template<class T>
     void enumerate(std::vector<T>& vector, size_t count, std::function<void(IStreamReader&, T&)> readf)
     {
