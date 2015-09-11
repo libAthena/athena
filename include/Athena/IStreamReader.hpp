@@ -82,6 +82,12 @@ public:
     template <class T>
     inline atInt8 readVal(typename std::enable_if<std::is_same<T, atInt8>::value>::type* = 0)
     {return readByte();}
+    template <class T>
+    inline atInt8 readValLittle(typename std::enable_if<std::is_same<T, atInt8>::value>::type* = 0)
+    {return readByte();}
+    template <class T>
+    inline atInt8 readValBig(typename std::enable_if<std::is_same<T, atInt8>::value>::type* = 0)
+    {return readByte();}
 
     /*! \brief Reads a byte at the current position and advances the current position
      *
@@ -90,6 +96,12 @@ public:
     inline atUint8 readUByte() {return readByte();}
     template <class T>
     inline atUint8 readVal(typename std::enable_if<std::is_same<T, atUint8>::value>::type* = 0)
+    {return readUByte();}
+    template <class T>
+    inline atUint8 readValLittle(typename std::enable_if<std::is_same<T, atUint8>::value>::type* = 0)
+    {return readUByte();}
+    template <class T>
+    inline atUint8 readValBig(typename std::enable_if<std::is_same<T, atUint8>::value>::type* = 0)
     {return readUByte();}
 
     /*! \brief Reads a byte at the current position and advances the current position.
