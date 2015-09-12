@@ -47,6 +47,11 @@ typedef struct stat stat64_t;
 #define stat64 stat
 #elif _WIN32
 typedef struct _stat64 stat64_t;
+#elif __FreeBSD__
+typedef struct stat stat64_t;
+#define stat64 stat
+#define fseeko64 fseeko
+#define ftello64 ftello
 #else
 typedef struct stat64 stat64_t;
 #endif
