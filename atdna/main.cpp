@@ -1328,7 +1328,6 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         {
                             fileOut << "    /* " << fieldName << " */\n"
                                        "    " << fieldName << (p ? ".write(" ATHENA_DNA_WRITER ");\n" : ".read(" ATHENA_DNA_READER ");\n");
-                            break;
                         }
                     }
 
@@ -1649,7 +1648,6 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                 fileOut << "    /* " << fieldName << " */\n"
                                            "    " ATHENA_YAML_WRITER ".enumerate(\"" << fieldNameBare << "\", " << fieldName << ");\n";
                             }
-                            break;
                         }
                     }
 
