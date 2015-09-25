@@ -375,6 +375,8 @@ public:
      */
     inline void writeBool(bool val) {writeUBytes((atUint8*)&val, 1);}
     inline void writeVal(bool val) {writeBool(val);}
+    inline void writeValLittle(bool val) {writeBool(val);}
+    inline void writeValBig(bool val) {writeBool(val);}
 
     /** @brief Writes an atVec2f (8 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.

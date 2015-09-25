@@ -490,6 +490,12 @@ public:
     template <class T>
     inline bool readVal(typename std::enable_if<std::is_same<T, bool>::value>::type* = 0)
     {return readBool();}
+    template <class T>
+    inline bool readValLittle(typename std::enable_if<std::is_same<T, bool>::value>::type* = 0)
+    {return readBool();}
+    template <class T>
+    inline bool readValBig(typename std::enable_if<std::is_same<T, bool>::value>::type* = 0)
+    {return readBool();}
 
     /** @brief Reads an atVec2f (8 bytes), swaps to endianness specified by setEndian depending on platform
      *  and advances the current position
