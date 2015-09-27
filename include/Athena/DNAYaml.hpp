@@ -527,7 +527,7 @@ public:
         vector.reserve(count);
         enterSubVector(name);
         for (size_t i=0 ; i<count ; ++i)
-            vector.emplace_back(readVal<T>(name));
+            vector.push_back(readVal<T>(name));
         leaveSubVector();
     }
 

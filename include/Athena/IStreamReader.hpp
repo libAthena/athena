@@ -939,7 +939,7 @@ public:
         vector.clear();
         vector.reserve(count);
         for (size_t i=0 ; i<count ; ++i)
-            vector.emplace_back(readVal<T>());
+            vector.push_back(readVal<T>());
     }
 
     /** @brief Performs automatic std::vector enumeration reads using numeric type T
@@ -959,7 +959,7 @@ public:
         vector.clear();
         vector.reserve(count);
         for (size_t i=0 ; i<count ; ++i)
-            vector.emplace_back(readValLittle<T>());
+            vector.push_back(readValLittle<T>());
     }
 
     /** @brief Performs automatic std::vector enumeration reads using numeric type T
@@ -979,7 +979,7 @@ public:
         vector.clear();
         vector.reserve(count);
         for (size_t i=0 ; i<count ; ++i)
-            vector.emplace_back(readValBig<T>());
+            vector.push_back(readValBig<T>());
     }
 
     /** @brief Performs automatic std::vector enumeration reads using non-numeric type T
