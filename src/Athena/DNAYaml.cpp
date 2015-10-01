@@ -169,6 +169,76 @@ std::unique_ptr<YAMLNode> YAMLDocReader::ParseEvents(yaml_parser_t* doc)
     return std::unique_ptr<YAMLNode>();
 }
 
+bool YAMLDocReader::ValidateClassType(yaml_parser_t* doc, const char* expectedType)
+{
+    if (!expectedType)
+        return false;
+
+    yaml_event_t event;
+    if (!yaml_parser_parse(doc, &event))
+    {
+        HandleYAMLParserError(doc);
+        return false;
+    }
+
+    int result;
+    int mappingLevel = 0;
+    bool inDNA = false;
+    for (result = yaml_parser_parse(doc, &event);
+         event.type != YAML_STREAM_END_EVENT;
+         result = yaml_parser_parse(doc, &event))
+    {
+        if (!result)
+        {
+            HandleYAMLParserError(doc);
+            return false;
+        }
+        switch (event.type)
+        {
+        case YAML_SCALAR_EVENT:
+        {
+            if (mappingLevel == 1)
+            {
+                if (inDNA)
+                {
+                    if (!strcmp(expectedType, reinterpret_cast<const char*>(event.data.scalar.value)))
+                    {
+                        yaml_event_delete(&event);
+                        return true;
+                    }
+                    yaml_event_delete(&event);
+                    return false;
+                }
+                if (!strcmp("DNAType", reinterpret_cast<const char*>(event.data.scalar.value)))
+                    inDNA = true;
+            }
+            break;
+        }
+        case YAML_MAPPING_START_EVENT:
+        {
+            ++mappingLevel;
+            inDNA = false;
+            break;
+        }
+        case YAML_MAPPING_END_EVENT:
+        {
+            --mappingLevel;
+            inDNA = false;
+            break;
+        }
+        case YAML_DOCUMENT_END_EVENT:
+        {
+            yaml_event_delete(&event);
+            return false;
+        }
+        default:
+            break;
+        }
+        yaml_event_delete(&event);
+    }
+    return false;
+}
+
 static inline bool EmitKeyScalar(yaml_emitter_t* doc, const char* val)
 {
     yaml_event_t event;

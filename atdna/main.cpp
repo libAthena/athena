@@ -1665,6 +1665,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
 
             fileOut << "}\n\n";
         }
+        fileOut << "const char* " << decl->getQualifiedNameAsString() << "::DNAType()\n{\n    return \"" << decl->getQualifiedNameAsString() << "\";\n}\n\n";
     }
 
 public:

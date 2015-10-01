@@ -426,6 +426,7 @@ class YAMLDocReader
     std::vector<int> m_seqTrackerStack;
     static std::unique_ptr<YAMLNode> ParseEvents(yaml_parser_t* doc);
 public:
+    static bool ValidateClassType(yaml_parser_t* doc, const char* expectedType);
     inline const YAMLNode* getRootNode() const {return m_rootNode.get();}
     bool read(yaml_parser_t* doc)
     {
@@ -671,9 +672,15 @@ class YAMLDocWriter
     std::vector<YAMLNode*> m_subStack;
     static bool RecursiveFinish(yaml_emitter_t* doc, const YAMLNode& node);
 public:
-    YAMLDocWriter() : m_rootNode(YAML_MAPPING_NODE)
+    YAMLDocWriter(const char* classType) : m_rootNode(YAML_MAPPING_NODE)
     {
         m_subStack.emplace_back(&m_rootNode);
+        if (classType)
+        {
+            YAMLNode* classVal = new YAMLNode(YAML_SCALAR_NODE);
+            classVal->m_scalarString.assign(classType);
+            m_rootNode.m_mapChildren.emplace_back("DNAType", std::unique_ptr<YAMLNode>(classVal));
+        }
     }
 
     void enterSubRecord(const char* name)
@@ -936,6 +943,8 @@ struct DNAYaml : DNA<DNAE>
 {
     virtual void toYAML(YAMLDocWriter& out) const=0;
     virtual void fromYAML(YAMLDocReader& in)=0;
+    static const char* DNAType() {return nullptr;}
+    virtual const char* DNATypeV() const {return nullptr;}
 
     template <size_t sizeVar>
     using Buffer = struct Athena::io::BufferYaml<sizeVar, DNAE>;
@@ -970,7 +979,7 @@ struct DNAYaml : DNA<DNAE>
             return std::string();
         }
         {
-            YAMLDocWriter docWriter;
+            YAMLDocWriter docWriter(DNATypeV());
             toYAML(docWriter);
             if (!docWriter.finish(&emitter))
             {
@@ -1013,6 +1022,22 @@ struct DNAYaml : DNA<DNAE>
         return true;
     }
 
+    template<class DNASubtype>
+    static bool ValidateFromYAMLString(const std::string& str)
+    {
+        yaml_parser_t parser;
+        if (!yaml_parser_initialize(&parser))
+        {
+            HandleYAMLParserError(&parser);
+            return false;
+        }
+        YAMLStdStringReaderState reader(str);
+        yaml_parser_set_input(&parser, (yaml_read_handler_t*)YAMLStdStringReader, &reader);
+        bool retval = YAMLDocReader::ValidateClassType(&parser, DNASubtype::DNAType());
+        yaml_parser_delete(&parser);
+        return retval;
+    }
+
     bool toYAMLFile(FILE* fout) const
     {
         yaml_emitter_t emitter;
@@ -1033,7 +1058,7 @@ struct DNAYaml : DNA<DNAE>
             return false;
         }
         {
-            YAMLDocWriter docWriter;
+            YAMLDocWriter docWriter(DNATypeV());
             toYAML(docWriter);
             if (!docWriter.finish(&emitter))
             {
@@ -1073,6 +1098,23 @@ struct DNAYaml : DNA<DNAE>
         fromYAML(docReader);
         yaml_parser_delete(&parser);
         return true;
+    }
+
+    template<class DNASubtype>
+    static bool ValidateFromYAMLFile(FILE* fin)
+    {
+        yaml_parser_t parser;
+        if (!yaml_parser_initialize(&parser))
+        {
+            HandleYAMLParserError(&parser);
+            return false;
+        }
+        long pos = ftell(fin);
+        yaml_parser_set_input_file(&parser, fin);
+        bool retval = YAMLDocReader::ValidateClassType(&parser, DNASubtype::DNAType());
+        fseek(fin, pos, SEEK_SET);
+        yaml_parser_delete(&parser);
+        return retval;
     }
 };
 
@@ -1160,11 +1202,15 @@ struct WStringAsStringYaml : public DNAYaml<VE>, public std::string
     DECL_DNA \
     void fromYAML(Athena::io::YAMLDocReader&); \
     void toYAML(Athena::io::YAMLDocWriter&) const; \
+    static const char* DNAType(); \
+    const char* DNATypeV() const {return DNAType();} \
 
 /** Macro to automatically declare YAML read/write methods with client-code's definition */
 #define DECL_EXPLICIT_YAML \
     void fromYAML(Athena::io::YAMLDocReader&); \
     void toYAML(Athena::io::YAMLDocWriter&) const; \
+    static const char* DNAType(); \
+    const char* DNATypeV() const {return DNAType();} \
 
 }
 }
