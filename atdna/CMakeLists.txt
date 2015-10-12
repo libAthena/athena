@@ -167,7 +167,8 @@ macro(atdna out)
 
   # OSX Extra
   elseif(APPLE)
-    list(APPEND extraargs -isysroot ${CMAKE_OSX_SYSROOT} -isysroot /)
+    list(APPEND extraargs -isysroot ${CMAKE_OSX_SYSROOT} -isysroot
+         ${CMAKE_OSX_SYSROOT}/../../../../../Toolchains/XcodeDefault.xctoolchain)
   endif()
 
   # Make target
