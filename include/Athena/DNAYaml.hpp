@@ -263,7 +263,14 @@ inline RETURNTYPE NodeToVec(const YAMLNode* node)
     {
         YAMLNode* snode = it->get();
         if (snode->m_type == YAML_SCALAR_NODE)
-            retval.vec[i] = NodeToVal<float>(snode);
+        {
+            if (std::is_same<RETURNTYPE, atVec2d>::value ||
+                std::is_same<RETURNTYPE, atVec3d>::value ||
+                std::is_same<RETURNTYPE, atVec4d>::value)
+                retval.vec[i] = NodeToVal<double>(snode);
+            else
+                retval.vec[i] = NodeToVal<float>(snode);
+        }
         else
             retval.vec[i] = 0.0;
     }
@@ -322,6 +329,72 @@ inline atVec4f NodeToVal(const YAMLNode* node)
 
 template <>
 inline std::unique_ptr<YAMLNode> ValToNode(const atVec4f& val)
+{
+    YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
+    ret->m_seqChildren.reserve(4);
+    for (size_t i=0 ; i<4 ; ++i)
+    {
+        char str[64];
+        snprintf(str, 64, "%f", val.vec[i]);
+        YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
+        comp->m_scalarString = str;
+        ret->m_seqChildren.emplace_back(comp);
+    }
+    return std::unique_ptr<YAMLNode>(ret);
+}
+
+template <>
+inline atVec2d NodeToVal(const YAMLNode* node)
+{
+    return NodeToVec<atVec2d>(node);
+}
+
+template <>
+inline std::unique_ptr<YAMLNode> ValToNode(const atVec2d& val)
+{
+    YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
+    ret->m_seqChildren.reserve(2);
+    for (size_t i=0 ; i<2 ; ++i)
+    {
+        char str[64];
+        snprintf(str, 64, "%f", val.vec[i]);
+        YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
+        comp->m_scalarString = str;
+        ret->m_seqChildren.emplace_back(comp);
+    }
+    return std::unique_ptr<YAMLNode>(ret);
+}
+
+template <>
+inline atVec3d NodeToVal(const YAMLNode* node)
+{
+    return NodeToVec<atVec3d>(node);
+}
+
+template <>
+inline std::unique_ptr<YAMLNode> ValToNode(const atVec3d& val)
+{
+    YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
+    ret->m_seqChildren.reserve(3);
+    for (size_t i=0 ; i<3 ; ++i)
+    {
+        char str[64];
+        snprintf(str, 64, "%f", val.vec[i]);
+        YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
+        comp->m_scalarString = str;
+        ret->m_seqChildren.emplace_back(comp);
+    }
+    return std::unique_ptr<YAMLNode>(ret);
+}
+
+template <>
+inline atVec4d NodeToVal(const YAMLNode* node)
+{
+    return NodeToVec<atVec4d>(node);
+}
+
+template <>
+inline std::unique_ptr<YAMLNode> ValToNode(const atVec4d& val)
 {
     YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
     ret->m_seqChildren.reserve(4);
@@ -643,10 +716,24 @@ public:
     {
         return readVal<atVec3f>(name);
     }
-
     inline atVec4f readVec4f(const char* name)
     {
         return readVal<atVec4f>(name);
+    }
+
+    inline atVec2d readVec2d(const char* name)
+    {
+        return readVal<atVec2d>(name);
+    }
+
+    inline atVec3d readVec3d(const char* name)
+    {
+        return readVal<atVec3d>(name);
+    }
+
+    inline atVec4d readVec4d(const char* name)
+    {
+        return readVal<atVec4d>(name);
     }
 
     inline std::unique_ptr<atUint8[]> readUBytes(const char* name)
@@ -751,7 +838,10 @@ public:
                    typename std::enable_if<!std::is_arithmetic<T>::value &&
                                            !std::is_same<T, atVec2f>::value &&
                                            !std::is_same<T, atVec3f>::value &&
-                                           !std::is_same<T, atVec4f>::value>::type* = 0)
+                                           !std::is_same<T, atVec4f>::value &&
+                                           !std::is_same<T, atVec2d>::value &&
+                                           !std::is_same<T, atVec3d>::value &&
+                                           !std::is_same<T, atVec4d>::value>::type* = 0)
     {
         enterSubVector(name);
         for (const T& item : vector)
@@ -768,7 +858,10 @@ public:
                    typename std::enable_if<std::is_arithmetic<T>::value ||
                                            std::is_same<T, atVec2f>::value ||
                                            std::is_same<T, atVec3f>::value ||
-                                           std::is_same<T, atVec4f>::value>::type* = 0)
+                                           std::is_same<T, atVec4f>::value ||
+                                           std::is_same<T, atVec2d>::value ||
+                                           std::is_same<T, atVec3d>::value ||
+                                           std::is_same<T, atVec4d>::value>::type* = 0)
     {
         enterSubVector(name);
         for (T item : vector)
@@ -896,6 +989,21 @@ public:
     inline void writeVec4f(const char* name, const atVec4f& val)
     {
         writeVal<atVec4f>(name, val);
+    }
+
+    inline void writeVec2d(const char* name, const atVec2d& val)
+    {
+        writeVal<atVec2d>(name, val);
+    }
+
+    inline void writeVec3d(const char* name, const atVec3d& val)
+    {
+        writeVal<atVec3d>(name, val);
+    }
+
+    inline void writeVec4d(const char* name, const atVec4d& val)
+    {
+        writeVal<atVec4d>(name, val);
     }
 
     inline void writeUBytes(const char* name, const std::unique_ptr<atUint8[]>& val, size_t byteCount)

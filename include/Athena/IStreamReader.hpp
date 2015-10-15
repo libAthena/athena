@@ -686,6 +686,195 @@ public:
     inline atVec4f readValBig(typename std::enable_if<std::is_same<T, atVec4f>::value>::type* = 0)
     {return readVec4fBig();}
 
+    /** @brief Reads an atVec2d (16 bytes), swaps to endianness specified by setEndian depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
+    inline atVec2d readVec2d()
+    {
+        atVec2d val;
+        readUBytesToBuf(&val, 16);
+        if (m_endian == BigEndian)
+        {
+            utility::BigDouble(val.vec[0]);
+            utility::BigDouble(val.vec[1]);
+        }
+        else
+        {
+            utility::LittleDouble(val.vec[0]);
+            utility::LittleDouble(val.vec[1]);
+        }
+        return val;
+    }
+    template <class T>
+    inline atVec2d readVal(typename std::enable_if<std::is_same<T, atVec2d>::value>::type* = 0)
+    {return readVec2d();}
+
+    /** @brief Reads an atVec2d (16 bytes), swaps against little endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
+    inline atVec2d readVec2dLittle()
+    {
+        atVec2d val;
+        readUBytesToBuf(&val, 16);
+        utility::LittleDouble(val.vec[0]);
+        utility::LittleDouble(val.vec[1]);
+        return val;
+    }
+    template <class T>
+    inline atVec2d readValLittle(typename std::enable_if<std::is_same<T, atVec2d>::value>::type* = 0)
+    {return readVec2dLittle();}
+
+    /** @brief Reads an atVec2d (16 bytes), swaps against big endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
+    inline atVec2d readVec2dBig()
+    {
+        atVec2d val;
+        readUBytesToBuf(&val, 16);
+        utility::BigDouble(val.vec[0]);
+        utility::BigDouble(val.vec[1]);
+        return val;
+    }
+    template <class T>
+    inline atVec2d readValBig(typename std::enable_if<std::is_same<T, atVec2d>::value>::type* = 0)
+    {return readVec2dBig();}
+
+    /** @brief Reads an atVec3d (24 bytes), swaps to endianness specified by setEndian depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
+    inline atVec3d readVec3d()
+    {
+        atVec3d val;
+        readUBytesToBuf(&val, 24);
+        if (m_endian == BigEndian)
+        {
+            utility::BigDouble(val.vec[0]);
+            utility::BigDouble(val.vec[1]);
+            utility::BigDouble(val.vec[2]);
+        }
+        else
+        {
+            utility::LittleDouble(val.vec[0]);
+            utility::LittleDouble(val.vec[1]);
+            utility::LittleDouble(val.vec[2]);
+        }
+        return val;
+    }
+    template <class T>
+    inline atVec3d readVal(typename std::enable_if<std::is_same<T, atVec3d>::value>::type* = 0)
+    {return readVec3d();}
+
+    /** @brief Reads an atVec3d (24 bytes), swaps against little endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
+    inline atVec3d readVec3dLittle()
+    {
+        atVec3d val;
+        readUBytesToBuf(&val, 24);
+        utility::LittleDouble(val.vec[0]);
+        utility::LittleDouble(val.vec[1]);
+        utility::LittleDouble(val.vec[2]);
+        return val;
+    }
+    template <class T>
+    inline atVec3d readValLittle(typename std::enable_if<std::is_same<T, atVec3d>::value>::type* = 0)
+    {return readVec3dLittle();}
+
+    /** @brief Reads an atVec3d (24 bytes), swaps against big endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
+    inline atVec3d readVec3dBig()
+    {
+        atVec3d val;
+        readUBytesToBuf(&val, 24);
+        utility::BigDouble(val.vec[0]);
+        utility::BigDouble(val.vec[1]);
+        utility::BigDouble(val.vec[2]);
+        return val;
+    }
+    template <class T>
+    inline atVec3d readValBig(typename std::enable_if<std::is_same<T, atVec3d>::value>::type* = 0)
+    {return readVec3dBig();}
+
+    /** @brief Reads an atVec4d (32 bytes), swaps to endianness specified by setEndian depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
+    inline atVec4d readVec4d()
+    {
+        atVec4d val;
+        readUBytesToBuf(&val, 32);
+        if (m_endian == BigEndian)
+        {
+            utility::BigDouble(val.vec[0]);
+            utility::BigDouble(val.vec[1]);
+            utility::BigDouble(val.vec[2]);
+            utility::BigDouble(val.vec[3]);
+        }
+        else
+        {
+            utility::LittleDouble(val.vec[0]);
+            utility::LittleDouble(val.vec[1]);
+            utility::LittleDouble(val.vec[2]);
+            utility::LittleDouble(val.vec[3]);
+        }
+        return val;
+    }
+    template <class T>
+    inline atVec4d readVal(typename std::enable_if<std::is_same<T, atVec4d>::value>::type* = 0)
+    {return readVec4d();}
+
+    /** @brief Reads an atVec4d (32 bytes), swaps against little endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
+    inline atVec4d readVec4dLittle()
+    {
+        atVec4d val;
+        readUBytesToBuf(&val, 32);
+        utility::LittleDouble(val.vec[0]);
+        utility::LittleDouble(val.vec[1]);
+        utility::LittleDouble(val.vec[2]);
+        utility::LittleDouble(val.vec[3]);
+        return val;
+    }
+    template <class T>
+    inline atVec4d readValLittle(typename std::enable_if<std::is_same<T, atVec4d>::value>::type* = 0)
+    {return readVec4dLittle();}
+
+    /** @brief Reads an atVec4d (32 bytes), swaps against big endianness depending on platform
+     *  and advances the current position
+     *
+     *  @return The value at the current address
+     */
+    inline atVec4d readVec4dBig()
+    {
+        atVec4d val;
+        readUBytesToBuf(&val, 32);
+        utility::BigDouble(val.vec[0]);
+        utility::BigDouble(val.vec[1]);
+        utility::BigDouble(val.vec[2]);
+        utility::BigDouble(val.vec[3]);
+        return val;
+    }
+    template <class T>
+    inline atVec4d readValBig(typename std::enable_if<std::is_same<T, atVec4d>::value>::type* = 0)
+    {return readVec4dBig();}
+
     /** @brief Reads a wide-char string (using endianness from setEndian),
      *         converts to UTF8 and advances the position in the file
      *
@@ -1025,6 +1214,12 @@ public:
 protected:
     Endian      m_endian;
 };
+template <typename T>
+IStreamReader& operator>>(IStreamReader& lhs, T& rhs)
+{
+    rhs = lhs.readVal<T>(rhs);
+    return lhs;
+}
 }
 }
 #endif // ISTREAMREADER
