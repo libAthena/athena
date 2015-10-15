@@ -1064,6 +1064,13 @@ public:
 protected:
     Endian      m_endian;
 };
+
+template <typename T>
+IStreamWriter& operator<<(IStreamWriter& lhs, const T& rhs)
+{
+    lhs.writeVal<T>(rhs);
+    return lhs;
+}
 }
 }
 #endif // STREAMWRITER_HPP
