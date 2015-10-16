@@ -1068,7 +1068,7 @@ protected:
 template <typename T>
 IStreamWriter& operator<<(IStreamWriter& lhs, const T& rhs)
 {
-    lhs.writeVal<T>(rhs);
+    lhs.writeVal(rhs);
     return lhs;
 }
 }
