@@ -231,11 +231,6 @@ if(NOT GEKKO)
 add_subdirectory(atdna)
 endif()
 
-##################
-# Example import #
-##################
-add_subdirectory(Example)
-
 #########
 # CPack #
 #########
