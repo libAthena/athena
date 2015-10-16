@@ -4,6 +4,9 @@
 #include "win32_largefilewrapper.h"
 #elif __APPLE__
 #include "osx_largefilewrapper.h"
+#elif GEKKO
+#include "gekko_support.h"
+#include "osx_largefilewrapper.h"
 #endif
 
 namespace Athena

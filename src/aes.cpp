@@ -3,7 +3,7 @@
 #include <string.h>
 #if _WIN32
 #include <intrin.h>
-#else
+#elif !GEKKO
 #include <cpuid.h>
 #endif
 

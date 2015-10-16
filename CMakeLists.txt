@@ -25,11 +25,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
 if(WIN32)
-list(APPEND CORE_EXTRA src/win32_largefilewrapper.c)
-elseif(APPLE)
-list(APPEND CORE_EXTRA src/osx_largefilewrapper.c)
-elseif(GEKKO)
-list(APPEND CORE_EXTRA src/gekko_support.c)
+list(APPEND CORE_EXTRA src/win32_largefilewrapper.c include/win32_largefilewrapper.h)
+elseif(APPLE OR GEKKO)
+list(APPEND CORE_EXTRA src/osx_largefilewrapper.c include/osx_largefilewrapper.h)
+if(GEKKO)
+list(APPEND CORE_EXTRA src/gekko_support.c include/gekko_support.h)
+endif()
 endif()
 
 add_library(AthenaCore
@@ -68,7 +69,6 @@ add_library(AthenaCore
     include/LZ77/LZType11.hpp
     include/Athena/FileInfo.hpp
     include/Athena/Dir.hpp
-    include/gekko_support.h
     include/Athena/DNA.hpp
     include/Athena/DNAYaml.hpp
     include/yaml.h
@@ -117,7 +117,7 @@ add_library(AthenaWiiSave EXCLUDE_FROM_ALL
     include/md5.h
     include/sha1.h
 )
-if(NOT MSVC)
+if(NOT MSVC AND NOT GEKKO)
 set_source_files_properties(src/aes.cpp PROPERTIES COMPILE_FLAGS -maes)
 endif()
 
@@ -227,7 +227,9 @@ install(EXPORT AthenaTargets DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT Athena)
 # atdna import #
 ################
 
+if(NOT GEKKO)
 add_subdirectory(atdna)
+endif()
 
 #########
 # CPack #

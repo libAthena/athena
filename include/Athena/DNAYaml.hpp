@@ -7,6 +7,10 @@
  * Any changes to the types or namespacing must be reflected in 'atdna/main.cpp'
  */
 
+#ifdef GEKKO
+#include <stdlib.h>
+#include <limits.h>
+#endif
 #include <string.h>
 #include <yaml.h>
 #include <utf8proc.h>

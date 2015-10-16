@@ -1,7 +1,7 @@
 #ifndef OSX_LARGEFILEWRAPPER_H
 #define OSX_LARGEFILEWRAPPER_H
 
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(GEKKO)
 #include <stdio.h>
 #ifdef __cplusplus
 extern "C" {
