@@ -185,4 +185,3 @@ SpriteFrame* SpritePart::root() const
 }
 }
 }
-#endif // ATHENA_NO_SAKURA

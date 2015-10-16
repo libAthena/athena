@@ -96,6 +96,33 @@ typedef union alignas(16)
     float vec[4];
 } atVec4f;
 
+typedef union alignas(16)
+{
+#if __SSE__
+    __m128d mVec128;
+    AT_ALIGNED_ALLOCATOR
+#endif
+    double vec[2];
+} atVec2d;
+
+typedef union alignas(16)
+{
+#if __SSE__
+    __m128d mVec128[2];
+    AT_ALIGNED_ALLOCATOR
+#endif
+    double vec[3];
+} atVec3d;
+
+typedef union alignas(16)
+{
+#if __SSE__
+    __m128d mVec128[2];
+    AT_ALIGNED_ALLOCATOR
+#endif
+    double vec[4];
+} atVec4d;
+
 
 #ifndef NULL
 #ifdef __cplusplus

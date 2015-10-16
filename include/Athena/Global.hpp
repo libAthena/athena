@@ -47,6 +47,11 @@ typedef struct stat stat64_t;
 #define stat64 stat
 #elif _WIN32
 typedef struct _stat64 stat64_t;
+#elif __FreeBSD__
+typedef struct stat stat64_t;
+#define stat64 stat
+#define fseeko64 fseeko
+#define ftello64 ftello
 #else
 typedef struct stat64 stat64_t;
 #endif
@@ -82,34 +87,6 @@ enum Endian
     LittleEndian,
     BigEndian
 };
-
-#ifndef ATHENA_NO_SAKURA
-namespace Sakura
-{
-template <typename T>
-class Vector2D
-{
-public:
-    T x;
-    T y;
-
-    Vector2D()
-        : x(0),
-          y(0)
-    {
-    }
-
-    Vector2D(T x, T y)
-        : x(x),
-          y(y)
-    {
-    }
-};
-
-typedef Vector2D<int> Vector2Di;
-typedef Vector2D<float> Vector2Df;
-} // Sakura
-#endif // ATHENA_NO_SAKURA
 } // Athena
 
 typedef void (*atEXCEPTION_HANDLER)(const Athena::error::Level& level, const char* file, const char* function, int line, const char* fmt, ...);

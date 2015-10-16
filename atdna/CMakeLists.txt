@@ -34,7 +34,12 @@ set(CLANG_INCLUDE_DIR ${LLVM_LIBRARY_DIRS}/clang/${LLVM_VERSION_STRING}/include
     CACHE PATH "Clang include dir" FORCE)
 
 if(UNIX)
-list(APPEND PLAT_LIBS z pthread curses dl)
+list(APPEND PLAT_LIBS z pthread curses)
+if (APPLE)
+    list(APPEND PLAT_LIBS dl)
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    list(APPEND PLAT_LIBS dl)
+endif()
 endif()
 
 # Offer the user the choice of overriding the installation directories
@@ -162,7 +167,8 @@ macro(atdna out)
 
   # OSX Extra
   elseif(APPLE)
-    list(APPEND extraargs -isysroot ${CMAKE_OSX_SYSROOT} -isysroot /)
+    list(APPEND extraargs -isysroot ${CMAKE_OSX_SYSROOT} -isysroot
+         ${CMAKE_OSX_SYSROOT}/../../../../../Toolchains/XcodeDefault.xctoolchain)
   endif()
 
   # Make target

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <iostream>
 #include "clang/AST/ASTConsumer.h"
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/Frontend/CompilerInstance.h"
@@ -218,15 +219,31 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         if (vType->isVectorType())
                         {
                             const clang::BuiltinType* eType = (clang::BuiltinType*)vType->getElementType().getTypePtr();
+                            const uint64_t width = context.getTypeInfo(eType).Width;
                             if (!eType->isBuiltinType() || !eType->isFloatingPoint() ||
-                                context.getTypeInfo(eType).Width != 32)
+                                (width != 32 && width != 64))
                                 continue;
                             if (vType->getNumElements() == 2)
-                                return ATHENA_DNA_WRITER ".writeVec2f" + funcPrefix + "(" + fieldName + ");";
+                            {
+                                if (width == 32)
+                                    return ATHENA_DNA_WRITER ".writeVec2f" + funcPrefix + "(" + fieldName + ");";
+                                else if (width == 64)
+                                    return ATHENA_DNA_WRITER ".writeVec2d" + funcPrefix + "(" + fieldName + ");";
+                            }
                             else if (vType->getNumElements() == 3)
-                                return ATHENA_DNA_WRITER ".writeVec3f" + funcPrefix + "(" + fieldName + ");";
+                            {
+                                if (width == 32)
+                                    return ATHENA_DNA_WRITER ".writeVec3f" + funcPrefix + "(" + fieldName + ");";
+                                else if (width == 64)
+                                    return ATHENA_DNA_WRITER ".writeVec3d" + funcPrefix + "(" + fieldName + ");";
+                            }
                             else if (vType->getNumElements() == 4)
-                                return ATHENA_DNA_WRITER ".writeVec4f" + funcPrefix + "(" + fieldName + ");";
+                            {
+                                if (width == 32)
+                                    return ATHENA_DNA_WRITER ".writeVec4f" + funcPrefix + "(" + fieldName + ");";
+                                else if (width == 64)
+                                    return ATHENA_DNA_WRITER ".writeVec4d" + funcPrefix + "(" + fieldName + ");";
+                            }
                         }
                     }
                 }
@@ -323,15 +340,31 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         if (vType->isVectorType())
                         {
                             const clang::BuiltinType* eType = (clang::BuiltinType*)vType->getElementType().getTypePtr();
+                            const uint64_t width = context.getTypeInfo(eType).Width;
                             if (!eType->isBuiltinType() || !eType->isFloatingPoint() ||
-                                context.getTypeInfo(eType).Width != 32)
+                                (width != 32 && width != 64))
                                 continue;
                             if (vType->getNumElements() == 2)
-                                return ATHENA_DNA_READER ".readVec2f" + funcPrefix + "()";
+                            {
+                                if (width == 32)
+                                    return ATHENA_DNA_READER ".readVec2f" + funcPrefix + "()";
+                                else if (width == 64)
+                                    return ATHENA_DNA_READER ".readVec2d" + funcPrefix + "()";
+                            }
                             else if (vType->getNumElements() == 3)
-                                return ATHENA_DNA_READER ".readVec3f" + funcPrefix + "()";
+                            {
+                                if (width == 32)
+                                    return ATHENA_DNA_READER ".readVec3f" + funcPrefix + "()";
+                                else if (width == 64)
+                                    return ATHENA_DNA_READER ".readVec3d" + funcPrefix + "()";
+                            }
                             else if (vType->getNumElements() == 4)
-                                return ATHENA_DNA_READER ".readVec4f" + funcPrefix + "()";
+                            {
+                                if (width == 32)
+                                    return ATHENA_DNA_READER ".readVec4f" + funcPrefix + "()";
+                                else if (width == 64)
+                                    return ATHENA_DNA_READER ".readVec4d" + funcPrefix + "()";
+                            }
                         }
                     }
                 }
@@ -436,15 +469,31 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         if (vType->isVectorType())
                         {
                             const clang::BuiltinType* eType = (clang::BuiltinType*)vType->getElementType().getTypePtr();
+                            const uint64_t width = context.getTypeInfo(eType).Width;
                             if (!eType->isBuiltinType() || !eType->isFloatingPoint() ||
-                                context.getTypeInfo(eType).Width != 32)
+                                (width != 32 && width != 64))
                                 continue;
                             if (vType->getNumElements() == 2)
-                                return ATHENA_YAML_WRITER ".writeVec2f(\"" + bareFieldName + "\", " + fieldName + ");";
+                            {
+                                if (width == 32)
+                                    return ATHENA_YAML_WRITER ".writeVec2f(\"" + bareFieldName + "\", " + fieldName + ");";
+                                else if (width == 64)
+                                    return ATHENA_YAML_WRITER ".writeVec2d(\"" + bareFieldName + "\", " + fieldName + ");";
+                            }
                             else if (vType->getNumElements() == 3)
-                                return ATHENA_YAML_WRITER ".writeVec3f(\"" + bareFieldName + "\", " + fieldName + ");";
+                            {
+                                if (width == 32)
+                                    return ATHENA_YAML_WRITER ".writeVec3f(\"" + bareFieldName + "\", " + fieldName + ");";
+                                else if (width == 64)
+                                    return ATHENA_YAML_WRITER ".writeVec3d(\"" + bareFieldName + "\", " + fieldName + ");";
+                            }
                             else if (vType->getNumElements() == 4)
-                                return ATHENA_YAML_WRITER ".writeVec4f(\"" + bareFieldName + "\", " + fieldName + ");";
+                            {
+                                if (width == 32)
+                                    return ATHENA_YAML_WRITER ".writeVec4f(\"" + bareFieldName + "\", " + fieldName + ");";
+                                else if (width == 64)
+                                    return ATHENA_YAML_WRITER ".writeVec4d(\"" + bareFieldName + "\", " + fieldName + ");";
+                            }
                         }
                     }
                 }
@@ -541,15 +590,31 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         if (vType->isVectorType())
                         {
                             const clang::BuiltinType* eType = (clang::BuiltinType*)vType->getElementType().getTypePtr();
+                            const uint64_t width = context.getTypeInfo(eType).Width;
                             if (!eType->isBuiltinType() || !eType->isFloatingPoint() ||
-                                context.getTypeInfo(eType).Width != 32)
+                                (width != 32 && width != 64))
                                 continue;
                             if (vType->getNumElements() == 2)
-                                return ATHENA_YAML_READER ".readVec2f(\"" + bareFieldName + "\")";
+                            {
+                                if (width == 32)
+                                    return ATHENA_YAML_READER ".readVec2f(\"" + bareFieldName + "\")";
+                                else if (width == 64)
+                                    return ATHENA_YAML_READER ".readVec2d(\"" + bareFieldName + "\")";
+                            }
                             else if (vType->getNumElements() == 3)
-                                return ATHENA_YAML_READER ".readVec3f(\"" + bareFieldName + "\")";
+                            {
+                                if (width == 32)
+                                    return ATHENA_YAML_READER ".readVec3f(\"" + bareFieldName + "\")";
+                                else if (width == 64)
+                                    return ATHENA_YAML_READER ".readVec3d(\"" + bareFieldName + "\")";
+                            }
                             else if (vType->getNumElements() == 4)
-                                return ATHENA_YAML_READER ".readVec4f(\"" + bareFieldName + "\")";
+                            {
+                                if (width == 32)
+                                    return ATHENA_YAML_READER ".readVec4f(\"" + bareFieldName + "\")";
+                                else if (width == 64)
+                                    return ATHENA_YAML_READER ".readVec4d(\"" + bareFieldName + "\")";
+                            }
                         }
                     }
                 }
@@ -1328,7 +1393,6 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         {
                             fileOut << "    /* " << fieldName << " */\n"
                                        "    " << fieldName << (p ? ".write(" ATHENA_DNA_WRITER ");\n" : ".read(" ATHENA_DNA_READER ");\n");
-                            break;
                         }
                     }
 
@@ -1649,7 +1713,6 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                 fileOut << "    /* " << fieldName << " */\n"
                                            "    " ATHENA_YAML_WRITER ".enumerate(\"" << fieldNameBare << "\", " << fieldName << ");\n";
                             }
-                            break;
                         }
                     }
 
@@ -1667,6 +1730,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
 
             fileOut << "}\n\n";
         }
+        fileOut << "const char* " << decl->getQualifiedNameAsString() << "::DNAType()\n{\n    return \"" << decl->getQualifiedNameAsString() << "\";\n}\n\n";
     }
 
 public:

@@ -263,7 +263,14 @@ inline RETURNTYPE NodeToVec(const YAMLNode* node)
     {
         YAMLNode* snode = it->get();
         if (snode->m_type == YAML_SCALAR_NODE)
-            retval.vec[i] = NodeToVal<float>(snode);
+        {
+            if (std::is_same<RETURNTYPE, atVec2d>::value ||
+                std::is_same<RETURNTYPE, atVec3d>::value ||
+                std::is_same<RETURNTYPE, atVec4d>::value)
+                retval.vec[i] = NodeToVal<double>(snode);
+            else
+                retval.vec[i] = NodeToVal<float>(snode);
+        }
         else
             retval.vec[i] = 0.0;
     }
@@ -322,6 +329,72 @@ inline atVec4f NodeToVal(const YAMLNode* node)
 
 template <>
 inline std::unique_ptr<YAMLNode> ValToNode(const atVec4f& val)
+{
+    YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
+    ret->m_seqChildren.reserve(4);
+    for (size_t i=0 ; i<4 ; ++i)
+    {
+        char str[64];
+        snprintf(str, 64, "%f", val.vec[i]);
+        YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
+        comp->m_scalarString = str;
+        ret->m_seqChildren.emplace_back(comp);
+    }
+    return std::unique_ptr<YAMLNode>(ret);
+}
+
+template <>
+inline atVec2d NodeToVal(const YAMLNode* node)
+{
+    return NodeToVec<atVec2d>(node);
+}
+
+template <>
+inline std::unique_ptr<YAMLNode> ValToNode(const atVec2d& val)
+{
+    YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
+    ret->m_seqChildren.reserve(2);
+    for (size_t i=0 ; i<2 ; ++i)
+    {
+        char str[64];
+        snprintf(str, 64, "%f", val.vec[i]);
+        YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
+        comp->m_scalarString = str;
+        ret->m_seqChildren.emplace_back(comp);
+    }
+    return std::unique_ptr<YAMLNode>(ret);
+}
+
+template <>
+inline atVec3d NodeToVal(const YAMLNode* node)
+{
+    return NodeToVec<atVec3d>(node);
+}
+
+template <>
+inline std::unique_ptr<YAMLNode> ValToNode(const atVec3d& val)
+{
+    YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
+    ret->m_seqChildren.reserve(3);
+    for (size_t i=0 ; i<3 ; ++i)
+    {
+        char str[64];
+        snprintf(str, 64, "%f", val.vec[i]);
+        YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
+        comp->m_scalarString = str;
+        ret->m_seqChildren.emplace_back(comp);
+    }
+    return std::unique_ptr<YAMLNode>(ret);
+}
+
+template <>
+inline atVec4d NodeToVal(const YAMLNode* node)
+{
+    return NodeToVec<atVec4d>(node);
+}
+
+template <>
+inline std::unique_ptr<YAMLNode> ValToNode(const atVec4d& val)
 {
     YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
     ret->m_seqChildren.reserve(4);
@@ -426,6 +499,7 @@ class YAMLDocReader
     std::vector<int> m_seqTrackerStack;
     static std::unique_ptr<YAMLNode> ParseEvents(yaml_parser_t* doc);
 public:
+    static bool ValidateClassType(yaml_parser_t* doc, const char* expectedType);
     inline const YAMLNode* getRootNode() const {return m_rootNode.get();}
     bool read(yaml_parser_t* doc)
     {
@@ -527,7 +601,7 @@ public:
         vector.reserve(count);
         enterSubVector(name);
         for (size_t i=0 ; i<count ; ++i)
-            vector.emplace_back(readVal<T>(name));
+            vector.push_back(readVal<T>(name));
         leaveSubVector();
     }
 
@@ -642,10 +716,24 @@ public:
     {
         return readVal<atVec3f>(name);
     }
-
     inline atVec4f readVec4f(const char* name)
     {
         return readVal<atVec4f>(name);
+    }
+
+    inline atVec2d readVec2d(const char* name)
+    {
+        return readVal<atVec2d>(name);
+    }
+
+    inline atVec3d readVec3d(const char* name)
+    {
+        return readVal<atVec3d>(name);
+    }
+
+    inline atVec4d readVec4d(const char* name)
+    {
+        return readVal<atVec4d>(name);
     }
 
     inline std::unique_ptr<atUint8[]> readUBytes(const char* name)
@@ -671,9 +759,15 @@ class YAMLDocWriter
     std::vector<YAMLNode*> m_subStack;
     static bool RecursiveFinish(yaml_emitter_t* doc, const YAMLNode& node);
 public:
-    YAMLDocWriter() : m_rootNode(YAML_MAPPING_NODE)
+    YAMLDocWriter(const char* classType) : m_rootNode(YAML_MAPPING_NODE)
     {
         m_subStack.emplace_back(&m_rootNode);
+        if (classType)
+        {
+            YAMLNode* classVal = new YAMLNode(YAML_SCALAR_NODE);
+            classVal->m_scalarString.assign(classType);
+            m_rootNode.m_mapChildren.emplace_back("DNAType", std::unique_ptr<YAMLNode>(classVal));
+        }
     }
 
     void enterSubRecord(const char* name)
@@ -744,7 +838,10 @@ public:
                    typename std::enable_if<!std::is_arithmetic<T>::value &&
                                            !std::is_same<T, atVec2f>::value &&
                                            !std::is_same<T, atVec3f>::value &&
-                                           !std::is_same<T, atVec4f>::value>::type* = 0)
+                                           !std::is_same<T, atVec4f>::value &&
+                                           !std::is_same<T, atVec2d>::value &&
+                                           !std::is_same<T, atVec3d>::value &&
+                                           !std::is_same<T, atVec4d>::value>::type* = 0)
     {
         enterSubVector(name);
         for (const T& item : vector)
@@ -761,7 +858,10 @@ public:
                    typename std::enable_if<std::is_arithmetic<T>::value ||
                                            std::is_same<T, atVec2f>::value ||
                                            std::is_same<T, atVec3f>::value ||
-                                           std::is_same<T, atVec4f>::value>::type* = 0)
+                                           std::is_same<T, atVec4f>::value ||
+                                           std::is_same<T, atVec2d>::value ||
+                                           std::is_same<T, atVec3d>::value ||
+                                           std::is_same<T, atVec4d>::value>::type* = 0)
     {
         enterSubVector(name);
         for (T item : vector)
@@ -891,6 +991,21 @@ public:
         writeVal<atVec4f>(name, val);
     }
 
+    inline void writeVec2d(const char* name, const atVec2d& val)
+    {
+        writeVal<atVec2d>(name, val);
+    }
+
+    inline void writeVec3d(const char* name, const atVec3d& val)
+    {
+        writeVal<atVec3d>(name, val);
+    }
+
+    inline void writeVec4d(const char* name, const atVec4d& val)
+    {
+        writeVal<atVec4d>(name, val);
+    }
+
     inline void writeUBytes(const char* name, const std::unique_ptr<atUint8[]>& val, size_t byteCount)
     {
         writeVal<const std::unique_ptr<atUint8[]>&>(name, val, byteCount);
@@ -936,6 +1051,8 @@ struct DNAYaml : DNA<DNAE>
 {
     virtual void toYAML(YAMLDocWriter& out) const=0;
     virtual void fromYAML(YAMLDocReader& in)=0;
+    static const char* DNAType() {return nullptr;}
+    virtual const char* DNATypeV() const {return nullptr;}
 
     template <size_t sizeVar>
     using Buffer = struct Athena::io::BufferYaml<sizeVar, DNAE>;
@@ -970,7 +1087,7 @@ struct DNAYaml : DNA<DNAE>
             return std::string();
         }
         {
-            YAMLDocWriter docWriter;
+            YAMLDocWriter docWriter(DNATypeV());
             toYAML(docWriter);
             if (!docWriter.finish(&emitter))
             {
@@ -1013,6 +1130,22 @@ struct DNAYaml : DNA<DNAE>
         return true;
     }
 
+    template<class DNASubtype>
+    static bool ValidateFromYAMLString(const std::string& str)
+    {
+        yaml_parser_t parser;
+        if (!yaml_parser_initialize(&parser))
+        {
+            HandleYAMLParserError(&parser);
+            return false;
+        }
+        YAMLStdStringReaderState reader(str);
+        yaml_parser_set_input(&parser, (yaml_read_handler_t*)YAMLStdStringReader, &reader);
+        bool retval = YAMLDocReader::ValidateClassType(&parser, DNASubtype::DNAType());
+        yaml_parser_delete(&parser);
+        return retval;
+    }
+
     bool toYAMLFile(FILE* fout) const
     {
         yaml_emitter_t emitter;
@@ -1033,7 +1166,7 @@ struct DNAYaml : DNA<DNAE>
             return false;
         }
         {
-            YAMLDocWriter docWriter;
+            YAMLDocWriter docWriter(DNATypeV());
             toYAML(docWriter);
             if (!docWriter.finish(&emitter))
             {
@@ -1073,6 +1206,23 @@ struct DNAYaml : DNA<DNAE>
         fromYAML(docReader);
         yaml_parser_delete(&parser);
         return true;
+    }
+
+    template<class DNASubtype>
+    static bool ValidateFromYAMLFile(FILE* fin)
+    {
+        yaml_parser_t parser;
+        if (!yaml_parser_initialize(&parser))
+        {
+            HandleYAMLParserError(&parser);
+            return false;
+        }
+        long pos = ftell(fin);
+        yaml_parser_set_input_file(&parser, fin);
+        bool retval = YAMLDocReader::ValidateClassType(&parser, DNASubtype::DNAType());
+        fseek(fin, pos, SEEK_SET);
+        yaml_parser_delete(&parser);
+        return retval;
     }
 };
 
@@ -1160,11 +1310,15 @@ struct WStringAsStringYaml : public DNAYaml<VE>, public std::string
     DECL_DNA \
     void fromYAML(Athena::io::YAMLDocReader&); \
     void toYAML(Athena::io::YAMLDocWriter&) const; \
+    static const char* DNAType(); \
+    const char* DNATypeV() const {return DNAType();} \
 
 /** Macro to automatically declare YAML read/write methods with client-code's definition */
 #define DECL_EXPLICIT_YAML \
     void fromYAML(Athena::io::YAMLDocReader&); \
     void toYAML(Athena::io::YAMLDocWriter&) const; \
+    static const char* DNAType(); \
+    const char* DNATypeV() const {return DNAType();} \
 
 }
 }
