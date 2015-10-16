@@ -21,6 +21,7 @@ long long
 strtoq(const char *nptr, char **endptr, int base);
 unsigned long long
 strtouq(const char *nptr, char **endptr, int base);
+/* devkitppc doesn't properly declare strtof for some reason */
 float
 strtof(const char *string, char **endPtr );
 #ifdef __cplusplus

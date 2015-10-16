@@ -4,7 +4,10 @@ set(CMAKE_SYSTEM_PROCESSOR powerpc-eabi)
 
 set(DEVKITPRO $ENV{DEVKITPRO})
 set(DEVKITPPC $ENV{DEVKITPPC})
-set(GEKKO true)
+add_definitions(-DGEKKO=1 -DHW_RVL=1)
+
+# Let the project know we're targetting GEKKO
+set(GEKKO TRUE)
 
 if(NOT DEVKITPPC)
     message(FATAL_ERROR "Please set DEVKITPPC in your environment")
@@ -19,6 +22,8 @@ if(NOT LIBOGCDIR)
     set(LIBOGCDIR ${DEVKITPRO}/libogc)
 endif()
 
+include_directories(${LIBOGCDIR}/include)
+link_directories(${LIBOGCDIR}/lib/wii)
 if(WIN32)
 	set(CMAKE_C_COMPILER ${DEVKITPPC}/bin/powerpc-eabi-gcc.exe)
 	set(CMAKE_CXX_COMPILER ${DEVKITPPC}/bin/powerpc-eabi-g++.exe)
@@ -27,7 +32,7 @@ else()
 	set(CMAKE_CXX_COMPILER ${DEVKITPPC}/bin/powerpc-eabi-g++)
 endif()
 
-set(MACHDEP "-DGEKKO -mrvl -mcpu=750 -meabi -mhard-float")
+set(MACHDEP "-mrvl -mcpu=750 -meabi -mhard-float")
 
 set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} ${MACHDEP}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MACHDEP}")
