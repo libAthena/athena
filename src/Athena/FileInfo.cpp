@@ -172,24 +172,18 @@ bool FileInfo::touch() const
 #elif (defined(HW_RVL) || defined(HW_DOL)) && defined(GEKKO)
     // Generic portable version, not extremely reliable but does work
     atUint64 val = 0xCDCDCDCDCD;
-    try
     {
         Athena::io::FileReader reader(m_path.c_str());
-        val = reader.readUint64();
-    }
-    catch(...)
-    {
+        if (reader.isOpen())
+            val = reader.readUint64();
     }
 
-    try
     {
         Athena::io::FileWriter writer(m_path, false);
-        if (val != 0xCDCDCDCDCD)
+        if (val != 0xCDCDCDCDCD && writer.isOpen())
             writer.writeUint64(val);
-    }
-    catch(...)
-    {
-        return false;
+        else if (!writer.isOpen())
+            return false;
     }
 
 #endif
