@@ -1,4 +1,4 @@
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(GEKKO)
 #include "osx_largefilewrapper.h"
 #include <stdio.h>
 
