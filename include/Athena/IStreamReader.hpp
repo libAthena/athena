@@ -1217,7 +1217,7 @@ protected:
 template <typename T>
 IStreamReader& operator>>(IStreamReader& lhs, T& rhs)
 {
-    rhs = lhs.readVal<T>(rhs);
+    rhs = lhs.readVal<T>();
     return lhs;
 }
 }

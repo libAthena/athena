@@ -20,6 +20,8 @@ namespace io
  */
 class MemoryReader : public IStreamReader
 {
+protected:
+    MemoryReader() = default;
 public:
     virtual ~MemoryReader();
 
@@ -83,10 +85,10 @@ public:
     atUint64 readUBytesToBuf(void* buf, atUint64 len);
 
 protected:
-    const atUint8*   m_data;
-    atUint64         m_length;
-    atUint64         m_position;
-    bool             m_owns;
+    const atUint8*   m_data = nullptr;
+    atUint64         m_length = 0;
+    atUint64         m_position = 0;
+    bool             m_owns = false;
 };
 
 class MemoryCopyReader : public MemoryReader
@@ -104,8 +106,7 @@ public:
      * \param filename The file to create the stream from
      */
     MemoryCopyReader(const std::string& filename)
-    : MemoryReader(NULL, 0),
-      m_filepath(filename)
+    : m_filepath(filename)
     {loadData();}
 
     void setData(const atUint8* data, atUint64 length);

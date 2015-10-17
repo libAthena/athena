@@ -84,7 +84,7 @@ std::string vsprintf(const char* fmt, va_list list)
     int size = 512;
     char* buffer = 0;
     buffer = new char[size];
-    int nsize = ::vsnprintf(buffer, size, fmt, list);
+    int nsize = ::vsprintf(buffer, fmt, list);
 
     while (size <= nsize)
     {
@@ -92,7 +92,7 @@ std::string vsprintf(const char* fmt, va_list list)
         delete[] buffer;
         buffer = 0;
         buffer = new char[nsize + 1]; //+1 for /0
-        nsize = ::vsnprintf(buffer, size, fmt, list);
+        nsize = ::vsprintf(buffer, fmt, list);
     }
 
     std::string ret(buffer);
