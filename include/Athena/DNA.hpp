@@ -44,6 +44,8 @@ struct WStringAsString;
 template <Endian DNAE>
 struct DNA
 {
+    virtual ~DNA() {}
+
     /**
      * @brief Common virtual read function for all DNA types
      */
@@ -52,6 +54,12 @@ struct DNA
      * @brief Common virtual write function for all DNA types
      */
     virtual void write(IStreamWriter&) const=0;
+    /**
+     * @brief Common virtual binary size computation for all DNA types
+     * @param __isz initial cumulative value to add result to
+     * @return Cumulative size
+     */
+    virtual size_t binarySize(size_t __isz) const=0;
 
     /**
      * @brief Template type signaling atdna to capture the value where it's used
@@ -121,6 +129,20 @@ struct DNA
      * @brief Meta Template preventing atdna from emitting read/write implementations
      */
     struct Delete {};
+
+    /**
+     * @brief Internal DNA helper for accumulating binarySize
+     * @param __isz initial size value
+     * @param v Vector to enumerate
+     * @return Cumulative total
+     */
+    template <typename T>
+    static size_t __EnumerateSize(size_t __isz, const T& v)
+    {
+        for (const auto& val : v)
+            __isz = val.binarySize(__isz);
+        return __isz;
+    }
 };
 
 /**
@@ -130,14 +152,18 @@ template <size_t sizeVar, Endian VE>
 struct Buffer : public DNA<VE>, public std::unique_ptr<atUint8[]>
 {
     typename DNA<VE>::Delete expl;
-    inline void read(IStreamReader& reader)
+    void read(IStreamReader& reader)
     {
         reset(new atUint8[sizeVar]);
         reader.readUBytesToBuf(get(), sizeVar);
     }
-    inline void write(IStreamWriter& writer) const
+    void write(IStreamWriter& writer) const
     {
         writer.writeUBytes(get(), sizeVar);
+    }
+    size_t binarySize(size_t __isz) const
+    {
+        return __isz + sizeVar;
     }
 };
 
@@ -148,13 +174,15 @@ template <atInt32 sizeVar, Endian VE>
 struct String : public DNA<VE>, public std::string
 {
     typename DNA<VE>::Delete expl;
-    inline void read(IStreamReader& reader)
+    void read(IStreamReader& reader)
     {this->assign(std::move(reader.readString(sizeVar)));}
-    inline void write(IStreamWriter& writer) const
+    void write(IStreamWriter& writer) const
     {writer.writeString(*this, sizeVar);}
-    inline std::string& operator=(const std::string& __str)
+    size_t binarySize(size_t __isz) const
+    {return __isz + ((sizeVar<0)?(this->size()+1):sizeVar);}
+    std::string& operator=(const std::string& __str)
     {return this->assign(__str);}
-    inline std::string& operator=(std::string&& __str)
+    std::string& operator=(std::string&& __str)
     {this->swap(__str); return *this;}
 };
 
@@ -165,19 +193,21 @@ template <atInt32 sizeVar, Endian VE>
 struct WString : public DNA<VE>, public std::wstring
 {
     typename DNA<VE>::Delete expl;
-    inline void read(IStreamReader& reader)
+    void read(IStreamReader& reader)
     {
         reader.setEndian(VE);
         this->assign(std::move(reader.readWString(sizeVar)));
     }
-    inline void write(IStreamWriter& writer) const
+    void write(IStreamWriter& writer) const
     {
         writer.setEndian(VE);
         writer.writeWString(*this, sizeVar);
     }
-    inline std::wstring& operator=(const std::wstring& __str)
+    size_t binarySize(size_t __isz) const
+    {return __isz + (((sizeVar<0)?(this->size()+1):sizeVar)*2);}
+    std::wstring& operator=(const std::wstring& __str)
     {return this->assign(__str);}
-    inline std::wstring& operator=(std::wstring&& __str)
+    std::wstring& operator=(std::wstring&& __str)
     {this->swap(__str); return *this;}
 };
 
@@ -188,13 +218,15 @@ template <atInt32 sizeVar, Endian VE>
 struct WStringAsString : public DNA<VE>, public std::string
 {
     typename DNA<VE>::Delete expl;
-    inline void read(IStreamReader& reader)
+    void read(IStreamReader& reader)
     {*this = reader.readWStringAsString(sizeVar);}
-    inline void write(IStreamWriter& writer) const
+    void write(IStreamWriter& writer) const
     {writer.writeStringAsWString(*this, sizeVar);}
-    inline std::string& operator=(const std::string& __str)
+    size_t binarySize(size_t __isz) const
+    {return __isz + (((sizeVar<0)?(this->size()+1):sizeVar)*2);}
+    std::string& operator=(const std::string& __str)
     {return this->assign(__str);}
-    inline std::string& operator=(std::string&& __str)
+    std::string& operator=(std::string&& __str)
     {this->swap(__str); return *this;}
 };
 
@@ -202,11 +234,13 @@ struct WStringAsString : public DNA<VE>, public std::string
 #define DECL_DNA \
     void read(Athena::io::IStreamReader&); \
     void write(Athena::io::IStreamWriter&) const; \
+    size_t binarySize(size_t __isz) const;
 
 /** Macro to automatically declare read/write methods and prevent outputting implementation */
 #define DECL_EXPLICIT_DNA \
     void read(Athena::io::IStreamReader&); \
     void write(Athena::io::IStreamWriter&) const; \
+    size_t binarySize(size_t __isz) const; \
     Delete __dna_delete;
 
 /** Macro to supply count variable to atdna and mute it for other compilers */

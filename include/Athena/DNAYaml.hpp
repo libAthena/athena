@@ -1049,6 +1049,8 @@ struct WStringAsStringYaml;
 template <Endian DNAE>
 struct DNAYaml : DNA<DNAE>
 {
+    virtual ~DNAYaml() {}
+
     virtual void toYAML(YAMLDocWriter& out) const=0;
     virtual void fromYAML(YAMLDocReader& in)=0;
     static const char* DNAType() {return nullptr;}
@@ -1230,18 +1232,22 @@ template <size_t sizeVar, Endian VE>
 struct BufferYaml : public DNAYaml<VE>, public std::unique_ptr<atUint8[]>
 {
     typename DNA<VE>::Delete expl;
-    inline void read(IStreamReader& reader)
+    void read(IStreamReader& reader)
     {
         reset(new atUint8[sizeVar]);
         reader.readUBytesToBuf(get(), sizeVar);
     }
-    inline void write(IStreamWriter& writer) const
+    void write(IStreamWriter& writer) const
     {
         writer.writeUBytes(get(), sizeVar);
     }
-    inline void fromYAML(Athena::io::YAMLDocReader& reader)
+    size_t binarySize(size_t __isz) const
+    {
+        return __isz + sizeVar;
+    }
+    void fromYAML(Athena::io::YAMLDocReader& reader)
     {*this = reader.readUBytes(nullptr);}
-    inline void toYAML(Athena::io::YAMLDocWriter& writer) const
+    void toYAML(Athena::io::YAMLDocWriter& writer) const
     {writer.writeUBytes(nullptr, *this, sizeVar);}
 };
 
@@ -1249,17 +1255,19 @@ template <atInt32 sizeVar, Endian VE>
 struct StringYaml : public DNAYaml<VE>, public std::string
 {
     typename DNA<VE>::Delete expl;
-    inline void read(IStreamReader& reader)
+    void read(IStreamReader& reader)
     {this->assign(std::move(reader.readString(sizeVar)));}
-    inline void write(IStreamWriter& writer) const
+    void write(IStreamWriter& writer) const
     {writer.writeString(*this, sizeVar);}
-    inline void fromYAML(Athena::io::YAMLDocReader& reader)
+    size_t binarySize(size_t __isz) const
+    {return __isz + ((sizeVar<0)?(this->size()+1):sizeVar);}
+    void fromYAML(Athena::io::YAMLDocReader& reader)
     {this->assign(std::move(reader.readString(nullptr)));}
-    inline void toYAML(Athena::io::YAMLDocWriter& writer) const
+    void toYAML(Athena::io::YAMLDocWriter& writer) const
     {writer.writeString(nullptr, *this);}
-    inline std::string& operator=(const std::string& __str)
+    std::string& operator=(const std::string& __str)
     {return this->assign(__str);}
-    inline std::string& operator=(std::string&& __str)
+    std::string& operator=(std::string&& __str)
     {this->swap(__str); return *this;}
 };
 
@@ -1267,23 +1275,25 @@ template <atInt32 sizeVar, Endian VE>
 struct WStringYaml : public DNAYaml<VE>, public std::wstring
 {
     typename DNA<VE>::Delete expl;
-    inline void read(IStreamReader& reader)
+    void read(IStreamReader& reader)
     {
         reader.setEndian(VE);
         this->assign(std::move(reader.readWString(sizeVar)));
     }
-    inline void write(IStreamWriter& writer) const
+    void write(IStreamWriter& writer) const
     {
         writer.setEndian(VE);
         writer.writeWString(*this, sizeVar);
     }
-    inline void fromYAML(Athena::io::YAMLDocReader& reader)
+    size_t binarySize(size_t __isz) const
+    {return __isz + (((sizeVar<0)?(this->size()+1):sizeVar)*2);}
+    void fromYAML(Athena::io::YAMLDocReader& reader)
     {this->assign(std::move(reader.readWString(nullptr)));}
-    inline void toYAML(Athena::io::YAMLDocWriter& writer) const
+    void toYAML(Athena::io::YAMLDocWriter& writer) const
     {writer.writeWString(nullptr, *this);}
-    inline std::wstring& operator=(const std::wstring& __str)
+    std::wstring& operator=(const std::wstring& __str)
     {return this->assign(__str);}
-    inline std::wstring& operator=(std::wstring&& __str)
+    std::wstring& operator=(std::wstring&& __str)
     {this->swap(__str); return *this;}
 };
 
@@ -1291,17 +1301,19 @@ template <atInt32 sizeVar, Endian VE>
 struct WStringAsStringYaml : public DNAYaml<VE>, public std::string
 {
     typename DNA<VE>::Delete expl;
-    inline void read(IStreamReader& reader)
+    void read(IStreamReader& reader)
     {*this = reader.readWStringAsString(sizeVar);}
-    inline void write(IStreamWriter& writer) const
+    void write(IStreamWriter& writer) const
     {writer.writeStringAsWString(*this, sizeVar);}
-    inline void fromYAML(Athena::io::YAMLDocReader& reader)
+    size_t binarySize(size_t __isz) const
+    {return __isz + (((sizeVar<0)?(this->size()+1):sizeVar)*2);}
+    void fromYAML(Athena::io::YAMLDocReader& reader)
     {this->assign(std::move(reader.readString(nullptr)));}
-    inline void toYAML(Athena::io::YAMLDocWriter& writer) const
+    void toYAML(Athena::io::YAMLDocWriter& writer) const
     {writer.writeString(nullptr, *this);}
-    inline std::string& operator=(const std::string& __str)
+    std::string& operator=(const std::string& __str)
     {return this->assign(__str);}
-    inline std::string& operator=(std::string&& __str)
+    std::string& operator=(std::string&& __str)
     {this->swap(__str); return *this;}
 };
 
