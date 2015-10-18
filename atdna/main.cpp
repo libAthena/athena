@@ -144,11 +144,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
             {
                 return 1;
             }
-            else if (bType->isUnsignedInteger())
-            {
-                return width / 8;
-            }
-            else if (bType->isSignedInteger())
+            else if (bType->isUnsignedInteger() || bType->isSignedInteger())
             {
                 return width / 8;
             }
@@ -160,15 +156,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
             {
                 return 1;
             }
-            else if (bType->isUnsignedInteger())
-            {
-                return width / 8;
-            }
-            else if (bType->isSignedInteger())
-            {
-                return width / 8;
-            }
-            else if (bType->isFloatingPoint())
+            else if (bType->isUnsignedInteger() || bType->isSignedInteger() || bType->isFloatingPoint())
             {
                 return width / 8;
             }
