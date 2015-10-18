@@ -21,6 +21,7 @@ static unsigned AthenaError = 0;
 #define ATHENA_DNA_WRITER "__dna_writer"
 #define ATHENA_YAML_READER "__dna_docin"
 #define ATHENA_YAML_WRITER "__dna_docout"
+#define ATHENA_SZ_ENUMERATE "__EnumerateSize"
 
 #ifndef INSTALL_PREFIX
 #define INSTALL_PREFIX /usr/local
@@ -128,6 +129,70 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
             }
         }
         return false;
+    }
+
+    int64_t GetSizeValue(const clang::Type* theType, unsigned width)
+    {
+        if (theType->isEnumeralType())
+        {
+            clang::EnumType* eType = (clang::EnumType*)theType;
+            clang::EnumDecl* eDecl = eType->getDecl();
+            theType = eDecl->getIntegerType().getCanonicalType().getTypePtr();
+
+            const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
+            if (bType->isBooleanType())
+            {
+                return 1;
+            }
+            else if (bType->isUnsignedInteger() || bType->isSignedInteger())
+            {
+                return width / 8;
+            }
+        }
+        else if (theType->isBuiltinType())
+        {
+            const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
+            if (bType->isBooleanType())
+            {
+                return 1;
+            }
+            else if (bType->isUnsignedInteger() || bType->isSignedInteger() || bType->isFloatingPoint())
+            {
+                return width / 8;
+            }
+        }
+        else if (theType->isRecordType())
+        {
+            const clang::CXXRecordDecl* rDecl = theType->getAsCXXRecordDecl();
+            for (const clang::FieldDecl* field : rDecl->fields())
+            {
+                if (!field->getName().compare("clangVec"))
+                {
+                    const clang::VectorType* vType = (clang::VectorType*)field->getType().getTypePtr();
+                    if (vType->isVectorType())
+                    {
+                        const clang::BuiltinType* eType = (clang::BuiltinType*)vType->getElementType().getTypePtr();
+                        const uint64_t width = context.getTypeInfo(eType).Width;
+                        if (!eType->isBuiltinType() || !eType->isFloatingPoint() ||
+                            (width != 32 && width != 64))
+                            continue;
+                        if (vType->getNumElements() == 2)
+                        {
+                            return width / 8 * 2;
+                        }
+                        else if (vType->getNumElements() == 3)
+                        {
+                            return width / 8 * 3;
+                        }
+                        else if (vType->getNumElements() == 4)
+                        {
+                            return width / 8 * 4;
+                        }
+                    }
+                }
+            }
+        }
+        return 0;
     }
 
     std::string GetOpString(const clang::Type* theType, unsigned width,
@@ -628,6 +693,356 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
             }
         }
         return std::string();
+    }
+
+    void emitSizeFuncs(clang::CXXRecordDecl* decl, const std::string& baseDNA)
+    {
+        int64_t podTotal = 0;
+        fileOut << "size_t " << decl->getQualifiedNameAsString() << "::binarySize(size_t __isz) const\n{\n";
+
+        if (baseDNA.size())
+        {
+            fileOut << "    __isz = " << baseDNA << "::binarySize(__isz);\n";
+        }
+
+        for (const clang::FieldDecl* field : decl->fields())
+        {
+            clang::QualType qualType = field->getType();
+            clang::TypeInfo regTypeInfo = context.getTypeInfo(qualType);
+            const clang::Type* regType = qualType.getTypePtrOrNull();
+            while (regType->getTypeClass() == clang::Type::Elaborated ||
+                   regType->getTypeClass() == clang::Type::Typedef)
+                regType = regType->getUnqualifiedDesugaredType();
+
+            /* Resolve constant array */
+            size_t arraySize = 1;
+            bool isArray = false;
+            if (regType->getTypeClass() == clang::Type::ConstantArray)
+            {
+                isArray = true;
+                const clang::ConstantArrayType* caType = (clang::ConstantArrayType*)regType;
+                arraySize = caType->getSize().getZExtValue();
+                qualType = caType->getElementType();
+                regTypeInfo = context.getTypeInfo(qualType);
+                regType = qualType.getTypePtrOrNull();
+                if (regType->getTypeClass() == clang::Type::Elaborated)
+                    regType = regType->getUnqualifiedDesugaredType();
+            }
+
+            for (int e=0 ; e<arraySize ; ++e)
+            {
+                std::string fieldName;
+                if (isArray)
+                {
+                    char subscript[16];
+                    snprintf(subscript, 16, "[%d]", e);
+                    fieldName = field->getName().str() + subscript;
+                }
+                else
+                    fieldName = field->getName();
+
+                if (regType->getTypeClass() == clang::Type::TemplateSpecialization)
+                {
+                    const clang::TemplateSpecializationType* tsType = (const clang::TemplateSpecializationType*)regType;
+                    const clang::TemplateDecl* tsDecl = tsType->getTemplateName().getAsTemplateDecl();
+
+                    if (!tsDecl->getName().compare("Value"))
+                    {
+                        clang::QualType templateType;
+                        const clang::TemplateArgument* typeArg = nullptr;
+                        size_t typeSize = 0;
+                        for (const clang::TemplateArgument& arg : *tsType)
+                        {
+                            if (arg.getKind() == clang::TemplateArgument::Type)
+                            {
+                                typeArg = &arg;
+                                templateType = arg.getAsType().getCanonicalType();
+                                const clang::Type* type = arg.getAsType().getCanonicalType().getTypePtr();
+                                typeSize = GetSizeValue(type, regTypeInfo.Width);
+                            }
+                        }
+
+                        if (typeSize)
+                            podTotal += typeSize;
+                        else
+                            fileOut << "    __isz = " << fieldName << ".binarySize(__isz);\n";
+                    }
+                    else if (!tsDecl->getName().compare("Vector"))
+                    {
+                        clang::QualType templateType;
+                        const clang::TemplateArgument* typeArg = nullptr;
+                        size_t typeSize = 0;
+                        for (const clang::TemplateArgument& arg : *tsType)
+                        {
+                            if (arg.getKind() == clang::TemplateArgument::Type)
+                            {
+                                typeArg = &arg;
+                                templateType = arg.getAsType().getCanonicalType();
+                                clang::TypeInfo typeInfo = context.getTypeInfo(templateType);
+                                typeSize = GetSizeValue(templateType.getTypePtr(), typeInfo.Width);
+                            }
+                        }
+
+                        if (typeSize)
+                            fileOut << "    __isz += " << fieldName << ".size() * " << typeSize << ";\n";
+                        else
+                            fileOut << "    __isz = " ATHENA_SZ_ENUMERATE "(__isz, " << fieldName << ");\n";
+
+                    }
+                    else if (!tsDecl->getName().compare("Buffer"))
+                    {
+                        const clang::Expr* sizeExpr = nullptr;
+                        std::string sizeExprStr;
+                        for (const clang::TemplateArgument& arg : *tsType)
+                        {
+                            if (arg.getKind() == clang::TemplateArgument::Expression)
+                            {
+                                const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)arg.getAsExpr()->IgnoreImpCasts();
+                                if (uExpr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
+                                    uExpr->getKind() == clang::UETT_SizeOf)
+                                {
+                                    const clang::Expr* argExpr = uExpr->getArgumentExpr();
+                                    while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
+                                        argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                                    sizeExpr = argExpr;
+                                    llvm::raw_string_ostream strStream(sizeExprStr);
+                                    argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
+                                }
+                            }
+                        }
+
+                        fileOut << "    __isz += (" << sizeExprStr << ");\n";
+                    }
+                    else if (!tsDecl->getName().compare("String"))
+                    {
+                        const clang::Expr* sizeExpr = nullptr;
+                        std::string sizeExprStr;
+                        for (const clang::TemplateArgument& arg : *tsType)
+                        {
+                            if (arg.getKind() == clang::TemplateArgument::Expression)
+                            {
+                                const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
+                                const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
+                                llvm::APSInt sizeLiteral;
+                                if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
+                                    uExpr->getKind() == clang::UETT_SizeOf)
+                                {
+                                    const clang::Expr* argExpr = uExpr->getArgumentExpr();
+                                    while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
+                                        argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                                    sizeExpr = argExpr;
+                                    llvm::raw_string_ostream strStream(sizeExprStr);
+                                    argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
+                                }
+                                else if (expr->isIntegerConstantExpr(sizeLiteral, context))
+                                {
+                                    sizeExprStr = sizeLiteral.toString(10);
+                                }
+                            }
+                        }
+
+                        if (sizeExprStr.size())
+                            fileOut << "    __isz += (" << sizeExprStr << ");\n";
+                        else
+                            fileOut << "    __isz += " << fieldName << ".size() + 1;\n";
+                    }
+                    else if (!tsDecl->getName().compare("WString"))
+                    {
+                        const clang::Expr* sizeExpr = nullptr;
+                        std::string sizeExprStr;
+                        size_t idx = 0;
+                        for (const clang::TemplateArgument& arg : *tsType)
+                        {
+                            if (arg.getKind() == clang::TemplateArgument::Expression)
+                            {
+                                const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
+                                if (idx == 0)
+                                {
+                                    llvm::APSInt sizeLiteral;
+                                    const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
+                                    if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
+                                        uExpr->getKind() == clang::UETT_SizeOf)
+                                    {
+                                        const clang::Expr* argExpr = uExpr->getArgumentExpr();
+                                        while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
+                                            argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                                        sizeExpr = argExpr;
+                                        llvm::raw_string_ostream strStream(sizeExprStr);
+                                        argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
+                                    }
+                                    else if (expr->isIntegerConstantExpr(sizeLiteral, context))
+                                    {
+                                        sizeExprStr = sizeLiteral.toString(10);
+                                    }
+                                }
+                            }
+                            ++idx;
+                        }
+
+                        if (sizeExprStr.size())
+                            fileOut << "    __isz += (" << sizeExprStr << ") * 2;\n";
+                        else
+                            fileOut << "    __isz += (" << fieldName << ".size() + 1) * 2;\n";
+                    }
+                    else if (!tsDecl->getName().compare("WStringAsString"))
+                    {
+                        const clang::Expr* sizeExpr = nullptr;
+                        std::string sizeExprStr;
+                        for (const clang::TemplateArgument& arg : *tsType)
+                        {
+                            if (arg.getKind() == clang::TemplateArgument::Expression)
+                            {
+                                const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
+                                const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
+                                llvm::APSInt sizeLiteral;
+                                if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
+                                    uExpr->getKind() == clang::UETT_SizeOf)
+                                {
+                                    const clang::Expr* argExpr = uExpr->getArgumentExpr();
+                                    while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
+                                        argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                                    sizeExpr = argExpr;
+                                    llvm::raw_string_ostream strStream(sizeExprStr);
+                                    argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
+                                }
+                                else if (expr->isIntegerConstantExpr(sizeLiteral, context))
+                                {
+                                    sizeExprStr = sizeLiteral.toString(10);
+                                }
+                            }
+                        }
+
+
+                        if (sizeExprStr.size())
+                            fileOut << "    __isz += (" << sizeExprStr << ") * 2;\n";
+                        else
+                            fileOut << "    __isz += (" << fieldName << ".size() + 1) * 2;\n";
+                    }
+                    else if (!tsDecl->getName().compare("Seek"))
+                    {
+                        size_t idx = 0;
+                        const clang::Expr* offsetExpr = nullptr;
+                        std::string offsetExprStr;
+                        llvm::APSInt direction(64, 0);
+                        const clang::Expr* directionExpr = nullptr;
+                        bool bad = false;
+                        int64_t literal = 0;
+                        for (const clang::TemplateArgument& arg : *tsType)
+                        {
+                            if (arg.getKind() == clang::TemplateArgument::Expression)
+                            {
+                                const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
+                                if (!idx)
+                                {
+                                    offsetExpr = expr;
+                                    const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
+                                    llvm::APSInt offsetLiteral;
+                                    if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
+                                        uExpr->getKind() == clang::UETT_SizeOf)
+                                    {
+                                        const clang::Expr* argExpr = uExpr->getArgumentExpr();
+                                        while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
+                                            argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                                        offsetExpr = argExpr;
+                                        llvm::raw_string_ostream strStream(offsetExprStr);
+                                        argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
+                                    }
+                                    else if (expr->isIntegerConstantExpr(offsetLiteral, context))
+                                    {
+                                        literal = offsetLiteral.getSExtValue();
+                                    }
+                                }
+                                else
+                                {
+                                    directionExpr = expr;
+                                    if (!expr->isIntegerConstantExpr(direction, context))
+                                    {
+                                        bad = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            ++idx;
+                        }
+                        if (bad)
+                            continue;
+
+                        int64_t directionVal = direction.getSExtValue();
+
+                        if (literal)
+                        {
+                            if (directionVal == 0)
+                            {
+                                podTotal = 0;
+                                fileOut << "    __isz = " << literal << ";\n";
+                            }
+                            else if (directionVal == 1)
+                                podTotal += literal;
+                        }
+                        else
+                        {
+                            if (directionVal == 0)
+                            {
+                                podTotal = 0;
+                                fileOut << "    __isz = (" << offsetExprStr << ");\n";
+                            }
+                            else if (directionVal == 1)
+                                fileOut << "    __isz += (" << offsetExprStr << ");\n";
+                        }
+
+                    }
+                    else if (!tsDecl->getName().compare("Align"))
+                    {
+                        llvm::APSInt align(64, 0);
+                        bool bad = false;
+                        for (const clang::TemplateArgument& arg : *tsType)
+                        {
+                            if (arg.getKind() == clang::TemplateArgument::Expression)
+                            {
+                                const clang::Expr* expr = arg.getAsExpr();
+                                if (!expr->isIntegerConstantExpr(align, context))
+                                {
+                                    bad = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (bad)
+                            continue;
+
+                        int64_t alignVal = align.getSExtValue();
+                        if (alignVal)
+                        {
+                            fileOut << "    __isz += " << podTotal << ";\n";
+                            podTotal = 0;
+                            if (align.isPowerOf2())
+                                fileOut << "    __isz = (__isz + " << alignVal-1 << ") & ~" << alignVal-1 << ";\n";
+                            else
+                                fileOut << "    __isz = (__isz + " << alignVal-1 << ") / " << alignVal << " * " << alignVal << ";\n";
+                        }
+                    }
+
+                }
+
+                else if (regType->getTypeClass() == clang::Type::Record)
+                {
+                    const clang::CXXRecordDecl* cxxRDecl = regType->getAsCXXRecordDecl();
+                    std::string baseDNA;
+                    bool isYAML = false;
+                    if (cxxRDecl && isDNARecord(cxxRDecl, baseDNA, isYAML))
+                    {
+                        fileOut << "    __isz = " << fieldName << ".binarySize(__isz);\n";
+                    }
+                }
+
+            }
+
+        }
+
+        if (podTotal)
+            fileOut << "    return __isz + " << podTotal << ";\n}\n\n";
+        else
+            fileOut << "    return __isz;\n}\n\n";
     }
 
     void emitIOFuncs(clang::CXXRecordDecl* decl, const std::string& baseDNA)
@@ -1789,6 +2204,7 @@ public:
         emitIOFuncs(decl, baseDNA);
         if (isYAML)
             emitYAMLFuncs(decl, baseDNA);
+        emitSizeFuncs(decl, baseDNA);
 
         return true;
     }
