@@ -32,6 +32,7 @@ public:
     atUint64 readUBytesToBuf(void* buf, atUint64 len);
 
     void setCacheSize(const atInt32 blockSize);
+    FILE* _fileHandle() {return m_fileHandle;}
 protected:
     std::string  m_filename;
 #if _WIN32

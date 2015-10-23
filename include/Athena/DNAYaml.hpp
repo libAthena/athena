@@ -11,6 +11,7 @@
 #include <yaml.h>
 #include <utf8proc.h>
 #include "DNA.hpp"
+#include "FileReader.hpp"
 
 namespace Athena
 {
@@ -1225,6 +1226,12 @@ struct DNAYaml : DNA<DNAE>
         fseek(fin, pos, SEEK_SET);
         yaml_parser_delete(&parser);
         return retval;
+    }
+
+    template<class DNASubtype>
+    static bool ValidateFromYAMLFile(Athena::io::FileReader& fin)
+    {
+        return ValidateFromYAMLFile<DNASubtype>(fin._fileHandle());
     }
 };
 

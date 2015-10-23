@@ -26,6 +26,7 @@ public:
     atUint64 length() const;
     void writeUBytes(const atUint8* data, atUint64 len);
 
+    FILE* _fileHandle() {return m_fileHandle;}
 private:
     std::string  m_filename;
 #if _WIN32
