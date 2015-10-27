@@ -49,5 +49,23 @@ void Socket::setBlocking(bool blocking)
     sock_set_blocking(m_handle, blocking);
 }
 
+#if _WIN32
+struct WSADerpHandler
+{
+    WSADerpHandler()
+    {
+        WSADATA init;
+        WSAStartup(MAKEWORD(2, 2), &init);
+    }
+
+    ~WSADerpHandler()
+    {
+        WSACleanup();
+    }
+};
+
+static const WSADerpHandler __wsaderp__;
+#endif
+
 }
 }
