@@ -1,25 +1,5 @@
 #include "Athena/IPAddress.hpp"
-
-#ifdef __unix__
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <unistd.h>
-#elif defined(_WIN32)
-#ifdef _WIN32_WINDOWS
-#undef _WIN32_WINDOWS
-#endif
-#ifdef _WIN32_WINNT
-#undef _WIN32_WINNT
-#endif
-#define _WIN32_WINDOWS 0x0501
-#define _WIN32_WINNT   0x0501
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#endif
+#include "sockwrap.h" // To resolve local IP
 
 namespace Athena
 {
@@ -55,6 +35,35 @@ const std::string IPAddress::toString() const
     return inet_ntoa(address);
 }
 
+const atUint32 IPAddress::toInt() const
+{
+    return ntohl(m_address);
+}
+
+IPAddress IPAddress::localAddress()
+{
+    sockhandle_t sock = socket(PF_INET, SOCK_DGRAM, 0);
+    if (sock == sock_invalid_socket())
+        return IPAddress();
+
+    struct sockaddr_in address = sock_create_address(ntohl(INADDR_LOOPBACK), 9);
+    if (connect(sock, reinterpret_cast<sockaddr*>(&address), sizeof(struct sockaddr_in)) == -1)
+    {
+        sock_close_socket(sock);
+        return IPAddress();
+    }
+
+    addrlen_t size = sizeof(address);
+    if (getsockname(sock, reinterpret_cast<sockaddr*>(&address), &size) == -1)
+    {
+        sock_close_socket(sock);
+        return IPAddress();
+    }
+
+    sock_close_socket(sock);
+    return IPAddress(ntohl(address.sin_addr.s_addr));
+}
+
 void IPAddress::resolve(const std::string& address)
 {
     if (address == "0.0.0.0")
@@ -72,10 +81,11 @@ void IPAddress::resolve(const std::string& address)
         atUint32 ip = inet_addr(address.c_str());
         if (ip == INADDR_NONE)
         {
-            addrinfo hints = {0};
+            addrinfo hints;
+            memset(&hints, 0, sizeof(addrinfo));
             hints.ai_family = AF_INET;
             addrinfo* result = nullptr;
-            if (getaddrinfo(address.c_str(), NULL, &hints, &result))
+            if (getaddrinfo(address.c_str(), nullptr, &hints, &result) == 0)
             {
                 if (result)
                 {

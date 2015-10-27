@@ -154,10 +154,12 @@ add_library(AthenaZelda EXCLUDE_FROM_ALL
 )
 
 add_library(AthenaNet
+    src/sockwrap.c
     src/Athena/Socket.cpp
     src/Athena/OAuth.cpp
     src/Athena/IPAddress.cpp
 
+    include/sockwrap.h
     include/Athena/Socket.hpp
     include/Athena/OAuth.hpp
     include/Athena/IPAddress.hpp)
