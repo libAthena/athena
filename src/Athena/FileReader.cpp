@@ -59,8 +59,8 @@ void FileReader::open()
         return;
     }
 
-    // ensure we're at the beginning of the file
-    rewind(m_fileHandle);
+    // reset error
+    m_hasError = false;
 }
 
 void FileReader::close()
