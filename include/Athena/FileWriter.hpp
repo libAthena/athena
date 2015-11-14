@@ -12,10 +12,25 @@ class FileWriter : public IStreamWriter
 {
 public:
     FileWriter(const std::string& filename, bool overwrite = true);
-#if _WIN32
     FileWriter(const std::wstring& filename, bool overwrite = true);
-#endif
     virtual ~FileWriter();
+
+    inline std::string filename() const
+    {
+#if _WIN32
+        return utility::wideToUtf8(m_filename);
+#else
+        return m_filename;
+#endif
+    }
+    inline std::wstring wfilename() const
+    {
+#if _WIN32
+        return m_filename;
+#else
+        return utility::utf8ToWide(m_filename);
+#endif
+    }
 
     void open(bool overwrite = true);
     void close();
@@ -28,9 +43,10 @@ public:
 
     FILE* _fileHandle() {return m_fileHandle;}
 private:
-    std::string  m_filename;
 #if _WIN32
-    std::wstring m_wfilename;
+    std::wstring m_filename;
+#else
+    std::string  m_filename;
 #endif
     FILE*        m_fileHandle;
     atUint8      m_currentByte;

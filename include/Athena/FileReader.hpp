@@ -14,12 +14,26 @@ class FileReader : public IStreamReader
 {
 public:
     FileReader(const std::string& filename, atInt32 cacheSize = (32 * 1024));
-#if _WIN32
     FileReader(const std::wstring& filename, atInt32 cacheSize = (32 * 1024));
-#endif
     virtual ~FileReader();
-    inline const std::string& filename() const
-    {return m_filename;}
+
+    inline std::string filename() const
+    {
+#if _WIN32
+        return utility::wideToUtf8(m_filename);
+#else
+        return m_filename;
+#endif
+    }
+
+    inline std::wstring wfilename() const
+    {
+#if _WIN32
+        return m_filename;
+#else
+        return utility::utf8ToWide(m_filename);
+#endif
+    }
 
     void open();
     void close();
@@ -34,13 +48,14 @@ public:
     void setCacheSize(const atInt32 blockSize);
     FILE* _fileHandle() {return m_fileHandle;}
 protected:
-    std::string  m_filename;
 #if _WIN32
-    std::wstring m_wfilename;
+    std::wstring m_filename;
+#else
+    std::string  m_filename;
 #endif
     FILE*        m_fileHandle;
     std::unique_ptr<atUint8[]>    m_cacheData;
-    atInt32     m_blockSize;
+    atInt32      m_blockSize;
     atInt32      m_curBlock;
     atUint64     m_offset;
 };

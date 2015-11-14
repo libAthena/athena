@@ -903,7 +903,7 @@ public:
     }
 
     template <typename INTYPE>
-    void writeVal(const char* name, INTYPE val)
+    void writeVal(const char* name, const INTYPE& val)
     {
         YAMLNode* curSub = m_subStack.back();
         if (curSub->m_type == YAML_MAPPING_NODE)
@@ -913,7 +913,7 @@ public:
     }
 
     template <typename INTYPE>
-    void writeVal(const char* name, INTYPE val, size_t byteCount)
+    void writeVal(const char* name, const INTYPE& val, size_t byteCount)
     {
         YAMLNode* curSub = m_subStack.back();
         if (curSub->m_type == YAML_MAPPING_NODE)

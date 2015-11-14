@@ -58,7 +58,7 @@ void* operator new[](size_t bytes) noexcept \
 void operator delete(void* buf) noexcept \
 {_mm_free(buf);} \
 void operator delete[](void* buf) noexcept \
-{_mm_free(buf);} \
+{_mm_free(buf);}
 
 typedef union alignas(16)
 {
