@@ -59,7 +59,7 @@ void FileWriter::open(bool overwrite)
 
     if (!m_fileHandle)
     {
-        atError("Unable to open file '%s'", filename());
+        atError("Unable to open file '%s'", filename().c_str());
         setError();
         return;
     }

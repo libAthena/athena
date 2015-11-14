@@ -22,6 +22,12 @@
 #define S_ISLNK(m) 0
 #endif
 
+#define PRISize "Iu"
+
+#else
+
+#define PRISize "zu"
+
 #endif
 
 #ifndef AT_PRETTY_FUNCTION
