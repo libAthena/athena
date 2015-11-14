@@ -208,6 +208,11 @@ std::string& rtrim(std::string& s);
 // trim from both ends
 std::string& trim(std::string& s);
 atUint64 fileSize(const std::string& filename);
+
+std::string wideToUtf8(const std::wstring& src);
+
+std::wstring utf8ToWide(const std::string& src);
+
 } // utility
 } // Athena
 #endif
