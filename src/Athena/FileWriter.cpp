@@ -20,7 +20,7 @@ FileWriter::FileWriter(const std::string& filename, bool overwrite)
 #if _WIN32
     m_filename = utility::utf8ToWide(filename);
 #else
-    m_filename = fiename;
+    m_filename = filename;
 #endif
     open(overwrite);
 }

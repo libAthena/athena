@@ -21,7 +21,7 @@ FileReader::FileReader(const std::string& filename, atInt32 cacheSize)
 #if _WIN32
     m_filename = utility::utf8ToWide(filename);
 #else
-    m_filename = fiename;
+    m_filename = filename;
 #endif
     open();
     setCacheSize(cacheSize);
@@ -29,8 +29,8 @@ FileReader::FileReader(const std::string& filename, atInt32 cacheSize)
 
 FileReader::FileReader(const std::wstring& filename, atInt32 cacheSize)
     : m_fileHandle(nullptr),
-    m_cacheData(nullptr),
-    m_offset(0)
+      m_cacheData(nullptr),
+      m_offset(0)
 {
 #if _WIN32
     m_filename = filename;
@@ -88,15 +88,15 @@ void FileReader::seek(atInt64 pos, SeekOrigin origin)
         atUint64 oldOff = m_offset;
         switch(origin)
         {
-            case SeekOrigin::Begin:
-                m_offset = pos;
-                break;
-            case SeekOrigin::Current:
-                m_offset += pos;
-                break;
-            case SeekOrigin::End:
-                m_offset = length() - pos;
-                break;
+        case SeekOrigin::Begin:
+            m_offset = pos;
+            break;
+        case SeekOrigin::Current:
+            m_offset += pos;
+            break;
+        case SeekOrigin::End:
+            m_offset = length() - pos;
+            break;
         }
         if (m_offset > length())
         {
