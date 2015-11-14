@@ -841,7 +841,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                             }
                         }
 
-                        if (sizeExprStr.size())
+                        if (sizeExprStr.size() && sizeExprStr.compare("-1"))
                             fileOut << "    __isz += (" << sizeExprStr << ");\n";
                         else
                             fileOut << "    __isz += " << fieldName << ".size() + 1;\n";
@@ -879,7 +879,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                             ++idx;
                         }
 
-                        if (sizeExprStr.size())
+                        if (sizeExprStr.size() && sizeExprStr.compare("-1"))
                             fileOut << "    __isz += (" << sizeExprStr << ") * 2;\n";
                         else
                             fileOut << "    __isz += (" << fieldName << ".size() + 1) * 2;\n";
@@ -913,7 +913,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         }
 
 
-                        if (sizeExprStr.size())
+                        if (sizeExprStr.size() && sizeExprStr.compare("-1"))
                             fileOut << "    __isz += (" << sizeExprStr << ") * 2;\n";
                         else
                             fileOut << "    __isz += (" << fieldName << ".size() + 1) * 2;\n";
