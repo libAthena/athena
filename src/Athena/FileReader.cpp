@@ -57,7 +57,8 @@ void FileReader::open()
 
     if (!m_fileHandle)
     {
-        atError("File not found '%s'", filename());
+        std::string _filename = filename();
+        atError("File not found '%s'", _filename.c_str());
         setError();
         return;
     }
@@ -82,6 +83,9 @@ void FileReader::close()
 
 void FileReader::seek(atInt64 pos, SeekOrigin origin)
 {
+    if (!isOpen())
+        return;
+
     // check block position
     if (m_blockSize > 0)
     {

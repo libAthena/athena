@@ -84,6 +84,13 @@ void FileWriter::close()
 
 void FileWriter::seek(atInt64 pos, SeekOrigin origin)
 {
+    if (!isOpen())
+    {
+        atError("Unable to seek in file, not open");
+        setError();
+        return;
+    }
+
     if (fseeko64(m_fileHandle, pos, (int)origin) != 0)
     {
         atError("Unable to seek in file");
