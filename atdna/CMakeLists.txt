@@ -11,7 +11,7 @@ endif()
 # Find dependencies
 include(FindLLVM.cmake)
 if(NOT LLVM_FOUND)
-    message("-- Unable to locate LLVM installation; skipping atdna")
+    message(STATUS "Unable to locate LLVM installation; skipping atdna")
 else()
 list(APPEND LLVM_LIBS
      clangFrontend

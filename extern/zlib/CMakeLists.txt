@@ -2,7 +2,7 @@ if(NOT WIN32)
 find_package(ZLIB)
 endif()
 if(WIN32 OR NOT ZLIB_FOUND)
-message("-- Using Athena's built-in zlib")
+message(STATUS "Using Athena's built-in zlib")
 add_library(z
     adler32.c
     compress.c
