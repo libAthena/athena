@@ -14,26 +14,32 @@ namespace Athena
 namespace io
 {
 FileReader::FileReader(const std::string& filename, atInt32 cacheSize)
-    : m_filename(filename),
-      m_fileHandle(nullptr),
+    : m_fileHandle(nullptr),
       m_cacheData(nullptr),
       m_offset(0)
 {
+#if _WIN32
+    m_filename = utility::utf8ToWide(filename);
+#else
+    m_filename = filename;
+#endif
     open();
     setCacheSize(cacheSize);
 }
 
-#if _WIN32
 FileReader::FileReader(const std::wstring& filename, atInt32 cacheSize)
-    : m_wfilename(filename),
-    m_fileHandle(nullptr),
-    m_cacheData(nullptr),
-    m_offset(0)
+    : m_fileHandle(nullptr),
+      m_cacheData(nullptr),
+      m_offset(0)
 {
+#if _WIN32
+    m_filename = filename;
+#else
+    m_filename = utility::wideToUtf8(filename);
+#endif
     open();
     setCacheSize(cacheSize);
 }
-#endif
 
 FileReader::~FileReader()
 {
@@ -44,23 +50,21 @@ FileReader::~FileReader()
 void FileReader::open()
 {
 #if _WIN32
-    if (m_wfilename.size())
-        m_fileHandle = _wfopen(m_wfilename.c_str(), L"rb");
-    else
-        m_fileHandle = fopen(m_filename.c_str(), "rb");
+    m_fileHandle = _wfopen(m_filename.c_str(), L"rb");
 #else
     m_fileHandle = fopen(m_filename.c_str(), "rb");
 #endif
 
     if (!m_fileHandle)
     {
-        atError("File not found '%s'", m_filename.c_str());
+        std::string _filename = filename();
+        atError("File not found '%s'", _filename.c_str());
         setError();
         return;
     }
 
-    // ensure we're at the beginning of the file
-    rewind(m_fileHandle);
+    // reset error
+    m_hasError = false;
 }
 
 void FileReader::close()
@@ -79,21 +83,24 @@ void FileReader::close()
 
 void FileReader::seek(atInt64 pos, SeekOrigin origin)
 {
+    if (!isOpen())
+        return;
+
     // check block position
     if (m_blockSize > 0)
     {
         atUint64 oldOff = m_offset;
         switch(origin)
         {
-            case SeekOrigin::Begin:
-                m_offset = pos;
-                break;
-            case SeekOrigin::Current:
-                m_offset += pos;
-                break;
-            case SeekOrigin::End:
-                m_offset = length() - pos;
-                break;
+        case SeekOrigin::Begin:
+            m_offset = pos;
+            break;
+        case SeekOrigin::Current:
+            m_offset += pos;
+            break;
+        case SeekOrigin::End:
+            m_offset = length() - pos;
+            break;
         }
         if (m_offset > length())
         {
@@ -136,7 +143,11 @@ atUint64 FileReader::length() const
         return 0;
     }
 
+#if _WIN32
+    return utility::fileSize(utility::wideToUtf8(m_filename));
+#else
     return utility::fileSize(m_filename);
+#endif
 }
 
 atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len)

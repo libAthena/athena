@@ -14,22 +14,28 @@ namespace Athena
 namespace io
 {
 FileWriter::FileWriter(const std::string& filename, bool overwrite)
-    : m_filename(filename),
-      m_fileHandle(NULL),
+    : m_fileHandle(NULL),
       m_bytePosition(0)
 {
+#if _WIN32
+    m_filename = utility::utf8ToWide(filename);
+#else
+    m_filename = filename;
+#endif
     open(overwrite);
 }
 
-#if _WIN32
 FileWriter::FileWriter(const std::wstring& filename, bool overwrite)
-    : m_wfilename(filename),
-    m_fileHandle(NULL),
-    m_bytePosition(0)
+    : m_fileHandle(NULL),
+      m_bytePosition(0)
 {
+#if _WIN32
+    m_filename = filename;
+#else
+    m_filename = utility::wideToUtf8(filename);
+#endif
     open(overwrite);
 }
-#endif
 
 FileWriter::~FileWriter()
 {
@@ -40,38 +46,26 @@ FileWriter::~FileWriter()
 void FileWriter::open(bool overwrite)
 {
 #if _WIN32
-    if (m_wfilename.size())
-    {
-        if (overwrite)
-            m_fileHandle = _wfopen(m_wfilename.c_str(), L"w+b");
-        else
-            m_fileHandle = _wfopen(m_wfilename.c_str(), L"r+b");
-    }
+    if (overwrite)
+        m_fileHandle = _wfopen(m_filename.c_str(), L"w+b");
     else
-    {
-        if (overwrite)
-            m_fileHandle = fopen(m_filename.c_str(), "w+b");
-        else
-            m_fileHandle = fopen(m_filename.c_str(), "r+b");
-    }
+        m_fileHandle = _wfopen(m_filename.c_str(), L"r+b");
 #else
     if (overwrite)
         m_fileHandle = fopen(m_filename.c_str(), "w+b");
     else
-        m_fileHandle = fopen(m_filename.c_str(), "r+b"); 
+        m_fileHandle = fopen(m_filename.c_str(), "r+b");
 #endif
-
-
 
     if (!m_fileHandle)
     {
-        atError("Unable to open file '%s'", m_filename.c_str());
+        atError("Unable to open file '%s'", filename().c_str());
         setError();
         return;
     }
 
-    // ensure we're at the beginning of the file
-    rewind(m_fileHandle);
+    // reset error
+    m_hasError = false;
 }
 
 void FileWriter::close()
@@ -90,6 +84,13 @@ void FileWriter::close()
 
 void FileWriter::seek(atInt64 pos, SeekOrigin origin)
 {
+    if (!isOpen())
+    {
+        atError("Unable to seek in file, not open");
+        setError();
+        return;
+    }
+
     if (fseeko64(m_fileHandle, pos, (int)origin) != 0)
     {
         atError("Unable to seek in file");
@@ -104,7 +105,11 @@ atUint64 FileWriter::position() const
 
 atUint64 FileWriter::length() const
 {
+#if _WIN32
+    return utility::fileSize(utility::wideToUtf8(m_filename));
+#else
     return utility::fileSize(m_filename);
+#endif
 }
 
 void FileWriter::writeUBytes(const atUint8* data, atUint64 len)

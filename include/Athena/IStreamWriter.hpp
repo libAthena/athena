@@ -383,306 +383,324 @@ public:
      *
      * @param vec The value to write to the buffer
      */
-    inline void writeVec2f(atVec2f vec)
+    inline void writeVec2f(const atVec2f& vec)
     {
+        atVec2f tmp = vec;
         if (m_endian == BigEndian)
         {
-            utility::BigFloat(vec.vec[0]);
-            utility::BigFloat(vec.vec[1]);
+            utility::BigFloat(tmp.vec[0]);
+            utility::BigFloat(tmp.vec[1]);
         }
         else
         {
-            utility::LittleFloat(vec.vec[0]);
-            utility::LittleFloat(vec.vec[1]);
+            utility::LittleFloat(tmp.vec[0]);
+            utility::LittleFloat(tmp.vec[1]);
         }
-        writeUBytes((atUint8*)&vec, 8);
+        writeUBytes((atUint8*)&tmp, 8);
     }
-    inline void writeVal(atVec2f val) {writeVec2f(val);}
+    inline void writeVal(const atVec2f& val) {writeVec2f(val);}
 
     /** @brief Writes an atVec2f (8 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes against little depending on the platform.
      *
      * @param vec The value to write to the buffer
      */
-    inline void writeVec2fLittle(atVec2f vec)
+    inline void writeVec2fLittle(const atVec2f& vec)
     {
-        utility::LittleFloat(vec.vec[0]);
-        utility::LittleFloat(vec.vec[1]);
-        writeUBytes((atUint8*)&vec, 8);
+        atVec2f tmp = vec;
+        utility::LittleFloat(tmp.vec[0]);
+        utility::LittleFloat(tmp.vec[1]);
+        writeUBytes((atUint8*)&tmp, 8);
     }
-    inline void writeValLittle(atVec2f val) {writeVec2fLittle(val);}
+    inline void writeValLittle(const atVec2f& val) {writeVec2fLittle(val);}
 
     /** @brief Writes an atVec2f (8 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes against big depending on the platform.
      *
      * @param vec The value to write to the buffer
      */
-    inline void writeVec2fBig(atVec2f vec)
+    inline void writeVec2fBig(const atVec2f& vec)
     {
-        utility::BigFloat(vec.vec[0]);
-        utility::BigFloat(vec.vec[1]);
-        writeUBytes((atUint8*)&vec, 8);
+        atVec2f tmp = vec;
+        utility::BigFloat(tmp.vec[0]);
+        utility::BigFloat(tmp.vec[1]);
+        writeUBytes((atUint8*)&tmp, 8);
     }
-    inline void writeValBig(atVec2f val) {writeVec2fBig(val);}
+    inline void writeValBig(const atVec2f& val) {writeVec2fBig(val);}
 
     /** @brief Writes an atVec3f (12 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
      *  @param vec The value to write to the buffer
      */
-    inline void writeVec3f(atVec3f vec)
+    inline void writeVec3f(const atVec3f& vec)
     {
+        atVec3f tmp = vec;
         if (m_endian == BigEndian)
         {
-            utility::BigFloat(vec.vec[0]);
-            utility::BigFloat(vec.vec[1]);
-            utility::BigFloat(vec.vec[2]);
+            utility::BigFloat(tmp.vec[0]);
+            utility::BigFloat(tmp.vec[1]);
+            utility::BigFloat(tmp.vec[2]);
         }
         else
         {
-            utility::LittleFloat(vec.vec[0]);
-            utility::LittleFloat(vec.vec[1]);
-            utility::LittleFloat(vec.vec[2]);
+            utility::LittleFloat(tmp.vec[0]);
+            utility::LittleFloat(tmp.vec[1]);
+            utility::LittleFloat(tmp.vec[2]);
         }
-        writeUBytes((atUint8*)&vec, 12);
+        writeUBytes((atUint8*)&tmp, 12);
     }
-    inline void writeVal(atVec3f val) {writeVec3f(val);}
+    inline void writeVal(const atVec3f& val) {writeVec3f(val);}
 
     /** @brief Writes an atVec3f (12 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes against little depending on the platform.
      *
      *  @param vec The value to write to the buffer
      */
-    inline void writeVec3fLittle(atVec3f vec)
+    inline void writeVec3fLittle(const atVec3f& vec)
     {
-        utility::LittleFloat(vec.vec[0]);
-        utility::LittleFloat(vec.vec[1]);
-        utility::LittleFloat(vec.vec[2]);
-        writeUBytes((atUint8*)&vec, 12);
+        atVec3f tmp = vec;
+        utility::LittleFloat(tmp.vec[0]);
+        utility::LittleFloat(tmp.vec[1]);
+        utility::LittleFloat(tmp.vec[2]);
+        writeUBytes((atUint8*)&tmp, 12);
     }
-    inline void writeValLittle(atVec3f val) {writeVec3fLittle(val);}
+    inline void writeValLittle(const atVec3f& val) {writeVec3fLittle(val);}
 
     /** @brief Writes an atVec3f (12 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes against big depending on the platform.
      *
      *  @param vec The value to write to the buffer
      */
-    inline void writeVec3fBig(atVec3f vec)
+    inline void writeVec3fBig(const atVec3f& vec)
     {
-        utility::BigFloat(vec.vec[0]);
-        utility::BigFloat(vec.vec[1]);
-        utility::BigFloat(vec.vec[2]);
-        writeUBytes((atUint8*)&vec, 12);
+        atVec3f tmp = vec;
+        utility::BigFloat(tmp.vec[0]);
+        utility::BigFloat(tmp.vec[1]);
+        utility::BigFloat(tmp.vec[2]);
+        writeUBytes((atUint8*)&tmp, 12);
     }
-    inline void writeValBig(atVec3f val) {writeVec3fBig(val);}
+    inline void writeValBig(const atVec3f& val) {writeVec3fBig(val);}
 
     /** @brief Writes an atVec4f (16 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
      *  @param vec The value to write to the buffer
      */
-    inline void writeVec4f(atVec4f vec)
+    inline void writeVec4f(const atVec4f& vec)
     {
+        atVec4f tmp = vec;
         if (m_endian == BigEndian)
         {
-            utility::BigFloat(vec.vec[0]);
-            utility::BigFloat(vec.vec[1]);
-            utility::BigFloat(vec.vec[2]);
-            utility::BigFloat(vec.vec[3]);
+            utility::BigFloat(tmp.vec[0]);
+            utility::BigFloat(tmp.vec[1]);
+            utility::BigFloat(tmp.vec[2]);
+            utility::BigFloat(tmp.vec[3]);
         }
         else
         {
-            utility::LittleFloat(vec.vec[0]);
-            utility::LittleFloat(vec.vec[1]);
-            utility::LittleFloat(vec.vec[2]);
-            utility::LittleFloat(vec.vec[3]);
+            utility::LittleFloat(tmp.vec[0]);
+            utility::LittleFloat(tmp.vec[1]);
+            utility::LittleFloat(tmp.vec[2]);
+            utility::LittleFloat(tmp.vec[3]);
         }
-        writeUBytes((atUint8*)&vec, 16);
+        writeUBytes((atUint8*)&tmp, 16);
     }
-    inline void writeVal(atVec4f val) {writeVec4f(val);}
+    inline void writeVal(const atVec4f& val) {writeVec4f(val);}
 
     /** @brief Writes an atVec4f (16 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes against little depending on the platform.
      *
      *  @param vec The value to write to the buffer
      */
-    inline void writeVec4fLittle(atVec4f vec)
+    inline void writeVec4fLittle(const atVec4f& vec)
     {
-        utility::LittleFloat(vec.vec[0]);
-        utility::LittleFloat(vec.vec[1]);
-        utility::LittleFloat(vec.vec[2]);
-        utility::LittleFloat(vec.vec[3]);
-        writeUBytes((atUint8*)&vec, 16);
+        atVec4f tmp = vec;
+        utility::LittleFloat(tmp.vec[0]);
+        utility::LittleFloat(tmp.vec[1]);
+        utility::LittleFloat(tmp.vec[2]);
+        utility::LittleFloat(tmp.vec[3]);
+        writeUBytes((atUint8*)&tmp, 16);
     }
-    inline void writeValLittle(atVec4f val) {writeVec4fLittle(val);}
+    inline void writeValLittle(const atVec4f& val) {writeVec4fLittle(val);}
 
     /** @brief Writes an atVec4f (16 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes against big depending on the platform.
      *
      *  @param vec The value to write to the buffer
      */
-    inline void writeVec4fBig(atVec4f vec)
+    inline void writeVec4fBig(const atVec4f& vec)
     {
-        utility::BigFloat(vec.vec[0]);
-        utility::BigFloat(vec.vec[1]);
-        utility::BigFloat(vec.vec[2]);
-        utility::BigFloat(vec.vec[3]);
-        writeUBytes((atUint8*)&vec, 16);
+        atVec4f tmp = vec;
+        utility::BigFloat(tmp.vec[0]);
+        utility::BigFloat(tmp.vec[1]);
+        utility::BigFloat(tmp.vec[2]);
+        utility::BigFloat(tmp.vec[3]);
+        writeUBytes((atUint8*)&tmp, 16);
     }
-    inline void writeValBig(atVec4f val) {writeVec4fBig(val);}
+    inline void writeValBig(const atVec4f& val) {writeVec4fBig(val);}
 
     /** @brief Writes an atVec2d (16 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
      * @param vec The value to write to the buffer
      */
-    inline void writeVec2d(atVec2d vec)
+    inline void writeVec2d(const atVec2d& vec)
     {
+        atVec2d tmp = vec;
         if (m_endian == BigEndian)
         {
-            utility::BigDouble(vec.vec[0]);
-            utility::BigDouble(vec.vec[1]);
+            utility::BigDouble(tmp.vec[0]);
+            utility::BigDouble(tmp.vec[1]);
         }
         else
         {
-            utility::LittleDouble(vec.vec[0]);
-            utility::LittleDouble(vec.vec[1]);
+            utility::LittleDouble(tmp.vec[0]);
+            utility::LittleDouble(tmp.vec[1]);
         }
-        writeUBytes((atUint8*)&vec, 16);
+        writeUBytes((atUint8*)&tmp, 16);
     }
-    inline void writeVal(atVec2d val) {writeVec2d(val);}
+    inline void writeVal(const atVec2d& val) {writeVec2d(val);}
 
     /** @brief Writes an atVec2d (16 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes against little depending on the platform.
      *
      * @param vec The value to write to the buffer
      */
-    inline void writeVec2dLittle(atVec2d vec)
+    inline void writeVec2dLittle(const atVec2d& vec)
     {
-        utility::LittleDouble(vec.vec[0]);
-        utility::LittleDouble(vec.vec[1]);
-        writeUBytes((atUint8*)&vec, 16);
+        atVec2d tmp = vec;
+        utility::LittleDouble(tmp.vec[0]);
+        utility::LittleDouble(tmp.vec[1]);
+        writeUBytes((atUint8*)&tmp, 16);
     }
-    inline void writeValLittle(atVec2d val) {writeVec2dLittle(val);}
+    inline void writeValLittle(const atVec2d& val) {writeVec2dLittle(val);}
 
     /** @brief Writes an atVec2d (16 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes against big depending on the platform.
      *
      * @param vec The value to write to the buffer
      */
-    inline void writeVec2dBig(atVec2d vec)
+    inline void writeVec2dBig(const atVec2d& vec)
     {
-        utility::BigDouble(vec.vec[0]);
-        utility::BigDouble(vec.vec[1]);
-        writeUBytes((atUint8*)&vec, 16);
+        atVec2d tmp = vec;
+        utility::BigDouble(tmp.vec[0]);
+        utility::BigDouble(tmp.vec[1]);
+        writeUBytes((atUint8*)&tmp, 16);
     }
-    inline void writeValBig(atVec2d val) {writeVec2dBig(val);}
+    inline void writeValBig(const atVec2d& val) {writeVec2dBig(val);}
 
     /** @brief Writes an atVec3d (24 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
      *  @param vec The value to write to the buffer
      */
-    inline void writeVec3d(atVec3d vec)
+    inline void writeVec3d(const atVec3d& vec)
     {
+        atVec3d tmp = vec;
         if (m_endian == BigEndian)
         {
-            utility::BigDouble(vec.vec[0]);
-            utility::BigDouble(vec.vec[1]);
-            utility::BigDouble(vec.vec[2]);
+            utility::BigDouble(tmp.vec[0]);
+            utility::BigDouble(tmp.vec[1]);
+            utility::BigDouble(tmp.vec[2]);
         }
         else
         {
-            utility::LittleDouble(vec.vec[0]);
-            utility::LittleDouble(vec.vec[1]);
-            utility::LittleDouble(vec.vec[2]);
+            utility::LittleDouble(tmp.vec[0]);
+            utility::LittleDouble(tmp.vec[1]);
+            utility::LittleDouble(tmp.vec[2]);
         }
-        writeUBytes((atUint8*)&vec, 24);
+        writeUBytes((atUint8*)&tmp, 24);
     }
-    inline void writeVal(atVec3d val) {writeVec3d(val);}
+    inline void writeVal(const atVec3d& val) {writeVec3d(val);}
 
     /** @brief Writes an atVec3d (24 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes against little depending on the platform.
      *
      *  @param vec The value to write to the buffer
      */
-    inline void writeVec3dLittle(atVec3d vec)
+    inline void writeVec3dLittle(const atVec3d& vec)
     {
-        utility::LittleDouble(vec.vec[0]);
-        utility::LittleDouble(vec.vec[1]);
-        utility::LittleDouble(vec.vec[2]);
-        writeUBytes((atUint8*)&vec, 24);
+        atVec3d tmp = vec;
+        utility::LittleDouble(tmp.vec[0]);
+        utility::LittleDouble(tmp.vec[1]);
+        utility::LittleDouble(tmp.vec[2]);
+        writeUBytes((atUint8*)&tmp, 24);
     }
-    inline void writeValLittle(atVec3d val) {writeVec3dLittle(val);}
+    inline void writeValLittle(const atVec3d& val) {writeVec3dLittle(val);}
 
     /** @brief Writes an atVec3d (24 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes against big depending on the platform.
      *
      *  @param vec The value to write to the buffer
      */
-    inline void writeVec3dBig(atVec3d vec)
+    inline void writeVec3dBig(const atVec3d& vec)
     {
-        utility::BigDouble(vec.vec[0]);
-        utility::BigDouble(vec.vec[1]);
-        utility::BigDouble(vec.vec[2]);
-        writeUBytes((atUint8*)&vec, 24);
+        atVec3d tmp = vec;
+        utility::BigDouble(tmp.vec[0]);
+        utility::BigDouble(tmp.vec[1]);
+        utility::BigDouble(tmp.vec[2]);
+        writeUBytes((atUint8*)&tmp, 24);
     }
-    inline void writeValBig(atVec3d val) {writeVec3dBig(val);}
+    inline void writeValBig(const atVec3d& val) {writeVec3dBig(val);}
 
     /** @brief Writes an atVec4d (32 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
      *
      *  @param vec The value to write to the buffer
      */
-    inline void writeVec4d(atVec4d vec)
+    inline void writeVec4d(const atVec4d& vec)
     {
+        atVec4d tmp = vec;
         if (m_endian == BigEndian)
         {
-            utility::BigDouble(vec.vec[0]);
-            utility::BigDouble(vec.vec[1]);
-            utility::BigDouble(vec.vec[2]);
-            utility::BigDouble(vec.vec[3]);
+            utility::BigDouble(tmp.vec[0]);
+            utility::BigDouble(tmp.vec[1]);
+            utility::BigDouble(tmp.vec[2]);
+            utility::BigDouble(tmp.vec[3]);
         }
         else
         {
-            utility::LittleDouble(vec.vec[0]);
-            utility::LittleDouble(vec.vec[1]);
-            utility::LittleDouble(vec.vec[2]);
-            utility::LittleDouble(vec.vec[3]);
+            utility::LittleDouble(tmp.vec[0]);
+            utility::LittleDouble(tmp.vec[1]);
+            utility::LittleDouble(tmp.vec[2]);
+            utility::LittleDouble(tmp.vec[3]);
         }
-        writeUBytes((atUint8*)&vec, 32);
+        writeUBytes((atUint8*)&tmp, 32);
     }
-    inline void writeVal(atVec4d val) {writeVec4d(val);}
+    inline void writeVal(const atVec4d& val) {writeVec4d(val);}
 
     /** @brief Writes an atVec4d (32 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes against little depending on the platform.
      *
      *  @param vec The value to write to the buffer
      */
-    inline void writeVec4dLittle(atVec4d vec)
+    inline void writeVec4dLittle(const atVec4d& vec)
     {
-        utility::LittleDouble(vec.vec[0]);
-        utility::LittleDouble(vec.vec[1]);
-        utility::LittleDouble(vec.vec[2]);
-        utility::LittleDouble(vec.vec[3]);
-        writeUBytes((atUint8*)&vec, 32);
+        atVec4d tmp = vec;
+        utility::LittleDouble(tmp.vec[0]);
+        utility::LittleDouble(tmp.vec[1]);
+        utility::LittleDouble(tmp.vec[2]);
+        utility::LittleDouble(tmp.vec[3]);
+        writeUBytes((atUint8*)&tmp, 32);
     }
-    inline void writeValLittle(atVec4d val) {writeVec4dLittle(val);}
+    inline void writeValLittle(const atVec4d& val) {writeVec4dLittle(val);}
 
     /** @brief Writes an atVec4d (32 bytes) to the buffer and advances the buffer.
      *         It also swaps the bytes against big depending on the platform.
      *
      *  @param vec The value to write to the buffer
      */
-    inline void writeVec4dBig(atVec4d vec)
+    inline void writeVec4dBig(const atVec4d& vec)
     {
-        utility::BigDouble(vec.vec[0]);
-        utility::BigDouble(vec.vec[1]);
-        utility::BigDouble(vec.vec[2]);
-        utility::BigDouble(vec.vec[3]);
-        writeUBytes((atUint8*)&vec, 32);
+        atVec4d tmp = vec;
+        utility::BigDouble(tmp.vec[0]);
+        utility::BigDouble(tmp.vec[1]);
+        utility::BigDouble(tmp.vec[2]);
+        utility::BigDouble(tmp.vec[3]);
+        writeUBytes((atUint8*)&tmp, 32);
     }
-    inline void writeValBig(atVec4d val) {writeVec4dBig(val);}
+    inline void writeValBig(const atVec4d& val) {writeVec4dBig(val);}
 
     /** @brief Converts a UTF8 string to a wide-char string in the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
