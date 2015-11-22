@@ -2259,7 +2259,7 @@ int main(int argc, const char** argv)
 
     std::vector<std::string> args = {"clang-tool",
                                      "-fsyntax-only",
-                                     "-std=c++11",
+                                     "-std=c++14",
                                      "-D__atdna__=1",
                                      "-I" XSTR(INSTALL_PREFIX) "/lib/clang/" CLANG_VERSION_STRING "/include",
                                      "-I" XSTR(INSTALL_PREFIX) "/include/Athena"};

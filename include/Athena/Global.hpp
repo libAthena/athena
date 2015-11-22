@@ -69,6 +69,7 @@ typedef struct stat64 stat64_t;
 #define ROUND_UP_32(val) (((val) + 31) & ~31)
 #define ROUND_UP_16(val) (((val) + 15) & ~15)
 
+#ifndef ENABLE_BITWISE_ENUM
 #define ENABLE_BITWISE_ENUM(type)\
 inline type operator|(type a, type b)\
 {\
@@ -97,6 +98,7 @@ inline type operator~(const type& key)\
     using T = std::underlying_type_t<type>;\
     return type(~static_cast<T>(key));\
 }
+#endif
 
 namespace Athena
 {
