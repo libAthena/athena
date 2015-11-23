@@ -13,8 +13,8 @@ namespace io
 class FileReader : public IStreamReader
 {
 public:
-    FileReader(const std::string& filename, atInt32 cacheSize = (32 * 1024));
-    FileReader(const std::wstring& filename, atInt32 cacheSize = (32 * 1024));
+    FileReader(const std::string& filename, atInt32 cacheSize = (32 * 1024), bool globalErr=true);
+    FileReader(const std::wstring& filename, atInt32 cacheSize = (32 * 1024), bool globalErr=true);
     virtual ~FileReader();
 
     inline std::string filename() const
@@ -58,6 +58,7 @@ protected:
     atInt32      m_blockSize;
     atInt32      m_curBlock;
     atUint64     m_offset;
+    bool         m_globalErr;
 };
 } // io
 } // Athena

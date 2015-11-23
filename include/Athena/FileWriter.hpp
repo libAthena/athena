@@ -11,8 +11,8 @@ namespace io
 class FileWriter : public IStreamWriter
 {
 public:
-    FileWriter(const std::string& filename, bool overwrite = true);
-    FileWriter(const std::wstring& filename, bool overwrite = true);
+    FileWriter(const std::string& filename, bool overwrite = true, bool globalErr=true);
+    FileWriter(const std::wstring& filename, bool overwrite = true, bool globalErr=true);
     virtual ~FileWriter();
 
     inline std::string filename() const
@@ -51,6 +51,7 @@ private:
     FILE*        m_fileHandle;
     atUint8      m_currentByte;
     atUint64     m_bytePosition;
+    bool         m_globalErr;
 };
 }
 } // Athena

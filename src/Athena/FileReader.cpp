@@ -13,10 +13,11 @@ namespace Athena
 {
 namespace io
 {
-FileReader::FileReader(const std::string& filename, atInt32 cacheSize)
+FileReader::FileReader(const std::string& filename, atInt32 cacheSize, bool globalErr)
     : m_fileHandle(nullptr),
       m_cacheData(nullptr),
-      m_offset(0)
+      m_offset(0),
+      m_globalErr(globalErr)
 {
 #if _WIN32
     m_filename = utility::utf8ToWide(filename);
@@ -27,10 +28,11 @@ FileReader::FileReader(const std::string& filename, atInt32 cacheSize)
     setCacheSize(cacheSize);
 }
 
-FileReader::FileReader(const std::wstring& filename, atInt32 cacheSize)
+FileReader::FileReader(const std::wstring& filename, atInt32 cacheSize, bool globalErr)
     : m_fileHandle(nullptr),
       m_cacheData(nullptr),
-      m_offset(0)
+      m_offset(0),
+      m_globalErr(globalErr)
 {
 #if _WIN32
     m_filename = filename;
@@ -58,7 +60,8 @@ void FileReader::open()
     if (!m_fileHandle)
     {
         std::string _filename = filename();
-        atError("File not found '%s'", _filename.c_str());
+        if (m_globalErr)
+            atError("File not found '%s'", _filename.c_str());
         setError();
         return;
     }
@@ -71,7 +74,8 @@ void FileReader::close()
 {
     if (!m_fileHandle)
     {
-        atError("Cannot close an unopened stream");
+        if (m_globalErr)
+            atError("Cannot close an unopened stream");
         setError();
         return;
     }
@@ -105,7 +109,9 @@ void FileReader::seek(atInt64 pos, SeekOrigin origin)
         if (m_offset > length())
         {
             oldOff = m_offset;
-            atError("Unable to seek in file");
+            if (m_globalErr)
+                atError("Unable to seek in file");
+            setError();
             return;
         }
 
@@ -118,14 +124,19 @@ void FileReader::seek(atInt64 pos, SeekOrigin origin)
         }
     }
     else if (fseeko64(m_fileHandle, pos, (int)origin) != 0)
-        atError("Unable to seek in file");
+    {
+        if (m_globalErr)
+            atError("Unable to seek in file");
+        setError();
+    }
 }
 
 atUint64 FileReader::position() const
 {
     if (!isOpen())
     {
-        atError("File not open");
+        if (m_globalErr)
+            atError("File not open");
         return 0;
     }
 
@@ -139,7 +150,8 @@ atUint64 FileReader::length() const
 {
     if (!isOpen())
     {
-        atError("File not open");
+        if (m_globalErr)
+            atError("File not open");
         return 0;
     }
 
@@ -154,7 +166,8 @@ atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len)
 {
     if (!isOpen())
     {
-        atError("File not open for reading");
+        if (m_globalErr)
+            atError("File not open for reading");
         setError();
         return 0;
     }

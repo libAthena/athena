@@ -104,12 +104,12 @@ namespace Athena
 {
 namespace error
 {
-enum Level
+enum class Level
 {
-    LevelMessage,
-    LevelWarning,
-    LevelError,
-    LevelFatal
+    Message,
+    Warning,
+    Error,
+    Fatal
 };
 }
 enum SeekOrigin
@@ -126,7 +126,7 @@ enum Endian
 };
 } // Athena
 
-typedef void (*atEXCEPTION_HANDLER)(const Athena::error::Level& level, const char* file, const char* function, int line, const char* fmt, ...);
+typedef void (*atEXCEPTION_HANDLER)(Athena::error::Level level, const char* file, const char* function, int line, const char* fmt, ...);
 
 atEXCEPTION_HANDLER atGetExceptionHandler();
 void atSetExceptionHandler(atEXCEPTION_HANDLER func);
@@ -183,19 +183,19 @@ std::ostream& operator<<(std::ostream& os, const Athena::Endian& endian);
 #define atMessage(fmt...) \
     do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
     if (__handler) \
-        __handler(Athena::error::LevelMessage, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
+        __handler(Athena::error::Level::Message, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
 } while(0)
 
 #define atWarning(fmt...) \
     do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
     if (__handler) \
-        __handler(Athena::error::LevelWarning, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
+        __handler(Athena::error::Level::Warning, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
 } while(0)
 
 #define atError(fmt...) \
     do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
     if (__handler) \
-        __handler(Athena::error::LevelError, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
+        __handler(Athena::error::Level::Error, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
 } while(0)
 
 #define atFatal(fmt...) \

@@ -13,9 +13,10 @@ namespace Athena
 {
 namespace io
 {
-FileWriter::FileWriter(const std::string& filename, bool overwrite)
+FileWriter::FileWriter(const std::string& filename, bool overwrite, bool globalErr)
     : m_fileHandle(NULL),
-      m_bytePosition(0)
+      m_bytePosition(0),
+      m_globalErr(globalErr)
 {
 #if _WIN32
     m_filename = utility::utf8ToWide(filename);
@@ -25,9 +26,10 @@ FileWriter::FileWriter(const std::string& filename, bool overwrite)
     open(overwrite);
 }
 
-FileWriter::FileWriter(const std::wstring& filename, bool overwrite)
+FileWriter::FileWriter(const std::wstring& filename, bool overwrite, bool globalErr)
     : m_fileHandle(NULL),
-      m_bytePosition(0)
+      m_bytePosition(0),
+      m_globalErr(globalErr)
 {
 #if _WIN32
     m_filename = filename;
@@ -59,7 +61,8 @@ void FileWriter::open(bool overwrite)
 
     if (!m_fileHandle)
     {
-        atError("Unable to open file '%s'", filename().c_str());
+        if (m_globalErr)
+            atError("Unable to open file '%s'", filename().c_str());
         setError();
         return;
     }
@@ -72,7 +75,8 @@ void FileWriter::close()
 {
     if (!m_fileHandle)
     {
-        atError("Cannot close an unopened stream");
+        if (m_globalErr)
+            atError("Cannot close an unopened stream");
         setError();
         return;
     }
@@ -86,14 +90,16 @@ void FileWriter::seek(atInt64 pos, SeekOrigin origin)
 {
     if (!isOpen())
     {
-        atError("Unable to seek in file, not open");
+        if (m_globalErr)
+            atError("Unable to seek in file, not open");
         setError();
         return;
     }
 
     if (fseeko64(m_fileHandle, pos, (int)origin) != 0)
     {
-        atError("Unable to seek in file");
+        if (m_globalErr)
+            atError("Unable to seek in file");
         setError();
     }
 }
@@ -116,14 +122,16 @@ void FileWriter::writeUBytes(const atUint8* data, atUint64 len)
 {
     if (!isOpen())
     {
-        atError("File not open for writing");
+        if (m_globalErr)
+            atError("File not open for writing");
         setError();
         return;
     }
 
     if (fwrite(data, 1, len, m_fileHandle) != len)
     {
-        atError("Unable to write to stream");
+        if (m_globalErr)
+            atError("Unable to write to stream");
         setError();
     }
 }

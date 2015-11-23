@@ -41,18 +41,18 @@ std::ostream& operator<<(std::ostream& os, const Athena::Endian& endian)
 }
 
 
-static void __defaultExceptionHandler(const Athena::error::Level& level, const char* file, const char* function, int line, const char* fmt, ...)
+static void __defaultExceptionHandler(Athena::error::Level level, const char* file, const char* function, int line, const char* fmt, ...)
 {
     std::string levelStr;
-    switch(level)
+    switch (level)
     {
-        case Athena::error::LevelWarning:
+        case Athena::error::Level::Warning:
             levelStr = "[WARNING] ";
             break;
-        case Athena::error::LevelError:
+        case Athena::error::Level::Error:
             levelStr = "[ERROR  ] ";
             break;
-        case Athena::error::LevelFatal:
+        case Athena::error::Level::Fatal:
             levelStr = "[FATAL  ] ";
             break;
         default: break;
