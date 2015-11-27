@@ -148,25 +148,25 @@ std::ostream& operator<<(std::ostream& os, const Athena::Endian& endian);
 #define atMessage(fmt, ...) \
     do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
     if (__handler) \
-        __handler(Athena::error::LevelMessage, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
+        __handler(Athena::error::Level::Message, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
 } while(0)
 
 #define atWarning(fmt, ...) \
     do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
     if (__handler) \
-        __handler(Athena::error::LevelWarning, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
+        __handler(Athena::error::Level::Warning, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
 } while(0)
 
 #define atError(fmt, ...) \
     do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
     if (__handler) \
-        __handler(Athena::error::LevelError, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
+        __handler(Athena::error::Level::Error, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
 } while(0)
 
 #define atFatal(fmt, ...) \
     do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
     if (__handler) \
-        __handler(Athena::error::LevelFatal, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
+        __handler(Athena::error::Level::Fatal, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
 } while(0)
 #elif defined(__GNUC__)
 
@@ -174,7 +174,7 @@ std::ostream& operator<<(std::ostream& os, const Athena::Endian& endian);
 #define atDebug(fmt...) \
     do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
     if (__handler) \
-        __handler(Athena::error::LevelMessage, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
+        __handler(Athena::error::Level::Message, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
 } while(0)
 #else // _MSC_VER
 #define atDebug(fmt, ...)
@@ -201,7 +201,7 @@ std::ostream& operator<<(std::ostream& os, const Athena::Endian& endian);
 #define atFatal(fmt...) \
     do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
     if (__handler) \
-        __handler(Athena::error::LevelFatal, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
+        __handler(Athena::error::Level::Fatal, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
 } while(0)
 #endif // defined(__GNUC__)
 
