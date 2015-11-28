@@ -176,6 +176,12 @@ atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len)
         return fread(buf, 1, len, m_fileHandle);
     else
     {
+        atUint64 fs = utility::fileSize(m_filename);
+        if (m_offset >= fs)
+            return 0;
+        if (m_offset + len >= fs)
+            len = fs - m_offset;
+
         size_t block = m_offset / m_blockSize;
         atUint64 cacheOffset = m_offset % m_blockSize;
         atUint64 cacheSize;
