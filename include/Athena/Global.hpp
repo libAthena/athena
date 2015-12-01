@@ -139,7 +139,7 @@ std::ostream& operator<<(std::ostream& os, const Athena::Endian& endian);
 #define atDebug(fmt, ...) \
     do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
     if (__handler) \
-        __handler(Athena::error::LevelMessage, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
+        __handler(Athena::error::Level::Message, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
 } while(0)
 #else
 #define atDebug(fmt, ...)

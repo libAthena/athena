@@ -44,6 +44,7 @@ typedef unsigned long long atUint64;
 // Vector types
 #if __SSE__
 #include <xmmintrin.h>
+#include <emmintrin.h>
 #ifndef _WIN32
 #include <mm_malloc.h>
 #endif
