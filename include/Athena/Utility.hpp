@@ -208,6 +208,9 @@ std::string& rtrim(std::string& s);
 // trim from both ends
 std::string& trim(std::string& s);
 atUint64 fileSize(const std::string& filename);
+#ifdef _MSC_VER
+atUint64 fileSize(const std::wstring& filename);
+#endif
 
 std::string wideToUtf8(const std::wstring& src);
 

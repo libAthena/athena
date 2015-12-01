@@ -111,11 +111,7 @@ atUint64 FileWriter::position() const
 
 atUint64 FileWriter::length() const
 {
-#if _WIN32
-    return utility::fileSize(utility::wideToUtf8(m_filename));
-#else
     return utility::fileSize(m_filename);
-#endif
 }
 
 void FileWriter::writeUBytes(const atUint8* data, atUint64 len)

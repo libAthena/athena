@@ -155,11 +155,7 @@ atUint64 FileReader::length() const
         return 0;
     }
 
-#if _WIN32
-    return utility::fileSize(utility::wideToUtf8(m_filename));
-#else
     return utility::fileSize(m_filename);
-#endif
 }
 
 atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len)

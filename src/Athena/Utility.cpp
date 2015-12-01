@@ -171,6 +171,15 @@ atUint64 fileSize(const std::string& filename)
     return st.st_size;
 }
 
+#ifdef _MSC_VER
+atUint64 fileSize(const std::wstring& filename)
+{
+    stat64_t st;
+    _wstati64(filename.c_str(), &st);
+    return st.st_size;
+}
+#endif
+
 // trim from both ends
 std::string& trim(std::string& s)
 {
