@@ -712,50 +712,52 @@ public:
      */
     inline void writeStringAsWString(const std::string& str, atInt32 fixedLen = -1)
     {
-       std::string tmpStr = "\xEF\xBB\xBF" + str;
-       const utf8proc_uint8_t* buf = reinterpret_cast<const utf8proc_uint8_t*>(tmpStr.c_str());
-       if (fixedLen < 0)
-       {
-           while (*buf)
-           {
-               utf8proc_int32_t wc;
-               utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
-               if (len < 0)
-               {
-                   atWarning("invalid UTF-8 character while decoding");
-                   return;
-               }
-               buf += len;
-               if (wc != 0xFEFF)
-                   writeUint16(atUint16(wc));
-           }
-           writeUint16(0);
-       }
-       else
-       {
-           for (atInt32 i=0 ; i<fixedLen ; ++i)
-           {
-               utf8proc_int32_t wc = 0;
-               if (*buf)
-               {
-                   utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
-                   if (len < 0)
-                   {
-                       atWarning("invalid UTF-8 character while decoding");
-                       return;
-                   }
-                   buf += len;
-               }
+        if (fixedLen == 0)
+            return;
+        std::string tmpStr = "\xEF\xBB\xBF" + str;
+        const utf8proc_uint8_t* buf = reinterpret_cast<const utf8proc_uint8_t*>(tmpStr.c_str());
+        if (fixedLen < 0)
+        {
+            while (*buf)
+            {
+                utf8proc_int32_t wc;
+                utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
+                if (len < 0)
+                {
+                    atWarning("invalid UTF-8 character while decoding");
+                    return;
+                }
+                buf += len;
+                if (wc != 0xFEFF)
+                    writeUint16(atUint16(wc));
+            }
+            writeUint16(0);
+        }
+        else
+        {
+            for (atInt32 i=0 ; i<fixedLen ; ++i)
+            {
+                utf8proc_int32_t wc = 0;
+                if (*buf)
+                {
+                    utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
+                    if (len < 0)
+                    {
+                        atWarning("invalid UTF-8 character while decoding");
+                        return;
+                    }
+                    buf += len;
+                }
 
-               if (wc == 0xFEFF)
-               {
-                   --i;
-                   continue;
-               }
+                if (wc == 0xFEFF)
+                {
+                    --i;
+                    continue;
+                }
 
-               writeUint16(atUint16(wc));
-           }
-       }
+                writeUint16(atUint16(wc));
+            }
+        }
     }
 
     /** @brief Converts a UTF8 string to a wide-char string in the buffer and advances the buffer.
@@ -768,6 +770,8 @@ public:
      */
     inline void writeStringAsWStringLittle(const std::string& str, atInt32 fixedLen = -1)
     {
+        if (fixedLen == 0)
+            return;
         std::string tmpStr = "\xEF\xBB\xBF" + str;
         const utf8proc_uint8_t* buf = reinterpret_cast<const utf8proc_uint8_t*>(tmpStr.c_str());
         if (fixedLen < 0)
@@ -824,6 +828,9 @@ public:
      */
     inline void writeStringAsWStringBig(const std::string& str, atInt32 fixedLen = -1)
     {
+        if (fixedLen == 0)
+            return;
+
         std::string tmpStr = "\xEF\xBB\xBF" + str;
         const utf8proc_uint8_t* buf = reinterpret_cast<const utf8proc_uint8_t*>(tmpStr.c_str());
         if (fixedLen < 0)
@@ -877,6 +884,9 @@ public:
      */
     inline void writeString(const std::string& str, atInt32 fixedLen = -1)
     {
+        if (fixedLen == 0)
+            return;
+
         if (fixedLen < 0)
         {
             for (atUint8 c : str)
@@ -913,6 +923,9 @@ public:
      */
     inline void writeWString(const std::wstring& str, atInt32 fixedLen = -1)
     {
+        if (fixedLen == 0)
+            return;
+
         if (fixedLen < 0)
         {
             for (atUint16 c : str)
@@ -949,6 +962,9 @@ public:
      */
     inline void writeWStringLittle(const std::wstring& str, atInt32 fixedLen = -1)
     {
+        if (fixedLen == 0)
+            return;
+
         if (fixedLen < 0)
         {
             for (atUint16 c : str)
@@ -985,6 +1001,9 @@ public:
      */
     inline void writeWStringBig(const std::wstring& str, atInt32 fixedLen = -1)
     {
+        if (fixedLen == 0)
+            return;
+
         if (fixedLen < 0)
         {
             for (atUint16 c : str)
@@ -1025,9 +1044,9 @@ public:
     template <class T>
     void enumerate(const std::vector<T>& vector,
                    typename std::enable_if<std::is_arithmetic<T>::value ||
-                                           std::is_same<T, atVec2f>::value ||
-                                           std::is_same<T, atVec3f>::value ||
-                                           std::is_same<T, atVec4f>::value>::type* = 0)
+                   std::is_same<T, atVec2f>::value ||
+                   std::is_same<T, atVec3f>::value ||
+                   std::is_same<T, atVec4f>::value>::type* = 0)
     {
         for (const T& item : vector)
             writeVal(item);
@@ -1041,9 +1060,9 @@ public:
     template <class T>
     void enumerateLittle(const std::vector<T>& vector,
                          typename std::enable_if<std::is_arithmetic<T>::value ||
-                                                 std::is_same<T, atVec2f>::value ||
-                                                 std::is_same<T, atVec3f>::value ||
-                                                 std::is_same<T, atVec4f>::value>::type* = 0)
+                         std::is_same<T, atVec2f>::value ||
+                         std::is_same<T, atVec3f>::value ||
+                         std::is_same<T, atVec4f>::value>::type* = 0)
     {
         for (const T& item : vector)
             writeValLittle(item);
@@ -1057,9 +1076,9 @@ public:
     template <class T>
     void enumerateBig(const std::vector<T>& vector,
                       typename std::enable_if<std::is_arithmetic<T>::value ||
-                                              std::is_same<T, atVec2f>::value ||
-                                              std::is_same<T, atVec3f>::value ||
-                                              std::is_same<T, atVec4f>::value>::type* = 0)
+                      std::is_same<T, atVec2f>::value ||
+                      std::is_same<T, atVec3f>::value ||
+                      std::is_same<T, atVec4f>::value>::type* = 0)
     {
         for (const T& item : vector)
             writeValBig(item);
@@ -1071,9 +1090,9 @@ public:
     template <class T>
     void enumerate(const std::vector<T>& vector,
                    typename std::enable_if<!std::is_arithmetic<T>::value &&
-                                           !std::is_same<T, atVec2f>::value &&
-                                           !std::is_same<T, atVec3f>::value &&
-                                           !std::is_same<T, atVec4f>::value>::type* = 0)
+                   !std::is_same<T, atVec2f>::value &&
+                   !std::is_same<T, atVec3f>::value &&
+                   !std::is_same<T, atVec4f>::value>::type* = 0)
     {
         for (const T& item : vector)
             item.write(*this);
