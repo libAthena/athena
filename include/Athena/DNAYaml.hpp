@@ -502,6 +502,7 @@ class YAMLDocReader
 public:
     static bool ValidateClassType(yaml_parser_t* doc, const char* expectedType);
     inline const YAMLNode* getRootNode() const {return m_rootNode.get();}
+    std::unique_ptr<YAMLNode> releaseRootNode() {return std::move(m_rootNode);}
     bool read(yaml_parser_t* doc)
     {
         std::unique_ptr<YAMLNode> newRoot = ParseEvents(doc);
