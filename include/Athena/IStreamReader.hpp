@@ -883,6 +883,9 @@ public:
      */
     inline std::string readWStringAsString(atInt32 fixedLen = -1)
     {
+        if (fixedLen == 0)
+            return std::string();
+
         std::string retval;
         atUint16 chr = readUint16();
 
@@ -921,6 +924,9 @@ public:
      */
     inline std::string readWStringAsStringLittle(atInt32 fixedLen = -1)
     {
+        if (fixedLen == 0)
+            return std::string();
+
         std::string retval;
         atUint16 chr = readUint16Little();
 
@@ -959,6 +965,9 @@ public:
      */
     inline std::string readWStringAsStringBig(atInt32 fixedLen = -1)
     {
+        if (fixedLen == 0)
+            return std::string();
+
         std::string retval;
         atUint16 chr = readUint16Big();
 
@@ -996,6 +1005,8 @@ public:
      */
     inline std::string readString(atInt32 fixedLen = -1)
     {
+        if (fixedLen == 0)
+            return std::string();
         std::string ret;
         atUint8 chr = readByte();
 
@@ -1026,6 +1037,9 @@ public:
      */
     inline std::wstring readWString(atInt32 fixedLen = -1)
     {
+        if (fixedLen == 0)
+            return std::wstring();
+
         std::wstring ret;
         atUint16 chr = readUint16();
 
@@ -1057,6 +1071,9 @@ public:
      */
     inline std::wstring readWStringLittle(atInt32 fixedLen = -1)
     {
+        if (fixedLen == 0)
+            return std::wstring();
+
         std::wstring ret;
         atUint16 chr = readUint16Little();
 
@@ -1088,6 +1105,8 @@ public:
      */
     inline std::wstring readWStringBig(atInt32 fixedLen = -1)
     {
+        if (fixedLen == 0)
+            return std::wstring();
         std::wstring ret;
         atUint16 chr = readUint16Big();
 
