@@ -236,7 +236,7 @@ public:
         for (size_t i=0 ; i<v ; ++i)
         {
             utf8proc_int32_t dummy;
-            utf8proc_ssize_t sz = utf8proc_iterate(reinterpret_cast<const utf8proc_uint8_t*>(m_it.base()), -1, &dummy);
+            utf8proc_ssize_t sz = utf8proc_iterate(reinterpret_cast<const utf8proc_uint8_t*>(&*m_it), -1, &dummy);
             if (sz > 0)
                 m_it += sz;
         }
@@ -255,7 +255,7 @@ public:
     uint32_t operator*() const
     {
         utf8proc_int32_t ret;
-        utf8proc_iterate(reinterpret_cast<const utf8proc_uint8_t*>(m_it.base()), -1, &ret);
+        utf8proc_iterate(reinterpret_cast<const utf8proc_uint8_t*>(&*m_it), -1, &ret);
         return ret;
     }
     std::string::const_iterator iter() const {return m_it;}
