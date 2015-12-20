@@ -242,6 +242,10 @@ public:
         }
         return *this;
     }
+    UTF8Iterator& operator++()
+    {
+        return this->operator+=(1);
+    }
     UTF8Iterator operator+(size_t v) const
     {
         UTF8Iterator ret(m_it);
