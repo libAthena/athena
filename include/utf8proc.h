@@ -222,5 +222,41 @@ static inline utf8proc_ssize_t utf8proc_encode_char(utf8proc_int32_t uc, utf8pro
   } else return 0;
 }
 
+#ifdef __cplusplus
+#include <iterator>
+
+class UTF8Iterator : public std::iterator<std::forward_iterator_tag, uint32_t>
+{
+    std::string::const_iterator m_it;
+public:
+    UTF8Iterator(const std::string::const_iterator& it) : m_it(it) {}
+    UTF8Iterator& operator+=(size_t v)
+    {
+        for (size_t i=0 ; i<v ; ++i)
+        {
+            utf8proc_int32_t dummy;
+            utf8proc_ssize_t sz = utf8proc_iterate(reinterpret_cast<const utf8proc_uint8_t*>(m_it.base()), -1, &dummy);
+            if (sz > 0)
+                m_it += sz;
+        }
+        return *this;
+    }
+    UTF8Iterator operator+(size_t v) const
+    {
+        UTF8Iterator ret(m_it);
+        ret += v;
+        return ret;
+    }
+    uint32_t operator*() const
+    {
+        utf8proc_int32_t ret;
+        utf8proc_iterate(reinterpret_cast<const utf8proc_uint8_t*>(m_it.base()), -1, &ret);
+        return ret;
+    }
+    std::string::const_iterator iter() const {return m_it;}
+};
+
+#endif
+
 #endif
 
