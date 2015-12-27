@@ -237,8 +237,23 @@ public:
         {
             utf8proc_int32_t dummy;
             utf8proc_ssize_t sz = utf8proc_iterate(reinterpret_cast<const utf8proc_uint8_t*>(&*m_it), -1, &dummy);
+#ifndef NDEBUG
+            if (*m_it == '\0')
+            {
+                fprintf(stderr, "ERROR! UTF8-iterator null-term fail\n");
+                abort();
+            }
+            else if (sz > 0)
+                m_it += sz;
+            else
+            {
+                fprintf(stderr, "ERROR! UTF8Iterator character fail");
+                abort();
+            }
+#else
             if (sz > 0)
                 m_it += sz;
+#endif
         }
         return *this;
     }
@@ -259,6 +274,17 @@ public:
         return ret;
     }
     std::string::const_iterator iter() const {return m_it;}
+    size_t countTo(std::string::const_iterator end) const
+    {
+        UTF8Iterator it(m_it);
+        size_t ret = 0;
+        while (it.iter() < end)
+        {
+            ++ret;
+            ++it;
+        }
+        return ret;
+    }
 };
 
 #endif
