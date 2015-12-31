@@ -12,6 +12,8 @@
 **/*.dylib
 **/*.user
 **/.directory
+**/.DS_Store
+PKGBUILD
 # Directories
 **/doc
 **/obj
