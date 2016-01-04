@@ -544,7 +544,7 @@ public:
     void enumerate(const char* name, T& record)
     {
         enterSubRecord(name);
-        record.fromYAML(*this);
+        record.read(*this);
         leaveSubRecord();
     }
 
@@ -586,7 +586,7 @@ public:
         {
             vector.emplace_back();
             enterSubRecord(nullptr);
-            vector.back().fromYAML(*this);
+            vector.back().read(*this);
             leaveSubRecord();
         }
         leaveSubVector();
@@ -811,7 +811,7 @@ public:
     void enumerate(const char* name, T& record)
     {
         enterSubRecord(name);
-        record.toYAML(*this);
+        record.write(*this);
         leaveSubRecord();
     }
 
@@ -849,7 +849,7 @@ public:
         for (const T& item : vector)
         {
             enterSubRecord(nullptr);
-            item.toYAML(*this);
+            item.write(*this);
             leaveSubRecord();
         }
         leaveSubVector();
@@ -1053,8 +1053,10 @@ struct DNAYaml : DNA<DNAE>
 {
     virtual ~DNAYaml() {}
 
-    virtual void toYAML(YAMLDocWriter& out) const=0;
-    virtual void fromYAML(YAMLDocReader& in)=0;
+    using DNA<DNAE>::read;
+    using DNA<DNAE>::write;
+    virtual void read(YAMLDocReader& in)=0;
+    virtual void write(YAMLDocWriter& out) const=0;
     static const char* DNAType() {return nullptr;}
     virtual const char* DNATypeV() const {return nullptr;}
 
@@ -1092,7 +1094,7 @@ struct DNAYaml : DNA<DNAE>
         }
         {
             YAMLDocWriter docWriter(DNATypeV());
-            toYAML(docWriter);
+            write(docWriter);
             if (!docWriter.finish(&emitter))
             {
                 yaml_emitter_delete(&emitter);
@@ -1129,7 +1131,7 @@ struct DNAYaml : DNA<DNAE>
             yaml_parser_delete(&parser);
             return false;
         }
-        fromYAML(docReader);
+        read(docReader);
         yaml_parser_delete(&parser);
         return true;
     }
@@ -1171,7 +1173,7 @@ struct DNAYaml : DNA<DNAE>
         }
         {
             YAMLDocWriter docWriter(DNATypeV());
-            toYAML(docWriter);
+            write(docWriter);
             if (!docWriter.finish(&emitter))
             {
                 yaml_emitter_delete(&emitter);
@@ -1207,7 +1209,7 @@ struct DNAYaml : DNA<DNAE>
             yaml_parser_delete(&parser);
             return false;
         }
-        fromYAML(docReader);
+        read(docReader);
         yaml_parser_delete(&parser);
         return true;
     }
@@ -1253,9 +1255,9 @@ struct BufferYaml : public DNAYaml<VE>, public std::unique_ptr<atUint8[]>
     {
         return __isz + sizeVar;
     }
-    void fromYAML(Athena::io::YAMLDocReader& reader)
+    void read(Athena::io::YAMLDocReader& reader)
     {*this = reader.readUBytes(nullptr);}
-    void toYAML(Athena::io::YAMLDocWriter& writer) const
+    void write(Athena::io::YAMLDocWriter& writer) const
     {writer.writeUBytes(nullptr, *this, sizeVar);}
 };
 
@@ -1269,9 +1271,9 @@ struct StringYaml : public DNAYaml<VE>, public std::string
     {writer.writeString(*this, sizeVar);}
     size_t binarySize(size_t __isz) const
     {return __isz + ((sizeVar<0)?(this->size()+1):sizeVar);}
-    void fromYAML(Athena::io::YAMLDocReader& reader)
+    void read(Athena::io::YAMLDocReader& reader)
     {this->assign(std::move(reader.readString(nullptr)));}
-    void toYAML(Athena::io::YAMLDocWriter& writer) const
+    void write(Athena::io::YAMLDocWriter& writer) const
     {writer.writeString(nullptr, *this);}
     std::string& operator=(const std::string& __str)
     {return this->assign(__str);}
@@ -1295,9 +1297,9 @@ struct WStringYaml : public DNAYaml<VE>, public std::wstring
     }
     size_t binarySize(size_t __isz) const
     {return __isz + (((sizeVar<0)?(this->size()+1):sizeVar)*2);}
-    void fromYAML(Athena::io::YAMLDocReader& reader)
+    void read(Athena::io::YAMLDocReader& reader)
     {this->assign(std::move(reader.readWString(nullptr)));}
-    void toYAML(Athena::io::YAMLDocWriter& writer) const
+    void write(Athena::io::YAMLDocWriter& writer) const
     {writer.writeWString(nullptr, *this);}
     std::wstring& operator=(const std::wstring& __str)
     {return this->assign(__str);}
@@ -1315,9 +1317,9 @@ struct WStringAsStringYaml : public DNAYaml<VE>, public std::string
     {writer.writeStringAsWString(*this, sizeVar);}
     size_t binarySize(size_t __isz) const
     {return __isz + (((sizeVar<0)?(this->size()+1):sizeVar)*2);}
-    void fromYAML(Athena::io::YAMLDocReader& reader)
+    void read(Athena::io::YAMLDocReader& reader)
     {this->assign(std::move(reader.readString(nullptr)));}
-    void toYAML(Athena::io::YAMLDocWriter& writer) const
+    void write(Athena::io::YAMLDocWriter& writer) const
     {writer.writeString(nullptr, *this);}
     std::string& operator=(const std::string& __str)
     {return this->assign(__str);}
@@ -1328,15 +1330,15 @@ struct WStringAsStringYaml : public DNAYaml<VE>, public std::string
 /** Macro to automatically declare YAML read/write methods in subclasses */
 #define DECL_YAML \
     DECL_DNA \
-    void fromYAML(Athena::io::YAMLDocReader&); \
-    void toYAML(Athena::io::YAMLDocWriter&) const; \
+    void read(Athena::io::YAMLDocReader&); \
+    void write(Athena::io::YAMLDocWriter&) const; \
     static const char* DNAType(); \
     const char* DNATypeV() const {return DNAType();} \
 
 /** Macro to automatically declare YAML read/write methods with client-code's definition */
 #define DECL_EXPLICIT_YAML \
-    void fromYAML(Athena::io::YAMLDocReader&); \
-    void toYAML(Athena::io::YAMLDocWriter&) const; \
+    void read(Athena::io::YAMLDocReader&); \
+    void write(Athena::io::YAMLDocWriter&) const; \
     static const char* DNAType(); \
     const char* DNATypeV() const {return DNAType();} \
 

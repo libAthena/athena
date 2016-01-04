@@ -567,7 +567,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 if (isDNARecord(rDecl, baseDNA, isYAML))
                 {
                     isDNATypeOut = true;
-                    return "toYAML(" ATHENA_YAML_WRITER ");";
+                    return "write(" ATHENA_YAML_WRITER ");";
                 }
             }
         }
@@ -688,7 +688,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 if (isDNARecord(rDecl, baseDNA, isYAML))
                 {
                     isDNATypeOut = true;
-                    return "fromYAML(" ATHENA_YAML_READER ");";
+                    return "read(" ATHENA_YAML_READER ");";
                 }
             }
         }
@@ -1825,16 +1825,16 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
         for (int p=0 ; p<2 ; ++p)
         {
             if (p)
-                fileOut << "void " << decl->getQualifiedNameAsString() << "::toYAML(Athena::io::YAMLDocWriter& " ATHENA_YAML_WRITER ") const\n{\n";
+                fileOut << "void " << decl->getQualifiedNameAsString() << "::write(Athena::io::YAMLDocWriter& " ATHENA_YAML_WRITER ") const\n{\n";
             else
-                fileOut << "void " << decl->getQualifiedNameAsString() << "::fromYAML(Athena::io::YAMLDocReader& " ATHENA_YAML_READER ")\n{\n";
+                fileOut << "void " << decl->getQualifiedNameAsString() << "::read(Athena::io::YAMLDocReader& " ATHENA_YAML_READER ")\n{\n";
 
             if (baseDNA.size())
             {
                 if (p)
-                    fileOut << "    " << baseDNA << "::toYAML(" ATHENA_YAML_WRITER ");\n";
+                    fileOut << "    " << baseDNA << "::write(" ATHENA_YAML_WRITER ");\n";
                 else
-                    fileOut << "    " << baseDNA << "::fromYAML(" ATHENA_YAML_READER ");\n";
+                    fileOut << "    " << baseDNA << "::read(" ATHENA_YAML_READER ");\n";
             }
 
             for (const clang::FieldDecl* field : decl->fields())
