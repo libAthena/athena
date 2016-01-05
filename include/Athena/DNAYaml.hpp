@@ -498,14 +498,34 @@ class YAMLDocReader
     std::unique_ptr<YAMLNode> m_rootNode;
     std::vector<YAMLNode*> m_subStack;
     std::vector<int> m_seqTrackerStack;
-    static std::unique_ptr<YAMLNode> ParseEvents(yaml_parser_t* doc);
+    yaml_parser_t m_parser;
+    std::unique_ptr<YAMLNode> ParseEvents();
+
 public:
-    static bool ValidateClassType(yaml_parser_t* doc, const char* expectedType);
-    inline const YAMLNode* getRootNode() const {return m_rootNode.get();}
-    std::unique_ptr<YAMLNode> releaseRootNode() {return std::move(m_rootNode);}
-    bool read(yaml_parser_t* doc)
+    YAMLDocReader()
     {
-        std::unique_ptr<YAMLNode> newRoot = ParseEvents(doc);
+        if (!yaml_parser_initialize(&m_parser))
+        {
+            HandleYAMLParserError(&m_parser);
+            return;
+        }
+    }
+    ~YAMLDocReader()
+    {
+        yaml_parser_delete(&m_parser);
+    }
+
+    void reset()
+    {
+        yaml_parser_delete(&m_parser);
+        if (!yaml_parser_initialize(&m_parser))
+            HandleYAMLParserError(&m_parser);
+    }
+
+    yaml_parser_t* getParser() {return &m_parser;}
+    bool parse()
+    {
+        std::unique_ptr<YAMLNode> newRoot = ParseEvents();
         if (!newRoot)
             return false;
         m_rootNode = std::move(newRoot);
@@ -514,6 +534,10 @@ public:
         m_seqTrackerStack.clear();
         return true;
     }
+
+    static bool ValidateClassType(yaml_parser_t* doc, const char* expectedType);
+    inline const YAMLNode* getRootNode() const {return m_rootNode.get();}
+    std::unique_ptr<YAMLNode> releaseRootNode() {return std::move(m_rootNode);}
 
     void enterSubRecord(const char* name)
     {
@@ -759,10 +783,19 @@ class YAMLDocWriter
 {
     YAMLNode m_rootNode;
     std::vector<YAMLNode*> m_subStack;
+    yaml_emitter_t m_emitter;
     static bool RecursiveFinish(yaml_emitter_t* doc, const YAMLNode& node);
 public:
     YAMLDocWriter(const char* classType) : m_rootNode(YAML_MAPPING_NODE)
     {
+        if (!yaml_emitter_initialize(&m_emitter))
+        {
+            HandleYAMLEmitterError(&m_emitter);
+            return;
+        }
+        yaml_emitter_set_unicode(&m_emitter, true);
+        yaml_emitter_set_width(&m_emitter, -1);
+
         m_subStack.emplace_back(&m_rootNode);
         if (classType)
         {
@@ -770,6 +803,34 @@ public:
             classVal->m_scalarString.assign(classType);
             m_rootNode.m_mapChildren.emplace_back("DNAType", std::unique_ptr<YAMLNode>(classVal));
         }
+    }
+
+    ~YAMLDocWriter()
+    {
+        yaml_emitter_delete(&m_emitter);
+    }
+
+    yaml_emitter_t* getEmitter() {return &m_emitter;}
+
+    bool open()
+    {
+        if (!yaml_emitter_open(&m_emitter))
+        {
+            HandleYAMLEmitterError(&m_emitter);
+            return false;
+        }
+        return true;
+    }
+
+    bool close()
+    {
+        if (!yaml_emitter_close(&m_emitter) ||
+            !yaml_emitter_flush(&m_emitter))
+        {
+            HandleYAMLEmitterError(&m_emitter);
+            return false;
+        }
+        return true;
     }
 
     void enterSubRecord(const char* name)
@@ -885,21 +946,21 @@ public:
         leaveSubVector();
     }
 
-    bool finish(yaml_emitter_t* docOut)
+    bool finish()
     {
         yaml_event_t event = {YAML_DOCUMENT_START_EVENT};
         event.data.document_start.implicit = true;
-        if (!yaml_emitter_emit(docOut, &event))
+        if (!yaml_emitter_emit(&m_emitter, &event))
             goto err;
-        if (!RecursiveFinish(docOut, m_rootNode))
+        if (!RecursiveFinish(&m_emitter, m_rootNode))
             return false;
         event.type = YAML_DOCUMENT_END_EVENT;
         event.data.document_end.implicit = true;
-        if (!yaml_emitter_emit(docOut, &event))
+        if (!yaml_emitter_emit(&m_emitter, &event))
             goto err;
         return true;
     err:
-        HandleYAMLEmitterError(docOut);
+        HandleYAMLEmitterError(&m_emitter);
         return false;
     }
 
@@ -1074,65 +1135,31 @@ struct DNAYaml : DNA<DNAE>
 
     std::string toYAMLString() const
     {
-        yaml_emitter_t emitter;
-        if (!yaml_emitter_initialize(&emitter))
-        {
-            HandleYAMLEmitterError(&emitter);
-            return std::string();
-        }
+        YAMLDocWriter docWriter(DNATypeV());
 
         std::string res;
-        yaml_emitter_set_output(&emitter, (yaml_write_handler_t*)YAMLStdStringWriter, &res);
-        yaml_emitter_set_unicode(&emitter, true);
-        yaml_emitter_set_width(&emitter, -1);
+        yaml_emitter_set_output(docWriter.getEmitter(), (yaml_write_handler_t*)YAMLStdStringWriter, &res);
+        yaml_emitter_set_unicode(docWriter.getEmitter(), true);
+        yaml_emitter_set_width(docWriter.getEmitter(), -1);
 
-        if (!yaml_emitter_open(&emitter))
-        {
-            HandleYAMLEmitterError(&emitter);
-            yaml_emitter_delete(&emitter);
+        if (!docWriter.open())
             return std::string();
-        }
-        {
-            YAMLDocWriter docWriter(DNATypeV());
-            write(docWriter);
-            if (!docWriter.finish(&emitter))
-            {
-                yaml_emitter_delete(&emitter);
-                return std::string();
-            }
-        }
-        if (!yaml_emitter_close(&emitter) ||
-            !yaml_emitter_flush(&emitter))
-        {
-            HandleYAMLEmitterError(&emitter);
-            yaml_emitter_delete(&emitter);
+        write(docWriter);
+        if (!docWriter.finish())
             return std::string();
-        }
-        yaml_emitter_delete(&emitter);
+        docWriter.close();
 
         return res;
     }
 
     bool fromYAMLString(const std::string& str)
     {
-        yaml_parser_t parser;
-        if (!yaml_parser_initialize(&parser))
-        {
-            HandleYAMLParserError(&parser);
-            return false;
-        }
-
         YAMLStdStringReaderState reader(str);
-        yaml_parser_set_input(&parser, (yaml_read_handler_t*)YAMLStdStringReader, &reader);
-
         YAMLDocReader docReader;
-        if (!docReader.read(&parser))
-        {
-            yaml_parser_delete(&parser);
+        yaml_parser_set_input(docReader.getParser(), (yaml_read_handler_t*)YAMLStdStringReader, &reader);
+        if (!docReader.parse())
             return false;
-        }
         read(docReader);
-        yaml_parser_delete(&parser);
         return true;
     }
 
@@ -1154,63 +1181,29 @@ struct DNAYaml : DNA<DNAE>
 
     bool toYAMLFile(FILE* fout) const
     {
-        yaml_emitter_t emitter;
-        if (!yaml_emitter_initialize(&emitter))
-        {
-            HandleYAMLEmitterError(&emitter);
-            return false;
-        }
+        YAMLDocWriter docWriter(DNATypeV());
 
-        yaml_emitter_set_output_file(&emitter, fout);
-        yaml_emitter_set_unicode(&emitter, true);
-        yaml_emitter_set_width(&emitter, -1);
+        yaml_emitter_set_output_file(docWriter.getEmitter(), fout);
+        yaml_emitter_set_unicode(docWriter.getEmitter(), true);
+        yaml_emitter_set_width(docWriter.getEmitter(), -1);
 
-        if (!yaml_emitter_open(&emitter))
-        {
-            HandleYAMLEmitterError(&emitter);
-            yaml_emitter_delete(&emitter);
+        if (!docWriter.open())
             return false;
-        }
-        {
-            YAMLDocWriter docWriter(DNATypeV());
-            write(docWriter);
-            if (!docWriter.finish(&emitter))
-            {
-                yaml_emitter_delete(&emitter);
-                return false;
-            }
-        }
-        if (!yaml_emitter_close(&emitter) ||
-            !yaml_emitter_flush(&emitter))
-        {
-            HandleYAMLEmitterError(&emitter);
-            yaml_emitter_delete(&emitter);
+        write(docWriter);
+        if (!docWriter.finish())
             return false;
-        }
-        yaml_emitter_delete(&emitter);
+        docWriter.close();
 
         return true;
     }
 
     bool fromYAMLFile(FILE* fin)
     {
-        yaml_parser_t parser;
-        if (!yaml_parser_initialize(&parser))
-        {
-            HandleYAMLParserError(&parser);
-            return false;
-        }
-
-        yaml_parser_set_input_file(&parser, fin);
-
         YAMLDocReader docReader;
-        if (!docReader.read(&parser))
-        {
-            yaml_parser_delete(&parser);
+        yaml_parser_set_input_file(docReader.getParser(), fin);
+        if (!docReader.parse())
             return false;
-        }
         read(docReader);
-        yaml_parser_delete(&parser);
         return true;
     }
 

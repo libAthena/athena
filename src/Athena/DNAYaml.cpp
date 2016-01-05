@@ -93,12 +93,12 @@ static inline void InsertNode(std::vector<YAMLNode*>& nodeStack,
     }
 }
 
-std::unique_ptr<YAMLNode> YAMLDocReader::ParseEvents(yaml_parser_t* doc)
+std::unique_ptr<YAMLNode> YAMLDocReader::ParseEvents()
 {
     yaml_event_t event;
-    if (!yaml_parser_parse(doc, &event))
+    if (!yaml_parser_parse(&m_parser, &event))
     {
-        HandleYAMLParserError(doc);
+        HandleYAMLParserError(&m_parser);
         return std::unique_ptr<YAMLNode>();
     }
 
@@ -106,13 +106,13 @@ std::unique_ptr<YAMLNode> YAMLDocReader::ParseEvents(yaml_parser_t* doc)
     std::unique_ptr<YAMLNode> mapKey;
     std::unique_ptr<YAMLNode> retVal;
     int result;
-    for (result = yaml_parser_parse(doc, &event);
+    for (result = yaml_parser_parse(&m_parser, &event);
          event.type != YAML_STREAM_END_EVENT;
-         result = yaml_parser_parse(doc, &event))
+         result = yaml_parser_parse(&m_parser, &event))
     {
         if (!result)
         {
-            HandleYAMLParserError(doc);
+            HandleYAMLParserError(&m_parser);
             return std::unique_ptr<YAMLNode>();
         }
         switch (event.type)
