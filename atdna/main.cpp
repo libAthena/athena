@@ -328,33 +328,34 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 clang::EnumType* eType = (clang::EnumType*)theType;
                 clang::EnumDecl* eDecl = eType->getDecl();
                 theType = eDecl->getIntegerType().getCanonicalType().getTypePtr();
+                std::string qName = eDecl->getQualifiedNameAsString();
 
                 const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
                 if (bType->isBooleanType())
                 {
-                    return eDecl->getName().str() + "(" ATHENA_DNA_READER ".readBool())";
+                    return qName + "(" ATHENA_DNA_READER ".readBool())";
                 }
                 else if (bType->isUnsignedInteger())
                 {
                     if (width == 8)
-                        return eDecl->getName().str() + "(" ATHENA_DNA_READER ".readUByte())";
+                        return qName + "(" ATHENA_DNA_READER ".readUByte())";
                     else if (width == 16)
-                        return eDecl->getName().str() + "(" ATHENA_DNA_READER ".readUint16" + funcPrefix + "())";
+                        return qName + "(" ATHENA_DNA_READER ".readUint16" + funcPrefix + "())";
                     else if (width == 32)
-                        return eDecl->getName().str() + "(" ATHENA_DNA_READER ".readUint32" + funcPrefix + "())";
+                        return qName + "(" ATHENA_DNA_READER ".readUint32" + funcPrefix + "())";
                     else if (width == 64)
-                        return eDecl->getName().str() + "(" ATHENA_DNA_READER ".readUint64" + funcPrefix + "())";
+                        return qName + "(" ATHENA_DNA_READER ".readUint64" + funcPrefix + "())";
                 }
                 else if (bType->isSignedInteger())
                 {
                     if (width == 8)
-                        return eDecl->getName().str() + "(" ATHENA_DNA_READER ".readByte()";
+                        return qName + "(" ATHENA_DNA_READER ".readByte()";
                     else if (width == 16)
-                        return eDecl->getName().str() + "(" ATHENA_DNA_READER ".readInt16" + funcPrefix + "())";
+                        return qName + "(" ATHENA_DNA_READER ".readInt16" + funcPrefix + "())";
                     else if (width == 32)
-                        return eDecl->getName().str() + "(" ATHENA_DNA_READER ".readInt32" + funcPrefix + "())";
+                        return qName + "(" ATHENA_DNA_READER ".readInt32" + funcPrefix + "())";
                     else if (width == 64)
-                        return eDecl->getName().str() + "(" ATHENA_DNA_READER ".readInt64" + funcPrefix + "())";
+                        return qName + "(" ATHENA_DNA_READER ".readInt64" + funcPrefix + "())";
                 }
             }
             else if (theType->isBuiltinType())
@@ -578,33 +579,34 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 clang::EnumType* eType = (clang::EnumType*)theType;
                 clang::EnumDecl* eDecl = eType->getDecl();
                 theType = eDecl->getIntegerType().getCanonicalType().getTypePtr();
+                std::string qName = eDecl->getQualifiedNameAsString();
 
                 const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
                 if (bType->isBooleanType())
                 {
-                    return eDecl->getName().str() + "(" ATHENA_YAML_READER ".readBool(\"" + bareFieldName + "\"))";
+                    return qName + "(" ATHENA_YAML_READER ".readBool(\"" + bareFieldName + "\"))";
                 }
                 else if (bType->isUnsignedInteger())
                 {
                     if (width == 8)
-                        return eDecl->getName().str() + "(" ATHENA_YAML_READER ".readUByte(\"" + bareFieldName + "\"))";
+                        return qName + "(" ATHENA_YAML_READER ".readUByte(\"" + bareFieldName + "\"))";
                     else if (width == 16)
-                        return eDecl->getName().str() + "(" ATHENA_YAML_READER ".readUint16(\"" + bareFieldName + "\"))";
+                        return qName + "(" ATHENA_YAML_READER ".readUint16(\"" + bareFieldName + "\"))";
                     else if (width == 32)
-                        return eDecl->getName().str() + "(" ATHENA_YAML_READER ".readUint32(\"" + bareFieldName + "\"))";
+                        return qName + "(" ATHENA_YAML_READER ".readUint32(\"" + bareFieldName + "\"))";
                     else if (width == 64)
-                        return eDecl->getName().str() + "(" ATHENA_YAML_READER ".readUint64(\"" + bareFieldName + "\"))";
+                        return qName + "(" ATHENA_YAML_READER ".readUint64(\"" + bareFieldName + "\"))";
                 }
                 else if (bType->isSignedInteger())
                 {
                     if (width == 8)
-                        return eDecl->getName().str() + "(" ATHENA_YAML_READER ".readByte(\"" + bareFieldName + "\"))";
+                        return qName + "(" ATHENA_YAML_READER ".readByte(\"" + bareFieldName + "\"))";
                     else if (width == 16)
-                        return eDecl->getName().str() + "(" ATHENA_YAML_READER ".readInt16(\"" + bareFieldName + "\"))";
+                        return qName + "(" ATHENA_YAML_READER ".readInt16(\"" + bareFieldName + "\"))";
                     else if (width == 32)
-                        return eDecl->getName().str() + "(" ATHENA_YAML_READER ".readInt32(\"" + bareFieldName + "\"))";
+                        return qName + "(" ATHENA_YAML_READER ".readInt32(\"" + bareFieldName + "\"))";
                     else if (width == 64)
-                        return eDecl->getName().str() + "(" ATHENA_YAML_READER ".readInt64(\"" + bareFieldName + "\"))";
+                        return qName + "(" ATHENA_YAML_READER ".readInt64(\"" + bareFieldName + "\"))";
                 }
             }
             else if (theType->isBuiltinType())
