@@ -167,6 +167,9 @@ macro(atdna out)
 
   # OSX Extra
   elseif(APPLE)
+    if (NOT EXISTS "${CMAKE_OSX_SYSROOT}")
+      message(FATAL_ERROR "CMAKE_OSX_SYSROOT not set")
+    endif()
     list(APPEND extraargs -isysroot ${CMAKE_OSX_SYSROOT} -I ${CMAKE_OSX_SYSROOT}/usr/include -isysroot
          ${CMAKE_OSX_SYSROOT}/../../../../../Toolchains/XcodeDefault.xctoolchain)
   endif()
