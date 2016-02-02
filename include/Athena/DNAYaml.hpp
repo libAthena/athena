@@ -539,23 +539,24 @@ public:
     inline const YAMLNode* getRootNode() const {return m_rootNode.get();}
     std::unique_ptr<YAMLNode> releaseRootNode() {return std::move(m_rootNode);}
 
-    void enterSubRecord(const char* name)
+    bool enterSubRecord(const char* name)
     {
         YAMLNode* curSub = m_subStack.back();
         if (curSub->m_type == YAML_SEQUENCE_NODE)
         {
             int& seqIdx = m_seqTrackerStack.back();
             m_subStack.push_back(curSub->m_seqChildren[seqIdx++].get());
-            return;
+            return true;
         }
         for (const auto& item : curSub->m_mapChildren)
         {
             if (!item.first.compare(name))
             {
                 m_subStack.push_back(item.second.get());
-                return;
+                return true;
             }
         }
+        return false;
     }
 
     void leaveSubRecord()
@@ -572,7 +573,7 @@ public:
         leaveSubRecord();
     }
 
-    void enterSubVector(const char* name)
+    bool enterSubVector(const char* name)
     {
         YAMLNode* curSub = m_subStack.back();
         for (const auto& item : curSub->m_mapChildren)
@@ -582,9 +583,10 @@ public:
                 YAMLNode* nextSub = item.second.get();
                 m_subStack.push_back(nextSub);
                 m_seqTrackerStack.push_back(0);
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     void leaveSubVector()

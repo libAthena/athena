@@ -710,8 +710,10 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
         for (const clang::FieldDecl* field : decl->fields())
         {
             clang::QualType qualType = field->getType();
-            clang::TypeInfo regTypeInfo = context.getTypeInfo(qualType);
             const clang::Type* regType = qualType.getTypePtrOrNull();
+            if (!regType || regType->getTypeClass() == clang::Type::TemplateTypeParm)
+                continue;
+            clang::TypeInfo regTypeInfo = context.getTypeInfo(qualType);
             while (regType->getTypeClass() == clang::Type::Elaborated ||
                    regType->getTypeClass() == clang::Type::Typedef)
                 regType = regType->getUnqualifiedDesugaredType();
@@ -1068,8 +1070,10 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
             for (const clang::FieldDecl* field : decl->fields())
             {
                 clang::QualType qualType = field->getType();
-                clang::TypeInfo regTypeInfo = context.getTypeInfo(qualType);
                 const clang::Type* regType = qualType.getTypePtrOrNull();
+                if (!regType || regType->getTypeClass() == clang::Type::TemplateTypeParm)
+                    continue;
+                clang::TypeInfo regTypeInfo = context.getTypeInfo(qualType);
                 while (regType->getTypeClass() == clang::Type::Elaborated ||
                        regType->getTypeClass() == clang::Type::Typedef)
                     regType = regType->getUnqualifiedDesugaredType();
@@ -1842,8 +1846,10 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
             for (const clang::FieldDecl* field : decl->fields())
             {
                 clang::QualType qualType = field->getType();
-                clang::TypeInfo regTypeInfo = context.getTypeInfo(qualType);
                 const clang::Type* regType = qualType.getTypePtrOrNull();
+                if (!regType || regType->getTypeClass() == clang::Type::TemplateTypeParm)
+                    continue;
+                clang::TypeInfo regTypeInfo = context.getTypeInfo(qualType);
                 while (regType->getTypeClass() == clang::Type::Elaborated ||
                        regType->getTypeClass() == clang::Type::Typedef)
                     regType = regType->getUnqualifiedDesugaredType();
@@ -2272,7 +2278,7 @@ int main(int argc, const char** argv)
     clang::tooling::ToolInvocation TI(args, new ATDNAAction, fman.get());
     if (!TI.run())
         return 1;
-    
+
     return 0;
 }
 
