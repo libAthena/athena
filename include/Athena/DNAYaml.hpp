@@ -537,6 +537,7 @@ public:
 
     static bool ValidateClassType(yaml_parser_t* doc, const char* expectedType);
     inline const YAMLNode* getRootNode() const {return m_rootNode.get();}
+    inline const YAMLNode* getCurNode() const {return m_subStack.empty() ? nullptr : m_subStack.back();}
     std::unique_ptr<YAMLNode> releaseRootNode() {return std::move(m_rootNode);}
 
     bool enterSubRecord(const char* name)
