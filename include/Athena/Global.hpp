@@ -129,6 +129,10 @@ enum Endian
 typedef void (*atEXCEPTION_HANDLER)(Athena::error::Level level, const char* file, const char* function, int line, const char* fmt, ...);
 
 atEXCEPTION_HANDLER atGetExceptionHandler();
+/**
+ * atSetExceptionHandler is only meant to be used a the start and end of an application's lifetime,
+ * this function cannot be considered thread-safe, therefore modifying during runtime is not recommended.
+ */
 void atSetExceptionHandler(atEXCEPTION_HANDLER func);
 
 std::ostream& operator<<(std::ostream& os, const Athena::SeekOrigin& origin);
