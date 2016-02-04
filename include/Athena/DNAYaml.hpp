@@ -836,6 +836,8 @@ public:
         return true;
     }
 
+    inline YAMLNode* getCurNode() const {return m_subStack.empty() ? nullptr : m_subStack.back();}
+
     void enterSubRecord(const char* name)
     {
         YAMLNode* curSub = m_subStack.back();
@@ -855,16 +857,25 @@ public:
         if (m_subStack.size() > 1)
         {
             YAMLNode* curSub = m_subStack.back();
-            /* Automatically lower to scalar if there's only one unnamed node */
+            /* Automatically lower to scalar or sequence if there's only one unnamed node */
             if (curSub->m_mapChildren.size() == 1 &&
                 curSub->m_mapChildren[0].first.empty())
             {
                 auto& item = curSub->m_mapChildren[0];
-                if (item.first.empty() && item.second->m_type == YAML_SCALAR_NODE)
+                if (item.first.empty())
                 {
-                    curSub->m_type = YAML_SCALAR_NODE;
-                    curSub->m_scalarString = std::move(item.second->m_scalarString);
-                    curSub->m_mapChildren.clear();
+                    if (item.second->m_type == YAML_SCALAR_NODE)
+                    {
+                        curSub->m_type = YAML_SCALAR_NODE;
+                        curSub->m_scalarString = std::move(item.second->m_scalarString);
+                        curSub->m_mapChildren.clear();
+                    }
+                    else if (item.second->m_type == YAML_SEQUENCE_NODE)
+                    {
+                        curSub->m_type = YAML_SEQUENCE_NODE;
+                        curSub->m_seqChildren = std::move(item.second->m_seqChildren);
+                        curSub->m_mapChildren.clear();
+                    }
                 }
             }
             m_subStack.pop_back();
