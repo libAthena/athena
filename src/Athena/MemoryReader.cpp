@@ -14,7 +14,7 @@ namespace Athena
 {
 namespace io
 {
-MemoryReader::MemoryReader(const atUint8* data, atUint64 length, bool takeOwnership)
+MemoryReader::MemoryReader(const void* data, atUint64 length, bool takeOwnership)
     : m_data(data),
       m_length(length),
       m_position(0),
@@ -38,10 +38,10 @@ MemoryReader::MemoryReader(const atUint8* data, atUint64 length, bool takeOwners
 MemoryReader::~MemoryReader()
 {
     if (m_owns)
-        delete[] m_data;
+        delete[] reinterpret_cast<const atUint8*>(m_data);
 }
 
-MemoryCopyReader::MemoryCopyReader(const atUint8* data, atUint64 length)
+MemoryCopyReader::MemoryCopyReader(const void* data, atUint64 length)
     : MemoryReader(data, length, false)
 {
     if (!data)
@@ -138,7 +138,7 @@ atUint64 MemoryReader::readUBytesToBuf(void* buf, atUint64 length)
         return 0;
     }
 
-    memcpy(buf, (const atUint8*)(m_data + m_position), length);
+    memcpy(buf, reinterpret_cast<const atUint8*>(m_data) + m_position, length);
     m_position += length;
     return length;
 }

@@ -31,7 +31,7 @@ public:
      *   \param length The length of the existing buffer
      *   \param takeOwnership Memory will be freed with the reader if set
      */
-    MemoryReader(const atUint8* data, atUint64 length, bool takeOwnership=false);
+    MemoryReader(const void* data, atUint64 length, bool takeOwnership=false);
 
     /*! \brief Sets the buffers position relative to the specified position.<br />
      *         It seeks relative to the current position by default.
@@ -85,7 +85,7 @@ public:
     atUint64 readUBytesToBuf(void* buf, atUint64 len);
 
 protected:
-    const atUint8*   m_data = nullptr;
+    const void*      m_data = nullptr;
     atUint64         m_length = 0;
     atUint64         m_position = 0;
     bool             m_owns = false;
@@ -99,7 +99,7 @@ public:
      *   \param data The existing buffer
      *   \param length The length of the existing buffer
      */
-    MemoryCopyReader(const atUint8* data, atUint64 length);
+    MemoryCopyReader(const void* data, atUint64 length);
 
     /*! \brief This constructor creates an instance from a file on disk.
      *
