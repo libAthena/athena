@@ -169,28 +169,25 @@ std::unique_ptr<YAMLNode> YAMLDocReader::ParseEvents()
     return std::unique_ptr<YAMLNode>();
 }
 
-bool YAMLDocReader::ValidateClassType(yaml_parser_t* doc, const char* expectedType)
+bool YAMLDocReader::ClassTypeOperation(std::function<bool(const char* dnaType)> func)
 {
-    if (!expectedType)
-        return false;
-
     yaml_event_t event;
-    if (!yaml_parser_parse(doc, &event))
+    if (!yaml_parser_parse(&m_parser, &event))
     {
-        HandleYAMLParserError(doc);
+        HandleYAMLParserError(&m_parser);
         return false;
     }
 
     int result;
     int mappingLevel = 0;
     bool inDNA = false;
-    for (result = yaml_parser_parse(doc, &event);
+    for (result = yaml_parser_parse(&m_parser, &event);
          event.type != YAML_STREAM_END_EVENT;
-         result = yaml_parser_parse(doc, &event))
+         result = yaml_parser_parse(&m_parser, &event))
     {
         if (!result)
         {
-            HandleYAMLParserError(doc);
+            HandleYAMLParserError(&m_parser);
             return false;
         }
         switch (event.type)
@@ -201,13 +198,9 @@ bool YAMLDocReader::ValidateClassType(yaml_parser_t* doc, const char* expectedTy
             {
                 if (inDNA)
                 {
-                    if (!strcmp(expectedType, reinterpret_cast<const char*>(event.data.scalar.value)))
-                    {
-                        yaml_event_delete(&event);
-                        return true;
-                    }
+                    bool result = func(reinterpret_cast<const char*>(event.data.scalar.value));
                     yaml_event_delete(&event);
-                    return false;
+                    return result;
                 }
                 if (!strcmp("DNAType", reinterpret_cast<const char*>(event.data.scalar.value)))
                     inDNA = true;
@@ -237,6 +230,17 @@ bool YAMLDocReader::ValidateClassType(yaml_parser_t* doc, const char* expectedTy
         yaml_event_delete(&event);
     }
     return false;
+}
+
+bool YAMLDocReader::ValidateClassType(const char* expectedType)
+{
+    if (!expectedType)
+        return false;
+
+    return ClassTypeOperation([&](const char* dnaType) -> bool
+    {
+        return (strcmp(expectedType, dnaType) == 0);
+    });
 }
 
 static inline bool EmitKeyScalar(yaml_emitter_t* doc, const char* val)

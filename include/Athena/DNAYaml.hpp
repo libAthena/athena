@@ -535,7 +535,9 @@ public:
         return true;
     }
 
-    static bool ValidateClassType(yaml_parser_t* doc, const char* expectedType);
+    bool ClassTypeOperation(std::function<bool(const char* dnaType)> func);
+    bool ValidateClassType(const char* expectedType);
+
     inline const YAMLNode* getRootNode() const {return m_rootNode.get();}
     inline const YAMLNode* getCurNode() const {return m_subStack.empty() ? nullptr : m_subStack.back();}
     std::unique_ptr<YAMLNode> releaseRootNode() {return std::move(m_rootNode);}
@@ -1166,16 +1168,10 @@ struct DNAYaml : DNA<DNAE>
     template<class DNASubtype>
     static bool ValidateFromYAMLString(const std::string& str)
     {
-        yaml_parser_t parser;
-        if (!yaml_parser_initialize(&parser))
-        {
-            HandleYAMLParserError(&parser);
-            return false;
-        }
         YAMLStdStringReaderState reader(str);
-        yaml_parser_set_input(&parser, (yaml_read_handler_t*)YAMLStdStringReader, &reader);
-        bool retval = YAMLDocReader::ValidateClassType(&parser, DNASubtype::DNAType());
-        yaml_parser_delete(&parser);
+        YAMLDocReader docReader;
+        yaml_parser_set_input(docReader.getParser(), (yaml_read_handler_t*)YAMLStdStringReader, &reader);
+        bool retval = docReader.ValidateClassType(DNASubtype::DNAType());
         return retval;
     }
 
@@ -1207,17 +1203,11 @@ struct DNAYaml : DNA<DNAE>
     template<class DNASubtype>
     static bool ValidateFromYAMLFile(FILE* fin)
     {
-        yaml_parser_t parser;
-        if (!yaml_parser_initialize(&parser))
-        {
-            HandleYAMLParserError(&parser);
-            return false;
-        }
+        YAMLDocReader reader;
         long pos = ftell(fin);
-        yaml_parser_set_input_file(&parser, fin);
-        bool retval = YAMLDocReader::ValidateClassType(&parser, DNASubtype::DNAType());
+        yaml_parser_set_input_file(reader.getParser(), fin);
+        bool retval = reader.ValidateClassType(DNASubtype::DNAType());
         fseek(fin, pos, SEEK_SET);
-        yaml_parser_delete(&parser);
         return retval;
     }
 
