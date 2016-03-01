@@ -815,25 +815,32 @@ public:
 
     yaml_emitter_t* getEmitter() {return &m_emitter;}
 
-    bool open()
+    bool finish()
     {
-        if (!yaml_emitter_open(&m_emitter))
-        {
-            HandleYAMLEmitterError(&m_emitter);
-            return false;
-        }
-        return true;
-    }
+        yaml_event_t event;
 
-    bool close()
-    {
+        if (!yaml_emitter_open(&m_emitter))
+            goto err;
+
+        event.type = YAML_DOCUMENT_START_EVENT;
+        event.data.document_start.implicit = true;
+        if (!yaml_emitter_emit(&m_emitter, &event))
+            goto err;
+        if (!RecursiveFinish(&m_emitter, m_rootNode))
+            return false;
+        event.type = YAML_DOCUMENT_END_EVENT;
+        event.data.document_end.implicit = true;
+        if (!yaml_emitter_emit(&m_emitter, &event))
+            goto err;
+
         if (!yaml_emitter_close(&m_emitter) ||
             !yaml_emitter_flush(&m_emitter))
-        {
-            HandleYAMLEmitterError(&m_emitter);
-            return false;
-        }
+            goto err;
+
         return true;
+    err:
+        HandleYAMLEmitterError(&m_emitter);
+        return false;
     }
 
     inline YAMLNode* getCurNode() const {return m_subStack.empty() ? nullptr : m_subStack.back();}
@@ -958,24 +965,6 @@ public:
             leaveSubRecord();
         }
         leaveSubVector();
-    }
-
-    bool finish()
-    {
-        yaml_event_t event = {YAML_DOCUMENT_START_EVENT};
-        event.data.document_start.implicit = true;
-        if (!yaml_emitter_emit(&m_emitter, &event))
-            goto err;
-        if (!RecursiveFinish(&m_emitter, m_rootNode))
-            return false;
-        event.type = YAML_DOCUMENT_END_EVENT;
-        event.data.document_end.implicit = true;
-        if (!yaml_emitter_emit(&m_emitter, &event))
-            goto err;
-        return true;
-    err:
-        HandleYAMLEmitterError(&m_emitter);
-        return false;
     }
 
     template <typename INTYPE>
@@ -1156,12 +1145,9 @@ struct DNAYaml : DNA<DNAE>
         yaml_emitter_set_unicode(docWriter.getEmitter(), true);
         yaml_emitter_set_width(docWriter.getEmitter(), -1);
 
-        if (!docWriter.open())
-            return std::string();
         write(docWriter);
         if (!docWriter.finish())
             return std::string();
-        docWriter.close();
 
         return res;
     }
@@ -1201,12 +1187,9 @@ struct DNAYaml : DNA<DNAE>
         yaml_emitter_set_unicode(docWriter.getEmitter(), true);
         yaml_emitter_set_width(docWriter.getEmitter(), -1);
 
-        if (!docWriter.open())
-            return false;
         write(docWriter);
         if (!docWriter.finish())
             return false;
-        docWriter.close();
 
         return true;
     }
