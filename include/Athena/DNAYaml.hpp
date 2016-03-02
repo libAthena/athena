@@ -679,7 +679,8 @@ public:
                 }
             }
         }
-        atWarning("Unable to find field '%s'; returning 0", name);
+        if (name)
+            atWarning("Unable to find field '%s'; returning 0", name);
         return RETURNTYPE();
     }
 
@@ -819,7 +820,7 @@ public:
 
     bool finish()
     {
-        yaml_event_t event;
+        yaml_event_t event = {};
 
         if (!yaml_emitter_open(&m_emitter))
             goto err;
