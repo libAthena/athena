@@ -576,7 +576,7 @@ public:
         leaveSubRecord();
     }
 
-    bool enterSubVector(const char* name)
+    bool enterSubVector(const char* name, size_t& countOut)
     {
         YAMLNode* curSub = m_subStack.back();
         for (const auto& item : curSub->m_mapChildren)
@@ -584,11 +584,21 @@ public:
             if (!item.first.compare(name))
             {
                 YAMLNode* nextSub = item.second.get();
+                if (nextSub->m_type == YAML_SEQUENCE_NODE)
+                {
+                    countOut = nextSub->m_seqChildren.size();
+                }
+                else
+                {
+                    atError("'%s' is not a vector field", name);
+                    countOut = 0;
+                }
                 m_subStack.push_back(nextSub);
                 m_seqTrackerStack.push_back(0);
                 return true;
             }
         }
+        countOut = 0;
         return false;
     }
 
@@ -600,18 +610,18 @@ public:
             m_seqTrackerStack.pop_back();
         }
     }
-
     template <class T>
-    void enumerate(const char* name, std::vector<T>& vector, size_t count,
-                   typename std::enable_if<!std::is_arithmetic<T>::value &&
-                                           !std::is_same<T, atVec2f>::value &&
-                                           !std::is_same<T, atVec3f>::value &&
-                                           !std::is_same<T, atVec4f>::value>::type* = 0)
+    size_t enumerate(const char* name, std::vector<T>& vector,
+                     typename std::enable_if<!std::is_arithmetic<T>::value &&
+                                             !std::is_same<T, atVec2f>::value &&
+                                             !std::is_same<T, atVec3f>::value &&
+                                             !std::is_same<T, atVec4f>::value>::type* = 0)
     {
+        size_t countOut;
+        enterSubVector(name, countOut);
         vector.clear();
-        vector.reserve(count);
-        enterSubVector(name);
-        for (size_t i=0 ; i<count ; ++i)
+        vector.reserve(countOut);
+        for (size_t i=0 ; i<countOut ; ++i)
         {
             vector.emplace_back();
             enterSubRecord(nullptr);
@@ -619,31 +629,35 @@ public:
             leaveSubRecord();
         }
         leaveSubVector();
+        return countOut;
     }
 
     template <class T>
-    void enumerate(const char* name, std::vector<T>& vector, size_t count,
-                   typename std::enable_if<std::is_arithmetic<T>::value ||
-                                           std::is_same<T, atVec2f>::value ||
-                                           std::is_same<T, atVec3f>::value ||
-                                           std::is_same<T, atVec4f>::value>::type* = 0)
+    size_t enumerate(const char* name, std::vector<T>& vector,
+                     typename std::enable_if<std::is_arithmetic<T>::value ||
+                                             std::is_same<T, atVec2f>::value ||
+                                             std::is_same<T, atVec3f>::value ||
+                                             std::is_same<T, atVec4f>::value>::type* = 0)
     {
+        size_t countOut;
+        enterSubVector(name, countOut);
         vector.clear();
-        vector.reserve(count);
-        enterSubVector(name);
-        for (size_t i=0 ; i<count ; ++i)
+        vector.reserve(countOut);
+        for (size_t i=0 ; i<countOut ; ++i)
             vector.push_back(readVal<T>(name));
         leaveSubVector();
+        return countOut;
     }
 
     template <class T>
-    void enumerate(const char* name, std::vector<T>& vector, size_t count,
-                   std::function<void(YAMLDocReader&, T&)> readf)
+    size_t enumerate(const char* name, std::vector<T>& vector,
+                     std::function<void(YAMLDocReader&, T&)> readf)
     {
+        size_t countOut;
+        enterSubVector(name, countOut);
         vector.clear();
-        vector.reserve(count);
-        enterSubVector(name);
-        for (size_t i=0 ; i<count ; ++i)
+        vector.reserve(countOut);
+        for (size_t i=0 ; i<countOut ; ++i)
         {
             vector.emplace_back();
             enterSubRecord(nullptr);
@@ -651,6 +665,7 @@ public:
             leaveSubRecord();
         }
         leaveSubVector();
+        return countOut;
     }
 
     template <typename RETURNTYPE>

@@ -83,6 +83,99 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
     clang::ASTContext& context;
     StreamOut& fileOut;
 
+    struct YAMLFieldNode
+    {
+        enum class Type
+        {
+            EnterSubVector,
+            LeaveSubVector,
+            Value,
+            VectorRefSize,
+            VectorNoRefSize,
+            Buffer,
+            String,
+            WString,
+            Record
+        } m_type;
+
+        std::string m_fieldNameBare;
+        std::string m_fieldName;
+        std::string m_sizeExpr;
+        std::string m_ioOp;
+        bool m_output = true;
+
+        YAMLFieldNode(Type tp) : m_type(tp) {}
+
+        void output(StreamOut& out, int p) const
+        {
+            if (m_output)
+            {
+                out << "    /* " << m_fieldName << " */\n";
+                switch (m_type)
+                {
+                case Type::EnterSubVector:
+                    if (!p)
+                        out << "    size_t __" << m_fieldName << "Count;\n    " ATHENA_YAML_READER ".enterSubVector(\"" << m_fieldName << "\", __" << m_fieldName << "Count);\n";
+                    else
+                        out << "    " ATHENA_YAML_WRITER ".enterSubVector(\"" << m_fieldName << "\");\n";
+                    break;
+                case Type::LeaveSubVector:
+                    if (!p)
+                        out << "    " ATHENA_YAML_READER ".leaveSubVector();\n";
+                    else
+                        out << "    " ATHENA_YAML_WRITER ".leaveSubVector();\n";
+                    break;
+                case Type::Value:
+                    if (!p)
+                        out << "    " << m_fieldName << " = " << m_ioOp << ";\n";
+                    else
+                        out << "    " << m_ioOp << "\n";
+                    break;
+                case Type::VectorRefSize:
+                    if (!p)
+                        out << "    " << m_sizeExpr << " = " ATHENA_YAML_READER ".enumerate(\"" << m_fieldNameBare << "\", " << m_fieldName << ");\n";
+                    else
+                        out << "    " ATHENA_YAML_WRITER ".enumerate(\"" << m_fieldNameBare << "\", " << m_fieldName << ");\n";
+                    break;
+                case Type::VectorNoRefSize:
+                    if (!p)
+                        out << "    " ATHENA_YAML_READER ".enumerate(\"" << m_fieldNameBare << "\", " << m_fieldName << ");\n";
+                    else
+                        out << "    " ATHENA_YAML_WRITER ".enumerate(\"" << m_fieldNameBare << "\", " << m_fieldName << ");\n";
+                    break;
+                case Type::Buffer:
+                    if (!p)
+                        out << "    " << m_fieldName << " = " ATHENA_YAML_READER ".readUBytes(\"" << m_fieldNameBare << "\");\n";
+                    else
+                        out << "    " ATHENA_YAML_WRITER ".writeUBytes(\"" << m_fieldNameBare << "\", " << m_fieldName << ", " << m_sizeExpr << ");\n";
+                    break;
+                case Type::String:
+                    if (!p)
+                        out << "    " << m_fieldName << " = " ATHENA_YAML_READER ".readString(\"" << m_fieldNameBare << "\");\n";
+                    else
+                        out << "    " ATHENA_YAML_WRITER ".writeString(\"" << m_fieldNameBare << "\", " << m_fieldName << ");\n";
+                    break;
+                case Type::WString:
+                    if (!p)
+                        out << "    " << m_fieldName << " = " ATHENA_YAML_READER ".readWString(\"" << m_fieldNameBare << "\");\n";
+                    else
+                        out << "    " ATHENA_YAML_WRITER ".writeWString(\"" << m_fieldNameBare << "\", " << m_fieldName << ");\n";
+                    break;
+                case Type::Record:
+                    if (!p)
+                        out << "    " ATHENA_YAML_READER ".enumerate(\"" << m_fieldNameBare << "\", " << m_fieldName << ");\n";
+                    else
+                        out << "    " ATHENA_YAML_WRITER ".enumerate(\"" << m_fieldNameBare << "\", " << m_fieldName << ");\n";
+                    break;
+                }
+            }
+            else
+            {
+                out << "    /* " << m_fieldName << " squelched */\n";
+            }
+        }
+    };
+
     bool isDNARecord(const clang::CXXRecordDecl* record, std::string& baseDNA, bool& isYAML)
     {
         for (const clang::CXXBaseSpecifier& base : record->bases())
@@ -1827,6 +1920,8 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
 
     void emitYAMLFuncs(clang::CXXRecordDecl* decl, const std::string& baseDNA)
     {
+        std::vector<YAMLFieldNode> outputNodes;
+
         /* Two passes - read then write */
         for (int p=0 ; p<2 ; ++p)
         {
@@ -1842,6 +1937,9 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 else
                     fileOut << "    " << baseDNA << "::read(" ATHENA_YAML_READER ");\n";
             }
+
+            outputNodes.clear();
+            outputNodes.reserve(std::distance(decl->field_begin(), decl->field_end()));
 
             for (const clang::FieldDecl* field : decl->fields())
             {
@@ -1868,10 +1966,8 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                     if (regType->getTypeClass() == clang::Type::Elaborated)
                         regType = regType->getUnqualifiedDesugaredType();
 
-                    if (!p)
-                        fileOut << "    " ATHENA_YAML_READER ".enterSubVector(\"" << field->getName() << "\");\n";
-                    else
-                        fileOut << "    " ATHENA_YAML_WRITER ".enterSubVector(\"" << field->getName() << "\");\n";
+                    outputNodes.emplace_back(YAMLFieldNode::Type::EnterSubVector);
+                    outputNodes.back().m_fieldName = field->getNameAsString();
                 }
 
                 for (int e=0 ; e<arraySize ; ++e)
@@ -1939,11 +2035,10 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                             if (ioOp.empty())
                                 continue;
 
-                            fileOut << "    /* " << fieldName << " */\n";
-                            if (!p)
-                                fileOut << "    " << fieldName << " = " << ioOp << ";\n";
-                            else
-                                fileOut << "    " << ioOp << "\n";
+                            outputNodes.emplace_back(YAMLFieldNode::Type::Value);
+                            YAMLFieldNode& outNode = outputNodes.back();
+                            outNode.m_fieldName = fieldName;
+                            outNode.m_ioOp = ioOp;
                         }
                         else if (!tsDecl->getName().compare("Vector"))
                         {
@@ -1970,6 +2065,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                             const clang::TemplateArgument* sizeArg = nullptr;
                             size_t idx = 0;
                             bool bad = false;
+                            YAMLFieldNode::Type yamlFieldType;
                             for (const clang::TemplateArgument& arg : *tsType)
                             {
                                 if (arg.getKind() == clang::TemplateArgument::Type)
@@ -1992,6 +2088,22 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                             const clang::Expr* argExpr = uExpr->getArgumentExpr();
                                             while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
                                                 argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                                            if (argExpr->getStmtClass() == clang::Stmt::DeclRefExprClass)
+                                            {
+                                                clang::DeclRefExpr* drExpr = (clang::DeclRefExpr*)argExpr;
+                                                std::string testName = drExpr->getFoundDecl()->getNameAsString();
+                                                for (auto i=outputNodes.rbegin() ; i != outputNodes.rend() ; ++i)
+                                                {
+                                                    if (i->m_fieldName == testName)
+                                                    {
+                                                        i->m_output = false;
+                                                        break;
+                                                    }
+                                                }
+                                                yamlFieldType = YAMLFieldNode::Type::VectorRefSize;
+                                            }
+                                            else
+                                                yamlFieldType = YAMLFieldNode::Type::VectorNoRefSize;
                                             llvm::raw_string_ostream strStream(sizeExpr);
                                             argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
                                         }
@@ -2021,12 +2133,11 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                             if (sizeExpr.empty())
                                 continue;
 
-                            fileOut << "    /* " << fieldName << " */\n";
-                            if (!p)
-                                fileOut << "    " ATHENA_YAML_READER ".enumerate(\"" << fieldNameBare << "\", " << fieldName << ", " << sizeExpr << ");\n";
-                            else
-                                fileOut << "    " ATHENA_YAML_WRITER ".enumerate(\"" << fieldNameBare << "\", " << fieldName << ");\n";
-
+                            outputNodes.emplace_back(yamlFieldType);
+                            YAMLFieldNode& outNode = outputNodes.back();
+                            outNode.m_fieldName = fieldName;
+                            outNode.m_fieldNameBare = fieldNameBare;
+                            outNode.m_sizeExpr = sizeExpr;
                         }
                         else if (!tsDecl->getName().compare("Buffer"))
                         {
@@ -2052,20 +2163,19 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                             if (sizeExprStr.empty())
                                 continue;
 
-                            fileOut << "    /* " << fieldName << " */\n";
-                            if (!p)
-                                fileOut << "    " << fieldName << " = " ATHENA_YAML_READER ".readUBytes(\"" << fieldNameBare << "\");\n";
-                            else
-                                fileOut << "    " ATHENA_YAML_WRITER ".writeUBytes(\"" << fieldNameBare << "\", " << fieldName << ", " << sizeExprStr << ");\n";
+                            outputNodes.emplace_back(YAMLFieldNode::Type::Buffer);
+                            YAMLFieldNode& outNode = outputNodes.back();
+                            outNode.m_fieldName = fieldName;
+                            outNode.m_fieldNameBare = fieldNameBare;
+                            outNode.m_sizeExpr = sizeExprStr;
                         }
                         else if (!tsDecl->getName().compare("String") ||
                                  !tsDecl->getName().compare("WStringAsString"))
                         {
-                            fileOut << "    /* " << fieldName << " */\n";
-                            if (!p)
-                                fileOut << "    " << fieldName << " = " ATHENA_YAML_READER ".readString(\"" << fieldNameBare << "\");\n";
-                            else
-                                fileOut << "    " ATHENA_YAML_WRITER ".writeString(\"" << fieldNameBare << "\", " << fieldName << ");\n";
+                            outputNodes.emplace_back(YAMLFieldNode::Type::String);
+                            YAMLFieldNode& outNode = outputNodes.back();
+                            outNode.m_fieldName = fieldName;
+                            outNode.m_fieldNameBare = fieldNameBare;
                         }
                         else if (!tsDecl->getName().compare("WString"))
                         {
@@ -2110,11 +2220,10 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                             if (endianVal != 0 && endianVal != 1)
                                 continue;
 
-                            fileOut << "    /* " << fieldName << " */\n";
-                            if (!p)
-                                fileOut << "    " << fieldName << " = " ATHENA_YAML_READER ".readWString(\"" << fieldNameBare << "\");\n";
-                            else
-                                fileOut << "    " ATHENA_YAML_WRITER ".writeWString(\"" << fieldNameBare << "\", " << fieldName << ");\n";
+                            outputNodes.emplace_back(YAMLFieldNode::Type::WString);
+                            YAMLFieldNode& outNode = outputNodes.back();
+                            outNode.m_fieldName = fieldName;
+                            outNode.m_fieldNameBare = fieldNameBare;
                         }
 
                     }
@@ -2126,16 +2235,10 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         bool isYAML = false;
                         if (cxxRDecl && isDNARecord(cxxRDecl, baseDNA, isYAML))
                         {
-                            if (!p)
-                            {
-                                fileOut << "    /* " << fieldName << " */\n"
-                                           "    " ATHENA_YAML_READER ".enumerate(\"" << fieldNameBare << "\", " << fieldName << ");\n";
-                            }
-                            else
-                            {
-                                fileOut << "    /* " << fieldName << " */\n"
-                                           "    " ATHENA_YAML_WRITER ".enumerate(\"" << fieldNameBare << "\", " << fieldName << ");\n";
-                            }
+                            outputNodes.emplace_back(YAMLFieldNode::Type::Record);
+                            YAMLFieldNode& outNode = outputNodes.back();
+                            outNode.m_fieldName = fieldName;
+                            outNode.m_fieldNameBare = fieldNameBare;
                         }
                     }
 
@@ -2143,13 +2246,13 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
 
                 if (isArray)
                 {
-                    if (!p)
-                        fileOut << "    " ATHENA_YAML_READER ".leaveSubVector();\n";
-                    else
-                        fileOut << "    " ATHENA_YAML_WRITER ".leaveSubVector();\n";
+                    outputNodes.emplace_back(YAMLFieldNode::Type::LeaveSubVector);
                 }
 
             }
+
+            for (const YAMLFieldNode& node : outputNodes)
+                node.output(fileOut, p);
 
             fileOut << "}\n\n";
         }
