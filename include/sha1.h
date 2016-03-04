@@ -1,7 +1,7 @@
 #ifndef _SHA1_H_
 #define _SHA1_H_
 
-#include "Athena/Types.hpp"
+#include "athena/Types.hpp"
 
 #ifndef __DOXYGEN_IGNORE__
 #ifdef __cplusplus

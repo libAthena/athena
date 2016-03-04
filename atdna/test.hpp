@@ -1,6 +1,6 @@
-#include <Athena/DNAYaml.hpp>
+#include <athena/DNAYaml.hpp>
 
-using namespace Athena;
+using namespace athena;
 typedef io::DNAYaml<BigEndian> BigDNA;
 
 struct TESTSubFile : public BigDNA

@@ -10,7 +10,7 @@ static GXRModeObj* rmode = nullptr;
 
 #endif
 
-#include <Athena/MemoryReader.hpp>
+#include <athena/MemoryReader.hpp>
 
 int main()
 {
@@ -36,7 +36,7 @@ int main()
     if (rmode->viTVMode & VI_NON_INTERLACE)
         VIDEO_WaitVSync();
 
-    Athena::io::MemoryCopyReader test("sd:/test.dat");
+    athena::io::MemoryCopyReader test("sd:/test.dat");
     while(true)
     {
 #if HW_RVL

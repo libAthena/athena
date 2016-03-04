@@ -7,7 +7,7 @@
 #include <cpuid.h>
 #endif
 
-namespace Athena
+namespace athena
 {
 
 /* rotates x one bit to the left */

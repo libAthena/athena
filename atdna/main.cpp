@@ -15,8 +15,8 @@
 #include "llvm/Support/CommandLine.h"
 
 static unsigned AthenaError = 0;
-#define ATHENA_DNA_BASETYPE "struct Athena::io::DNA"
-#define ATHENA_DNA_YAMLTYPE "struct Athena::io::DNAYaml"
+#define ATHENA_DNA_BASETYPE "struct athena::io::DNA"
+#define ATHENA_DNA_YAMLTYPE "struct athena::io::DNAYaml"
 #define ATHENA_DNA_READER "__dna_reader"
 #define ATHENA_DNA_WRITER "__dna_writer"
 #define ATHENA_YAML_READER "__dna_docin"
@@ -1148,9 +1148,9 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
         for (int p=0 ; p<2 ; ++p)
         {
             if (p)
-                fileOut << "void " << decl->getQualifiedNameAsString() << "::write(Athena::io::IStreamWriter& " ATHENA_DNA_WRITER ") const\n{\n";
+                fileOut << "void " << decl->getQualifiedNameAsString() << "::write(athena::io::IStreamWriter& " ATHENA_DNA_WRITER ") const\n{\n";
             else
-                fileOut << "void " << decl->getQualifiedNameAsString() << "::read(Athena::io::IStreamReader& " ATHENA_DNA_READER ")\n{\n";
+                fileOut << "void " << decl->getQualifiedNameAsString() << "::read(athena::io::IStreamReader& " ATHENA_DNA_READER ")\n{\n";
 
             if (baseDNA.size())
             {
@@ -1823,23 +1823,23 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                             if (directionVal == 0)
                             {
                                 if (!p)
-                                    fileOut << "    " ATHENA_DNA_READER ".seek(" << offsetExprStr << ", Athena::Begin);\n";
+                                    fileOut << "    " ATHENA_DNA_READER ".seek(" << offsetExprStr << ", athena::Begin);\n";
                                 else
-                                    fileOut << "    " ATHENA_DNA_WRITER ".seek(" << offsetExprStr << ", Athena::Begin);\n";
+                                    fileOut << "    " ATHENA_DNA_WRITER ".seek(" << offsetExprStr << ", athena::Begin);\n";
                             }
                             else if (directionVal == 1)
                             {
                                 if (!p)
-                                    fileOut << "    " ATHENA_DNA_READER ".seek(" << offsetExprStr << ", Athena::Current);\n";
+                                    fileOut << "    " ATHENA_DNA_READER ".seek(" << offsetExprStr << ", athena::Current);\n";
                                 else
-                                    fileOut << "    " ATHENA_DNA_WRITER ".seek(" << offsetExprStr << ", Athena::Current);\n";
+                                    fileOut << "    " ATHENA_DNA_WRITER ".seek(" << offsetExprStr << ", athena::Current);\n";
                             }
                             else if (directionVal == 2)
                             {
                                 if (!p)
-                                    fileOut << "    " ATHENA_DNA_READER ".seek(" << offsetExprStr << ", Athena::End);\n";
+                                    fileOut << "    " ATHENA_DNA_READER ".seek(" << offsetExprStr << ", athena::End);\n";
                                 else
-                                    fileOut << "    " ATHENA_DNA_WRITER ".seek(" << offsetExprStr << ", Athena::End);\n";
+                                    fileOut << "    " ATHENA_DNA_WRITER ".seek(" << offsetExprStr << ", athena::End);\n";
                             }
 
                         }
@@ -1882,16 +1882,16 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                 else if (align.isPowerOf2())
                                 {
                                     if (!p)
-                                        fileOut << "    " ATHENA_DNA_READER ".seek((" ATHENA_DNA_READER ".position() + " << alignVal-1 << ") & ~" << alignVal-1 << ", Athena::Begin);\n";
+                                        fileOut << "    " ATHENA_DNA_READER ".seek((" ATHENA_DNA_READER ".position() + " << alignVal-1 << ") & ~" << alignVal-1 << ", athena::Begin);\n";
                                     else
-                                        fileOut << "    " ATHENA_DNA_WRITER ".seek((" ATHENA_DNA_WRITER ".position() + " << alignVal-1 << ") & ~" << alignVal-1 << ", Athena::Begin);\n";
+                                        fileOut << "    " ATHENA_DNA_WRITER ".seek((" ATHENA_DNA_WRITER ".position() + " << alignVal-1 << ") & ~" << alignVal-1 << ", athena::Begin);\n";
                                 }
                                 else
                                 {
                                     if (!p)
-                                        fileOut << "    " ATHENA_DNA_READER ".seek((" ATHENA_DNA_READER ".position() + " << alignVal-1 << ") / " << alignVal << " * " << alignVal << ", Athena::Begin);\n";
+                                        fileOut << "    " ATHENA_DNA_READER ".seek((" ATHENA_DNA_READER ".position() + " << alignVal-1 << ") / " << alignVal << " * " << alignVal << ", athena::Begin);\n";
                                     else
-                                        fileOut << "    " ATHENA_DNA_WRITER ".seek((" ATHENA_DNA_WRITER ".position() + " << alignVal-1 << ") / " << alignVal << " * " << alignVal << ", Athena::Begin);\n";
+                                        fileOut << "    " ATHENA_DNA_WRITER ".seek((" ATHENA_DNA_WRITER ".position() + " << alignVal-1 << ") / " << alignVal << " * " << alignVal << ", athena::Begin);\n";
                                 }
                             }
                         }
@@ -1926,9 +1926,9 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
         for (int p=0 ; p<2 ; ++p)
         {
             if (p)
-                fileOut << "void " << decl->getQualifiedNameAsString() << "::write(Athena::io::YAMLDocWriter& " ATHENA_YAML_WRITER ") const\n{\n";
+                fileOut << "void " << decl->getQualifiedNameAsString() << "::write(athena::io::YAMLDocWriter& " ATHENA_YAML_WRITER ") const\n{\n";
             else
-                fileOut << "void " << decl->getQualifiedNameAsString() << "::read(Athena::io::YAMLDocReader& " ATHENA_YAML_READER ")\n{\n";
+                fileOut << "void " << decl->getQualifiedNameAsString() << "::read(athena::io::YAMLDocReader& " ATHENA_YAML_READER ")\n{\n";
 
             if (baseDNA.size())
             {
@@ -2274,7 +2274,7 @@ public:
         if (!decl->getNumBases())
             return true;
 
-        /* First ensure this inherits from struct Athena::io::DNA */
+        /* First ensure this inherits from struct athena::io::DNA */
         std::string baseDNA;
         bool isYAML = false;
         if (!isDNARecord(decl, baseDNA, isYAML))
@@ -2333,9 +2333,9 @@ public:
     {
         /* Write file head */
         fileOut << "/* Auto generated atdna implementation */\n"
-                   "#include <Athena/Global.hpp>\n"
-                   "#include <Athena/IStreamReader.hpp>\n"
-                   "#include <Athena/IStreamWriter.hpp>\n\n";
+                   "#include <athena/Global.hpp>\n"
+                   "#include <athena/IStreamReader.hpp>\n"
+                   "#include <athena/IStreamWriter.hpp>\n\n";
         for (const std::string& inputf : InputFilenames)
             fileOut << "#include \"" << inputf << "\"\n";
         fileOut << "\n";

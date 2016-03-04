@@ -86,7 +86,7 @@ endif()
 
 # Define installs
 install(TARGETS atdna DESTINATION ${INSTALL_BIN_DIR} EXPORT atdnaTargets COMPONENT atdna)
-install(DIRECTORY ${CLANG_INCLUDE_DIR}/ DESTINATION ${INSTALL_INCLUDE_DIR}/Athena/clang COMPONENT atdna)
+install(DIRECTORY ${CLANG_INCLUDE_DIR}/ DESTINATION ${INSTALL_INCLUDE_DIR}/athena/clang COMPONENT atdna)
 
 ##################
 # Package Export #

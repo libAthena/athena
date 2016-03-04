@@ -6,6 +6,6 @@ set(YAML_VERSION_STRING "${YAML_VERSION_MAJOR}.${YAML_VERSION_MINOR}.${YAML_VERS
 file(GLOB SRC src/*.c)
 
 include_directories(../../include)
-add_library(AthenaLibYaml STATIC ${SRC})
+add_library(athena-libyaml STATIC ${SRC})
 
-install(TARGETS AthenaLibYaml DESTINATION lib COMPONENT yaml)
+install(TARGETS athena-libyaml DESTINATION lib COMPONENT yaml)

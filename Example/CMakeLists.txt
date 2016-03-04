@@ -10,7 +10,7 @@ add_executable(Example
 if(GEKKO)
 include_directories(${LIBOGCDIR}/include)
 link_directories(${LIGOGCDIR}/lib/wii)
-target_link_libraries(Example AthenaCore z wiiuse bte ogc m)
+target_link_libraries(Example athena-core z wiiuse bte ogc m)
 else()
 #TODO: add normal link libraries
 endif()

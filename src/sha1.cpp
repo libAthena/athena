@@ -40,7 +40,7 @@
 
 #include "sha1.h"
 #include <string.h>
-#include "Athena/Utility.hpp"
+#include "athena/Utility.hpp"
 
 /*
  *  Define the circular shift macro
@@ -392,8 +392,8 @@ atUint8* getSha1(atUint8* stuff, atUint32 stuff_size)
     {
         int val = sha.Message_Digest[ i ];
 
-        if (!Athena::utility::isSystemBigEndian())
-            val = Athena::utility::swap32(val);
+        if (!athena::utility::isSystemBigEndian())
+            val = athena::utility::swap32(val);
 
         memcpy((char*)ret + (i * 4), &val, 4);
     }

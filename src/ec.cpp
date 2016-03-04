@@ -8,7 +8,7 @@
 
 // Not all of these headers are necessary, figure out which ones are actually used and prune those that are irrelevant.
 #include <string.h>
-#include "Athena/Utility.hpp"
+#include "athena/Utility.hpp"
 
 #include "bn.h"
 #include "ec.h"
@@ -351,7 +351,7 @@ void generate_ecdsa(atUint8* R, atUint8* S, atUint8* k, atUint8* hash)
     elt_zero(e);
     memcpy(e + 10, hash, 20);
 
-    Athena::utility::fillRandom(m, sizeof(m));
+    athena::utility::fillRandom(m, sizeof(m));
     m[0] = 0;
 
     //  R = (mG).x
@@ -431,21 +431,21 @@ void make_ec_cert(atUint8* cert, atUint8* sig, char* signer, char* name, atUint8
     memset(cert, 0, 0x180);
     *(atUint32*)(cert) =  0x10002;
 
-    if (!Athena::utility::isSystemBigEndian())
-        *(atUint32*)(cert) = Athena::utility::swapU32(*(atUint32*)(cert));
+    if (!athena::utility::isSystemBigEndian())
+        *(atUint32*)(cert) = athena::utility::swapU32(*(atUint32*)(cert));
 
     memcpy((char*)cert + 4, sig, 60);
     strcpy((char*)cert + 0x80, signer);
     *(atUint32*)(cert + 0xc0) =  2;
 
-    if (!Athena::utility::isSystemBigEndian())
-        *(atUint32*)(cert + 0xc0) = Athena::utility::swapU32(*(atUint32*)(cert + 0xc0));
+    if (!athena::utility::isSystemBigEndian())
+        *(atUint32*)(cert + 0xc0) = athena::utility::swapU32(*(atUint32*)(cert + 0xc0));
 
     strcpy((char*)cert + 0xc4, name);
     *(atUint32*)(cert + 0x104) =  key_id;
 
-    if (!Athena::utility::isSystemBigEndian())
-        *(atUint32*)(cert + 0x104) = Athena::utility::swapU32(*(atUint32*)(cert + 0x104));
+    if (!athena::utility::isSystemBigEndian())
+        *(atUint32*)(cert + 0x104) = athena::utility::swapU32(*(atUint32*)(cert + 0x104));
 
     ec_priv_to_pub(priv, cert + 0x108);
 }

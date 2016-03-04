@@ -1,6 +1,6 @@
 #include "LZ77/LZLookupTable.hpp"
 #include "LZ77/LZType10.hpp"
-#include <Athena/MemoryWriter.hpp>
+#include <athena/MemoryWriter.hpp>
 #include <string.h>
 
 LZType10::LZType10(atInt32 MinimumOffset, atInt32 SlidingWindow, atInt32 MinimumMatch, atInt32 BlockSize)
@@ -14,9 +14,9 @@ LZType10::LZType10(atInt32 MinimumOffset, atInt32 SlidingWindow, atInt32 Minimum
 atUint32 LZType10::compress(const atUint8* src, atUint8** dstBuf, atUint32 srcLength)
 {
     atUint32 encodeSize = (srcLength << 8) | (0x10);
-    encodeSize = Athena::utility::LittleUint32(encodeSize); //File size needs to be written as little endian always
+    encodeSize = athena::utility::LittleUint32(encodeSize); //File size needs to be written as little endian always
 
-    Athena::io::MemoryCopyWriter outbuf("tmp");
+    athena::io::MemoryCopyWriter outbuf("tmp");
     outbuf.writeUint32(encodeSize);
 
     atUint8* ptrStart = (atUint8*)src;
@@ -42,7 +42,7 @@ atUint32 LZType10::compress(const atUint8* src, atUint8** dstBuf, atUint32 srcLe
             {
                 //Gotta swap the bytes since system is wii is big endian and most computers are little endian
                 atUint16 lenOff = (((searchResult.length - m_minMatch) & 0xF) << 12) | ((searchResult.offset - 1) & 0xFFF);
-                Athena::utility::BigUint16(lenOff);
+                athena::utility::BigUint16(lenOff);
 
                 memcpy(ptrBytes, &lenOff, sizeof(atUint16));
 
@@ -81,7 +81,7 @@ atUint32 LZType10::decompress(const atUint8* src, atUint8** dst, atUint32 srcLen
         return 0;
 
     atUint32 uncompressedSize = *(atUint32*)(src); //Size of data when it is uncompressed
-    Athena::utility::LittleUint32(uncompressedSize); //The compressed file has the filesize encoded in little endian
+    athena::utility::LittleUint32(uncompressedSize); //The compressed file has the filesize encoded in little endian
     uncompressedSize = uncompressedSize >> 8;//first byte is the encode flag
 
     atUint8* uncompressedData = new atUint8[uncompressedSize];
@@ -104,7 +104,7 @@ atUint32 LZType10::decompress(const atUint8* src, atUint8** dst, atUint32 srcLen
             {
                 atUint16 lenOff;
                 memcpy(&lenOff, inputPtr, sizeof(atUint16));
-                Athena::utility::BigUint16(lenOff);
+                athena::utility::BigUint16(lenOff);
                 inputPtr += sizeof(atUint16); //Move forward two bytes
                 //length offset pair has been decoded.
                 LZLengthOffset decoding;

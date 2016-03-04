@@ -5,7 +5,7 @@
 #include <deque>
 #include <vector>
 #include <cstdint>
-#include <Athena/Types.hpp>
+#include <athena/Types.hpp>
 
 struct LZLengthOffset
 {

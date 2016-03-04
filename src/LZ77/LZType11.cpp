@@ -1,6 +1,6 @@
 #include "LZ77/LZLookupTable.hpp"
 #include "LZ77/LZType11.hpp"
-#include <Athena/MemoryWriter.hpp>
+#include <athena/MemoryWriter.hpp>
 #include <string.h>
 
 
@@ -13,13 +13,13 @@ LZType11::LZType11(atInt32 minimumOffset, atInt32 slidingWindow, atInt32 minimum
 
 atUint32 LZType11::compress(const atUint8* src, atUint8** dst, atUint32 srcLength)
 {
-    Athena::io::MemoryCopyWriter outbuff("tmp");
+    athena::io::MemoryCopyWriter outbuff("tmp");
 
     if (srcLength > 0xFFFFFF) // If length is greater than 24 bits or 16 Megs
     {
         atUint32 encodeFlag = 0x11;
-        Athena::utility::LittleUint32(encodeFlag);
-        Athena::utility::LittleUint32(srcLength);//Filesize data is little endian
+        athena::utility::LittleUint32(encodeFlag);
+        athena::utility::LittleUint32(srcLength);//Filesize data is little endian
         outbuff.writeUint32(encodeFlag);
         outbuff.writeUint32(srcLength);
 
@@ -27,7 +27,7 @@ atUint32 LZType11::compress(const atUint8* src, atUint8** dst, atUint32 srcLengt
     else
     {
         atUint32 encodeSize = (srcLength << 8) | (0x11);
-        Athena::utility::LittleUint32(encodeSize);
+        athena::utility::LittleUint32(encodeSize);
         outbuff.writeUint32(encodeSize);
     }
 
@@ -79,7 +79,7 @@ atUint32 LZType11::compress(const atUint8* src, atUint8** dst, atUint32 srcLengt
                     atUint16 lenOff = ((((searchResult.length - 1) & 0xF) << 12) | //Bits 15-12
                                        ((searchResult.offset - 1) & 0xFFF)               //Bits 11-0
                                       );
-                    Athena::utility::BigUint16(lenOff);
+                    athena::utility::BigUint16(lenOff);
                     memcpy(ptrBytes, &lenOff, 2);
                     ptrBytes += 2;
                 }
@@ -88,7 +88,7 @@ atUint32 LZType11::compress(const atUint8* src, atUint8** dst, atUint32 srcLengt
                     atUint32 lenOff = ((((searchResult.length - minThreeByteMatch) & 0xFF) << 12) | //Bits 20-12
                                        ((searchResult.offset - 1) & 0xFFF)                    //Bits 11-0
                                       );
-                    Athena::utility::BigUint32(lenOff);
+                    athena::utility::BigUint32(lenOff);
                     memcpy(ptrBytes, (atUint8*)&lenOff + 1, 3); //Make sure to copy the lower 24 bits. 0x12345678- This statement copies 0x123456
                     ptrBytes += 3;
                 }
@@ -98,7 +98,7 @@ atUint32 LZType11::compress(const atUint8* src, atUint8** dst, atUint32 srcLengt
                                        (((searchResult.length - minFourByteMatch) & 0xFFFF) << 12) | //Bits 28-12
                                        ((searchResult.offset - 1) & 0xFFF)                        //Bits 11-0
                                       );
-                    Athena::utility::BigUint32(lenOff);
+                    athena::utility::BigUint32(lenOff);
                     memcpy(ptrBytes, &lenOff, 4);
                     ptrBytes += 4;
                 }
@@ -136,14 +136,14 @@ atUint32 LZType11::decompress(const atUint8* src, atUint8** dst, atUint32 srcLen
         return 0;
 
     atUint32 uncompressedLen = *(atUint32*)(src);
-    Athena::utility::LittleUint32(uncompressedLen);//The compressed file has the filesize encoded in little endian
+    athena::utility::LittleUint32(uncompressedLen);//The compressed file has the filesize encoded in little endian
     uncompressedLen = uncompressedLen >> 8; //First byte is the encode flag
     atUint32 currentOffset = 4;
 
     if (uncompressedLen == 0) //If the filesize var is zero then the true filesize is over 14MB and must be read in from the next 4 bytes
     {
         atUint32 filesize = *(atUint32*)(src + 4);
-        filesize = Athena::utility::LittleUint32(filesize);
+        filesize = athena::utility::LittleUint32(filesize);
         currentOffset += 4;
     }
 
@@ -178,7 +178,7 @@ atUint32 LZType11::decompress(const atUint8* src, atUint8** dst, atUint32 srcLen
                     atUint16 lenOff = 0;
                     memcpy(&lenOff, inputPtr, 2);
                     inputPtr += 2;
-                    Athena::utility::BigUint16(lenOff);
+                    athena::utility::BigUint16(lenOff);
                     decoding.length = (lenOff >> 12) + 1;
                     decoding.offset = (lenOff & 0xFFF) + 1;
                 }
@@ -187,7 +187,7 @@ atUint32 LZType11::decompress(const atUint8* src, atUint8** dst, atUint32 srcLen
                     atUint32 lenOff = 0;
                     memcpy((atUint8*)&lenOff + 1, inputPtr, 3);
                     inputPtr += 3;
-                    Athena::utility::BigUint32(lenOff);
+                    athena::utility::BigUint32(lenOff);
                     decoding.length = (lenOff >> 12) + threeByteDenorm;
                     decoding.offset = (lenOff & 0xFFF) + 1;
                 }
@@ -196,7 +196,7 @@ atUint32 LZType11::decompress(const atUint8* src, atUint8** dst, atUint32 srcLen
                     atUint32 lenOff = 0;
                     memcpy(&lenOff, inputPtr, 4);
                     inputPtr += 4;
-                    Athena::utility::BigUint32(lenOff);
+                    athena::utility::BigUint32(lenOff);
 
                     decoding.length = ((lenOff >> 12) & 0xFFFF) + fourByteDenorm; //Gets rid of the Four byte flag
                     decoding.offset = (lenOff & 0xFFF) + 1;

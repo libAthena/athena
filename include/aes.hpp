@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <memory>
 
-namespace Athena
+namespace athena
 {
 
 class IAES
