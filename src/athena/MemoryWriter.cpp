@@ -14,10 +14,11 @@ namespace athena
 namespace io
 {
 
-MemoryWriter::MemoryWriter(atUint8* data, atUint64 length)
+MemoryWriter::MemoryWriter(atUint8* data, atUint64 length, bool takeOwnership)
     : m_data((atUint8*)data),
       m_length(length),
-      m_position(0)
+      m_position(0),
+      m_bufferOwned(takeOwnership)
 {
     if (!data)
     {
@@ -34,11 +35,20 @@ MemoryWriter::MemoryWriter(atUint8* data, atUint64 length)
     }
 }
 
+MemoryWriter::~MemoryWriter()
+{
+    if (m_bufferOwned)
+        delete m_data;
+    m_data = nullptr;
+    m_length = 0;
+}
+
 MemoryCopyWriter::MemoryCopyWriter(atUint8* data, atUint64 length)
 {
     m_data = data;
     m_length = length;
     m_position = 0;
+    m_bufferOwned = false;
 
     if (length == 0)
     {
@@ -46,7 +56,6 @@ MemoryCopyWriter::MemoryCopyWriter(atUint8* data, atUint64 length)
         setError();
         return;
     }
-
     m_dataCopy.reset(new atUint8[length]);
     m_data = m_dataCopy.get();
     if (data)
@@ -54,13 +63,13 @@ MemoryCopyWriter::MemoryCopyWriter(atUint8* data, atUint64 length)
 }
 
 MemoryCopyWriter::MemoryCopyWriter(const std::string& filename)
-    : MemoryWriter(NULL, 0)
 {
     m_filepath = filename;
     m_length = 0x10;
     m_position = 0;
     m_dataCopy.reset(new atUint8[m_length]);
     m_data = m_dataCopy.get();
+    m_bufferOwned = false;
 
     if (!m_data)
     {
@@ -68,16 +77,14 @@ MemoryCopyWriter::MemoryCopyWriter(const std::string& filename)
         setError();
         return;
     }
-
-    memset(m_data, 0, m_length);
 }
 
 void MemoryWriter::seek(atInt64 position, SeekOrigin origin)
 {
     switch (origin)
     {
-        case SeekOrigin::Begin:
-            if (position < 0)
+    case SeekOrigin::Begin:
+        if (position < 0)
             {
                 atError("Position outside stream bounds");
                 setError();
@@ -180,11 +187,15 @@ void MemoryCopyWriter::seek(atInt64 position, SeekOrigin origin)
     }
 }
 
-void MemoryWriter::setData(atUint8* data, atUint64 length)
+void MemoryWriter::setData(atUint8* data, atUint64 length, bool takeOwnership)
 {
+    if (m_bufferOwned)
+        delete m_data;
+
     m_data = (atUint8*)data;
     m_length = length;
     m_position = 0;
+    m_bufferOwned = takeOwnership;
 }
 
 void MemoryCopyWriter::setData(const atUint8* data, atUint64 length)
@@ -194,6 +205,7 @@ void MemoryCopyWriter::setData(const atUint8* data, atUint64 length)
     memcpy(m_data, data, length);
     m_length = length;
     m_position = 0;
+    m_bufferOwned = false;
 }
 
 atUint8* MemoryWriter::data() const

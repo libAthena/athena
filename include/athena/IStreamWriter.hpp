@@ -99,7 +99,7 @@ public:
      *  @param data The buffer to write
      *  @param length The amount to write
      */
-    inline void writeBytes(const atInt8* data, atUint64 len) {writeUBytes((atUint8*)data, len);}
+    inline void writeBytes(const void* data, atUint64 len) {writeUBytes((atUint8*)data, len);}
 
     /** @brief Writes an Int16 to the buffer and advances the buffer.
      *         It also swaps the bytes depending on the platform and Stream settings.
