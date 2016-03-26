@@ -73,6 +73,7 @@ add_library(athena-core
     include/athena/DNAYaml.hpp
     include/yaml.h
     include/utf8proc.h
+    include/optional.hpp
 )
 
 add_library(athena-sakura EXCLUDE_FROM_ALL
