@@ -549,6 +549,8 @@ public:
         {
             int& seqIdx = m_seqTrackerStack.back();
             m_subStack.push_back(curSub->m_seqChildren[seqIdx++].get());
+            if (m_subStack.back()->m_type == YAML_SEQUENCE_NODE)
+                m_seqTrackerStack.push_back(0);
             return true;
         }
         for (const auto& item : curSub->m_mapChildren)
@@ -556,6 +558,8 @@ public:
             if (!item.first.compare(name))
             {
                 m_subStack.push_back(item.second.get());
+                if (m_subStack.back()->m_type == YAML_SEQUENCE_NODE)
+                    m_seqTrackerStack.push_back(0);
                 return true;
             }
         }
@@ -565,7 +569,11 @@ public:
     void leaveSubRecord()
     {
         if (m_subStack.size() > 1)
+        {
+            if (m_subStack.back()->m_type == YAML_SEQUENCE_NODE)
+                m_seqTrackerStack.pop_back();
             m_subStack.pop_back();
+        }
     }
 
     template <class T>
@@ -579,23 +587,33 @@ public:
     bool enterSubVector(const char* name, size_t& countOut)
     {
         YAMLNode* curSub = m_subStack.back();
-        for (const auto& item : curSub->m_mapChildren)
+        if (!name && curSub->m_type == YAML_SEQUENCE_NODE)
         {
-            if (!item.first.compare(name))
+            m_subStack.push_back(curSub);
+            m_seqTrackerStack.push_back(0);
+            countOut = curSub->m_seqChildren.size();
+            return true;
+        }
+        else
+        {
+            for (const auto& item : curSub->m_mapChildren)
             {
-                YAMLNode* nextSub = item.second.get();
-                if (nextSub->m_type == YAML_SEQUENCE_NODE)
+                if (!item.first.compare(name))
                 {
-                    countOut = nextSub->m_seqChildren.size();
+                    YAMLNode* nextSub = item.second.get();
+                    if (nextSub->m_type == YAML_SEQUENCE_NODE)
+                    {
+                        countOut = nextSub->m_seqChildren.size();
+                    }
+                    else
+                    {
+                        atError("'%s' is not a vector field", name);
+                        countOut = 0;
+                    }
+                    m_subStack.push_back(nextSub);
+                    m_seqTrackerStack.push_back(0);
+                    return true;
                 }
-                else
-                {
-                    atError("'%s' is not a vector field", name);
-                    countOut = 0;
-                }
-                m_subStack.push_back(nextSub);
-                m_seqTrackerStack.push_back(0);
-                return true;
             }
         }
         countOut = 0;
