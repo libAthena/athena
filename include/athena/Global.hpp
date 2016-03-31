@@ -68,6 +68,7 @@ typedef struct stat64 stat64_t;
 
 #define ROUND_UP_32(val) (((val) + 31) & ~31)
 #define ROUND_UP_16(val) (((val) + 15) & ~15)
+#define ROUND_UP_4(val) (((val) + 3) & ~3)
 
 #ifndef ENABLE_BITWISE_ENUM
 #define ENABLE_BITWISE_ENUM(type)\
