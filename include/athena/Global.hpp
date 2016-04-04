@@ -67,6 +67,7 @@ typedef struct stat64 stat64_t;
 #endif
 
 #define ROUND_UP_256(val) (((val) + 255) & ~255)
+#define ROUND_UP_64(val) (((val) + 63) & ~63)
 #define ROUND_UP_32(val) (((val) + 31) & ~31)
 #define ROUND_UP_16(val) (((val) + 15) & ~15)
 #define ROUND_UP_4(val) (((val) + 3) & ~3)
