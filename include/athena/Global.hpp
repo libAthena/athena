@@ -66,9 +66,13 @@ typedef struct stat64 stat64_t;
 #define BLOCKSZ 512
 #endif
 
+#define ROUND_UP_256(val) (((val) + 255) & ~255)
 #define ROUND_UP_32(val) (((val) + 31) & ~31)
 #define ROUND_UP_16(val) (((val) + 15) & ~15)
 #define ROUND_UP_4(val) (((val) + 3) & ~3)
+
+#define _XSTR(s) _STR(s)
+#define _STR(s) #s
 
 #ifndef ENABLE_BITWISE_ENUM
 #define ENABLE_BITWISE_ENUM(type)\
