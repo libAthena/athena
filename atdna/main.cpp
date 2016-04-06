@@ -2268,7 +2268,7 @@ public:
         if (!EmitIncludes && !context.getSourceManager().isInMainFile(decl->getLocation()))
             return true;
 
-        if (decl->isInvalidDecl() || !decl->hasDefinition())
+        if (decl->isInvalidDecl() || !decl->hasDefinition() || !decl->isCompleteDefinition())
             return true;
 
         if (!decl->getNumBases())
