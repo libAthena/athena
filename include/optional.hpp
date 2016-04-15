@@ -554,11 +554,15 @@ public:
   }
 
   constexpr T const& value() const {
-    return initialized() ? contained_val() : atFatal("bad optional access");
+    if (!initialized())
+      atFatal("bad optional access");
+    return contained_val();
   }
 
   T& value() {
-    return initialized() ? contained_val() : atFatal("bad optional access");
+    if (!initialized())
+      atFatal("bad optional access");
+    return contained_val();
   }
 
 # endif
