@@ -27,6 +27,7 @@
 # We also want an user-specified LLVM_ROOT_DIR to take precedence over the
 # system default locations such as /usr/local/bin. Executing find_program()
 # multiples times is the approach recommended in the docs.
+set(LLVM_ROOT_DIR "" CACHE PATH "Location of LLVM development root")
 set(LLVM_FIND_COMPONENTS "")
 if(WIN32)
 get_filename_component(LLVM_ROOT_DIR [HKEY_LOCAL_MACHINE\\Software\\LLVM\\LLVM] ABSOLUTE)
