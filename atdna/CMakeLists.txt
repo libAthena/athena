@@ -25,12 +25,22 @@ list(APPEND LLVM_LIBS
      clangAST
      clangLex
      clangBasic
+     LLVMCore
      LLVMOption
      LLVMMCParser
      LLVMBitReader
      LLVMMC
+     LLVMProfileData
      LLVMSupport)
-set(CLANG_INCLUDE_DIR ${LLVM_LIBRARY_DIRS}/clang/${LLVM_VERSION_STRING}/include
+
+string(FIND ${LLVM_VERSION_STRING} "svn" SVN_FILTER_IDX)
+if(NOT SVN_FILTER_IDX EQUAL -1)
+   string(SUBSTRING ${LLVM_VERSION_STRING} 0 ${SVN_FILTER_IDX} LLVM_VERSION_BASE)
+else()
+   set(LLVM_VERSION_BASE ${LLVM_VERSION_STRING})
+endif()
+
+set(CLANG_INCLUDE_DIR ${LLVM_LIBRARY_DIRS}/clang/${LLVM_VERSION_BASE}/include
     CACHE PATH "Clang include dir" FORCE)
 
 if(UNIX)
