@@ -4,10 +4,6 @@
 #include "athena/MemoryReader.hpp"
 #include "athena/MemoryWriter.hpp"
 #include "athena/Utility.hpp"
-#include "aes.hpp"
-#include "ec.h"
-#include "md5.h"
-#include "sha1.h"
 
 #include <stdio.h>
 #include <vector>

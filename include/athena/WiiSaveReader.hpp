@@ -42,7 +42,7 @@ public:
      * \brief readSave
      * \return
      */
-    WiiSave* readSave();
+    std::unique_ptr<WiiSave> readSave();
 private:
     WiiBanner* readBanner();
     WiiFile*   readFile();

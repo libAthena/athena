@@ -19,7 +19,8 @@ set(ATHENA_VERSION
 
 add_subdirectory(extern)
 
-include_directories(include ${LZO_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
+include_directories(include ${LZO_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR} ${EASYECC_INCLUDE_DIR})
+
 if (NOT MSVC)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 endif()
@@ -121,6 +122,7 @@ add_library(athena-wiisave EXCLUDE_FROM_ALL
 if(NOT MSVC AND NOT GEKKO)
 set_source_files_properties(src/aes.cpp PROPERTIES COMPILE_FLAGS -maes)
 endif()
+
 
 add_library(athena-zelda EXCLUDE_FROM_ALL
     src/athena/ALTTPFile.cpp

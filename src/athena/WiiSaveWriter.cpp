@@ -10,7 +10,7 @@
 #include "athena/Utility.hpp"
 
 #include "aes.hpp"
-#include "ec.h"
+#include "ecc.h"
 #include "md5.h"
 #include "sha1.h"
 

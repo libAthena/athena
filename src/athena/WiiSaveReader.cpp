@@ -7,7 +7,7 @@
 #include "athena/FileWriter.hpp"
 #include "md5.h"
 #include "aes.hpp"
-#include "ec.h"
+#include "ecc.h"
 #include "sha1.h"
 #include <iostream>
 #include <iomanip>
@@ -31,7 +31,7 @@ WiiSaveReader::WiiSaveReader(const std::string& filename)
     setEndian(Endian::BigEndian);
 }
 
-WiiSave* WiiSaveReader::readSave()
+std::unique_ptr<WiiSave> WiiSaveReader::readSave()
 {
     WiiSave* ret = new WiiSave;
 
@@ -92,7 +92,7 @@ WiiSave* WiiSaveReader::readSave()
     ret->setRoot(buildTree(files));
 
     readCerts(totalSize);
-    return ret;
+    return std::unique_ptr<WiiSave>(ret);
 }
 
 WiiBanner* WiiSaveReader::readBanner()
@@ -292,9 +292,9 @@ WiiFile* WiiSaveReader::readFile()
     return ret;
 }
 
-
 void WiiSaveReader::readCerts(atUint32 totalSize)
 {
+#if 0
     std::cout << "Reading certs..." << std::endl;
     atUint32 dataSize = totalSize - 0x340;
     std::unique_ptr<atUint8[]> sig    = base::readUBytes(0x40);
@@ -304,12 +304,24 @@ void WiiSaveReader::readCerts(atUint32 totalSize)
     std::unique_ptr<atUint8[]> data   = base::readUBytes(dataSize);
     atUint8* hash;
 
+    std::cout << "validating..." << std::endl;
     hash = getSha1(data.get(), dataSize);
     atUint8* hash2 = getSha1(hash, 20);
-#if 0
-    std::cout << "validating..." << std::endl;
-    std::cout << (check_ec(ngCert.get(), apCert.get(), sig.get(), hash2) ? "ok" : "invalid") << "...";
-    std::cout << "done" << std::endl;
+    bool failed = false;
+
+    if (!ecdsa_verify(ngCert.get(), hash, sig.get()))
+    {
+        std::cout << "NGCert failure" << std::endl;
+        failed = true;
+    }
+    if (!ecdsa_verify(apCert.get(), hash2, sig.get()))
+    {
+        std::cout << "APCert failure" << std::endl;
+        failed = true;
+    }
+
+    if (!failed)
+        std::cout << "certificates ok" << std::endl;
 #endif
 }
 

@@ -1,0 +1,3 @@
+[submodule "easy-ecc"]
+	path = extern/easy-ecc
+	url = https://github.com/libAthena/easy-ecc.git
