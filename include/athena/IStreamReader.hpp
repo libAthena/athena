@@ -10,6 +10,11 @@ namespace athena
 {
 namespace io
 {
+/** @brief The IStreamReader class defines a basic API for reading from streams, Implementors are provided with one pure virtual
+ *  function that must be implemented in order to interact with the stream.
+ *
+ *  Most implementing classes will only need to implement IStreamReader::readUBytesToBuf(void*, atUint64) for basic stream intearaction
+ */
 class IStreamReader : public IStream
 {
 public:
@@ -26,7 +31,7 @@ public:
      *
      *  @return The current Stream Endianness
      */
-    inline Endian endian()      const
+    inline Endian endian() const
     {return m_endian;}
 
     /** @brief Returns whether the stream is BigEndian
@@ -51,9 +56,17 @@ public:
      */
     virtual void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current)=0;
 
+    /** @brief Sets the buffer's position relative to the next 64-byte aligned position.<br />
+     */
+    inline void seekAlign64() {seek(ROUND_UP_64(position()), SeekOrigin::Begin);}
+
     /** @brief Sets the buffers position relative to the next 32-byte aligned position.<br />
      */
     inline void seekAlign32() {seek(ROUND_UP_32(position()), SeekOrigin::Begin);}
+
+    /** @brief Sets the buffer's position relative to the next 16-byte aligned position.<br />
+     */
+    inline void seekAlign16() {seek(ROUND_UP_16(position()), SeekOrigin::Begin); }
 
     /** @brief Returns whether or not the stream is at the end.
      *
@@ -68,9 +81,9 @@ public:
      */
     virtual atUint64 position() const=0;
 
-    /** @brief Returns whether or not the stream is at the end.
+    /** @brief Returns the length of the file.
      *
-     *  @return True if at end; False otherwise.
+     *  @return True length of the file.
      */
     virtual atUint64 length() const=0;
 
@@ -117,7 +130,7 @@ public:
 
     /** @brief Reads a byte at the current position and advances the current position.
      *
-     * @return The buffer at the current position from the given length.
+     *  @return The buffer at the current position from the given length.
      */
     inline std::unique_ptr<atUint8[]> readUBytes(atUint64 length)
     {
@@ -126,7 +139,20 @@ public:
         return std::unique_ptr<atUint8[]>(buf);
     }
 
+    /** @brief Attempts to read a fixed length of data into a pre-allocated buffer.
+     *  @param buf The buffer to read into
+     *  @param len The length of the buffer
+     *  @return How much data was actually read, useful for detecting read errors.
+     */
     inline atUint64 readBytesToBuf(void* buf, atUint64 len) {return readUBytesToBuf(buf, len);}
+
+
+    /** @brief Attempts to read a fixed length of data into a pre-allocated buffer, this function is client defined
+     *  and must be implemented.
+     *  @param buf The buffer to read into
+     *  @param len The length of the buffer
+     *  @return How much data was actually read, useful for detecting read errors.
+     */
     virtual atUint64 readUBytesToBuf(void* buf, atUint64 len)=0;
 
     /** @brief Reads a Int16 and swaps to endianness specified by setEndian depending on platform

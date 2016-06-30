@@ -306,10 +306,11 @@ void WiiSaveReader::readCerts(atUint32 totalSize)
 
     hash = getSha1(data.get(), dataSize);
     atUint8* hash2 = getSha1(hash, 20);
-
+#if 0
     std::cout << "validating..." << std::endl;
     std::cout << (check_ec(ngCert.get(), apCert.get(), sig.get(), hash2) ? "ok" : "invalid") << "...";
     std::cout << "done" << std::endl;
+#endif
 }
 
 WiiFile* WiiSaveReader::buildTree(std::vector<WiiFile*> files)

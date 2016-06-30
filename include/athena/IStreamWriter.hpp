@@ -3,6 +3,7 @@
 
 #include "utf8proc.h"
 #include "IStream.hpp"
+#include <memory>
 
 namespace athena
 {
@@ -1032,7 +1033,15 @@ public:
     inline void writeValBig(const std::wstring& val) {writeWStringBig(val);}
 
     inline void fill(atUint8 val, atUint64 length)
-    {for (atUint64 l=0 ; l<length ; ++l) writeUBytes(&val, 1);}
+    {
+        if (length == 0)
+            return;
+
+        std::unique_ptr<atUint8[]> tmp(new atUint8[length]);
+        memset(tmp.get(), val, length);
+        writeUBytes(tmp.get(), length);
+    }
+
     inline void fill(atInt8 val, atUint64 length)
     {fill((atUint8)val, length);}
 

@@ -195,7 +195,7 @@ template <>
 inline std::unique_ptr<YAMLNode> ValToNode(const atInt64& val)
 {
     char str[32];
-    snprintf(str, 32, "0x%016llX", val);
+    snprintf(str, 32, "0x%016" PRIX64, val);
     YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
     ret->m_scalarString = str;
     return std::unique_ptr<YAMLNode>(ret);
@@ -215,7 +215,7 @@ template <>
 inline std::unique_ptr<YAMLNode> ValToNode(const atUint64& val)
 {
     char str[32];
-    snprintf(str, 32, "0x%016llX", val);
+    snprintf(str, 32, "0x%016" PRIX64, val);
     YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
     ret->m_scalarString = str;
     return std::unique_ptr<YAMLNode>(ret);

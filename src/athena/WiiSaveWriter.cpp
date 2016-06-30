@@ -194,6 +194,7 @@ void WiiSaveWriter::writeImage(WiiImage* image)
 
 void WiiSaveWriter::writeCerts(atUint32 filesSize, atUint32 ngId, atUint8* ngPriv, atUint8* ngSig, atUint32 ngKeyId)
 {
+#if 0
     atUint8  sig[0x40];
     atUint8  ngCert[0x180];
     atUint8  apCert[0x180];
@@ -245,6 +246,7 @@ void WiiSaveWriter::writeCerts(atUint32 filesSize, atUint32 ngId, atUint8* ngPri
     base::writeBytes((atInt8*)sig, 0x40);
     base::writeBytes((atInt8*)ngCert, 0x180);
     base::writeBytes((atInt8*)apCert, 0x180);
+#endif
 }
 
 } // io

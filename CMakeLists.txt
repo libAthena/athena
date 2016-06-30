@@ -100,8 +100,8 @@ add_library(athena-wiisave EXCLUDE_FROM_ALL
     src/athena/WiiSave.cpp
     src/athena/WiiSaveReader.cpp
     src/athena/WiiSaveWriter.cpp
-    src/bn.cpp
-    src/ec.cpp
+#    src/bn.cpp
+#    src/ec.cpp
     src/md5.cpp
     src/sha1.cpp
     src/aes.cpp
@@ -113,8 +113,8 @@ add_library(athena-wiisave EXCLUDE_FROM_ALL
     include/athena/WiiSaveReader.hpp
     include/athena/WiiSaveWriter.hpp
     include/aes.hpp
-    include/bn.h
-    include/ec.h
+#    include/bn.h
+#    include/ec.h
     include/md5.h
     include/sha1.h
 )
