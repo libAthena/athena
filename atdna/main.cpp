@@ -2372,6 +2372,9 @@ int main(int argc, const char** argv)
                                      "-fsyntax-only",
                                      "-std=c++14",
                                      "-D__atdna__=1",
+#if _WIN32
+                                     "-D__is_assignable(a,b)=false", /* HACK HACKITY HACK HACK: Microsoft, play nice with the other kids*/
+#endif
                                      "-I" XSTR(INSTALL_PREFIX) "/lib/clang/" CLANG_VERSION_STRING "/include",
                                      "-I" XSTR(INSTALL_PREFIX) "/include/Athena"};
     for (int a=1 ; a<argc ; ++a)
