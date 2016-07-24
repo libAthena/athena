@@ -215,7 +215,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                 hasWrite = true;
                         }
                         if (hasRead && hasWrite)
-                            baseDNA = rDecl->getName();
+                            baseDNA = rDecl->getQualifiedNameAsString();
                         return true;
                     }
                 }
