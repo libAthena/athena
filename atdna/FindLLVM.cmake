@@ -33,7 +33,8 @@ if(WIN32)
 get_filename_component(LLVM_ROOT_DIR [HKEY_LOCAL_MACHINE\\Software\\LLVM\\LLVM] ABSOLUTE)
 endif()
 
-set(llvm_config_names llvm-config-3.7 llvm-config37
+set(llvm_config_names llvm-config-3.8 llvm-config38
+                      llvm-config-3.7 llvm-config37
                       llvm-config-3.6 llvm-config36
                       llvm-config-3.5 llvm-config35
                       llvm-config-3.4 llvm-config34
@@ -144,7 +145,7 @@ else()
         )
         file(TO_CMAKE_PATH "${tmplibs}" tmplibs)
         string(REGEX REPLACE "([$^.[|*+?()]|])" "\\\\\\1" pattern "${prefix}/")
-        string(REGEX MATCHALL "${pattern}[^ ]+" LLVM_${var} ${tmplibs})
+        string(REGEX MATCHALL "${pattern}[^ ]+" "LLVM_${var}" "${tmplibs}")
     endmacro()
 
     llvm_set(VERSION_STRING version)
