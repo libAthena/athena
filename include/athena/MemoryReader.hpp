@@ -31,7 +31,7 @@ public:
      *   \param length The length of the existing buffer
      *   \param takeOwnership Memory will be freed with the reader if set
      */
-    MemoryReader(const void* data, atUint64 length, bool takeOwnership=false);
+    MemoryReader(const void* data, atUint64 length, bool takeOwnership=false, bool globalErr=true);
 
     /*! \brief Sets the buffers position relative to the specified position.<br />
      *         It seeks relative to the current position by default.
@@ -89,6 +89,7 @@ protected:
     atUint64         m_length = 0;
     atUint64         m_position = 0;
     bool             m_owns = false;
+    bool             m_globalErr = true;
 };
 
 class MemoryCopyReader : public MemoryReader

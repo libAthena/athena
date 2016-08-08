@@ -14,22 +14,25 @@ namespace athena
 {
 namespace io
 {
-MemoryReader::MemoryReader(const void* data, atUint64 length, bool takeOwnership)
+MemoryReader::MemoryReader(const void* data, atUint64 length, bool takeOwnership, bool globalErr)
     : m_data(data),
       m_length(length),
       m_position(0),
-      m_owns(takeOwnership)
+      m_owns(takeOwnership),
+      m_globalErr(globalErr)
 {
     if (!data)
     {
-        atError("data cannot be NULL");
+        if (m_globalErr)
+            atError("data cannot be NULL");
         setError();
         return;
     }
 
     if (length == 0)
     {
-        atError("length cannot be 0");
+        if (m_globalErr)
+            atError("length cannot be 0");
         setError();
         return;
     }
@@ -46,14 +49,16 @@ MemoryCopyReader::MemoryCopyReader(const void* data, atUint64 length)
 {
     if (!data)
     {
-        atError("data cannot be NULL");
+        if (m_globalErr)
+            atError("data cannot be NULL");
         setError();
         return;
     }
 
     if (length == 0)
     {
-        atError("length cannot be 0");
+        if (m_globalErr)
+            atError("length cannot be 0");
         setError();
         return;
     }
@@ -70,7 +75,8 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin)
         case SeekOrigin::Begin:
             if ((position < 0 || (atInt64)position > (atInt64)m_length))
             {
-                atError("Position %0.8X outside stream bounds ", position);
+                if (m_globalErr)
+                    atError("Position %0.8X outside stream bounds ", position);
                 setError();
                 return;
             }
@@ -81,7 +87,8 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin)
         case SeekOrigin::Current:
             if ((((atInt64)m_position + position) < 0 || (m_position + position) > m_length))
             {
-                atError("Position %0.8X outside stream bounds ", position);
+                if (m_globalErr)
+                    atError("Position %0.8X outside stream bounds ", position);
                 setError();
                 return;
             }
@@ -92,7 +99,8 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin)
         case SeekOrigin::End:
             if ((((atInt64)m_length - position < 0) || (m_length - position) > m_length))
             {
-                atError("Position %0.8X outside stream bounds ", position);
+                if (m_globalErr)
+                    atError("Position %0.8X outside stream bounds ", position);
                 setError();
                 return;
             }
@@ -133,7 +141,8 @@ atUint64 MemoryReader::readUBytesToBuf(void* buf, atUint64 length)
 {
     if (m_position + length > m_length)
     {
-        atError("Position %0.8X outside stream bounds ", m_position);
+        if (m_globalErr)
+            atError("Position %0.8X outside stream bounds ", m_position);
         setError();
         return 0;
     }
@@ -151,7 +160,8 @@ void MemoryCopyReader::loadData()
 
     if (!in)
     {
-        atError("Unable to open file '%s'", m_filepath.c_str());
+        if (m_globalErr)
+            atError("Unable to open file '%s'", m_filepath.c_str());
         setError();
         return;
     }
@@ -174,7 +184,8 @@ void MemoryCopyReader::loadData()
 
         if (ret < 0)
         {
-            atError("Error reading data from disk");
+            if (m_globalErr)
+                atError("Error reading data from disk");
             setError();
             return;
         }
