@@ -499,7 +499,7 @@ class YAMLDocReader
     std::vector<YAMLNode*> m_subStack;
     std::vector<int> m_seqTrackerStack;
     yaml_parser_t m_parser;
-    std::unique_ptr<YAMLNode> ParseEvents();
+    std::unique_ptr<YAMLNode> ParseEvents(athena::io::IStreamReader* reader);
 
 public:
     YAMLDocReader()
@@ -523,9 +523,9 @@ public:
     }
 
     yaml_parser_t* getParser() {return &m_parser;}
-    bool parse()
+    bool parse(athena::io::IStreamReader* reader)
     {
-        std::unique_ptr<YAMLNode> newRoot = ParseEvents();
+        std::unique_ptr<YAMLNode> newRoot = ParseEvents(reader);
         if (!newRoot)
             return false;
         m_rootNode = std::move(newRoot);
@@ -851,33 +851,7 @@ public:
 
     yaml_emitter_t* getEmitter() {return &m_emitter;}
 
-    bool finish()
-    {
-        yaml_event_t event = {};
-
-        if (!yaml_emitter_open(&m_emitter))
-            goto err;
-
-        event.type = YAML_DOCUMENT_START_EVENT;
-        event.data.document_start.implicit = true;
-        if (!yaml_emitter_emit(&m_emitter, &event))
-            goto err;
-        if (!RecursiveFinish(&m_emitter, m_rootNode))
-            return false;
-        event.type = YAML_DOCUMENT_END_EVENT;
-        event.data.document_end.implicit = true;
-        if (!yaml_emitter_emit(&m_emitter, &event))
-            goto err;
-
-        if (!yaml_emitter_close(&m_emitter) ||
-            !yaml_emitter_flush(&m_emitter))
-            goto err;
-
-        return true;
-    err:
-        HandleYAMLEmitterError(&m_emitter);
-        return false;
-    }
+    bool finish(athena::io::IStreamWriter* fout);
 
     inline YAMLNode* getCurNode() const {return m_subStack.empty() ? nullptr : m_subStack.back();}
 
@@ -1134,6 +1108,12 @@ public:
     }
 };
 
+int YAMLAthenaReader(athena::io::IStreamReader* reader,
+                     unsigned char* buffer, size_t size, size_t* size_read);
+
+int YAMLAthenaWriter(athena::io::IStreamWriter* writer,
+                     unsigned char *buffer, size_t size);
+
 /* forward-declaration dance for recursively-derived types */
 
 template <size_t sizeVar, Endian VE>
@@ -1182,7 +1162,7 @@ struct DNAYaml : DNA<DNAE>
         yaml_emitter_set_width(docWriter.getEmitter(), -1);
 
         write(docWriter);
-        if (!docWriter.finish())
+        if (!docWriter.finish(nullptr))
             return std::string();
 
         return res;
@@ -1193,7 +1173,7 @@ struct DNAYaml : DNA<DNAE>
         YAMLStdStringReaderState reader(str);
         YAMLDocReader docReader;
         yaml_parser_set_input(docReader.getParser(), (yaml_read_handler_t*)YAMLStdStringReader, &reader);
-        if (!docReader.parse())
+        if (!docReader.parse(nullptr))
             return false;
         read(docReader);
         return true;
@@ -1209,46 +1189,38 @@ struct DNAYaml : DNA<DNAE>
         return retval;
     }
 
-    bool toYAMLFile(FILE* fout) const
+    bool toYAMLStream(athena::io::IStreamWriter& fout) const
     {
         YAMLDocWriter docWriter(DNATypeV());
 
-        yaml_emitter_set_output_file(docWriter.getEmitter(), fout);
         yaml_emitter_set_unicode(docWriter.getEmitter(), true);
         yaml_emitter_set_width(docWriter.getEmitter(), -1);
 
         write(docWriter);
-        if (!docWriter.finish())
+        if (!docWriter.finish(&fout))
             return false;
 
         return true;
     }
 
-    bool fromYAMLFile(FILE* fin)
+    bool fromYAMLStream(athena::io::IStreamReader& fin)
     {
         YAMLDocReader docReader;
-        yaml_parser_set_input_file(docReader.getParser(), fin);
-        if (!docReader.parse())
+        if (!docReader.parse(&fin))
             return false;
         read(docReader);
         return true;
     }
 
     template<class DNASubtype>
-    static bool ValidateFromYAMLFile(FILE* fin)
+    static bool ValidateFromYAMLStream(athena::io::IStreamReader& fin)
     {
         YAMLDocReader reader;
-        long pos = ftell(fin);
-        yaml_parser_set_input_file(reader.getParser(), fin);
+        atUint64 pos = fin.position();
+        yaml_parser_set_input(reader.getParser(), (yaml_read_handler_t*)YAMLAthenaReader, &fin);
         bool retval = reader.ValidateClassType(DNASubtype::DNAType());
-        fseek(fin, pos, SEEK_SET);
+        fin.seek(pos, athena::Begin);
         return retval;
-    }
-
-    template<class DNASubtype>
-    static bool ValidateFromYAMLFile(athena::io::FileReader& fin)
-    {
-        return ValidateFromYAMLFile<DNASubtype>(fin._fileHandle());
     }
 };
 

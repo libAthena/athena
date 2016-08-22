@@ -66,6 +66,50 @@ int YAMLStdStringWriter(std::string* str, unsigned char *buffer, size_t size)
     return 1;
 }
 
+int YAMLAthenaReader(athena::io::IStreamReader* reader,
+                     unsigned char* buffer, size_t size, size_t* size_read)
+{
+    *size_read = reader->readUBytesToBuf(buffer, size);
+    return 1;
+}
+
+int YAMLAthenaWriter(athena::io::IStreamWriter* writer,
+                     unsigned char *buffer, size_t size)
+{
+    writer->writeUBytes(buffer, size);
+    return 1;
+}
+
+bool YAMLDocWriter::finish(athena::io::IStreamWriter* fout)
+{
+    yaml_event_t event = {};
+
+    if (fout)
+        yaml_emitter_set_output(&m_emitter, (yaml_write_handler_t*)YAMLAthenaWriter, fout);
+    if (!yaml_emitter_open(&m_emitter))
+        goto err;
+
+    event.type = YAML_DOCUMENT_START_EVENT;
+    event.data.document_start.implicit = true;
+    if (!yaml_emitter_emit(&m_emitter, &event))
+        goto err;
+    if (!RecursiveFinish(&m_emitter, m_rootNode))
+        return false;
+    event.type = YAML_DOCUMENT_END_EVENT;
+    event.data.document_end.implicit = true;
+    if (!yaml_emitter_emit(&m_emitter, &event))
+        goto err;
+
+    if (!yaml_emitter_close(&m_emitter) ||
+        !yaml_emitter_flush(&m_emitter))
+        goto err;
+
+    return true;
+err:
+    HandleYAMLEmitterError(&m_emitter);
+    return false;
+}
+
 static inline void InsertNode(std::vector<YAMLNode*>& nodeStack,
                               std::unique_ptr<YAMLNode>& mapKey,
                               std::unique_ptr<YAMLNode>& retVal,
@@ -93,9 +137,11 @@ static inline void InsertNode(std::vector<YAMLNode*>& nodeStack,
     }
 }
 
-std::unique_ptr<YAMLNode> YAMLDocReader::ParseEvents()
+std::unique_ptr<YAMLNode> YAMLDocReader::ParseEvents(athena::io::IStreamReader* reader)
 {
     yaml_event_t event;
+    if (reader)
+        yaml_parser_set_input(&m_parser, (yaml_read_handler_t*)YAMLAthenaReader, reader);
     if (!yaml_parser_parse(&m_parser, &event))
     {
         HandleYAMLParserError(&m_parser);
