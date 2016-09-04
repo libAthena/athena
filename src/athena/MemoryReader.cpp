@@ -76,7 +76,8 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin)
             if ((position < 0 || (atInt64)position > (atInt64)m_length))
             {
                 if (m_globalErr)
-                    atError("Position %0.8X outside stream bounds ", position);
+                    atFatal("Position %0.8X outside stream bounds ", position);
+                m_position = m_length;
                 setError();
                 return;
             }
@@ -88,7 +89,8 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin)
             if ((((atInt64)m_position + position) < 0 || (m_position + position) > m_length))
             {
                 if (m_globalErr)
-                    atError("Position %0.8X outside stream bounds ", position);
+                    atFatal("Position %0.8X outside stream bounds ", position);
+                m_position = m_length;
                 setError();
                 return;
             }
@@ -100,7 +102,8 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin)
             if ((((atInt64)m_length - position < 0) || (m_length - position) > m_length))
             {
                 if (m_globalErr)
-                    atError("Position %0.8X outside stream bounds ", position);
+                    atFatal("Position %0.8X outside stream bounds ", position);
+                m_position = m_length;
                 setError();
                 return;
             }
@@ -142,7 +145,8 @@ atUint64 MemoryReader::readUBytesToBuf(void* buf, atUint64 length)
     if (m_position + length > m_length)
     {
         if (m_globalErr)
-            atError("Position %0.8X outside stream bounds ", m_position);
+            atFatal("Position %0.8X outside stream bounds ", m_position);
+        m_position = m_length;
         setError();
         return 0;
     }
