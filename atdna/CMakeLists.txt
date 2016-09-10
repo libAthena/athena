@@ -44,12 +44,14 @@ set(CLANG_INCLUDE_DIR ${LLVM_LIBRARY_DIRS}/clang/${LLVM_VERSION_BASE}/include
     CACHE PATH "Clang include dir" FORCE)
 
 if(UNIX)
-list(APPEND PLAT_LIBS z pthread curses)
-if (APPLE)
+  list(APPEND PLAT_LIBS z pthread curses)
+  if (APPLE)
     list(APPEND PLAT_LIBS dl)
-elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     list(APPEND PLAT_LIBS dl)
-endif()
+  endif()
+elseif(WIN32)
+    list(APPEND PLAT_LIBS Mincore)
 endif()
 
 # Offer the user the choice of overriding the installation directories
@@ -83,7 +85,7 @@ include_directories(${LLVM_INCLUDE_DIRS})
 link_directories(${LLVM_LIBRARY_DIRS})
 add_executable(atdna main.cpp test.hpp ${PLAT_SRCS})
 target_link_libraries(atdna ${LLVM_LIBS} ${PLAT_LIBS})
-set_source_files_properties(main.cpp PROPERTIES COMPILE_DEFINITIONS 
+set_source_files_properties(main.cpp PROPERTIES COMPILE_DEFINITIONS
                             "INSTALL_PREFIX=${ABS_INSTALL_BIN_DIR};__STDC_LIMIT_MACROS=1;__STDC_CONSTANT_MACROS=1")
 if(MSVC)
 set_target_properties(atdna PROPERTIES
@@ -133,7 +135,7 @@ install(EXPORT atdnaTargets DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT atdna)
 #########
 
 enable_testing()
-add_test(NAME test-dna COMMAND $<TARGET_FILE:atdna> -o test.cpp 
+add_test(NAME test-dna COMMAND $<TARGET_FILE:atdna> -o test.cpp
          "-I${ATHENA_INCLUDE_DIR}" -isystem "${CLANG_INCLUDE_DIR}"
          ${CMAKE_SOURCE_DIR}/test.hpp)
 
@@ -185,7 +187,7 @@ macro(atdna out)
   endif()
 
   # Make target
-  add_custom_command(OUTPUT ${out} COMMAND $<TARGET_FILE:atdna> 
+  add_custom_command(OUTPUT ${out} COMMAND $<TARGET_FILE:atdna>
                      ARGS ${extraargs} -o ${out} ${cdefcli} ${inccli} "-I${ATHENA_INCLUDE_DIR}"
                      -isystem "${CLANG_INCLUDE_DIR}" ${ins}
                      DEPENDS ${ins} COMMENT "Generating DNA ${out}")

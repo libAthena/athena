@@ -33,7 +33,8 @@ if(WIN32)
 get_filename_component(LLVM_ROOT_DIR [HKEY_LOCAL_MACHINE\\Software\\LLVM\\LLVM] ABSOLUTE)
 endif()
 
-set(llvm_config_names llvm-config-3.8 llvm-config38
+set(llvm_config_names llvm-config-3.9 llvm-config39
+                      llvm-config-3.8 llvm-config38
                       llvm-config-3.7 llvm-config37
                       llvm-config-3.6 llvm-config36
                       llvm-config-3.5 llvm-config35
@@ -54,7 +55,9 @@ if ((WIN32 AND NOT(MINGW OR CYGWIN)) OR NOT LLVM_CONFIG)
             message(FATAL_ERROR "LLVM_ROOT_DIR (${LLVM_ROOT_DIR}) is not a valid LLVM install")
         endif()
         # We incorporate the CMake features provided by LLVM:
-        set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${LLVM_ROOT_DIR}/share/llvm/cmake")
+        set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
+            "${LLVM_ROOT_DIR}/share/llvm/cmake"
+            "${LLVM_ROOT_DIR}/lib/cmake/llvm")
         include(LLVMConfig)
         # Set properties
         set(LLVM_HOST_TARGET ${TARGET_TRIPLE})

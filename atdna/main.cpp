@@ -2323,22 +2323,22 @@ public:
 
 class ATDNAConsumer : public clang::ASTConsumer
 {
+    std::unique_ptr<StreamOut> fileOut;
     ATDNAEmitVisitor emitVisitor;
-    StreamOut& fileOut;
 public:
-    explicit ATDNAConsumer(clang::ASTContext& context, StreamOut& fo)
-    : emitVisitor(context, fo),
-      fileOut(fo) {}
+    explicit ATDNAConsumer(clang::ASTContext& context, std::unique_ptr<StreamOut>&& fo)
+    : fileOut(std::move(fo)),
+      emitVisitor(context, *fileOut) {}
     void HandleTranslationUnit(clang::ASTContext& context)
     {
         /* Write file head */
-        fileOut << "/* Auto generated atdna implementation */\n"
-                   "#include <athena/Global.hpp>\n"
-                   "#include <athena/IStreamReader.hpp>\n"
-                   "#include <athena/IStreamWriter.hpp>\n\n";
+        *fileOut << "/* Auto generated atdna implementation */\n"
+                    "#include <athena/Global.hpp>\n"
+                    "#include <athena/IStreamReader.hpp>\n"
+                    "#include <athena/IStreamWriter.hpp>\n\n";
         for (const std::string& inputf : InputFilenames)
-            fileOut << "#include \"" << inputf << "\"\n";
-        fileOut << "\n";
+            *fileOut << "#include \"" << inputf << "\"\n";
+        *fileOut << "\n";
 
         /* Emit file */
         emitVisitor.TraverseDecl(context.getTranslationUnitDecl());
@@ -2352,13 +2352,20 @@ public:
     std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(clang::CompilerInstance& compiler,
                                                           llvm::StringRef /*filename*/)
     {
-        StreamOut* fileout;
+        std::unique_ptr<StreamOut> fileout;
+#if LLVM_VERSION_MAJOR > 3 || (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 9)
         if (OutputFilename.size())
             fileout = compiler.createOutputFile(OutputFilename, false, true, "", "", true);
         else
             fileout = compiler.createDefaultOutputFile(false, "a", "cpp");
+#else
+        if (OutputFilename.size())
+            fileout.reset(compiler.createOutputFile(OutputFilename, false, true, "", "", true));
+        else
+            fileout.reset(compiler.createDefaultOutputFile(false, "a", "cpp"));
+#endif
         AthenaError = compiler.getASTContext().getDiagnostics().getCustomDiagID(clang::DiagnosticsEngine::Error, "Athena error: %0");
-        return std::unique_ptr<clang::ASTConsumer>(new ATDNAConsumer(compiler.getASTContext(), *fileout));
+        return std::unique_ptr<clang::ASTConsumer>(new ATDNAConsumer(compiler.getASTContext(), std::move(fileout)));
     }
 };
 
@@ -2372,9 +2379,6 @@ int main(int argc, const char** argv)
                                      "-fsyntax-only",
                                      "-std=c++14",
                                      "-D__atdna__=1",
-#if _WIN32
-                                     "-D__is_assignable(a,b)=false", /* HACK HACKITY HACK HACK: Microsoft, play nice with the other kids*/
-#endif
                                      "-I" XSTR(INSTALL_PREFIX) "/lib/clang/" CLANG_VERSION_STRING "/include",
                                      "-I" XSTR(INSTALL_PREFIX) "/include/Athena"};
     for (int a=1 ; a<argc ; ++a)
