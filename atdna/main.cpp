@@ -2324,21 +2324,24 @@ public:
 class ATDNAConsumer : public clang::ASTConsumer
 {
     std::unique_ptr<StreamOut> fileOut;
+    StreamOut& fileOutOld;
     ATDNAEmitVisitor emitVisitor;
 public:
-    explicit ATDNAConsumer(clang::ASTContext& context, std::unique_ptr<StreamOut>&& fo)
+    explicit ATDNAConsumer(clang::ASTContext& context, std::unique_ptr<StreamOut>&& fo, StreamOut* foOld)
     : fileOut(std::move(fo)),
-      emitVisitor(context, *fileOut) {}
+      fileOutOld(*foOld),
+      emitVisitor(context, *foOld) {}
+
     void HandleTranslationUnit(clang::ASTContext& context)
     {
         /* Write file head */
-        *fileOut << "/* Auto generated atdna implementation */\n"
-                    "#include <athena/Global.hpp>\n"
-                    "#include <athena/IStreamReader.hpp>\n"
-                    "#include <athena/IStreamWriter.hpp>\n\n";
+        fileOutOld << "/* Auto generated atdna implementation */\n"
+                      "#include <athena/Global.hpp>\n"
+                      "#include <athena/IStreamReader.hpp>\n"
+                      "#include <athena/IStreamWriter.hpp>\n\n";
         for (const std::string& inputf : InputFilenames)
-            *fileOut << "#include \"" << inputf << "\"\n";
-        *fileOut << "\n";
+            fileOutOld << "#include \"" << inputf << "\"\n";
+        fileOutOld << "\n";
 
         /* Emit file */
         emitVisitor.TraverseDecl(context.getTranslationUnitDecl());
@@ -2347,25 +2350,33 @@ public:
 
 class ATDNAAction : public clang::ASTFrontendAction
 {
+    /* Used by LLVM 3.9+; client owns stream */
+    std::unique_ptr<StreamOut> MakeStreamOut(std::unique_ptr<StreamOut>&& so, StreamOut*& outPtr)
+    {
+        outPtr = so.get();
+        return std::move(so);
+    }
+
+    /* Used by previous versions of LLVM; CompilerInstance owns stream */
+    std::unique_ptr<StreamOut> MakeStreamOut(StreamOut* so, StreamOut*& outPtr)
+    {
+        outPtr = so;
+        return {};
+    }
+
 public:
     explicit ATDNAAction() {}
     std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(clang::CompilerInstance& compiler,
                                                           llvm::StringRef /*filename*/)
     {
         std::unique_ptr<StreamOut> fileout;
-#if LLVM_VERSION_MAJOR > 3 || (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 9)
+        StreamOut* fileoutOld;
         if (OutputFilename.size())
-            fileout = compiler.createOutputFile(OutputFilename, false, true, "", "", true);
+            fileout = MakeStreamOut(compiler.createOutputFile(OutputFilename, false, true, "", "", true), fileoutOld);
         else
-            fileout = compiler.createDefaultOutputFile(false, "a", "cpp");
-#else
-        if (OutputFilename.size())
-            fileout.reset(compiler.createOutputFile(OutputFilename, false, true, "", "", true));
-        else
-            fileout.reset(compiler.createDefaultOutputFile(false, "a", "cpp"));
-#endif
+            fileout = MakeStreamOut(compiler.createDefaultOutputFile(false, "a", "cpp"), fileoutOld);
         AthenaError = compiler.getASTContext().getDiagnostics().getCustomDiagID(clang::DiagnosticsEngine::Error, "Athena error: %0");
-        return std::unique_ptr<clang::ASTConsumer>(new ATDNAConsumer(compiler.getASTContext(), std::move(fileout)));
+        return std::unique_ptr<clang::ASTConsumer>(new ATDNAConsumer(compiler.getASTContext(), std::move(fileout), fileoutOld));
     }
 };
 
