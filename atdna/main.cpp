@@ -2379,6 +2379,7 @@ int main(int argc, const char** argv)
                                      "-fsyntax-only",
                                      "-std=c++14",
                                      "-D__atdna__=1",
+                                     "-Wno-expansion-to-defined",
                                      "-I" XSTR(INSTALL_PREFIX) "/lib/clang/" CLANG_VERSION_STRING "/include",
                                      "-I" XSTR(INSTALL_PREFIX) "/include/Athena"};
     for (int a=1 ; a<argc ; ++a)
