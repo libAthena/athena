@@ -20,35 +20,6 @@ class IStreamReader : public IStream
 public:
     virtual ~IStreamReader() {}
 
-    /** @brief Sets the Endianness of the stream
-     *
-     *  @param endian The Endianness to set
-     */
-    inline void setEndian(Endian endian)
-    {m_endian = endian;}
-
-    /** @brief Returns the current Endianness of the stream
-     *
-     *  @return The current Stream Endianness
-     */
-    inline Endian endian() const
-    {return m_endian;}
-
-    /** @brief Returns whether the stream is BigEndian
-     *
-     *  @return bool True for BigEndian; False for LittleEndian
-     */
-    inline bool isBigEndian()   const
-    {return (m_endian == Endian::BigEndian);}
-
-    /** @brief Returns whether the stream is LittleEndian
-     *
-     *  @return True for LittleEndian; False for BigEndian
-     */
-    inline bool isLittleEndian()const
-    {return (m_endian == Endian::LittleEndian);}
-
-
     /** @brief Sets the buffers position relative to the specified position.<br />
      *         It seeks relative to the current position by default.
      *  @param position where in the buffer to seek
@@ -1255,9 +1226,6 @@ public:
             readf(*this, vector.back());
         }
     }
-
-protected:
-    Endian      m_endian;
 };
 template <typename T>
 IStreamReader& operator>>(IStreamReader& lhs, T& rhs)
