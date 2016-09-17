@@ -1,0 +1,25 @@
+var classathena_1_1_sakura_1_1_sprite_part =
+[
+    [ "SpritePart", "classathena_1_1_sakura_1_1_sprite_part.html#aae8aeee2d1f4c2572c43ee8843e96761", null ],
+    [ "SpritePart", "classathena_1_1_sakura_1_1_sprite_part.html#af47d08f9a28e46630f896011756b3539", null ],
+    [ "~SpritePart", "classathena_1_1_sakura_1_1_sprite_part.html#a0ca3f70a9f03c7ded2b7c294fea7e029", null ],
+    [ "flippedHorizontally", "classathena_1_1_sakura_1_1_sprite_part.html#a87f33f9468d39a51b77013f745a25178", null ],
+    [ "flippedVertically", "classathena_1_1_sakura_1_1_sprite_part.html#a53c92bc1f07572d64ef9f66fbfbded16", null ],
+    [ "hasCollision", "classathena_1_1_sakura_1_1_sprite_part.html#a817e1acf563cc338ee0f60baa237e92f", null ],
+    [ "name", "classathena_1_1_sakura_1_1_sprite_part.html#a1aecf29f0580e3da3da8b3bae59d0016", null ],
+    [ "offset", "classathena_1_1_sakura_1_1_sprite_part.html#ac5d112f5eda18b864549d82cfdf974e3", null ],
+    [ "root", "classathena_1_1_sakura_1_1_sprite_part.html#a1058b0f383b4b8d147e99a2a51e2737d", null ],
+    [ "setCollision", "classathena_1_1_sakura_1_1_sprite_part.html#a77078ab5a47236428a4b3b2b974cd3ed", null ],
+    [ "setFlippedHorizontally", "classathena_1_1_sakura_1_1_sprite_part.html#a3301b295005ed13fc04b39dafa991b1b", null ],
+    [ "setFlippedVertically", "classathena_1_1_sakura_1_1_sprite_part.html#ab27b2cf5ebd4bd938044908e2ae26992", null ],
+    [ "setName", "classathena_1_1_sakura_1_1_sprite_part.html#a092fe469c64faaca8d681dbb0e1605e1", null ],
+    [ "setOffset", "classathena_1_1_sakura_1_1_sprite_part.html#a5a7e5441c5153bfac18c9150f25c65ee", null ],
+    [ "setOffset", "classathena_1_1_sakura_1_1_sprite_part.html#a0fb20b02543da163b93f74ce1c4fa55d", null ],
+    [ "setRoot", "classathena_1_1_sakura_1_1_sprite_part.html#aad2812b60a0f800732bbf5e680f2ef1a", null ],
+    [ "setSize", "classathena_1_1_sakura_1_1_sprite_part.html#a63047d80f455343331c0baba6853c6b8", null ],
+    [ "setSize", "classathena_1_1_sakura_1_1_sprite_part.html#aeff632c489d935bbf30e12e26737ab04", null ],
+    [ "setTextureOffset", "classathena_1_1_sakura_1_1_sprite_part.html#a75e2c3a799d021f6acdac5dcc130e4c3", null ],
+    [ "setTextureOffset", "classathena_1_1_sakura_1_1_sprite_part.html#ab82a8bf5bc928b9f094abf700b0ba688", null ],
+    [ "size", "classathena_1_1_sakura_1_1_sprite_part.html#a2dd0a9f89bd58b3bef807f362fe39792", null ],
+    [ "textureOffset", "classathena_1_1_sakura_1_1_sprite_part.html#a996b7d2026605d0fc10a8f783ed30235", null ]
+];

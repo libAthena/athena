@@ -1,4 +1,0 @@
-<map id="Athena::ZQuestFile" name="Athena::ZQuestFile">
-<area shape="rect" id="node2" href="$class_athena_1_1_m_c_slot.html" title="{Athena::MCSlot\n||+ MCSlot()\l}" alt="" coords="5,512,128,589"/>
-<area shape="rect" id="node3" href="$class_athena_1_1_skyward_sword_quest.html" title="{Athena::SkywardSwordQuest\n||+ SkywardSwordQuest()\l+ setPlayerName()\l+ playerName()\l+ setRupeeCount()\l+ rupeeCount()\l+ setAmmoCount()\l+ ammoCount()\l+ setMaxHP()\l+ maxHP()\l+ maxHearts()\land 16 more...\l}" alt="" coords="153,439,365,663"/>
-</map>

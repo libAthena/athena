@@ -1,0 +1,4 @@
+<map id="athena::io::MemoryReader::setData" name="athena::io::MemoryReader::setData">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_memory_reader.html#a2f0f0efc43af6000fc68f16db258e50c" title="Returns whether or not the stream is at the end. " alt="" coords="263,5,457,47"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_memory_copy_reader.html#a0789f11bb0033bc9eaa3fec24b6b3768" title="This constructor creates an instance from a file on disk. " alt="" coords="247,71,473,112"/>
+</map>

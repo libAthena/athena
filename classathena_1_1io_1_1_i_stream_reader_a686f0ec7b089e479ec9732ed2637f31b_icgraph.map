@@ -1,0 +1,6 @@
+<map id="athena::io::IStreamReader::readByte" name="athena::io::IStreamReader::readByte">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_reader.html#ade572d05e65dfeafadf1d746d357cdb2" title="Reads a byte at the current position and advances the current position. " alt="" coords="244,5,435,47"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_i_stream_reader.html#a525eeaf5c6571b4067a35ab951a66703" title="Reads a string and advances the position in the file. " alt="" coords="244,71,435,112"/>
+<area shape="rect" id="node4" href="$structathena_1_1io_1_1_string.html#a444b2b154084e3e7e12d4b300670a3e9" title="Common virtual read function for all DNA types. " alt="" coords="498,37,631,79"/>
+<area shape="rect" id="node5" href="$structathena_1_1io_1_1_string_yaml.html#ad092367c1272a03b0fa0ec6369f637dc" title="Common virtual read function for all DNA types. " alt="" coords="483,103,647,144"/>
+</map>

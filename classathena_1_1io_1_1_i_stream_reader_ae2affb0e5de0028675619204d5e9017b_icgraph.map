@@ -1,0 +1,3 @@
+<map id="athena::io::IStreamReader::readInt32" name="athena::io::IStreamReader::readInt32">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_reader.html#ac5492c49ca81ea9edaab28f55cf62ad1" title="Reads a Uint32 and swaps to endianness specified by setEndian depending on platform and advances the ..." alt="" coords="244,5,435,47"/>
+</map>

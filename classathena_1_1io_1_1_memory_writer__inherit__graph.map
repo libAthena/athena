@@ -1,0 +1,11 @@
+<map id="athena::io::MemoryWriter" name="athena::io::MemoryWriter">
+<area shape="rect" id="node4" href="$classathena_1_1io_1_1_memory_copy_writer.html" title="{athena::io::MemoryCopyWriter\n|# m_dataCopy\l|+ MemoryCopyWriter()\l+ MemoryCopyWriter()\l+ seek()\l+ setData()\l+ writeUBytes()\l}" alt="" coords="529,939,749,1075"/>
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_writer.html" title="{athena::io::IStreamWriter\n||+ ~IStreamWriter()\l+ seek()\l+ seekAlign32()\l+ atEnd()\l+ position()\l+ length()\l+ writeUByte()\l+ writeVal()\l+ writeValLittle()\l+ writeValBig()\land 111 more...\l}" alt="" coords="546,307,731,531"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_i_stream.html" title="{athena::io::IStream\n|# m_hasError\l# m_endian\l|+ IStream()\l+ ~IStream()\l+ setEndian()\l+ endian()\l+ isBigEndian()\l+ isLittleEndian()\l+ seek()\l+ atEnd()\l+ position()\l+ length()\l+ hasError()\l# setError()\l}" alt="" coords="565,5,712,259"/>
+<area shape="rect" id="node5" href="$classathena_1_1io_1_1_a_l_t_t_p_file_writer.html" title="A Link to the Past save data writer class. " alt="" coords="5,1130,200,1237"/>
+<area shape="rect" id="node6" href="$classathena_1_1io_1_1_m_c_file_writer.html" title="The Minish Cap Save save data writer class. " alt="" coords="224,1123,400,1244"/>
+<area shape="rect" id="node7" href="$classathena_1_1io_1_1_skyward_sword_file_writer.html" title="{athena::io::SkywardSword\lFileWriter\n||+ SkywardSwordFileWriter()\l+ SkywardSwordFileWriter()\l+ write()\l}" alt="" coords="425,1123,629,1244"/>
+<area shape="rect" id="node8" href="$classathena_1_1io_1_1_sprite_file_writer.html" title="{athena::io::SpriteFileWriter\n||+ SpriteFileWriter()\l+ SpriteFileWriter()\l+ writeFile()\l}" alt="" coords="653,1130,848,1237"/>
+<area shape="rect" id="node9" href="$classathena_1_1io_1_1_wii_save_writer.html" title="Wii data.bin writer class. " alt="" coords="872,1137,1059,1229"/>
+<area shape="rect" id="node10" href="$classathena_1_1io_1_1_z_quest_file_writer.html" title="The ZQuestFileWriter class. " alt="" coords="1083,1130,1285,1237"/>
+</map>

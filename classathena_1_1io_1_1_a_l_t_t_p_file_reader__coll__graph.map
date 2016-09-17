@@ -1,0 +1,6 @@
+<map id="athena::io::ALTTPFileReader" name="athena::io::ALTTPFileReader">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_memory_copy_reader.html" title="{athena::io::MemoryCopyReader\n|# m_dataCopy\l# m_filepath\l|+ MemoryCopyReader()\l+ MemoryCopyReader()\l+ setData()\l# loadData()\l}" alt="" coords="5,880,232,1016"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_memory_reader.html" title="A Stream class for reading data from a memory position. " alt="" coords="22,579,215,832"/>
+<area shape="rect" id="node4" href="$classathena_1_1io_1_1_i_stream_reader.html" title="The IStreamReader class defines a basic API for reading from streams, Implementors are provided with ..." alt="" coords="23,307,214,531"/>
+<area shape="rect" id="node5" href="$classathena_1_1io_1_1_i_stream.html" title="{athena::io::IStream\n|# m_hasError\l# m_endian\l|+ IStream()\l+ ~IStream()\l+ setEndian()\l+ endian()\l+ isBigEndian()\l+ isLittleEndian()\l+ seek()\l+ atEnd()\l+ position()\l+ length()\l+ hasError()\l# setError()\l}" alt="" coords="45,5,192,259"/>
+</map>

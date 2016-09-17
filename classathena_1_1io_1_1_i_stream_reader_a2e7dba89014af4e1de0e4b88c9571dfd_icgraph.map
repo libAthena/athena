@@ -1,0 +1,9 @@
+<map id="athena::io::IStreamReader::readInt16" name="athena::io::IStreamReader::readInt16">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_reader.html#ab7e62052d98e338ae4ce297823436c98" title="Reads a Uint16 and swaps to endianness specified by setEndian depending on platform and advances the ..." alt="" coords="244,104,435,145"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_i_stream_reader.html#ac1e2c0114677d05fd2a79cc5f7fb35a7" title="Reads a wide&#45;char string (using endianness from setEndian), converts to UTF8 and advances the positio..." alt="" coords="483,71,673,112"/>
+<area shape="rect" id="node6" href="$classathena_1_1io_1_1_i_stream_reader.html#aebbd3a9f64e552d76a2392e2ae3fe9f8" title="Reads a wstring and advances the position in the file. " alt="" coords="483,136,673,177"/>
+<area shape="rect" id="node4" href="$structathena_1_1io_1_1_w_string_as_string.html#a7df789f2637078777affc17462be30b7" title="Common virtual read function for all DNA types. " alt="" coords="721,5,921,47"/>
+<area shape="rect" id="node5" href="$structathena_1_1io_1_1_w_string_as_string_yaml.html#a727430b87d311bb488ef8c17d36aacfa" title="Common virtual read function for all DNA types. " alt="" coords="721,71,921,112"/>
+<area shape="rect" id="node7" href="$structathena_1_1io_1_1_w_string.html#ab77da684bb6b3632608bc10471305333" title="Common virtual read function for all DNA types. " alt="" coords="748,136,895,177"/>
+<area shape="rect" id="node8" href="$structathena_1_1io_1_1_w_string_yaml.html#aa96163345ee4653222227c276e5b6328" title="Common virtual read function for all DNA types. " alt="" coords="733,201,910,243"/>
+</map>

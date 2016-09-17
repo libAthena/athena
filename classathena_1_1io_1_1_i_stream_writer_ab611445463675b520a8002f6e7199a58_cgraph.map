@@ -1,0 +1,4 @@
+<map id="athena::io::IStreamWriter::atEnd" name="athena::io::IStreamWriter::atEnd">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_writer.html#ad817da8d9fb4633f988a2cb1a90a3b77" title="Returns the current position in the stream. " alt="" coords="239,5,424,47"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_i_stream_writer.html#a083a0f5a8d7f3919bf3e5839cb265cbe" title="Returns whether or not the stream is at the end. " alt="" coords="239,71,424,112"/>
+</map>

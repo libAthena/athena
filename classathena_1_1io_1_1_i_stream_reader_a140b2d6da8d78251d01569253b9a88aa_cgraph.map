@@ -1,0 +1,3 @@
+<map id="athena::io::IStreamReader::readVec4d" name="athena::io::IStreamReader::readVec4d">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_reader.html#ad90233be645b52f421b1560d63cd07bd" title="Attempts to read a fixed length of data into a pre&#45;allocated buffer, this function is client defined ..." alt="" coords="244,5,435,47"/>
+</map>

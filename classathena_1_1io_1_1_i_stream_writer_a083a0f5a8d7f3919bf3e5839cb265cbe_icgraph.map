@@ -1,0 +1,4 @@
+<map id="athena::io::IStreamWriter::length" name="athena::io::IStreamWriter::length">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_writer.html#ab611445463675b520a8002f6e7199a58" title="Returns whether or not the stream is at the end. " alt="" coords="239,5,424,47"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_i_stream_writer.html#a8f16fc4fb358c95bea3ba7bb7880f3b0" title="Writes an wstring to the buffer and advances the buffer. " alt="" coords="239,71,424,112"/>
+</map>

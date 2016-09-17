@@ -1,0 +1,4 @@
+<map id="athena::io::IStreamWriter::writeByte" name="athena::io::IStreamWriter::writeByte">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_writer.html#ab4ec1727b753631de04ba00b6ff11e70" title="Writes a byte at the current position and advances the position by one byte. " alt="" coords="239,5,424,47"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_i_stream_writer.html#a643d08a3c8fd0d8774c44188663f8de4" title="Writes the given buffer with the specified length, buffers can be bigger than the length however it&#39;s..." alt="" coords="472,35,657,76"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="athena::io::IStreamReader::atEnd" name="athena::io::IStreamReader::atEnd">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_reader.html#ab02b8fd04541d1c87c6bafab84842463" title="Returns the current position in the stream. " alt="" coords="244,5,435,47"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_i_stream_reader.html#acab99b9b1dce30ab7993f3754e62280f" title="Returns the length of the file. " alt="" coords="244,71,435,112"/>
+</map>

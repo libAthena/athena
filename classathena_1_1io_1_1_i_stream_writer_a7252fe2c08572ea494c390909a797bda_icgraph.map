@@ -1,0 +1,3 @@
+<map id="athena::io::IStreamWriter::writeInt32" name="athena::io::IStreamWriter::writeInt32">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_writer.html#a97a89982f0dc086f7594fb9635c44228" title="Writes an Uint32 to the buffer and advances the buffer. It also swaps the bytes depending on the plat..." alt="" coords="239,5,424,47"/>
+</map>

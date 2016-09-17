@@ -1,0 +1,4 @@
+<map id="athena::io::IStreamReader::readUint16Big" name="athena::io::IStreamReader::readUint16Big">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_reader.html#a1f4b561c89ef8c4f1e75ae0a66fdd5ba" title="Reads a wide&#45;char string (against big&#45;endian), converts to UTF8 and advances the position in the file..." alt="" coords="244,5,435,47"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_i_stream_reader.html#afee5e6a8dcb4fc7c20d21e96369ed9a0" title="Reads a wstring assuming big&#45;endian characters and advances the position in the file. " alt="" coords="244,71,435,112"/>
+</map>

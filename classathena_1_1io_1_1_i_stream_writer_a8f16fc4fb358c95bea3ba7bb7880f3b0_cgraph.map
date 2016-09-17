@@ -1,0 +1,6 @@
+<map id="athena::io::IStreamWriter::writeWStringBig" name="athena::io::IStreamWriter::writeWStringBig">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_writer.html#a734667fa5a1b3b6bcd48db0a82f9b151" title="Writes an Uint16 to the buffer and advances the buffer. It also swaps the bytes against big depending..." alt="" coords="239,5,424,47"/>
+<area shape="rect" id="node4" href="$classathena_1_1io_1_1_i_stream_writer.html#a643d08a3c8fd0d8774c44188663f8de4" title="Writes the given buffer with the specified length, buffers can be bigger than the length however it&#39;s..." alt="" coords="705,35,891,76"/>
+<area shape="rect" id="node5" href="$classathena_1_1io_1_1_i_stream_writer.html#a083a0f5a8d7f3919bf3e5839cb265cbe" title="Returns whether or not the stream is at the end. " alt="" coords="239,123,424,164"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_i_stream_writer.html#a873ab4b37aed1c0675a45c03836325a1" title="Writes an Int16 to the buffer and advances the buffer. It also swaps the bytes against big depending ..." alt="" coords="472,5,657,47"/>
+</map>

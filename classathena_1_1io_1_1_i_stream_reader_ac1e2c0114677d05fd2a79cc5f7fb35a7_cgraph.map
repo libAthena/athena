@@ -1,0 +1,6 @@
+<map id="athena::io::IStreamReader::readWStringAsString" name="athena::io::IStreamReader::readWStringAsString">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_reader.html#ab7e62052d98e338ae4ce297823436c98" title="Reads a Uint16 and swaps to endianness specified by setEndian depending on platform and advances the ..." alt="" coords="244,5,435,47"/>
+<area shape="rect" id="node5" href="$classathena_1_1io_1_1_i_stream_reader.html#a4ba4e1ac641161d5c738c9375b5d2012" title="Sets the buffers position relative to the specified position. &#160;It seeks relative to the current posit..." alt="" coords="244,71,435,112"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_i_stream_reader.html#a2e7dba89014af4e1de0e4b88c9571dfd" title="Reads a Int16 and swaps to endianness specified by setEndian depending on platform and advances the c..." alt="" coords="483,5,673,47"/>
+<area shape="rect" id="node4" href="$classathena_1_1io_1_1_i_stream_reader.html#ad90233be645b52f421b1560d63cd07bd" title="Attempts to read a fixed length of data into a pre&#45;allocated buffer, this function is client defined ..." alt="" coords="721,5,912,47"/>
+</map>

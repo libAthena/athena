@@ -1,5 +1,0 @@
-<map id="Athena::io::MCFileReader" name="Athena::io::MCFileReader">
-<area shape="rect" id="node2" href="$class_athena_1_1io_1_1_memory_reader.html" title="{Athena::io::MemoryReader\n|# m_data\l# m_length\l# m_filepath\l# m_position\l# m_bitPosition\l# m_endian\l# m_progressCallback\l|+ MemoryReader()\l+ MemoryReader()\l+ ~MemoryReader()\l+ setEndian()\l+ endian()\l+ isBigEndian()\l+ isLittleEndian()\l+ isOpen()\l+ seek()\l+ seekAlign32()\land 27 more...\l# loadData()\l}" alt="" coords="5,549,207,876"/>
-<area shape="rect" id="node3" href="$class_athena_1_1io_1_1_i_stream_reader.html" title="{Athena::io::IStreamReader\n||+ ~IStreamReader()\l+ setEndian()\l+ endian()\l+ isBigEndian()\l+ isLittleEndian()\l+ isOpen()\l+ seek()\l+ seekAlign32()\l+ atEnd()\l+ position()\land 20 more...\l}" alt="" coords="7,277,205,501"/>
-<area shape="rect" id="node4" href="$class_athena_1_1io_1_1_i_stream.html" title="{Athena::io::IStream\n||+ ~IStream()\l+ setEndian()\l+ endian()\l+ isBigEndian()\l+ isLittleEndian()\l+ isOpen()\l+ seek()\l+ atEnd()\l+ position()\l+ length()\l+ seekBit()\l}" alt="" coords="31,5,181,229"/>
-</map>

@@ -1,0 +1,4 @@
+<map id="athena::io::IStreamReader::readUint16Little" name="athena::io::IStreamReader::readUint16Little">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_reader.html#ae85ae79951ff223a22305ac197f0ed90" title="Reads a wide&#45;char string (against little&#45;endian), converts to UTF8 and advances the position in the f..." alt="" coords="244,5,441,47"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_i_stream_reader.html#a8280d8caeb0ea9a5f38247a38e97f324" title="Reads a wstring assuming little&#45;endian characters and advances the position in the file..." alt="" coords="247,71,438,112"/>
+</map>

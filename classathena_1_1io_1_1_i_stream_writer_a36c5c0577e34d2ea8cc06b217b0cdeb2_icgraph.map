@@ -1,0 +1,5 @@
+<map id="athena::io::IStreamWriter::writeInt16Little" name="athena::io::IStreamWriter::writeInt16Little">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_writer.html#a9741c7076a34948ac2742691d613808c" title="Writes an Uint16 to the buffer and advances the buffer. It also swaps the bytes against little depend..." alt="" coords="239,39,424,80"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_i_stream_writer.html#a865f51a5ab4bd01933fba868eb2c248c" title="Converts a UTF8 string to a wide&#45;char string in the buffer and advances the buffer. It also swaps the bytes depending on the platform and Stream settings. " alt="" coords="472,5,673,47"/>
+<area shape="rect" id="node4" href="$classathena_1_1io_1_1_i_stream_writer.html#af1548ff6aba42ddd689f730a4cf05ba1" title="Writes an wstring to the buffer and advances the buffer. " alt="" coords="480,71,665,112"/>
+</map>

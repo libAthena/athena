@@ -1,0 +1,11 @@
+<map id="athena::io::MemoryReader" name="athena::io::MemoryReader">
+<area shape="rect" id="node4" href="$classathena_1_1io_1_1_memory_copy_reader.html" title="{athena::io::MemoryCopyReader\n|# m_dataCopy\l# m_filepath\l|+ MemoryCopyReader()\l+ MemoryCopyReader()\l+ setData()\l# loadData()\l}" alt="" coords="544,880,771,1016"/>
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_reader.html" title="The IStreamReader class defines a basic API for reading from streams, Implementors are provided with ..." alt="" coords="562,307,753,531"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_i_stream.html" title="{athena::io::IStream\n|# m_hasError\l# m_endian\l|+ IStream()\l+ ~IStream()\l+ setEndian()\l+ endian()\l+ isBigEndian()\l+ isLittleEndian()\l+ seek()\l+ atEnd()\l+ position()\l+ length()\l+ hasError()\l# setError()\l}" alt="" coords="584,5,731,259"/>
+<area shape="rect" id="node5" href="$classathena_1_1io_1_1_a_l_t_t_p_file_reader.html" title="A Link to the Past save data reader class. " alt="" coords="5,1071,205,1178"/>
+<area shape="rect" id="node6" href="$classathena_1_1io_1_1_m_c_file_reader.html" title="The Minish Cap Save save data reader class. " alt="" coords="230,1071,413,1178"/>
+<area shape="rect" id="node7" href="$classathena_1_1io_1_1_skyward_sword_file_reader.html" title="{athena::io::SkywardSword\lFileReader\n||+ SkywardSwordFileReader()\l+ SkywardSwordFileReader()\l+ read()\l}" alt="" coords="437,1064,648,1185"/>
+<area shape="rect" id="node8" href="$classathena_1_1io_1_1_sprite_file_reader.html" title="{athena::io::SpriteFileReader\n||+ SpriteFileReader()\l+ SpriteFileReader()\l+ readFile()\l}" alt="" coords="672,1071,872,1178"/>
+<area shape="rect" id="node9" href="$classathena_1_1io_1_1_wii_save_reader.html" title="Wii data.bin reader class. " alt="" coords="897,1071,1090,1178"/>
+<area shape="rect" id="node10" href="$classathena_1_1io_1_1_z_quest_file_reader.html" title="The ZQuestFileReader class. " alt="" coords="1114,1071,1323,1178"/>
+</map>

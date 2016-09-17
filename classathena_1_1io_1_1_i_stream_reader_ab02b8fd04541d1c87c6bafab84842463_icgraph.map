@@ -1,0 +1,6 @@
+<map id="athena::io::IStreamReader::position" name="athena::io::IStreamReader::position">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_reader.html#a2181ca1983f9bdab8125e898405b7ba0" title="Sets the buffer&#39;s position relative to the next 64&#45;byte aligned position. &#160;" alt="" coords="244,5,435,47"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_i_stream_reader.html#a9b1a617c8d43b2da1bc476b67691fcdd" title="Sets the buffers position relative to the next 32&#45;byte aligned position. &#160;" alt="" coords="244,71,435,112"/>
+<area shape="rect" id="node4" href="$classathena_1_1io_1_1_i_stream_reader.html#a3084d8f6a6fdfc9a3575504af814eeea" title="Sets the buffer&#39;s position relative to the next 16&#45;byte aligned position. &#160;" alt="" coords="244,136,435,177"/>
+<area shape="rect" id="node5" href="$classathena_1_1io_1_1_i_stream_reader.html#afb4be1f8a71727c016cee4fd73522c64" title="Returns whether or not the stream is at the end. " alt="" coords="244,201,435,243"/>
+</map>

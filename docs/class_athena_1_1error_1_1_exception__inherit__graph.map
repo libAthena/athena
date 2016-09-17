@@ -1,7 +1,0 @@
-<map id="Athena::error::Exception" name="Athena::error::Exception">
-<area shape="rect" id="node2" href="$class_athena_1_1error_1_1_file_not_found_exception.html" title="An excpeption thrown when a file could not be found at the given path. " alt="" coords="5,263,212,369"/>
-<area shape="rect" id="node3" href="$class_athena_1_1error_1_1_invalid_data_exception.html" title="An exception thrown on Invalid Data calls. " alt="" coords="237,270,431,362"/>
-<area shape="rect" id="node4" href="$class_athena_1_1error_1_1_invalid_operation_exception.html" title="An excpeption thrown on Invalid Operations calls. " alt="" coords="455,270,682,362"/>
-<area shape="rect" id="node5" href="$class_athena_1_1error_1_1_i_o_exception.html" title="An excpeption thrown on inappropriate IO calls. " alt="" coords="707,277,905,355"/>
-<area shape="rect" id="node6" href="$class_athena_1_1error_1_1_not_implemented_exception.html" title="{Athena::error::NotImplemented\lException\n||+ NotImplementedException()\l}" alt="" coords="930,270,1159,362"/>
-</map>

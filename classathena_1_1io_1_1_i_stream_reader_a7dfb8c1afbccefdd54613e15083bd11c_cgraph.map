@@ -1,0 +1,4 @@
+<map id="athena::io::IStreamReader::readBytes" name="athena::io::IStreamReader::readBytes">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_reader.html#acab99b9b1dce30ab7993f3754e62280f" title="Returns the length of the file. " alt="" coords="244,5,435,47"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_i_stream_reader.html#ad90233be645b52f421b1560d63cd07bd" title="Attempts to read a fixed length of data into a pre&#45;allocated buffer, this function is client defined ..." alt="" coords="244,71,435,112"/>
+</map>

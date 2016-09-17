@@ -1,0 +1,46 @@
+var classathena_1_1_wii_file =
+[
+    [ "Permission", "classathena_1_1_wii_file.html#afdf9e98a40263fb3ba5171b5163e82eb", [
+      [ "OtherRead", "classathena_1_1_wii_file.html#afdf9e98a40263fb3ba5171b5163e82eba12eb270036ffce1ab437639e13731b01", null ],
+      [ "OtherWrite", "classathena_1_1_wii_file.html#afdf9e98a40263fb3ba5171b5163e82ebae73b5a59d97ddf04ed8e7ecb76866c7e", null ],
+      [ "GroupRead", "classathena_1_1_wii_file.html#afdf9e98a40263fb3ba5171b5163e82ebaf5c94dece94613c55fe874347c922953", null ],
+      [ "GroupWrite", "classathena_1_1_wii_file.html#afdf9e98a40263fb3ba5171b5163e82ebac83273269881a5a09f4f343b41c536ea", null ],
+      [ "OwnerRead", "classathena_1_1_wii_file.html#afdf9e98a40263fb3ba5171b5163e82ebaa8befdb0dbd67df294d18d60b2babf30", null ],
+      [ "OwnerWrite", "classathena_1_1_wii_file.html#afdf9e98a40263fb3ba5171b5163e82ebaeba62df42abd862eda9bc322d4b02d6a", null ],
+      [ "OtherRW", "classathena_1_1_wii_file.html#afdf9e98a40263fb3ba5171b5163e82eba804b633798e95da1b6736848762bf192", null ],
+      [ "GroupRW", "classathena_1_1_wii_file.html#afdf9e98a40263fb3ba5171b5163e82eba19d8c392610c9baa9ef284e5ea935cbd", null ],
+      [ "OwnerRW", "classathena_1_1_wii_file.html#afdf9e98a40263fb3ba5171b5163e82ebaa064d342dc5e50ebd43bb7d5cdb105cb", null ]
+    ] ],
+    [ "Type", "classathena_1_1_wii_file.html#a2201d22220d2bccdfd2464cd74ae5773", [
+      [ "File", "classathena_1_1_wii_file.html#a2201d22220d2bccdfd2464cd74ae5773ad07c1a87feb3bff2311caf00eae886c3", null ],
+      [ "Directory", "classathena_1_1_wii_file.html#a2201d22220d2bccdfd2464cd74ae5773a236362a32f4e0ee9f6a49eb4a499ac60", null ]
+    ] ],
+    [ "WiiFile", "classathena_1_1_wii_file.html#a7d94cd45858fef629556d63146b8d9e2", null ],
+    [ "WiiFile", "classathena_1_1_wii_file.html#a7a387bcb833549f07d6276dd928ac275", null ],
+    [ "WiiFile", "classathena_1_1_wii_file.html#abe1527d489ffc14e39d447c15aec8763", null ],
+    [ "~WiiFile", "classathena_1_1_wii_file.html#a3f47a17fd94a0b8f462d6581f6d033c1", null ],
+    [ "addChild", "classathena_1_1_wii_file.html#a51cbbe44837af2cbb93069b5aada52fe", null ],
+    [ "allChildren", "classathena_1_1_wii_file.html#a2c83eb30d535f22a195ee425306b83c1", null ],
+    [ "attributes", "classathena_1_1_wii_file.html#a22b46c3f155b46da7a7fe74ab84cbeb3", null ],
+    [ "child", "classathena_1_1_wii_file.html#ae88735681171aa7b231a1c0ee29ac18d", null ],
+    [ "children", "classathena_1_1_wii_file.html#ab88e399f1a83fa9f67fc971b6fae0e16", null ],
+    [ "data", "classathena_1_1_wii_file.html#af7af632f51bdb537b35869639650ad84", null ],
+    [ "fileCount", "classathena_1_1_wii_file.html#a0cf493ee3e553ab73d631683293532de", null ],
+    [ "filename", "classathena_1_1_wii_file.html#a9fd2d5a9057edd99e04b18a481026939", null ],
+    [ "fullpath", "classathena_1_1_wii_file.html#aef6e70a5b571e7367a61c2ced3bb7a93", null ],
+    [ "isDirectory", "classathena_1_1_wii_file.html#a0c306332e612bf3052519bba96874da1", null ],
+    [ "isFile", "classathena_1_1_wii_file.html#a6d5fb379e976d81c6efdefc37f085d4f", null ],
+    [ "length", "classathena_1_1_wii_file.html#aeee8ccc0390f78e88a26657779c4be26", null ],
+    [ "parent", "classathena_1_1_wii_file.html#a90289a4e8e46789e2c5da934cd96f515", null ],
+    [ "permissions", "classathena_1_1_wii_file.html#af48d1253ed9d411c00a99fa033a1a73d", null ],
+    [ "removeChild", "classathena_1_1_wii_file.html#adf0987058f6793bed4facb2d4ef6de32", null ],
+    [ "removeChild", "classathena_1_1_wii_file.html#aa7582e565cf9305fd95f7a0c31d88a3b", null ],
+    [ "setAttributes", "classathena_1_1_wii_file.html#a2a3188f658f820328c713b020f6bed4a", null ],
+    [ "setData", "classathena_1_1_wii_file.html#a65501e9b953be8b39d6f57175aa92acb", null ],
+    [ "setFilename", "classathena_1_1_wii_file.html#adc0abac88fa54005364a378d51649204", null ],
+    [ "setLength", "classathena_1_1_wii_file.html#a02fb6c394ff82cc26602eee6934fc419", null ],
+    [ "setParent", "classathena_1_1_wii_file.html#a76fb22d1413746e0bd5373769af7b011", null ],
+    [ "setPermissions", "classathena_1_1_wii_file.html#a3408808610bc81ae98b64710268f596a", null ],
+    [ "setType", "classathena_1_1_wii_file.html#a037673d0adad87b35a5064176ddf516f", null ],
+    [ "type", "classathena_1_1_wii_file.html#acf982473deaafa9fc7ba457fc7c7d8b2", null ]
+];

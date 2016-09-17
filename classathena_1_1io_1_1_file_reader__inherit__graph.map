@@ -1,0 +1,4 @@
+<map id="athena::io::FileReader" name="athena::io::FileReader">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_reader.html" title="The IStreamReader class defines a basic API for reading from streams, Implementors are provided with ..." alt="" coords="5,307,196,531"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_i_stream.html" title="{athena::io::IStream\n|# m_hasError\l# m_endian\l|+ IStream()\l+ ~IStream()\l+ setEndian()\l+ endian()\l+ isBigEndian()\l+ isLittleEndian()\l+ seek()\l+ atEnd()\l+ position()\l+ length()\l+ hasError()\l# setError()\l}" alt="" coords="27,5,174,259"/>
+</map>

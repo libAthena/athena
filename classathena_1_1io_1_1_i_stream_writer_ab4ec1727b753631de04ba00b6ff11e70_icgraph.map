@@ -1,0 +1,6 @@
+<map id="athena::io::IStreamWriter::writeUByte" name="athena::io::IStreamWriter::writeUByte">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream_writer.html#a96dadce2d998dfc146c9f78d494f237d" title="Writes a byte at the current position and advances the position by one byte. " alt="" coords="239,5,424,47"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_i_stream_writer.html#a23b7b46e18bfa2cac97141a90b46ca97" title="Writes an string to the buffer and advances the buffer. " alt="" coords="239,71,424,112"/>
+<area shape="rect" id="node4" href="$structathena_1_1io_1_1_string.html#a73409b4025e3dac314d9cef000286f05" title="Common virtual write function for all DNA types. " alt="" coords="487,37,621,79"/>
+<area shape="rect" id="node5" href="$structathena_1_1io_1_1_string_yaml.html#a47e6fd1288cfb89646ebc99d9b8bbd60" title="Common virtual write function for all DNA types. " alt="" coords="472,103,636,144"/>
+</map>

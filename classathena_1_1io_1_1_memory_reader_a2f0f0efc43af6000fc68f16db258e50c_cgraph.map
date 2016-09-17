@@ -1,0 +1,5 @@
+<map id="athena::io::MemoryReader::length" name="athena::io::MemoryReader::length">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_memory_reader.html#a955cb812ebff99467d6efd11e3b9ccdd" title="Sets the buffer to the given one, deleting the current one. &#160;BEWARE: As this deletes the current buff..." alt="" coords="247,5,440,47"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_memory_reader.html#a0ec143d492341f61cd3acef61afe8358" title="Returns a copy of the current buffer. &#160;Changes to the copy do not affect the buffer so it&#39;s perfectly..." alt="" coords="247,71,440,112"/>
+<area shape="rect" id="node4" href="$classathena_1_1io_1_1_memory_reader.html#af3f62edd3db169a3276e7e3f230c930c" title="Reads a specified number of bytes to user&#45;allocated buffer. " alt="" coords="247,136,440,177"/>
+</map>

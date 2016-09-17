@@ -1,0 +1,12 @@
+<map id="athena::io::IStreamReader" name="athena::io::IStreamReader">
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_file_reader.html" title="{athena::io::FileReader\n|# m_filename\l# m_fileHandle\l# m_cacheData\l# m_blockSize\l# m_curBlock\l# m_offset\l# m_globalErr\l|+ FileReader()\l+ FileReader()\l+ ~FileReader()\l+ filename()\l+ wfilename()\l+ open()\l+ close()\l+ isOpen()\l+ save()\l+ seek()\l+ position()\l+ length()\l+ readUBytesToBuf()\l+ setCacheSize()\l+ _fileHandle()\l}" alt="" coords="373,579,536,949"/>
+<area shape="rect" id="node4" href="$classathena_1_1io_1_1_memory_reader.html" title="A Stream class for reading data from a memory position. " alt="" coords="561,637,754,891"/>
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_i_stream.html" title="{athena::io::IStream\n|# m_hasError\l# m_endian\l|+ IStream()\l+ ~IStream()\l+ setEndian()\l+ endian()\l+ isBigEndian()\l+ isLittleEndian()\l+ seek()\l+ atEnd()\l+ position()\l+ length()\l+ hasError()\l# setError()\l}" alt="" coords="483,5,629,259"/>
+<area shape="rect" id="node5" href="$classathena_1_1io_1_1_memory_copy_reader.html" title="{athena::io::MemoryCopyReader\n|# m_dataCopy\l# m_filepath\l|+ MemoryCopyReader()\l+ MemoryCopyReader()\l+ setData()\l# loadData()\l}" alt="" coords="544,997,771,1133"/>
+<area shape="rect" id="node6" href="$classathena_1_1io_1_1_a_l_t_t_p_file_reader.html" title="A Link to the Past save data reader class. " alt="" coords="5,1189,205,1295"/>
+<area shape="rect" id="node7" href="$classathena_1_1io_1_1_m_c_file_reader.html" title="The Minish Cap Save save data reader class. " alt="" coords="230,1189,413,1295"/>
+<area shape="rect" id="node8" href="$classathena_1_1io_1_1_skyward_sword_file_reader.html" title="{athena::io::SkywardSword\lFileReader\n||+ SkywardSwordFileReader()\l+ SkywardSwordFileReader()\l+ read()\l}" alt="" coords="437,1181,648,1303"/>
+<area shape="rect" id="node9" href="$classathena_1_1io_1_1_sprite_file_reader.html" title="{athena::io::SpriteFileReader\n||+ SpriteFileReader()\l+ SpriteFileReader()\l+ readFile()\l}" alt="" coords="672,1189,872,1295"/>
+<area shape="rect" id="node10" href="$classathena_1_1io_1_1_wii_save_reader.html" title="Wii data.bin reader class. " alt="" coords="897,1189,1090,1295"/>
+<area shape="rect" id="node11" href="$classathena_1_1io_1_1_z_quest_file_reader.html" title="The ZQuestFileReader class. " alt="" coords="1114,1189,1323,1295"/>
+</map>

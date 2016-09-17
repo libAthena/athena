@@ -1,0 +1,4 @@
+<map id="athena::io::MemoryWriter::length" name="athena::io::MemoryWriter::length">
+<area shape="rect" id="node2" href="$classathena_1_1io_1_1_memory_writer.html#a32cbcd645e5194480a6921f44075e9b6" title="Sets the buffer to the given one, deleting the current one if it owns it. &#160;" alt="" coords="240,5,427,47"/>
+<area shape="rect" id="node3" href="$classathena_1_1io_1_1_memory_writer.html#affc1d82274beef12db8b4eb03dd4b461" title="Returns a copy of the current buffer. &#160;Changes to the copy do not affect the buffer so it&#39;s perfectly..." alt="" coords="240,71,427,112"/>
+</map>
