@@ -51,12 +51,26 @@ void FileWriter::open(bool overwrite)
     if (overwrite)
         m_fileHandle = _wfopen(m_filename.c_str(), L"w+b");
     else
+    {
         m_fileHandle = _wfopen(m_filename.c_str(), L"r+b");
+        if (m_fileHandle)
+        {
+            fclose(m_fileHandle);
+            m_fileHandle = _wfopen(m_filename.c_str(), L"r+b");
+        }
+    }
 #else
     if (overwrite)
         m_fileHandle = fopen(m_filename.c_str(), "w+b");
     else
-        m_fileHandle = fopen(m_filename.c_str(), "r+b");
+    {
+        m_fileHandle = fopen(m_filename.c_str(), "a+b");
+        if (m_fileHandle)
+        {
+            fclose(m_fileHandle);
+            m_fileHandle = fopen(m_filename.c_str(), "r+b");
+        }
+    }
 #endif
 
     if (!m_fileHandle)
