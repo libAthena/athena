@@ -47,9 +47,9 @@ public:
     inline atUint64 position()    const
     {return m_position;}
 
-    /*! @brief Returns whether or not the stream is at the end.
+    /*! @brief Returns the length of the stream.
      *
-     *  @return bool True if at end; False otherwise.
+     *  @return Int64 The length of the stream.
      */
     inline atUint64 length()      const
     {return m_length;}
