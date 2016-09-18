@@ -1,9 +1,14 @@
 #ifndef FILESTREAM_HPP
 #define FILESTREAM_HPP
 
+#if _WIN32
+#include <windows.h>
+#else
+#include <stdio.h>
+#endif
+
 #include <string>
 #include <memory>
-#include <stdio.h>
 #include "athena/IStreamReader.hpp"
 
 namespace athena
@@ -38,7 +43,7 @@ public:
     void open();
     void close();
     inline bool isOpen() const
-    {return m_fileHandle != NULL;}
+    {return m_fileHandle != 0;}
     bool save();
     void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
     atUint64 position() const;
@@ -46,14 +51,21 @@ public:
     atUint64 readUBytesToBuf(void* buf, atUint64 len);
 
     void setCacheSize(const atInt32 blockSize);
-    FILE* _fileHandle() {return m_fileHandle;}
+
+#if _WIN32
+    using HandleType = HANDLE;
+#else
+    using HandleType = FILE*;
+#endif
+
+    HandleType _fileHandle() {return m_fileHandle;}
 protected:
 #if _WIN32
     std::wstring m_filename;
 #else
     std::string  m_filename;
 #endif
-    FILE*        m_fileHandle;
+    HandleType   m_fileHandle;
     std::unique_ptr<atUint8[]>    m_cacheData;
     atInt32      m_blockSize;
     atInt32      m_curBlock;

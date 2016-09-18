@@ -1,11 +1,5 @@
 #include "athena/FileReader.hpp"
-
-#if __APPLE__
-#include "osx_largefilewrapper.h"
-#elif GEKKO
-#include "gekko_support.h"
-#include "osx_largefilewrapper.h"
-#endif
+#include "win32_largefilewrapper.h"
 
 namespace athena
 {
@@ -17,7 +11,7 @@ FileReader::FileReader(const std::string& filename, atInt32 cacheSize, bool glob
       m_offset(0),
       m_globalErr(globalErr)
 {
-    m_filename = filename;
+    m_filename = utility::utf8ToWide(filename);
     open();
     setCacheSize(cacheSize);
 }
@@ -28,7 +22,7 @@ FileReader::FileReader(const std::wstring& filename, atInt32 cacheSize, bool glo
       m_offset(0),
       m_globalErr(globalErr)
 {
-    m_filename = utility::wideToUtf8(filename);
+    m_filename = filename;
     open();
     setCacheSize(cacheSize);
 }
@@ -41,10 +35,12 @@ FileReader::~FileReader()
 
 void FileReader::open()
 {
-    m_fileHandle = fopen(m_filename.c_str(), "rb");
+    m_fileHandle = CreateFileW(m_filename.c_str(), GENERIC_READ, FILE_SHARE_READ,
+                               nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
-    if (!m_fileHandle)
+    if (m_fileHandle == INVALID_HANDLE_VALUE)
     {
+        m_fileHandle = 0;
         std::string _filename = filename();
         if (m_globalErr)
             atError("File not found '%s'", _filename.c_str());
@@ -66,8 +62,8 @@ void FileReader::close()
         return;
     }
 
-    fclose(m_fileHandle);
-    m_fileHandle = NULL;
+    CloseHandle(m_fileHandle);
+    m_fileHandle = 0;
     return;
 }
 
@@ -104,16 +100,23 @@ void FileReader::seek(atInt64 pos, SeekOrigin origin)
         size_t block = m_offset / m_blockSize;
         if (block != m_curBlock)
         {
-            fseeko64(m_fileHandle, block * m_blockSize, SEEK_SET);
-            fread(m_cacheData.get(), 1, m_blockSize, m_fileHandle);
+            LARGE_INTEGER li;
+            li.QuadPart = block * m_blockSize;
+            SetFilePointerEx(m_fileHandle, li, nullptr, FILE_BEGIN);
+            ReadFile(m_fileHandle, m_cacheData.get(), m_blockSize, nullptr, nullptr);
             m_curBlock = (atInt32)block;
         }
     }
-    else if (fseeko64(m_fileHandle, pos, (int)origin) != 0)
+    else
     {
-        if (m_globalErr)
-            atError("Unable to seek in file");
-        setError();
+        LARGE_INTEGER li;
+        li.QuadPart = pos;
+        if (!SetFilePointerEx(m_fileHandle, li, nullptr, DWORD(origin)))
+        {
+            if (m_globalErr)
+                atError("Unable to seek in file");
+            setError();
+        }
     }
 }
 
@@ -129,7 +132,12 @@ atUint64 FileReader::position() const
     if (m_blockSize > 0)
         return m_offset;
     else
-        return ftello64(m_fileHandle);
+    {
+        LARGE_INTEGER li = {};
+        LARGE_INTEGER res;
+        SetFilePointerEx(m_fileHandle, li, &res, FILE_CURRENT);
+        return res.QuadPart;
+    }
 }
 
 atUint64 FileReader::length() const
@@ -141,7 +149,9 @@ atUint64 FileReader::length() const
         return 0;
     }
 
-    return utility::fileSize(m_filename);
+    LARGE_INTEGER res;
+    GetFileSizeEx(m_fileHandle, &res);
+    return res.QuadPart;
 }
 
 atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len)
@@ -155,14 +165,19 @@ atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len)
     }
 
     if (m_blockSize <= 0)
-        return fread(buf, 1, len, m_fileHandle);
+    {
+        DWORD ret = 0;
+        ReadFile(m_fileHandle, buf, len, &ret, nullptr);
+        return ret;
+    }
     else
     {
-        atUint64 fs = utility::fileSize(m_filename);
-        if (m_offset >= fs)
+        LARGE_INTEGER fs;
+        GetFileSizeEx(m_fileHandle, &fs);
+        if (m_offset >= fs.QuadPart)
             return 0;
-        if (m_offset + len >= fs)
-            len = fs - m_offset;
+        if (m_offset + len >= fs.QuadPart)
+            len = fs.QuadPart - m_offset;
 
         size_t block = m_offset / m_blockSize;
         atUint64 cacheOffset = m_offset % m_blockSize;
@@ -174,8 +189,10 @@ atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len)
         {
             if (block != m_curBlock)
             {
-                fseeko64(m_fileHandle, block * m_blockSize, SEEK_SET);
-                fread(m_cacheData.get(), 1, m_blockSize, m_fileHandle);
+                LARGE_INTEGER li;
+                li.QuadPart = block * m_blockSize;
+                SetFilePointerEx(m_fileHandle, li, nullptr, FILE_BEGIN);
+                ReadFile(m_fileHandle, m_cacheData.get(), m_blockSize, nullptr, nullptr);
                 m_curBlock = (atInt32)block;
             }
 

@@ -59,7 +59,7 @@ MemoryCopyWriter::MemoryCopyWriter(atUint8* data, atUint64 length)
     m_dataCopy.reset(new atUint8[length]);
     m_data = m_dataCopy.get();
     if (data)
-        memcpy(m_data, data, length);
+        memmove(m_data, data, length);
 }
 
 MemoryCopyWriter::MemoryCopyWriter(const std::string& filename)
@@ -202,7 +202,7 @@ void MemoryCopyWriter::setData(const atUint8* data, atUint64 length)
 {
     m_dataCopy.reset(new atUint8[length]);
     m_data = m_dataCopy.get();
-    memcpy(m_data, data, length);
+    memmove(m_data, data, length);
     m_length = length;
     m_position = 0;
     m_bufferOwned = false;
@@ -212,7 +212,7 @@ atUint8* MemoryWriter::data() const
 {
     atUint8* ret = new atUint8[m_length];
     memset(ret, 0, m_length);
-    memcpy(ret, m_data, m_length);
+    memmove(ret, m_data, m_length);
     return ret;
 }
 
@@ -280,7 +280,7 @@ void MemoryWriter::writeUBytes(const atUint8* data, atUint64 length)
         return;
     }
 
-    memcpy(reinterpret_cast<atInt8*>(m_data + m_position), data, length);
+    memmove(reinterpret_cast<atInt8*>(m_data + m_position), data, length);
 
     m_position += length;
 }
@@ -297,7 +297,7 @@ void MemoryCopyWriter::writeUBytes(const atUint8* data, atUint64 length)
     if (m_position + length > m_length)
         resize(m_position + length);
 
-    memcpy(reinterpret_cast<atInt8*>(m_data + m_position), data, length);
+    memmove(reinterpret_cast<atInt8*>(m_data + m_position), data, length);
 
     m_position += length;
 }
@@ -315,7 +315,7 @@ void MemoryCopyWriter::resize(atUint64 newSize)
     memset(newArray, 0, newSize);
 
     if (m_dataCopy)
-        memcpy(newArray, m_dataCopy.get(), m_length);
+        memmove(newArray, m_dataCopy.get(), m_length);
     m_dataCopy.reset(newArray);
 
     // Swap the pointer and size out for the new ones.

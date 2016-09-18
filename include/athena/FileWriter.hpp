@@ -1,8 +1,12 @@
 #ifndef FILEWRITER_HPP
 #define FILEWRITER_HPP
 
-#include "athena/IStreamWriter.hpp"
+#if _WIN32
+#include <windows.h>
+#else
 #include <stdio.h>
+#endif
+#include "athena/IStreamWriter.hpp"
 
 namespace athena
 {
@@ -35,20 +39,26 @@ public:
     void open(bool overwrite = true);
     void close();
     inline bool isOpen() const
-    {return m_fileHandle != NULL;}
+    {return m_fileHandle != 0;}
     void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
     atUint64 position() const;
     atUint64 length() const;
     void writeUBytes(const atUint8* data, atUint64 len);
 
-    FILE* _fileHandle() {return m_fileHandle;}
+#if _WIN32
+    using HandleType = HANDLE;
+#else
+    using HandleType = FILE*;
+#endif
+
+    HandleType _fileHandle() {return m_fileHandle;}
 private:
 #if _WIN32
     std::wstring m_filename;
 #else
     std::string  m_filename;
 #endif
-    FILE*        m_fileHandle;
+    HandleType   m_fileHandle;
     atUint8      m_currentByte;
     atUint64     m_bytePosition;
     bool         m_globalErr;

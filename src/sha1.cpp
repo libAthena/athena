@@ -395,7 +395,7 @@ atUint8* getSha1(atUint8* stuff, atUint32 stuff_size)
         if (!athena::utility::isSystemBigEndian())
             val = athena::utility::swap32(val);
 
-        memcpy((char*)ret + (i * 4), &val, 4);
+        memmove((char*)ret + (i * 4), &val, 4);
     }
 
     return ret;

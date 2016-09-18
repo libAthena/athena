@@ -26,18 +26,20 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 endif()
 
 if(WIN32)
-list(APPEND CORE_EXTRA src/win32_largefilewrapper.c include/win32_largefilewrapper.h)
-elseif(APPLE OR GEKKO)
+list(APPEND CORE_EXTRA src/win32_largefilewrapper.c include/win32_largefilewrapper.h
+     src/athena/FileWriterWin32.cpp src/athena/FileReaderWin32.cpp)
+else()
+list(APPEND CORE_EXTRA src/athena/FileWriter.cpp src/athena/FileReader.cpp)
+if(APPLE OR GEKKO)
 list(APPEND CORE_EXTRA src/osx_largefilewrapper.c include/osx_largefilewrapper.h)
 if(GEKKO)
 list(APPEND CORE_EXTRA src/gekko_support.c include/gekko_support.h)
 endif()
 endif()
+endif()
 
 add_library(athena-core
     src/athena/Utility.cpp
-    src/athena/FileReader.cpp
-    src/athena/FileWriter.cpp
     src/athena/MemoryReader.cpp
     src/athena/MemoryWriter.cpp
     src/athena/Global.cpp

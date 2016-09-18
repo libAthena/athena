@@ -1,31 +1,25 @@
 #include "athena/FileWriter.hpp"
-
-#if __APPLE__
-#include "osx_largefilewrapper.h"
-#elif GEKKO
-#include "gekko_support.h"
-#include "osx_largefilewrapper.h"
-#endif
+#include "win32_largefilewrapper.h"
 
 namespace athena
 {
 namespace io
 {
 FileWriter::FileWriter(const std::string& filename, bool overwrite, bool globalErr)
-    : m_fileHandle(NULL),
+    : m_fileHandle(0),
       m_bytePosition(0),
       m_globalErr(globalErr)
 {
-    m_filename = filename;
+    m_filename = utility::utf8ToWide(filename);
     open(overwrite);
 }
 
 FileWriter::FileWriter(const std::wstring& filename, bool overwrite, bool globalErr)
-    : m_fileHandle(NULL),
+    : m_fileHandle(0),
       m_bytePosition(0),
       m_globalErr(globalErr)
 {
-    m_filename = utility::wideToUtf8(filename);
+    m_filename = filename;
     open(overwrite);
 }
 
@@ -38,19 +32,19 @@ FileWriter::~FileWriter()
 void FileWriter::open(bool overwrite)
 {
     if (overwrite)
-        m_fileHandle = fopen(m_filename.c_str(), "w+b");
+    {
+        m_fileHandle = CreateFileW(m_filename.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE,
+                                   nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    }
     else
     {
-        m_fileHandle = fopen(m_filename.c_str(), "a+b");
-        if (m_fileHandle)
-        {
-            fclose(m_fileHandle);
-            m_fileHandle = fopen(m_filename.c_str(), "r+b");
-        }
+        m_fileHandle = CreateFileW(m_filename.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE,
+                                   nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
     }
 
-    if (!m_fileHandle)
+    if (m_fileHandle == INVALID_HANDLE_VALUE)
     {
+        m_fileHandle = 0;
         if (m_globalErr)
             atError("Unable to open file '%s'", filename().c_str());
         setError();
@@ -71,8 +65,8 @@ void FileWriter::close()
         return;
     }
 
-    fclose(m_fileHandle);
-    m_fileHandle = NULL;
+    CloseHandle(m_fileHandle);
+    m_fileHandle = 0;
 }
 
 void FileWriter::seek(atInt64 pos, SeekOrigin origin)
@@ -85,7 +79,9 @@ void FileWriter::seek(atInt64 pos, SeekOrigin origin)
         return;
     }
 
-    if (fseeko64(m_fileHandle, pos, (int)origin) != 0)
+    LARGE_INTEGER li;
+    li.QuadPart = pos;
+    if (!SetFilePointerEx(m_fileHandle, li, nullptr, DWORD(origin)))
     {
         if (m_globalErr)
             atError("Unable to seek in file");
@@ -95,7 +91,10 @@ void FileWriter::seek(atInt64 pos, SeekOrigin origin)
 
 atUint64 FileWriter::position() const
 {
-    return ftello64(m_fileHandle);
+    LARGE_INTEGER li = {};
+    LARGE_INTEGER res;
+    SetFilePointerEx(m_fileHandle, li, &res, FILE_CURRENT);
+    return res.QuadPart;
 }
 
 atUint64 FileWriter::length() const
@@ -113,7 +112,9 @@ void FileWriter::writeUBytes(const atUint8* data, atUint64 len)
         return;
     }
 
-    if (fwrite(data, 1, len, m_fileHandle) != len)
+    DWORD ret = 0;
+    WriteFile(m_fileHandle, data, len, &ret, nullptr);
+    if (ret != len)
     {
         if (m_globalErr)
             atError("Unable to write to stream");

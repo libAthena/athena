@@ -65,7 +65,7 @@ MemoryCopyReader::MemoryCopyReader(const void* data, atUint64 length)
 
     m_dataCopy.reset(new atUint8[m_length]);
     m_data = m_dataCopy.get();
-    memcpy(m_dataCopy.get(), data, m_length);
+    memmove(m_dataCopy.get(), data, m_length);
 }
 
 void MemoryReader::seek(atInt64 position, SeekOrigin origin)
@@ -127,7 +127,7 @@ void MemoryCopyReader::setData(const atUint8* data, atUint64 length)
 {
     m_dataCopy.reset(new atUint8[length]);
     m_data = m_dataCopy.get();
-    memcpy(m_dataCopy.get(), data, length);
+    memmove(m_dataCopy.get(), data, length);
     m_length = length;
     m_position = 0;
 }
@@ -136,7 +136,7 @@ atUint8* MemoryReader::data() const
 {
     atUint8* ret = new atUint8[m_length];
     memset(ret, 0, m_length);
-    memcpy(ret, m_data, m_length);
+    memmove(ret, m_data, m_length);
     return ret;
 }
 
@@ -151,7 +151,7 @@ atUint64 MemoryReader::readUBytesToBuf(void* buf, atUint64 length)
         return 0;
     }
 
-    memcpy(buf, reinterpret_cast<const atUint8*>(m_data) + m_position, length);
+    memmove(buf, reinterpret_cast<const atUint8*>(m_data) + m_position, length);
     m_position += length;
     return length;
 }
