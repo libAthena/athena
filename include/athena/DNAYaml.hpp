@@ -1203,9 +1203,8 @@ struct DNAYaml : DNA<DNAE>
         return true;
     }
 
-    typedef void (DNAYaml::*YAMLWriteMemFn)(YAMLDocWriter& out) const;
-
-    bool toYAMLStream(athena::io::IStreamWriter& fout, YAMLWriteMemFn fn) const
+    typedef void (DNAYaml::*YAMLWriteMemberFn)(YAMLDocWriter& out) const;
+    bool toYAMLStream(athena::io::IStreamWriter& fout, YAMLWriteMemberFn fn) const
     {
         YAMLDocWriter docWriter(DNATypeV());
 
@@ -1225,6 +1224,16 @@ struct DNAYaml : DNA<DNAE>
         if (!docReader.parse(&fin))
             return false;
         read(docReader);
+        return true;
+    }
+
+    typedef void (DNAYaml::*YAMLReadMemberFn)(YAMLDocReader& in);
+    bool fromYAMLStream(athena::io::IStreamReader& fin, YAMLReadMemberFn fn)
+    {
+        YAMLDocReader docReader;
+        if (!docReader.parse(&fin))
+            return false;
+        (this->*fn)(docReader);
         return true;
     }
 
