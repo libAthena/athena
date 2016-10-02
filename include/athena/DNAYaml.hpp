@@ -1286,10 +1286,13 @@ struct StringYaml : public DNAYaml<VE>, public std::string
     {this->assign(std::move(reader.readString(nullptr)));}
     void write(athena::io::YAMLDocWriter& writer) const
     {writer.writeString(nullptr, *this);}
+    StringYaml() = default;
+    StringYaml(const std::string& __str) : std::string(__str) {}
+    StringYaml(std::string&& __str) : std::string(std::move(__str)) {}
     std::string& operator=(const std::string& __str)
     {return this->assign(__str);}
     std::string& operator=(std::string&& __str)
-    {this->swap(__str); return *this;}
+    {static_cast<std::string&>(*this) = std::move(__str); return *this;}
 };
 
 template <atInt32 sizeVar, Endian VE>
