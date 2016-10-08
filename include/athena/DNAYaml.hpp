@@ -701,7 +701,7 @@ public:
                 int& seqIdx = m_seqTrackerStack.back();
                 return NodeToVal<RETURNTYPE>(mnode->m_seqChildren[seqIdx++].get());
             }
-            else if (mnode->m_type == YAML_MAPPING_NODE)
+            else if (mnode->m_type == YAML_MAPPING_NODE && name)
             {
                 for (const auto& item : mnode->m_mapChildren)
                 {
