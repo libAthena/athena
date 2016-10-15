@@ -58,6 +58,7 @@ typedef struct stat atStat64_t;
 #define atStat64 stat
 #else
 typedef struct stat64 atStat64_t;
+#define atStat64 stat64
 #endif
 
 #ifndef BLOCKSZ
