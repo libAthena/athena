@@ -26,7 +26,6 @@
 #ifdef _MSC_VER
 #include <functional>
 #include <locale>
-#define stat64 __stat64
 #define realpath(__name, __resolved) _fullpath((__resolved), (__name), 4096)
 #endif
 
@@ -83,8 +82,8 @@ atUint64 FileInfo::size() const
 
 bool FileInfo::exists() const
 {
-    stat64_t st;
-    int e = stat64(m_path.c_str(), &st);
+    atStat64_t st;
+    int e = atStat64(m_path.c_str(), &st);
 
     if (e < 0)
         return false;
@@ -94,8 +93,8 @@ bool FileInfo::exists() const
 
 bool FileInfo::isLink() const
 {
-    stat64_t st;
-    int e = stat64(m_path.c_str(), &st);
+    atStat64_t st;
+    int e = atStat64(m_path.c_str(), &st);
     if (e < 0)
         return false;
 
@@ -104,8 +103,8 @@ bool FileInfo::isLink() const
 
 bool FileInfo::isFile() const
 {
-    stat64_t st;
-    int e = stat64(m_path.c_str(), &st);
+    atStat64_t st;
+    int e = atStat64(m_path.c_str(), &st);
     if (e < 0)
         return false;
 
@@ -115,8 +114,8 @@ bool FileInfo::isFile() const
 bool FileInfo::touch() const
 {
 #if defined(__GNUC__) && !(defined(HW_DOL) || defined(HW_RVL) || defined(GEKKO))
-    stat64_t st;
-    if (stat64(m_path.c_str(), &st) < 0) {
+    atStat64_t st;
+    if (atStat64(m_path.c_str(), &st) < 0) {
         (void)athena::io::FileWriter(m_path);
         return true;
     }

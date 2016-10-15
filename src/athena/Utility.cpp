@@ -15,7 +15,6 @@
 #ifdef _MSC_VER
 #include <functional>
 #include <locale>
-#define stat64 __stat64
 #endif
 
 namespace athena
@@ -166,15 +165,15 @@ int countChar(const std::string& str, const char chr, int* lastOccur)
 
 atUint64 fileSize(const std::string& filename)
 {
-    stat64_t st;
-    stat64(filename.c_str(), &st);
+    atStat64_t st;
+    atStat64(filename.c_str(), &st);
     return st.st_size;
 }
 
 #ifdef _MSC_VER
 atUint64 fileSize(const std::wstring& filename)
 {
-    stat64_t st;
+    atStat64_t st;
     _wstati64(filename.c_str(), &st);
     return st.st_size;
 }

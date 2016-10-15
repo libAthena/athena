@@ -14,7 +14,6 @@
 #endif
 
 #ifdef _MSC_VER
-#define stat64 __stat64
 #define realpath(__name, __resolved) _fullpath((__name), (__resolved), 4096)
 #endif
 
@@ -32,8 +31,8 @@ std::string Dir::absolutePath() const
 
 bool Dir::isDir() const
 {
-    stat64_t st;
-    int e = stat64(m_path.c_str(), &st);
+    atStat64_t st;
+    int e = atStat64(m_path.c_str(), &st);
     if (e < 0)
         return false;
 
@@ -72,7 +71,7 @@ bool Dir::mkdir(const std::string& dir, mode_t mode)
 {
 #if _WIN32
     return !(::_mkdir(dir.c_str()) < 0);
-#else    
+#else
     return !(::mkdir(dir.c_str(), mode) < 0);
 #endif
 }

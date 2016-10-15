@@ -49,17 +49,15 @@
 
 #ifdef GEKKO
 #include "gekko_support.h"
-typedef struct stat stat64_t;
-#define stat64 stat
+typedef struct stat atStat64_t;
+#define atStat64 stat
 #elif _WIN32
-typedef struct _stat64 stat64_t;
-#elif __FreeBSD__
-typedef struct stat stat64_t;
-#define stat64 stat
-#define fseeko64 fseeko
-#define ftello64 ftello
+typedef struct _stat64 atStat64_t;
+#elif __APPLE__ || __FreeBSD__
+typedef struct stat atStat64_t;
+#define atStat64 stat
 #else
-typedef struct stat64 stat64_t;
+typedef struct stat64 atStat64_t;
 #endif
 
 #ifndef BLOCKSZ
