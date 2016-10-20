@@ -53,6 +53,7 @@ typedef struct stat atStat64_t;
 #define atStat64 stat
 #elif _WIN32
 typedef struct _stat64 atStat64_t;
+#define atStat64 _stat64
 #elif __APPLE__ || __FreeBSD__
 typedef struct stat atStat64_t;
 #define atStat64 stat
