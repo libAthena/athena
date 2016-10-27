@@ -30,7 +30,7 @@ list(APPEND CORE_EXTRA src/win32_largefilewrapper.c include/win32_largefilewrapp
      src/athena/FileWriterWin32.cpp src/athena/FileReaderWin32.cpp)
 else()
 list(APPEND CORE_EXTRA src/athena/FileWriter.cpp src/athena/FileReader.cpp)
-if(APPLE OR GEKKO)
+if(APPLE OR GEKKO OR ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 list(APPEND CORE_EXTRA src/osx_largefilewrapper.c include/osx_largefilewrapper.h)
 if(GEKKO)
 list(APPEND CORE_EXTRA src/gekko_support.c include/gekko_support.h)
