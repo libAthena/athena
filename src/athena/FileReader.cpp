@@ -1,6 +1,6 @@
 #include "athena/FileReader.hpp"
 
-#if __APPLE__
+#if __APPLE__ || __FreeBSD__
 #include "osx_largefilewrapper.h"
 #elif GEKKO
 #include "gekko_support.h"
