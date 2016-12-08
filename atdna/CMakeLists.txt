@@ -31,6 +31,7 @@ list(APPEND LLVM_LIBS
      LLVMBitReader
      LLVMMC
      LLVMProfileData
+     LLVMDemangle
      LLVMSupport)
 
 string(FIND ${LLVM_VERSION_STRING} "svn" SVN_FILTER_IDX)
