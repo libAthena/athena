@@ -13,6 +13,10 @@ include(FindLLVM.cmake)
 if(NOT LLVM_FOUND)
     message(STATUS "Unable to locate LLVM installation; skipping atdna")
 else()
+find_library(LLVMDEMANGLE_LIB LLVMDemangle)
+if (NOT LLVMDEMANGLE_LIB)
+    set(LLVMDEMANGLE_LIB "")
+endif()
 list(APPEND LLVM_LIBS
      clangFrontend
      clangTooling
@@ -31,7 +35,7 @@ list(APPEND LLVM_LIBS
      LLVMBitReader
      LLVMMC
      LLVMProfileData
-     LLVMDemangle
+     ${LLVMDEMANGLE_LIB}
      LLVMSupport)
 
 string(FIND ${LLVM_VERSION_STRING} "svn" SVN_FILTER_IDX)
