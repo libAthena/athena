@@ -174,9 +174,9 @@ atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len)
     {
         LARGE_INTEGER fs;
         GetFileSizeEx(m_fileHandle, &fs);
-        if (m_offset >= fs.QuadPart)
+        if (m_offset >= atUint64(fs.QuadPart))
             return 0;
-        if (m_offset + len >= fs.QuadPart)
+        if (m_offset + len >= atUint64(fs.QuadPart))
             len = fs.QuadPart - m_offset;
 
         size_t block = m_offset / m_blockSize;
