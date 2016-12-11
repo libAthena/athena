@@ -278,7 +278,7 @@ public:
     {
         UTF8Iterator it(m_it);
         size_t ret = 0;
-        while (it.iter() < end)
+        while (it.iter() < end && *it != '\0')
         {
             ++ret;
             ++it;
