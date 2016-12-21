@@ -31,9 +31,6 @@ set(LLVM_ROOT_DIR "" CACHE PATH "Location of LLVM development root")
 set(LLVM_FIND_COMPONENTS "")
 if(WIN32)
 get_filename_component(LLVM_ROOT_DIR [HKEY_LOCAL_MACHINE\\Software\\LLVM\\LLVM] ABSOLUTE)
-if(NOT LLVM_ROOT_DIR OR ${LLVM_ROOT_DIR} STREQUAL "/registry")
-get_filename_component(LLVM_ROOT_DIR [HKEY_LOCAL_MACHINE\\Software\\AxioDL\\llvm-hanafuda] ABSOLUTE)
-endif()
 endif()
 
 set(llvm_config_names llvm-config-3.9 llvm-config39
