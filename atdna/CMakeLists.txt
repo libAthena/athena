@@ -56,7 +56,7 @@ if(UNIX)
     list(APPEND PLAT_LIBS dl)
   endif()
 elseif(WIN32)
-  list(APPEND PLAT_LIBS Mincore)
+  list(APPEND PLAT_LIBS Version)
 endif()
 
 # Offer the user the choice of overriding the installation directories
