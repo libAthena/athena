@@ -11,11 +11,11 @@
 #include <sys/stat.h>
 
 #if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)
-#define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+#define S_ISREG(m) (((m)&S_IFMT) == S_IFREG)
 #endif
 
 #if !defined(S_ISDIR) && defined(S_IFMT) && defined(S_IFDIR)
-#define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
+#define S_ISDIR(m) (((m)&S_IFMT) == S_IFDIR)
 #endif
 
 #if !defined(S_ISLNK)
@@ -29,7 +29,7 @@
 #define PRISize "zu"
 
 #endif
-
+// clang-format off
 #ifndef AT_PRETTY_FUNCTION
 #   if defined(__PRETTY_FUNCTION__) || defined(__GNUC__)
 #       define AT_PRETTY_FUNCTION __PRETTY_FUNCTION__
@@ -45,7 +45,7 @@
 #       define AT_PRETTY_FUNCTION "<unknown>"
 #   endif
 #endif
-
+// clang-format on
 
 #ifdef GEKKO
 #include "gekko_support.h"
@@ -76,34 +76,34 @@ typedef struct stat64 atStat64_t;
 #define _STR(s) #s
 
 #ifndef ENABLE_BITWISE_ENUM
-#define ENABLE_BITWISE_ENUM(type)\
-constexpr type operator|(type a, type b)\
-{\
-    using T = std::underlying_type_t<type>;\
-    return type(static_cast<T>(a) | static_cast<T>(b));\
-}\
-constexpr type operator&(type a, type b)\
-{\
-    using T = std::underlying_type_t<type>;\
-    return type(static_cast<T>(a) & static_cast<T>(b));\
-}\
-inline type& operator|=(type& a, const type& b)\
-{\
-    using T = std::underlying_type_t<type>;\
-    a = type(static_cast<T>(a) | static_cast<T>(b));\
-    return a;\
-}\
-inline type& operator&=(type& a, const type& b)\
-{\
-    using T = std::underlying_type_t<type>;\
-    a = type(static_cast<T>(a) & static_cast<T>(b));\
-    return a;\
-}\
-inline type operator~(const type& key)\
-{\
-    using T = std::underlying_type_t<type>;\
-    return type(~static_cast<T>(key));\
-}
+#define ENABLE_BITWISE_ENUM(type)                                                                                      \
+    constexpr type operator|(type a, type b)                                                                           \
+    {                                                                                                                  \
+        using T = std::underlying_type_t<type>;                                                                        \
+        return type(static_cast<T>(a) | static_cast<T>(b));                                                            \
+    }                                                                                                                  \
+    constexpr type operator&(type a, type b)                                                                           \
+    {                                                                                                                  \
+        using T = std::underlying_type_t<type>;                                                                        \
+        return type(static_cast<T>(a) & static_cast<T>(b));                                                            \
+    }                                                                                                                  \
+    inline type& operator|=(type& a, const type& b)                                                                    \
+    {                                                                                                                  \
+        using T = std::underlying_type_t<type>;                                                                        \
+        a = type(static_cast<T>(a) | static_cast<T>(b));                                                               \
+        return a;                                                                                                      \
+    }                                                                                                                  \
+    inline type& operator&=(type& a, const type& b)                                                                    \
+    {                                                                                                                  \
+        using T = std::underlying_type_t<type>;                                                                        \
+        a = type(static_cast<T>(a) & static_cast<T>(b));                                                               \
+        return a;                                                                                                      \
+    }                                                                                                                  \
+    inline type operator~(const type& key)                                                                             \
+    {                                                                                                                  \
+        using T = std::underlying_type_t<type>;                                                                        \
+        return type(~static_cast<T>(key));                                                                             \
+    }
 #endif
 
 namespace athena
@@ -132,7 +132,8 @@ enum Endian
 };
 } // Athena
 
-typedef void (*atEXCEPTION_HANDLER)(athena::error::Level level, const char* file, const char* function, int line, const char* fmt, ...);
+typedef void (*atEXCEPTION_HANDLER)(athena::error::Level level, const char* file, const char* function, int line,
+                                    const char* fmt, ...);
 
 atEXCEPTION_HANDLER atGetExceptionHandler();
 /**
@@ -146,73 +147,93 @@ std::ostream& operator<<(std::ostream& os, const athena::Endian& endian);
 
 #ifdef _MSC_VER
 #ifndef NDEBUG
-#define atDebug(fmt, ...) \
-    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
-    if (__handler) \
-        __handler(athena::error::Level::Message, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
-} while(0)
+#define atDebug(fmt, ...)                                                                                              \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        atEXCEPTION_HANDLER __handler = atGetExceptionHandler();                                                       \
+        if (__handler)                                                                                                 \
+            __handler(athena::error::Level::Message, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__);      \
+    } while (0)
 #else
 #define atDebug(fmt, ...)
 #endif
 
-#define atMessage(fmt, ...) \
-    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
-    if (__handler) \
-        __handler(athena::error::Level::Message, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
-} while(0)
+#define atMessage(fmt, ...)                                                                                            \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        atEXCEPTION_HANDLER __handler = atGetExceptionHandler();                                                       \
+        if (__handler)                                                                                                 \
+            __handler(athena::error::Level::Message, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__);      \
+    } while (0)
 
-#define atWarning(fmt, ...) \
-    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
-    if (__handler) \
-        __handler(athena::error::Level::Warning, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
-} while(0)
+#define atWarning(fmt, ...)                                                                                            \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        atEXCEPTION_HANDLER __handler = atGetExceptionHandler();                                                       \
+        if (__handler)                                                                                                 \
+            __handler(athena::error::Level::Warning, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__);      \
+    } while (0)
 
-#define atError(fmt, ...) \
-    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
-    if (__handler) \
-        __handler(athena::error::Level::Error, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
-} while(0)
+#define atError(fmt, ...)                                                                                              \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        atEXCEPTION_HANDLER __handler = atGetExceptionHandler();                                                       \
+        if (__handler)                                                                                                 \
+            __handler(athena::error::Level::Error, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__);        \
+    } while (0)
 
-#define atFatal(fmt, ...) \
-    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
-    if (__handler) \
-        __handler(athena::error::Level::Fatal, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__); \
-} while(0)
+#define atFatal(fmt, ...)                                                                                              \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        atEXCEPTION_HANDLER __handler = atGetExceptionHandler();                                                       \
+        if (__handler)                                                                                                 \
+            __handler(athena::error::Level::Fatal, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt, ##__VA_ARGS__);        \
+    } while (0)
 #elif defined(__GNUC__)
 
 #ifndef NDEBUG
-#define atDebug(fmt...) \
-    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
-    if (__handler) \
-        __handler(athena::error::Level::Message, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
-} while(0)
+#define atDebug(fmt...)                                                                                                \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        atEXCEPTION_HANDLER __handler = atGetExceptionHandler();                                                       \
+        if (__handler)                                                                                                 \
+            __handler(athena::error::Level::Message, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt);                     \
+    } while (0)
 #else // _MSC_VER
 #define atDebug(fmt, ...)
 #endif // NDEBUG
 
-#define atMessage(fmt...) \
-    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
-    if (__handler) \
-        __handler(athena::error::Level::Message, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
-} while(0)
+#define atMessage(fmt...)                                                                                              \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        atEXCEPTION_HANDLER __handler = atGetExceptionHandler();                                                       \
+        if (__handler)                                                                                                 \
+            __handler(athena::error::Level::Message, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt);                     \
+    } while (0)
 
-#define atWarning(fmt...) \
-    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
-    if (__handler) \
-        __handler(athena::error::Level::Warning, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
-} while(0)
+#define atWarning(fmt...)                                                                                              \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        atEXCEPTION_HANDLER __handler = atGetExceptionHandler();                                                       \
+        if (__handler)                                                                                                 \
+            __handler(athena::error::Level::Warning, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt);                     \
+    } while (0)
 
-#define atError(fmt...) \
-    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
-    if (__handler) \
-        __handler(athena::error::Level::Error, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
-} while(0)
+#define atError(fmt...)                                                                                                \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        atEXCEPTION_HANDLER __handler = atGetExceptionHandler();                                                       \
+        if (__handler)                                                                                                 \
+            __handler(athena::error::Level::Error, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt);                       \
+    } while (0)
 
-#define atFatal(fmt...) \
-    do { atEXCEPTION_HANDLER __handler = atGetExceptionHandler(); \
-    if (__handler) \
-        __handler(athena::error::Level::Fatal, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt); \
-} while(0)
+#define atFatal(fmt...)                                                                                                \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        atEXCEPTION_HANDLER __handler = atGetExceptionHandler();                                                       \
+        if (__handler)                                                                                                 \
+            __handler(athena::error::Level::Fatal, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt);                       \
+    } while (0)
 #endif // defined(__GNUC__)
 
 #endif // GLOBAL_HPP

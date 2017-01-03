@@ -43,17 +43,16 @@ public:
     void setSkipData(std::unique_ptr<atUint8[]>&& data);
     atUint8* skipData() const;
 
-
     atUint32 slotChecksum();
     atUint32 skipChecksum();
     void fixChecksums();
 
     void setNew(bool isNew);
     bool isNew() const;
+
 private:
     std::unique_ptr<atUint8[]> m_skipData;
 };
-
 
 } // Athena
 #endif // SSQUEST_HPP

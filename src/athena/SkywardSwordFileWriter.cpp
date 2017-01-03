@@ -8,13 +8,13 @@ namespace io
 {
 
 SkywardSwordFileWriter::SkywardSwordFileWriter(atUint8* data, atUint64 len)
-    : base(data, len)
+    : MemoryCopyWriter(data, len)
 {
     setEndian(Endian::BigEndian);
 }
 
 SkywardSwordFileWriter::SkywardSwordFileWriter(const std::string& filename)
-    : base(filename)
+    : MemoryCopyWriter(filename)
 {
     setEndian(Endian::BigEndian);
 }

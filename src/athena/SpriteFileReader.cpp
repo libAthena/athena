@@ -10,12 +10,12 @@ namespace athena
 namespace io
 {
 SpriteFileReader::SpriteFileReader(atUint8* data, atUint64 length)
-    : base(data, length)
+    : MemoryCopyReader(data, length)
 {
 }
 
 SpriteFileReader::SpriteFileReader(const std::string& filepath)
-    : base(filepath)
+    : MemoryCopyReader(filepath)
 {
 
 }

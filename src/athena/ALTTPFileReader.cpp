@@ -10,12 +10,12 @@ namespace io
 {
 
 ALTTPFileReader::ALTTPFileReader(atUint8* data, atUint64 length)
-    : base(data, length)
+    : MemoryCopyReader(data, length)
 {
 }
 
 ALTTPFileReader::ALTTPFileReader(const std::string& filename)
-    : base(filename)
+    : MemoryCopyReader(filename)
 {
 }
 

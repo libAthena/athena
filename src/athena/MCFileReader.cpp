@@ -8,12 +8,12 @@ namespace io
 
 static const atUint32 SCRAMBLE_VALUE = 0x5A424741;
 MCFileReader::MCFileReader(atUint8* data, atUint64 length)
-    : base(data, length)
+    : MemoryCopyReader(data, length)
 {
 }
 
 MCFileReader::MCFileReader(const std::string& filename)
-    : base(filename)
+    : MemoryCopyReader(filename)
 {
 }
 

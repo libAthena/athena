@@ -15,7 +15,6 @@ namespace io
 
 class SpriteFileWriter : public MemoryCopyWriter
 {
-    MEMORYCOPYWRITER_BASE();
 public:
     SpriteFileWriter(atUint8* data, atUint64 length);
 

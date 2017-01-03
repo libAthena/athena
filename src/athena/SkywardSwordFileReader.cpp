@@ -9,13 +9,13 @@ namespace io
 {
 
 SkywardSwordFileReader::SkywardSwordFileReader(atUint8* data, atUint64 length)
-    : base(data, length)
+    : MemoryCopyReader(data, length)
 {
     setEndian(Endian::BigEndian);
 }
 
 SkywardSwordFileReader::SkywardSwordFileReader(const std::string& filename)
-    : base(filename)
+    : MemoryCopyReader(filename)
 {
     setEndian(Endian::BigEndian);
 }

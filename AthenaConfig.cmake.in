@@ -14,7 +14,7 @@ if(NOT TARGET AthenaCore AND NOT Athena_BINARY_DIR)
 endif()
  
 # These are IMPORTED targets created by AthenaTargets.cmake
-set(ATHENA_LIBRARIES AthenaCore AthenaSakura AthenaZelda AthenaWiiSave)
+set(ATHENA_LIBRARIES athena-core athena-wiisave athena-sakura athena-zelda)
 
 # Set icon location if on windows
 if(WIN32 AND NOT CYGWIN)

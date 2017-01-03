@@ -6,12 +6,12 @@ namespace io
 {
 
 MCFileWriter::MCFileWriter(atUint8* data, atUint64 length)
-    : base(data, length)
+    : MemoryCopyWriter(data, length)
 {
 }
 
 MCFileWriter::MCFileWriter(const std::string& filename)
-    : base(filename)
+    : MemoryCopyWriter(filename)
 {
 }
 

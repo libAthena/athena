@@ -9,12 +9,12 @@ namespace io
 {
 
 ZQuestFileWriter::ZQuestFileWriter(atUint8* data, atUint64 length)
-    : base(data, length)
+    : MemoryCopyWriter(data, length)
 {
 }
 
 ZQuestFileWriter::ZQuestFileWriter(const std::string& filename)
-    : base(filename)
+    : MemoryCopyWriter(filename)
 {
 }
 

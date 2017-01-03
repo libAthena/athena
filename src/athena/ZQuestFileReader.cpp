@@ -13,12 +13,12 @@ namespace io
 {
 
 ZQuestFileReader::ZQuestFileReader(atUint8* data, atUint64 length)
-    : base(data, length)
+    : MemoryCopyReader(data, length)
 {
 }
 
 ZQuestFileReader::ZQuestFileReader(const std::string& filename)
-    : base(filename)
+    : MemoryCopyReader(filename)
 {
 }
 

@@ -9,12 +9,12 @@ namespace athena
 namespace io
 {
 SpriteFileWriter::SpriteFileWriter(atUint8* data, atUint64 length)
-    : base(data, length)
+    : MemoryCopyWriter(data, length)
 {
 }
 
 SpriteFileWriter::SpriteFileWriter(const std::string& filepath)
-    : base(filepath)
+    : MemoryCopyWriter(filepath)
 {
 }
 
@@ -26,73 +26,51 @@ void SpriteFileWriter::writeFile(Sakura::SpriteFile* file)
         return;
     }
 
-    base::writeUint32(Sakura::SpriteFile::Magic);
-    base::writeUint32(Sakura::SpriteFile::Version);
+    writeUint32(Sakura::SpriteFile::Magic);
+    writeUint32(Sakura::SpriteFile::Version);
 
-    base::writeUint16(file->textureCount());
-    base::writeUint32(file->width());
-    base::writeUint32(file->height());
-    base::writeFloat(file->originX());
-    base::writeFloat(file->originY());
-    base::writeUint16(file->spriteCount());
+    writeUint16(file->textureCount());
+    writeUint32(file->width());
+    writeUint32(file->height());
+    writeFloat(file->originX());
+    writeFloat(file->originY());
+    writeUint16(file->spriteCount());
 
-    base::writeUint32(0xFFFFFFFF);
+    writeUint32(0xFFFFFFFF);
 
     for (Sakura::STexture* texture : file->textures())
     {
-        base::writeString(texture->Filepath);
-        base::writeBool(texture->Preload);
+        writeString(texture->Filepath);
+        writeBool(texture->Preload);
     }
-
-#ifndef ATHENA_USE_QT
 
     for (std::pair<std::string, Sakura::Sprite*> spritePair : file->sprites())
     {
         Sakura::Sprite* sprite = spritePair.second;
-        base::writeString(sprite->name());
-#else
-
-    foreach (Sakura::Sprite* sprite, file->sprites().values())
-    {
-
-        base::writeString(sprite->name().toStdString());
-#endif
-        base::writeUint16(sprite->frameCount());
-        base::writeUint16(sprite->stateCount());
+        writeString(sprite->name());
+        writeUint16(sprite->frameCount());
+        writeUint16(sprite->stateCount());
 
         for (int id : sprite->stateIds())
-            base::writeUint16(id);
+            writeUint16(id);
 
         for (Sakura::SpriteFrame* frame : sprite->frames())
         {
-            base::writeFloat(frame->frameTime());
-            base::writeUint16(frame->partCount());
+            writeFloat(frame->frameTime());
+            writeUint16(frame->partCount());
 
             for (Sakura::SpritePart* part : frame->parts())
             {
-#ifndef ATHENA_USE_QT
-                base::writeString(part->name());
-#else
-                base::writeString(part->name().toStdString());
-#endif
-                base::writeBool(part->hasCollision());
-#ifndef ATHENA_USE_QT
-                base::writeFloat(part->offset().x);
-                base::writeFloat(part->offset().y);
-                base::writeFloat(part->textureOffset().x);
-                base::writeFloat(part->textureOffset().y);
-                base::writeUint32(part->size().x);
-                base::writeUint32(part->size().y);
-#else
-                base::writeFloat(part->offset().x());
-                base::writeFloat(part->offset().y());
-                base::writeFloat(part->textureOffset().x());
-                base::writeFloat(part->textureOffset().y());
-                base::writeUint32(part->size().width());
-                base::writeUint32(part->size().height());
-#endif
-                base::writeBool(part->flippedHorizontally());
-                base::writeBool(part->flippedVertically());
+                writeString(part->name());
+                writeBool(part->hasCollision());
+                writeFloat(part->offset().x);
+                writeFloat(part->offset().y);
+                writeFloat(part->textureOffset().x);
+                writeFloat(part->textureOffset().y);
+                writeUint32(part->size().x);
+                writeUint32(part->size().y);
+                writeBool(part->flippedHorizontally());
+                writeBool(part->flippedVertically());
             }
         }
     }

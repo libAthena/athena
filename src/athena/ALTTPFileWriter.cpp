@@ -10,12 +10,12 @@ namespace io
 {
 
 ALTTPFileWriter::ALTTPFileWriter(atUint8* data, atUint64 length)
-    : base(data, length)
+    : MemoryCopyWriter(data, length)
 {
 }
 
 ALTTPFileWriter::ALTTPFileWriter(const std::string& filename)
-    : base(filename)
+    : MemoryCopyWriter(filename)
 {
 }
 
