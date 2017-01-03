@@ -15,7 +15,6 @@ namespace io
 
 class SpriteFileReader : public MemoryCopyReader
 {
-    MEMORYCOPYREADER_BASE();
 public:
     SpriteFileReader(atUint8* data, atUint64 length);
     SpriteFileReader(const std::string& filepath);

@@ -22,7 +22,6 @@ namespace io
  */
 class WiiSaveWriter : protected MemoryCopyWriter
 {
-    MEMORYCOPYWRITER_BASE();
 public:
     /*! \brief This constructor creates an instance from a file on disk.
      *

@@ -21,8 +21,6 @@ namespace io
  */
 class ALTTPFileReader : protected MemoryCopyReader
 {
-    MEMORYCOPYREADER_BASE();
-
 public:
     /*! \brief This constructor takes an existing buffer to read from.
      *

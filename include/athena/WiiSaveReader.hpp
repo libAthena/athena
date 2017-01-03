@@ -23,7 +23,6 @@ namespace io
  */
 class WiiSaveReader : public MemoryCopyReader
 {
-    MEMORYCOPYREADER_BASE();
 public:
     /*! \brief This constructor takes an existing buffer to read from.
      *

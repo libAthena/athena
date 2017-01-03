@@ -19,11 +19,11 @@ MCFileReader::MCFileReader(const std::string& filename)
 
 MCFile* MCFileReader::readFile()
 {
-    bool isScrambled = base::readUint32() != SCRAMBLE_VALUE;
-    base::m_position = 0;
+    bool isScrambled = readUint32() != SCRAMBLE_VALUE;
+    m_position = 0;
 
     if (isScrambled)
-        MCFile::unscramble(base::m_dataCopy.get(), base::m_length);
+        MCFile::unscramble(m_dataCopy.get(), m_length);
 
     return nullptr;
 }

@@ -156,6 +156,9 @@ add_library(athena-zelda EXCLUDE_FROM_ALL
     include/athena/SkywardSwordFileReader.hpp
     include/athena/SkywardSwordFileWriter.hpp
     include/athena/SkywardSwordQuest.hpp
+    include/athena/ZQuestFile.hpp
+    include/athena/ZQuestFileReader.hpp
+    include/athena/ZQuestFileWriter.hpp
 )
 
 # Icon

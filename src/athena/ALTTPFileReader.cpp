@@ -52,22 +52,22 @@ ALTTPFile* ALTTPFileReader::readFile()
 
         quest->setOverworldEvents(owEvents);
 
-        quest->setInventory(*(ALTTPInventory*)base::readBytes(sizeof(ALTTPInventory)).get());
-        quest->setRupeeMax(base::readUint16());
-        quest->setRupeeCurrent(base::readUint16());
+        quest->setInventory(*(ALTTPInventory*)readBytes(sizeof(ALTTPInventory)).get());
+        quest->setRupeeMax(readUint16());
+        quest->setRupeeCurrent(readUint16());
         quest->setCompasses(readDungeonFlags());
         quest->setBigKeys(readDungeonFlags());
         quest->setDungeonMaps(readDungeonFlags());
-        quest->setWishingPond(base::readUint16());
-        quest->setHealthMax(base::readByte());
-        quest->setHealth(base::readByte());
-        quest->setMagicPower(base::readByte());
-        quest->setKeys(base::readByte());
-        quest->setBombUpgrades(base::readByte());
-        quest->setArrowUpgrades(base::readByte());
-        quest->setHealthFiller(base::readByte());
-        quest->setMagicFiller(base::readByte());
-        atUint8 pendantsByte = base::readUByte();
+        quest->setWishingPond(readUint16());
+        quest->setHealthMax(readByte());
+        quest->setHealth(readByte());
+        quest->setMagicPower(readByte());
+        quest->setKeys(readByte());
+        quest->setBombUpgrades(readByte());
+        quest->setArrowUpgrades(readByte());
+        quest->setHealthFiller(readByte());
+        quest->setMagicFiller(readByte());
+        atUint8 pendantsByte = readUByte();
         ALTTPPendants pendants;
         pendants.Courage = pendantsByte & 1;
         pendants.Wisdom  = (pendantsByte >> 1) & 1;
@@ -78,11 +78,11 @@ ALTTPFile* ALTTPFileReader::readFile()
         pendants.Unused4 = false;
         pendants.Unused5 = false;
         quest->setPendants(pendants);
-        quest->setBombFiller(base::readByte());
-        quest->setArrowFiller(base::readByte());
-        quest->setArrows(base::readByte());
-        base::seek(1);
-        atUint8 abilitiesByte = base::readUByte();
+        quest->setBombFiller(readByte());
+        quest->setArrowFiller(readByte());
+        quest->setArrows(readByte());
+        seek(1);
+        atUint8 abilitiesByte = readUByte();
         ALTTPAbilities abilities;
         abilities.Nothing = abilitiesByte & 1;
         abilities.Swim = (abilitiesByte >> 1) & 1;
@@ -93,42 +93,42 @@ ALTTPFile* ALTTPFileReader::readFile()
         abilities.Read = (abilitiesByte >> 6) & 1;
         abilities.Unknown2 = (abilitiesByte >> 7) & 1;
         quest->setAbilityFlags(abilities);
-        quest->setCrystals(*(ALTTPCrystals*)base::readBytes(sizeof(ALTTPCrystals)).get());
-        quest->setMagicUsage(*(ALTTPMagicUsage*)base::readBytes(sizeof(ALTTPMagicUsage)).get());
+        quest->setCrystals(*(ALTTPCrystals*)readBytes(sizeof(ALTTPCrystals)).get());
+        quest->setMagicUsage(*(ALTTPMagicUsage*)readBytes(sizeof(ALTTPMagicUsage)).get());
 
         j = 0x10;
 
         while ((j--) > 0)
         {
-            dungeonKeys.push_back(base::readByte());
+            dungeonKeys.push_back(readByte());
         }
 
         quest->setDungeonKeys(dungeonKeys);
-        base::seek(0x039);
-        quest->setProgressIndicator((ALTTPProgressIndicator)base::readByte());
-        quest->setProgressFlags1(*(ALTTPProgressFlags1*)base::readBytes(sizeof(ALTTPProgressFlags1)).get());
-        quest->setMapIcon((ALTTPMapIcon)base::readByte());
-        quest->setStartLocation((ALTTPStartLocation)base::readByte());
-        quest->setProgressFlags2(*(ALTTPProgressFlags2*)base::readBytes(sizeof(ALTTPProgressFlags2)).get());
-        quest->setLightDarkWorldIndicator(*(ALTTPLightDarkWorldIndicator*)base::readBytes(1).get());
-        base::seek(1);
-        quest->setTagAlong((ALTTPTagAlong)base::readByte());
+        seek(0x039);
+        quest->setProgressIndicator((ALTTPProgressIndicator)readByte());
+        quest->setProgressFlags1(*(ALTTPProgressFlags1*)readBytes(sizeof(ALTTPProgressFlags1)).get());
+        quest->setMapIcon((ALTTPMapIcon)readByte());
+        quest->setStartLocation((ALTTPStartLocation)readByte());
+        quest->setProgressFlags2(*(ALTTPProgressFlags2*)readBytes(sizeof(ALTTPProgressFlags2)).get());
+        quest->setLightDarkWorldIndicator(*(ALTTPLightDarkWorldIndicator*)readBytes(1).get());
+        seek(1);
+        quest->setTagAlong((ALTTPTagAlong)readByte());
 
         j = 6;
 
         while ((j--) > 0)
         {
-            oldmanFlags.push_back(base::readByte());
+            oldmanFlags.push_back(readByte());
         }
 
         quest->setOldManFlags(oldmanFlags);
-        quest->setBombFlag(base::readByte());
+        quest->setBombFlag(readByte());
 
         j = 5;
 
         while ((j--) > 0)
         {
-            unknown1.push_back(base::readByte());
+            unknown1.push_back(readByte());
         }
 
         quest->setUnknown1(unknown1);
@@ -137,28 +137,28 @@ ALTTPFile* ALTTPFileReader::readFile()
 
         while ((j--) > 0)
         {
-            playerName.push_back(base::readUint16());
+            playerName.push_back(readUint16());
         }
 
         quest->setPlayerName(playerName);
-        quest->setValid((base::readUint16() == 0x55AA));
+        quest->setValid((readUint16() == 0x55AA));
 
         j = 0x0D;
 
         while ((j--) > 0)
         {
-            dungeonDeaths.push_back(base::readUint16());
+            dungeonDeaths.push_back(readUint16());
         }
 
         quest->setDungeonDeathTotals(dungeonDeaths);
 
-        quest->setUnknown2(base::readUint16());
-        quest->setDeathSaveCount(base::readUint16());
-        quest->setPostGameDeathCounter(base::readInt16());
+        quest->setUnknown2(readUint16());
+        quest->setDeathSaveCount(readUint16());
+        quest->setPostGameDeathCounter(readInt16());
 
-        base::seek(0xF7);
+        seek(0xF7);
 
-        quest->setChecksum(base::readUint16());
+        quest->setChecksum(readUint16());
 
         if (i < 3)
             quests.push_back(quest);
@@ -172,7 +172,7 @@ ALTTPFile* ALTTPFileReader::readFile()
 ALTTPRoomFlags* ALTTPFileReader::readRoomFlags()
 {
     ALTTPRoomFlags* flags = new ALTTPRoomFlags;
-    atUint8 flagsByte    = base::readUByte();
+    atUint8 flagsByte    = readUByte();
     flags->Chest1        = flagsByte & 1;
     flags->Chest2        = (flagsByte >> 1) & 1;
     flags->Chest3        = (flagsByte >> 2) & 1;
@@ -181,7 +181,7 @@ ALTTPRoomFlags* ALTTPFileReader::readRoomFlags()
     flags->Quadrant2     = (flagsByte >> 5) & 1;
     flags->Quadrant3     = (flagsByte >> 6) & 1;
     flags->Quadrant4     = (flagsByte >> 7) & 1;
-    flagsByte            = base::readUByte();
+    flagsByte            = readUByte();
     flags->Door1         = flagsByte & 1;
     flags->Door2         = (flagsByte >> 1) & 1;
     flags->Door3         = (flagsByte >> 2) & 1;
@@ -197,7 +197,7 @@ ALTTPRoomFlags* ALTTPFileReader::readRoomFlags()
 ALTTPOverworldEvent* ALTTPFileReader::readOverworldEvent()
 {
     ALTTPOverworldEvent* event = new ALTTPOverworldEvent;
-    atUint8 flagsByte = base::readUByte();
+    atUint8 flagsByte = readUByte();
     event->Unused1    = flagsByte & 1;
     event->HeartPiece = (flagsByte >> 1) & 1;
     event->Overlay    = (flagsByte >> 2) & 1;
@@ -212,7 +212,7 @@ ALTTPOverworldEvent* ALTTPFileReader::readOverworldEvent()
 ALTTPDungeonItemFlags ALTTPFileReader::readDungeonFlags()
 {
     ALTTPDungeonItemFlags flags;
-    atUint8 flagsByte     = base::readUByte();
+    atUint8 flagsByte     = readUByte();
     flags.Unused1         = flagsByte & 1;
     flags.Unused2         = (flagsByte >> 1) & 1;
     flags.GanonsTower     = (flagsByte >> 2) & 1;
@@ -221,7 +221,7 @@ ALTTPDungeonItemFlags ALTTPFileReader::readDungeonFlags()
     flags.TowerOfHera     = (flagsByte >> 5) & 1;
     flags.IcePalace       = (flagsByte >> 6) & 1;
     flags.SkullWoods      = (flagsByte >> 7) & 1;
-    flagsByte             = base::readUByte();
+    flagsByte             = readUByte();
     flags.MiseryMire      = flagsByte & 1;
     flags.DarkPalace      = (flagsByte >> 1) & 1;
     flags.SwampPalace     = (flagsByte >> 2) & 1;

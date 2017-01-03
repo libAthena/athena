@@ -121,18 +121,5 @@ protected:
 } // io
 } // Athena
 
-#ifndef MEMORYREADER_BASE
-#define MEMORYREADER_BASE() \
-private: \
-    typedef athena::io::MemoryReader base
-
-#endif // MEMORYREADER_BASE
-
-#ifndef MEMORYCOPYREADER_BASE
-#define MEMORYCOPYREADER_BASE() \
-private: \
-    typedef athena::io::MemoryCopyReader base
-
-#endif // MEMORYCOPYREADER_BASE
 
 #endif // MEMORYREADER_HPP
