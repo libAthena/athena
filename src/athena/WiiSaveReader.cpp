@@ -7,7 +7,7 @@
 #include "athena/FileWriter.hpp"
 #include "md5.h"
 #include "aes.hpp"
-#include "ecc.h"
+#include "ec.hpp"
 #include "sha1.h"
 #include <iostream>
 #include <iomanip>
@@ -294,7 +294,6 @@ WiiFile* WiiSaveReader::readFile()
 
 void WiiSaveReader::readCerts(atUint32 totalSize)
 {
-#if 0
     std::cout << "Reading certs..." << std::endl;
     atUint32 dataSize = totalSize - 0x340;
     std::unique_ptr<atUint8[]> sig    = base::readUBytes(0x40);
@@ -307,22 +306,14 @@ void WiiSaveReader::readCerts(atUint32 totalSize)
     std::cout << "validating..." << std::endl;
     hash = getSha1(data.get(), dataSize);
     atUint8* hash2 = getSha1(hash, 20);
-    bool failed = false;
+    bool ngValid = false;
+    bool apValid = false;
+    ecc::checkEC(ngCert.get(), apCert.get(), sig.get(), hash2, apValid, ngValid);
 
-    if (!ecdsa_verify(ngCert.get(), hash, sig.get()))
-    {
-        std::cout << "NGCert failure" << std::endl;
-        failed = true;
-    }
-    if (!ecdsa_verify(apCert.get(), hash2, sig.get()))
-    {
-        std::cout << "APCert failure" << std::endl;
-        failed = true;
-    }
-
-    if (!failed)
-        std::cout << "certificates ok" << std::endl;
-#endif
+    if (apValid)
+        std::cout << "AP Certificate ok" << std::endl;
+    if (ngValid)
+        std::cout << "NG Certificate ok" << std::endl;
 }
 
 WiiFile* WiiSaveReader::buildTree(std::vector<WiiFile*> files)

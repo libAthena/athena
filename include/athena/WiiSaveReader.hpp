@@ -21,7 +21,7 @@ namespace io
  *  all work is done using a memory buffer, and not read directly from the disk.
  *  \sa BinaryReader
  */
-class WiiSaveReader : protected MemoryCopyReader
+class WiiSaveReader : public MemoryCopyReader
 {
     MEMORYCOPYREADER_BASE();
 public:

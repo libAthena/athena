@@ -10,7 +10,7 @@
 #include "athena/Utility.hpp"
 
 #include "aes.hpp"
-#include "ecc.h"
+#include "ec.hpp"
 #include "md5.h"
 #include "sha1.h"
 
@@ -194,7 +194,6 @@ void WiiSaveWriter::writeImage(WiiImage* image)
 
 void WiiSaveWriter::writeCerts(atUint32 filesSize, atUint32 ngId, atUint8* ngPriv, atUint8* ngSig, atUint32 ngKeyId)
 {
-#if 0
     atUint8  sig[0x40];
     atUint8  ngCert[0x180];
     atUint8  apCert[0x180];
@@ -208,7 +207,7 @@ void WiiSaveWriter::writeCerts(atUint32 filesSize, atUint32 ngId, atUint8* ngPri
 
     sprintf(signer, "Root-CA00000001-MS00000002");
     sprintf(name, "NG%08x", ngId);
-    make_ec_cert(ngCert, ngSig, signer, name, ngPriv, ngKeyId);
+    ecc::makeECCert(ngCert, ngSig, signer, name, ngPriv, ngKeyId);
 
     memset(apPriv, 0, 30);
     apPriv[10] = 1;
@@ -217,11 +216,11 @@ void WiiSaveWriter::writeCerts(atUint32 filesSize, atUint32 ngId, atUint8* ngPri
 
     sprintf(signer, "Root-CA00000001-MS00000002-NG%08x", ngId);
     sprintf(name, "AP%08x%08x", 1, 2);
-    make_ec_cert(apCert, apSig, signer, name, apPriv, 0);
+    ecc::makeECCert(apCert, apSig, signer, name, apPriv, 0);
 
     hash = getSha1(apCert + 0x80, 0x100);
-    generate_ecdsa(apSig, apSig + 30, ngPriv, hash);
-    make_ec_cert(apCert, apSig, signer, name, apPriv, 0);
+    ecc::createECDSA(apSig, apSig + 30, ngPriv, hash);
+    ecc::makeECCert(apCert, apSig, signer, name, apPriv, 0);
     delete[] hash;
 
     dataSize = filesSize + 0x80;
@@ -234,7 +233,7 @@ void WiiSaveWriter::writeCerts(atUint32 filesSize, atUint32 ngId, atUint8* ngPri
     delete[] hash;
     delete[] data;
 
-    generate_ecdsa(sig, sig + 30, apPriv, hash2);
+    ecc::createECDSA(sig, sig + 30, apPriv, hash2);
     int stuff = 0x2f536969;
 
     if (!utility::isSystemBigEndian())
@@ -246,7 +245,6 @@ void WiiSaveWriter::writeCerts(atUint32 filesSize, atUint32 ngId, atUint8* ngPri
     base::writeBytes((atInt8*)sig, 0x40);
     base::writeBytes((atInt8*)ngCert, 0x180);
     base::writeBytes((atInt8*)apCert, 0x180);
-#endif
 }
 
 } // io
