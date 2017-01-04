@@ -26,11 +26,7 @@ SpriteFile::SpriteFile(atUint32 width, atUint32 height, float originX, float ori
 {
 }
 
-#ifndef ATHENA_USE_QT
 SpriteFile::SpriteFile(const Vector2Di& size, const Vector2Df& origin)
-#else
-SpriteFile::SpriteFile(const QSize& size, const QPoint& origin)
-#endif
     : m_size(size),
       m_origin(origin)
 {
@@ -38,113 +34,64 @@ SpriteFile::SpriteFile(const QSize& size, const QPoint& origin)
 
 SpriteFile::~SpriteFile()
 {
-#ifndef ATHENA_USE_QT
-
     for (std::pair<std::string, Sprite*> sprite : m_sprites)
     {
         delete sprite.second;
         sprite.second = NULL;
     }
 
-#endif
     m_sprites.clear();
 }
 
 void SpriteFile::setSize(atUint32 width, atUint32 height)
 {
-#ifndef ATHENA_USE_QT
     setSize(Vector2Di(width, height));
-#else
-    setSize(QSize(width, height));
-#endif
 }
 
-#ifndef ATHENA_USE_QT
 void SpriteFile::setSize(const Vector2Di& size)
-#else
-void SpriteFile::setSize(const QSize& size)
-#endif
 {
     m_size = size;
-#ifdef ATHENA_USE_QT
-    emit sizeChanged(size);
-#endif
 }
 
-#ifndef ATHENA_USE_QT
 Vector2Di SpriteFile::size() const
-#else
-QSize SpriteFile::size() const
-#endif
 {
     return m_size;
 }
 
 atUint32 SpriteFile::width() const
 {
-#ifndef ATHENA_USE_QT
     return m_size.x;
-#else
-    return m_size.width();
-#endif
 }
 
 atUint32 SpriteFile::height() const
 {
-#ifndef ATHENA_USE_QT
     return m_size.y;
-#else
-    return m_size.height();
-#endif
 }
 
 void SpriteFile::setOrigin(const float x, const float y)
 {
-#ifndef ATHENA_USE_QT
     setOrigin(Vector2Df(x, y));
-#else
-    setOrigin(QPoint(x, y));
-#endif
 }
 
-#ifndef ATHENA_USE_QT
 void SpriteFile::setOrigin(const Vector2Df& origin)
-#else
-void SpriteFile::setOrigin(const QPoint& origin)
-#endif
 {
     m_origin = origin;
-#ifdef ATHENA_USE_QT
-    emit originChanged(origin);
-#endif
 }
 
 
-#ifndef ATHENA_USE_QT
 Vector2Df SpriteFile::origin() const
-#else
-QPoint SpriteFile::origin() const
-#endif
 {
     return m_origin;
 }
 
 float SpriteFile::originX() const
 {
-#ifndef ATHENA_USE_QT
     return m_origin.x;
-#else
-    return m_origin.x();
-#endif
 }
 
 float SpriteFile::originY() const
 {
-#ifndef ATHENA_USE_QT
     return m_origin.y;
-#else
-    return m_origin.y();
-#endif
 }
 
 bool SpriteFile::addTexture(STexture* texture)
@@ -174,11 +121,7 @@ STexture* SpriteFile::texture(atUint32 id)
     return m_textures[id];
 }
 
-#ifndef ATHENA_USE_QT
 std::vector<STexture*> SpriteFile::textures() const
-#else
-QList<STexture*> SpriteFile::textures() const
-#endif
 {
     return m_textures;
 }
@@ -190,25 +133,15 @@ atUint32 SpriteFile::textureCount() const
 
 void SpriteFile::addSprite(Sprite* sprite)
 {
-#ifndef ATHENA_USE_QT
     std::string name(sprite->name());
     athena::utility::tolower(name);
 
     if (m_sprites.find(name) != m_sprites.end())
         return;
 
-#else
-    QString name = sprite->name().toLower();
-
-    if (m_sprites.contains(name))
-        return;
-
-#endif
-
     m_sprites[name] = sprite;
 }
 
-#ifndef ATHENA_USE_QT
 void SpriteFile::removeSprite(const std::string& name)
 {
     std::string tmpName(name);
@@ -218,19 +151,12 @@ void SpriteFile::removeSprite(const std::string& name)
     if (iterator != m_sprites.end())
         m_sprites.erase(iterator);
 }
-#else
-void SpriteFile::removeSprite(const QString& name)
-{
-    m_sprites.remove(name.toLower());
-}
-#endif
 
 void SpriteFile::removeSprite(Sprite* sprite)
 {
     removeSprite(sprite->name());
 }
 
-#ifndef ATHENA_USE_QT
 void SpriteFile::setSprites(std::unordered_map<std::string, Sprite*> sprites)
 {
     if (sprites.size() == 0)
@@ -249,18 +175,7 @@ void SpriteFile::setSprites(std::unordered_map<std::string, Sprite*> sprites)
 
     m_sprites = sprites;
 }
-#else
-void SpriteFile::setSprites(QMap<QString, Sprite*> sprites)
-{
-    if (sprites.size() == 0)
-        return;
 
-    m_sprites.clear();
-    m_sprites = sprites;
-}
-#endif
-
-#ifndef ATHENA_USE_QT
 Sprite* SpriteFile::sprite(const std::string& name)
 {
     std::string nameLow(name);
@@ -271,21 +186,8 @@ Sprite* SpriteFile::sprite(const std::string& name)
 
     return m_sprites[nameLow];
 }
-#else
-Sprite* SpriteFile::sprite(const QString& name)
-{
-    if (!m_sprites.contains(name.toLower()))
-        return NULL;
 
-    return m_sprites[name.toLower()];
-}
-#endif
-
-#ifndef ATHENA_USE_QT
 std::unordered_map<std::string, Sprite*> SpriteFile::sprites() const
-#else
-QMap<QString, Sprite*> SpriteFile::sprites() const
-#endif
 {
     return m_sprites;
 }
@@ -295,7 +197,6 @@ atUint32 SpriteFile::spriteCount() const
     return (atUint32)m_sprites.size();
 }
 
-#ifndef ATHENA_USE_QT
 void SpriteFile::setTextures(std::vector<STexture*> textures)
 {
     if (textures.size() == 0)
@@ -314,15 +215,6 @@ void SpriteFile::setTextures(std::vector<STexture*> textures)
 
     m_textures = textures;
 }
-#else
-void SpriteFile::setTextures(QList<STexture*> textures)
-{
-    if (textures.size() == 0)
-        return;
 
-    m_textures.clear();
-    m_textures = textures;
-}
-#endif
 } // Sakura
 } // zelda

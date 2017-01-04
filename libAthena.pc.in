@@ -6,5 +6,5 @@ Name: libAthena
 Description: Basic cross platform IO library
 Version: @ATHENA_VERSION@
 Cflags: -I${includedir}/Athena -std=c++11
-Libs: -L${libdir} -lAthenaCore -lAthenaSakura -lAthenaZelda -lAthenaWiiSave
+Libs: -L${libdir} -lathena-core -lathena-sakura -lathena-zelda -lathena-wiiSave
 Requires: zlib

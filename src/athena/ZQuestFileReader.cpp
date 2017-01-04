@@ -13,12 +13,12 @@ namespace io
 {
 
 ZQuestFileReader::ZQuestFileReader(atUint8* data, atUint64 length)
-    : base(data, length)
+    : MemoryCopyReader(data, length)
 {
 }
 
 ZQuestFileReader::ZQuestFileReader(const std::string& filename)
-    : base(filename)
+    : MemoryCopyReader(filename)
 {
 }
 
@@ -30,7 +30,7 @@ ZQuestFile* ZQuestFileReader::read()
     atUint16 BOM;
     atUint32 checksum = 0;
 
-    magic = base::readUint32();
+    magic = readUint32();
 
     if ((magic & 0x00FFFFFF) != (ZQuestFile::Magic & 0x00FFFFFF))
     {
@@ -38,7 +38,7 @@ ZQuestFile* ZQuestFileReader::read()
         return nullptr;
     }
 
-    version = base::readUint32();
+    version = readUint32();
 
     if (version > ZQuestFile::Version)
     {
@@ -46,12 +46,12 @@ ZQuestFile* ZQuestFileReader::read()
         return nullptr;
     }
 
-    compressedLen = base::readUint32();
-    uncompressedLen = base::readUint32();
+    compressedLen = readUint32();
+    uncompressedLen = readUint32();
 
     if (version >= ZQUEST_VERSION_CHECK(2, 0, 0))
     {
-        gameString = std::string((const char*)base::readBytes(0x0A).get(), 0x0A);
+        gameString = std::string((const char*)readBytes(0x0A).get(), 0x0A);
 
         for (size_t i = 0; i <  ZQuestFile::gameStringList().size(); i++)
         {
@@ -63,17 +63,17 @@ ZQuestFile* ZQuestFileReader::read()
             }
         }
 
-        BOM = base::readUint16();
-        checksum = base::readUint32();
+        BOM = readUint16();
+        checksum = readUint32();
     }
     else
     {
-        game = (ZQuestFile::Game)base::readUint32();
-        BOM = base::readUint16();
-        base::seek(0x0A);
+        game = (ZQuestFile::Game)readUint32();
+        BOM = readUint16();
+        seek(0x0A);
     }
 
-    std::unique_ptr<atUint8[]> data = base::readUBytes(compressedLen); // compressedLen is always the total file size
+    std::unique_ptr<atUint8[]> data = readUBytes(compressedLen); // compressedLen is always the total file size
 
     if (version >= ZQUEST_VERSION_CHECK(2, 0, 0))
     {

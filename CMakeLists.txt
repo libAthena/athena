@@ -19,7 +19,7 @@ set(ATHENA_VERSION
 
 add_subdirectory(extern)
 
-include_directories(include ${LZO_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR} ${EASYECC_INCLUDE_DIR})
+include_directories(include ${LZO_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
 
 if (NOT MSVC)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
@@ -103,8 +103,8 @@ add_library(athena-wiisave EXCLUDE_FROM_ALL
     src/athena/WiiSave.cpp
     src/athena/WiiSaveReader.cpp
     src/athena/WiiSaveWriter.cpp
-#    src/bn.cpp
-#    src/ec.cpp
+    src/bn.cpp
+    src/ec.cpp
     src/md5.cpp
     src/sha1.cpp
     src/aes.cpp
@@ -116,8 +116,8 @@ add_library(athena-wiisave EXCLUDE_FROM_ALL
     include/athena/WiiSaveReader.hpp
     include/athena/WiiSaveWriter.hpp
     include/aes.hpp
-#    include/bn.h
-#    include/ec.h
+    include/bn.hpp
+    include/ec.hpp
     include/md5.h
     include/sha1.h
 )
@@ -156,6 +156,9 @@ add_library(athena-zelda EXCLUDE_FROM_ALL
     include/athena/SkywardSwordFileReader.hpp
     include/athena/SkywardSwordFileWriter.hpp
     include/athena/SkywardSwordQuest.hpp
+    include/athena/ZQuestFile.hpp
+    include/athena/ZQuestFileReader.hpp
+    include/athena/ZQuestFileWriter.hpp
 )
 
 # Icon

@@ -20,8 +20,6 @@ namespace io
  */
 class ALTTPFileWriter : protected MemoryCopyWriter
 {
-    MEMORYCOPYWRITER_BASE();
-
 public:
     /*! \brief This constructor takes an existing buffer to write to.
      *

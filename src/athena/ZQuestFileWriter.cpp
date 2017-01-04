@@ -9,12 +9,12 @@ namespace io
 {
 
 ZQuestFileWriter::ZQuestFileWriter(atUint8* data, atUint64 length)
-    : base(data, length)
+    : MemoryCopyWriter(data, length)
 {
 }
 
 ZQuestFileWriter::ZQuestFileWriter(const std::string& filename)
-    : base(filename)
+    : MemoryCopyWriter(filename)
 {
 }
 
@@ -26,8 +26,8 @@ void ZQuestFileWriter::write(ZQuestFile* quest, bool compress)
         return;
     }
 
-    base::writeUint32(ZQuestFile::Magic);
-    base::writeUint32(ZQuestFile::Version);
+    writeUint32(ZQuestFile::Magic);
+    writeUint32(ZQuestFile::Version);
     atUint8* questData = quest->data();
     atUint32 compLen;
 
@@ -44,28 +44,28 @@ void ZQuestFileWriter::write(ZQuestFile* quest, bool compress)
             // Delete the compressed data since we won't be using it
             delete[] compData;
             compData = NULL;
-            base::writeUint32(quest->length());
+            writeUint32(quest->length());
         }
         else
         {
             // Don't do delete on data
             questData = compData;
-            base::writeUint32(compLen);
+            writeUint32(compLen);
         }
     }
     else
     {
         compLen = quest->length();
-        base::writeUint32(quest->length());
+        writeUint32(quest->length());
     }
 
-    base::writeUint32(quest->length());
-    base::writeBytes((atInt8*)quest->gameString().substr(0, 0x0A).c_str(), 0x0A);
-    base::writeUint16(quest->endian() == Endian::BigEndian ? 0xFFFE : 0xFEFF);
-    base::writeUint32(athena::Checksums::crc32(questData, compLen));
-    base::writeUBytes(questData, compLen);
+    writeUint32(quest->length());
+    writeBytes((atInt8*)quest->gameString().substr(0, 0x0A).c_str(), 0x0A);
+    writeUint16(quest->endian() == Endian::BigEndian ? 0xFFFE : 0xFEFF);
+    writeUint32(athena::Checksums::crc32(questData, compLen));
+    writeUBytes(questData, compLen);
 
-    base::save();
+    save();
 
     // Delete compressed data to prevent memory leaks
     if (questData != quest->data())

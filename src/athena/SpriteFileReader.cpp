@@ -10,12 +10,12 @@ namespace athena
 namespace io
 {
 SpriteFileReader::SpriteFileReader(atUint8* data, atUint64 length)
-    : base(data, length)
+    : MemoryCopyReader(data, length)
 {
 }
 
 SpriteFileReader::SpriteFileReader(const std::string& filepath)
-    : base(filepath)
+    : MemoryCopyReader(filepath)
 {
 
 }
@@ -24,7 +24,7 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
 {
     Sakura::SpriteFile* ret = NULL;
 
-    atUint32 magic = base::readUint32();
+    atUint32 magic = readUint32();
 
     if (magic != Sakura::SpriteFile::Magic)
     {
@@ -32,7 +32,7 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
         return nullptr;
     }
 
-    atUint32 version = base::readUint32();
+    atUint32 version = readUint32();
 
     // TODO: Make this more verbose
     if (version != Sakura::SpriteFile::Version)
@@ -46,13 +46,13 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
     // Such as the texture count, it's dimensions, and it's origin.
     // After that we have the number of sprites contained in this
     // sprite container.
-    atUint16 textureCount = base::readUint16(); // Having it as a Uint16 gives us the ability to have up to 65536 different states
+    atUint16 textureCount = readUint16(); // Having it as a Uint16 gives us the ability to have up to 65536 different states
     // This is probably overkill, but it's better safe than sorry.
-    atUint32 width        = base::readUint32();
-    atUint32 height       = base::readUint32();
-    float originX       = base::readFloat();
-    float originY       = base::readFloat();
-    atUint16 spriteCount  = base::readUint16();
+    atUint32 width        = readUint32();
+    atUint32 height       = readUint32();
+    float originX       = readFloat();
+    float originY       = readFloat();
+    atUint16 spriteCount  = readUint16();
 
     // Lets go ahead and create or new container.
     ret = new Sakura::SpriteFile(width, height, originX, originY);
@@ -62,7 +62,7 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
     // to migrate this code to Big Endian based systems, such as the wii
     // which require data to be 32 byte aligned, or it causes some issues.
     // It's also convenient to have this, for later expansion.
-    atUint32 reserved     = base::readUint32();
+    atUint32 reserved     = readUint32();
     UNUSED(reserved);
 
     // Next we have to load the textures
@@ -79,8 +79,8 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
     for (atUint16 i = 0; i < textureCount; i++)
     {
         Sakura::STexture* texture = new Sakura::STexture;
-        texture->Filepath = base::readString();
-        texture->Preload  = base::readBool();
+        texture->Filepath = readString();
+        texture->Preload  = readBool();
         textures.push_back(texture);
     }
 
@@ -102,19 +102,19 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
     {
         Sakura::Sprite* sprite = new Sakura::Sprite(ret);
 #ifndef ATHENA_USE_QT
-        std::string name = base::readString();
+        std::string name = readString();
 #else
-        QString name = QString::fromStdString(base::readString());
+        QString name = QString::fromStdString(readString());
 #endif
         sprite->setName(name);
-        atUint16 frameCount = base::readUint16();
-        atUint16 stateCount = base::readUint16();
+        atUint16 frameCount = readUint16();
+        atUint16 stateCount = readUint16();
 
         // Each state id corresponds to a texture held in the parent class
         std::vector<int> stateIds;
 
         for (int j = 0; j < stateCount; j++)
-            stateIds.push_back(base::readUint16());
+            stateIds.push_back(readUint16());
 
 
         sprite->setStateIds(stateIds);
@@ -135,8 +135,8 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
         for (atUint32 k = 0; k < frameCount; k++)
         {
             Sakura::SpriteFrame* frame = new Sakura::SpriteFrame(sprite);
-            frame->setFrameTime(base::readFloat());
-            atUint16 partCount = base::readUint16();
+            frame->setFrameTime(readFloat());
+            atUint16 partCount = readUint16();
 
 
 #ifndef ATHENA_USE_QT
@@ -149,25 +149,25 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
             {
                 Sakura::SpritePart* part = new Sakura::SpritePart(frame);
 #ifndef ATHENA_USE_QT
-                std::string name = base::readString();
+                std::string name = readString();
 #else
-                QString name = QString::fromStdString(base::readString());
+                QString name = QString::fromStdString(readString());
 #endif
                 part->setName(name);
-                part->setCollision(base::readBool());
+                part->setCollision(readBool());
 
-                float xOff = base::readFloat();
-                float yOff = base::readFloat();
+                float xOff = readFloat();
+                float yOff = readFloat();
                 part->setOffset(xOff, yOff);
-                float texXOff = base::readFloat();
-                float texYOff = base::readFloat();
+                float texXOff = readFloat();
+                float texYOff = readFloat();
                 part->setTextureOffset(texXOff, texYOff);
-                atUint32 width = base::readUint32();
-                atUint32 height = base::readUint32();
+                atUint32 width = readUint32();
+                atUint32 height = readUint32();
                 part->setSize(width, height);
-                bool flippedH = base::readBool();
+                bool flippedH = readBool();
                 part->setFlippedHorizontally(flippedH);
-                bool flippedV = base::readBool();
+                bool flippedV = readBool();
                 part->setFlippedVertically(flippedV);
 
                 parts.push_back(part);

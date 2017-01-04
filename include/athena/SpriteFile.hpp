@@ -1,16 +1,8 @@
 ﻿#ifndef SSPRITEFILE_HPP
 #define SSPRITEFILE_HPP
 
-#ifndef ATHENA_USE_QT
 #include <vector>
 #include <unordered_map>
-#else
-#include <QObject>
-#include <QMap>
-#include <QList>
-#include <QSize>
-#include <QPoint>
-#endif
 
 #include <string>
 #include "athena/SakuraGlobal.hpp"
@@ -26,14 +18,8 @@ struct STexture
 };
 
 class Sprite;
-#ifndef ATHENA_USE_QT
 class SpriteFile
 {
-#else
-class SpriteFile : public QObject
-{
-    Q_OBJECT
-#endif
 public:
     /*!
      * \brief Major
@@ -109,21 +95,13 @@ public slots:
      * \brief setSize
      * \param size
      */
-#ifndef ATHENA_USE_QT
     void setSize(const Vector2Di& size);
-#else
-    void setSize(const QSize& size);
-#endif
 
     /*!
      * \brief size
      * \return
      */
-#ifndef ATHENA_USE_QT
     Vector2Di size() const;
-#else
-    QSize size() const;
-#endif
 
     /*!
      * \brief width
@@ -148,21 +126,13 @@ public slots:
      * \brief setOrigin
      * \param origin
      */
-#ifndef ATHENA_USE_QT
     void setOrigin(const Vector2Df& origin);
-#else
-    void setOrigin(const QPoint& origin);
-#endif
 
     /*!
      * \brief origin
      * \return
      */
-#ifndef ATHENA_USE_QT
     Vector2Df origin() const;
-#else
-    QPoint origin() const;
-#endif
 
 
     /*!
@@ -195,71 +165,33 @@ public slots:
      * \return
      */
     STexture* texture(atUint32 id);
-
-#ifndef ATHENA_USE_QT
     std::vector<STexture*> textures() const;
-#else
-    QList<STexture*> textures() const;
-#endif
+
     atUint32 textureCount() const;
     /*!
      * \brief setTextures
      * \param textures
      */
-
-#ifndef ATHENA_USE_QT
     void setTextures(std::vector<STexture*> textures);
-#else
-    void setTextures(QList<STexture*> textures);
-#endif
 
     void addSprite(Sprite* sprite);
 
-#ifndef ATHENA_USE_QT
     void removeSprite(const std::string& name);
-#else
-    void removeSprite(const QString& name);
-#endif
     void removeSprite(Sprite* sprite);
 
-#ifndef ATHENA_USE_QT
     void setSprites(std::unordered_map<std::string, Sprite*> sprites);
-#else
-    void setSprites(QMap<QString, Sprite*> sprites);
-#endif
-#ifndef ATHENA_USE_QT
     Sprite* sprite(const std::string& name);
     std::unordered_map<std::string, Sprite*> sprites() const;
-#else
-    Sprite* sprite(const QString& name);
-    QMap<QString, Sprite*> sprites() const;
-#endif
 
     atUint32 spriteCount() const;
 
-#ifdef ATHENA_USE_QT
-signals:
-    void originChanged(QPoint);
-    void sizeChanged(QSize);
-#endif
 private:
-#ifndef ATHENA_USE_QT
     std::vector<STexture*> m_textures;
     Vector2Di              m_size;
     Vector2Df              m_origin;
     std::unordered_map<std::string, Sprite*> m_sprites;
-#else
-    QList<STexture*>       m_textures;
-    QSize                  m_size;
-    QPoint                 m_origin;
-    QMap<QString, Sprite*> m_sprites;
-#endif
 };
 } // Sakura
 } // Zelda
 
-#ifdef ATHENA_USE_QT
-Q_DECLARE_METATYPE(athena::Sakura::SpriteFile*)
-Q_DECLARE_METATYPE(athena::Sakura::STexture*)
-#endif
 #endif // SSPRITE_HPP

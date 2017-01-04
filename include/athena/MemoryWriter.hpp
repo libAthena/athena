@@ -161,16 +161,4 @@ private:
 }
 }
 
-#ifndef MEMORYWRITER_BASE
-#define MEMORYWRITER_BASE() \
-    private: \
-        typedef athena::io::MemoryWriter base
-#endif // BINARYWRITER_BASE
-
-#ifndef MEMORYCOPYWRITER_BASE
-#define MEMORYCOPYWRITER_BASE() \
-    private: \
-        typedef athena::io::MemoryCopyWriter base
-#endif // BINARYWRITER_BASE
-
 #endif // MEMORYWRITER_HPP

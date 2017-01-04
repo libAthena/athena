@@ -10,9 +10,7 @@ namespace io
 {
 class SkywardSwordFileReader : public MemoryCopyReader
 {
-    MEMORYCOPYREADER_BASE();
 public:
-
     SkywardSwordFileReader(atUint8* data, atUint64 length);
     SkywardSwordFileReader(const std::string& filename);
 
