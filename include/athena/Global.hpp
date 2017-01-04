@@ -70,6 +70,7 @@ typedef struct stat64 atStat64_t;
 #define ROUND_UP_64(val) (((val) + 63) & ~63)
 #define ROUND_UP_32(val) (((val) + 31) & ~31)
 #define ROUND_UP_16(val) (((val) + 15) & ~15)
+#define ROUND_UP_8(val) (((val) + 7) & ~7)
 #define ROUND_UP_4(val) (((val) + 3) & ~3)
 
 #define _XSTR(s) _STR(s)
