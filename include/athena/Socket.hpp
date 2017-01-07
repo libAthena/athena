@@ -1,19 +1,26 @@
 #ifndef ATHENA_SOCKET_HPP
 #define ATHENA_SOCKET_HPP
 
-#include <sys/types.h>
+#ifndef _WIN32
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <netdb.h>
 #include <arpa/inet.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <errno.h>
+#else
+#include <winsock2.h>
+#include <Ws2tcpip.h>
+#endif
+
+#include <sys/types.h>
+#include <fcntl.h>
 #include <string>
 
 #include "Global.hpp"
 
-namespace athena
+namespace jbus
 {
 namespace net
 {
@@ -51,10 +58,10 @@ class IPAddress
         else
         {
             /* Try to convert the address as a byte representation ("xxx.xxx.xxx.xxx") */
-            uint32_t ip = inet_addr(address.c_str());
-            if (ip != INADDR_NONE)
+            struct in_addr addr;
+            if (inet_pton(AF_INET, address.c_str(), &addr) == 1)
             {
-                m_address = ip;
+                m_address = addr.s_addr;
                 m_valid = true;
             }
             else
@@ -68,9 +75,9 @@ class IPAddress
                 {
                     if (result)
                     {
-                        ip = reinterpret_cast<sockaddr_in*>(result->ai_addr)->sin_addr.s_addr;
+                        addr = reinterpret_cast<sockaddr_in*>(result->ai_addr)->sin_addr;
                         freeaddrinfo(result);
-                        m_address = ip;
+                        m_address = addr.s_addr;
                         m_valid = true;
                     }
                 }
@@ -95,7 +102,12 @@ public:
 /** Server-oriented TCP socket class derived from SFML */
 class Socket
 {
-    int m_socket = -1;
+#ifndef _WIN32
+    using SocketTp = int;
+#else
+    using SocketTp = SOCKET;
+#endif
+    SocketTp m_socket = -1;
     bool m_isBlocking;
 
     static sockaddr_in createAddress(uint32_t address, unsigned short port)
@@ -118,7 +130,7 @@ class Socket
         if (isOpen())
             return false;
 
-        m_socket = socket(PF_INET, SOCK_STREAM, 0);
+        m_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         if (m_socket == -1)
         {
             atError("Can't allocate socket");
@@ -151,6 +163,20 @@ public:
         Busy
     };
 
+#ifdef _WIN32
+    static EResult LastWSAError()
+    {
+        switch (WSAGetLastError())
+        {
+        case WSAEWOULDBLOCK:
+        case WSAEALREADY:
+            return EResult::Busy;
+        default:
+            return EResult::Error;
+        }
+    }
+#endif
+
     Socket(bool blocking)
     : m_isBlocking(blocking) {}
     ~Socket() { close(); }
@@ -174,11 +200,16 @@ public:
     void setBlocking(bool blocking)
     {
         m_isBlocking = blocking;
+#ifndef _WIN32
         int status = fcntl(m_socket, F_GETFL);
         if (m_isBlocking)
             fcntl(m_socket, F_SETFL, status & ~O_NONBLOCK);
         else
             fcntl(m_socket, F_SETFL, status | O_NONBLOCK);
+#else
+        u_long b = blocking ? 0 : 1;
+        ioctlsocket(m_socket, FIONBIO, &b);
+#endif
     }
 
     bool isOpen() const { return m_socket != -1; }
@@ -217,9 +248,15 @@ public:
         /* Check for errors */
         if (remoteSocket == -1)
         {
+#ifndef _WIN32
             EResult res = (errno == EAGAIN) ? EResult::Busy : EResult::Error;
             if (res == EResult::Error)
                 atError("Failed to accept incoming connection: %s", strerror(errno));
+#else
+            EResult res = LastWSAError();
+            if (res == EResult::Error)
+                atError("Failed to accept incoming connection");
+#endif
             return res;
         }
 
@@ -251,7 +288,11 @@ public:
     {
         if (!isOpen())
             return;
+#ifndef _WIN32
         ::close(m_socket);
+#else
+        closesocket(m_socket);
+#endif
         m_socket = -1;
     }
 
@@ -265,7 +306,7 @@ public:
             return EResult::Error;
 
         /* Loop until every byte has been sent */
-        ssize_t result = 0;
+        int result = 0;
         for (size_t sent = 0; sent < len; sent += result)
         {
             /* Send a chunk of data */
@@ -273,7 +314,11 @@ public:
 
             /* Check for errors */
             if (result < 0)
+#ifndef _WIN32
                 return (errno == EAGAIN) ? EResult::Busy : EResult::Error;
+#else
+                return LastWSAError();
+#endif
         }
 
         transferred = len;
@@ -302,7 +347,11 @@ public:
         int result = ::recv(m_socket, static_cast<char*>(buf), static_cast<int>(len), _flags);
 
         if (result < 0)
+#ifndef _WIN32
             return (errno == EAGAIN) ? EResult::Busy : EResult::Error;
+#else
+            return LastWSAError();
+#endif
         else if (result == 0)
             return EResult::Error;
 
