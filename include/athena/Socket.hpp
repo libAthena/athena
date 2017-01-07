@@ -367,7 +367,7 @@ public:
 
     operator bool() const { return isOpen(); }
 
-    int GetInternalSocket() const { return m_socket; }
+    SocketTp GetInternalSocket() const { return m_socket; }
 };
 
 }
