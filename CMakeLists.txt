@@ -66,6 +66,7 @@ add_library(athena-core
     include/athena/MemoryWriter.hpp
     include/athena/Checksums.hpp
     include/athena/Compression.hpp
+    include/athena/Socket.hpp
     include/LZ77/LZBase.hpp
     include/LZ77/LZLookupTable.hpp
     include/LZ77/LZType10.hpp
