@@ -17,6 +17,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <string>
+#include <memory.h>
 
 #include "Global.hpp"
 
