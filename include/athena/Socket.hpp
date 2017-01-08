@@ -20,7 +20,7 @@
 
 #include "Global.hpp"
 
-namespace jbus
+namespace athena
 {
 namespace net
 {
