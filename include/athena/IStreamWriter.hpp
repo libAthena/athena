@@ -979,7 +979,7 @@ public:
 
         if (fixedLen < 0)
         {
-            for (atUint16 c : str)
+            for (wchar_t c : str)
             {
                 writeUint16Big(c);
 
@@ -993,7 +993,7 @@ public:
             auto it = str.begin();
             for (atInt32 i=0 ; i<fixedLen ; ++i)
             {
-                atUint16 chr;
+                wchar_t chr;
                 if (it == str.end())
                     chr = 0;
                 else
@@ -1003,6 +1003,84 @@ public:
         }
     }
     inline void writeValBig(const std::wstring& val) {writeWStringBig(val);}
+
+    /** @brief Writes a u16string to the buffer and advances the buffer.
+     *
+     *  @param str The string to write to the buffer
+     *  @param fixedLen If not -1, the number of characters to zero-fill string to
+     *
+     *  Endianness is big
+     */
+    inline void writeU16StringBig(const std::u16string& str, atInt32 fixedLen = -1)
+    {
+        if (fixedLen == 0)
+            return;
+
+        if (fixedLen < 0)
+        {
+            for (char16_t c : str)
+            {
+                writeUint16Big(c);
+
+                if (c == u'\0')
+                    break;
+            }
+            writeUint16Big(0);
+        }
+        else
+        {
+            auto it = str.begin();
+            for (atInt32 i=0 ; i<fixedLen ; ++i)
+            {
+                char16_t chr;
+                if (it == str.end())
+                    chr = 0;
+                else
+                    chr = *it++;
+                writeUint16Big(chr);
+            }
+        }
+    }
+    inline void writeValBig(const std::u16string& val) {writeU16StringBig(val);}
+
+    /** @brief Writes a u16string to the buffer and advances the buffer.
+     *
+     *  @param str The string to write to the buffer
+     *  @param fixedLen If not -1, the number of characters to zero-fill string to
+     *
+     *  Endianness is big
+     */
+    inline void writeU32StringBig(const std::u32string& str, atInt32 fixedLen = -1)
+    {
+        if (fixedLen == 0)
+            return;
+
+        if (fixedLen < 0)
+        {
+            for (char32_t c : str)
+            {
+                writeUint32Big(c);
+
+                if (c == U'\0')
+                    break;
+            }
+            writeUint32Big(0);
+        }
+        else
+        {
+            auto it = str.begin();
+            for (atInt32 i=0 ; i<fixedLen ; ++i)
+            {
+                char32_t chr;
+                if (it == str.end())
+                    chr = 0;
+                else
+                    chr = *it++;
+                writeUint32Big(chr);
+            }
+        }
+    }
+    inline void writeValBig(const std::u32string& val) {writeU32StringBig(val);}
 
     inline void fill(atUint8 val, atUint64 length)
     {

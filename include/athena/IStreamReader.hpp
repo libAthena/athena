@@ -1127,6 +1127,72 @@ public:
     inline std::wstring readValBig(typename std::enable_if<std::is_same<T, std::wstring>::value>::type* = 0)
     {return readWStringBig();}
 
+    /** @brief Reads a u16string assuming big-endian characters
+     *         and advances the position in the file
+     *
+     *  @param fixedLen If non-negative, this is a fixed-length string read
+     *  @return The read wstring
+     */
+    inline std::u16string readU16StringBig(atInt32 fixedLen = -1)
+    {
+        if (fixedLen == 0)
+            return std::u16string();
+        std::u16string ret;
+        char16_t chr = readUint16Big();
+
+        atInt32 i;
+        for (i = 1 ; chr != 0 ; ++i)
+        {
+            ret += chr;
+
+            if (fixedLen >= 0 && i >= fixedLen)
+                break;
+
+            chr = readUint16Big();
+        }
+
+        if (fixedLen >= 0 && i < fixedLen)
+            seek(fixedLen - i);
+
+        return ret;
+    }
+    template <class T>
+    inline std::u16string readValBig(typename std::enable_if<std::is_same<T, std::u16string>::value>::type* = 0)
+    {return readU16StringBig();}
+
+    /** @brief Reads a u32string assuming big-endian characters
+     *         and advances the position in the file
+     *
+     *  @param fixedLen If non-negative, this is a fixed-length string read
+     *  @return The read wstring
+     */
+    inline std::u32string readU32StringBig(atInt32 fixedLen = -1)
+    {
+        if (fixedLen == 0)
+            return std::u32string();
+        std::u32string ret;
+        char32_t chr = readUint32Big();
+
+        atInt32 i;
+        for (i = 1 ; chr != 0 ; ++i)
+        {
+            ret += chr;
+
+            if (fixedLen >= 0 && i >= fixedLen)
+                break;
+
+            chr = readUint32Big();
+        }
+
+        if (fixedLen >= 0 && i < fixedLen)
+            seek(fixedLen - i);
+
+        return ret;
+    }
+    template <class T>
+    inline std::u32string readValBig(typename std::enable_if<std::is_same<T, std::u32string>::value>::type* = 0)
+    {return readU32StringBig();}
+
     /** @brief Performs automatic std::vector enumeration reads using numeric type T
      *
      *  @param vector The std::vector to clear and populate using read data

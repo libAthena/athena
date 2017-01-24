@@ -493,6 +493,58 @@ inline std::unique_ptr<YAMLNode> ValToNode(const wchar_t* val)
     return ValToNode<const std::wstring&>(wstr);
 }
 
+template <>
+inline std::unique_ptr<YAMLNode> ValToNode(const std::u16string& val)
+{
+    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+    ret->m_scalarString.reserve(val.length());
+    for (char16_t ch : val)
+    {
+        utf8proc_uint8_t mb[4];
+        utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(ch), mb);
+        if (c < 0)
+        {
+            atWarning("invalid UTF-8 character while encoding");
+            return std::unique_ptr<YAMLNode>(ret);
+        }
+        ret->m_scalarString.append(reinterpret_cast<char*>(mb), c);
+    }
+    return std::unique_ptr<YAMLNode>(ret);
+}
+
+template <>
+inline std::unique_ptr<YAMLNode> ValToNode(const char16_t* val)
+{
+    std::u16string wstr(val);
+    return ValToNode<const std::u16string&>(wstr);
+}
+
+template <>
+inline std::unique_ptr<YAMLNode> ValToNode(const std::u32string& val)
+{
+    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+    ret->m_scalarString.reserve(val.length());
+    for (char32_t ch : val)
+    {
+        utf8proc_uint8_t mb[4];
+        utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(ch), mb);
+        if (c < 0)
+        {
+            atWarning("invalid UTF-8 character while encoding");
+            return std::unique_ptr<YAMLNode>(ret);
+        }
+        ret->m_scalarString.append(reinterpret_cast<char*>(mb), c);
+    }
+    return std::unique_ptr<YAMLNode>(ret);
+}
+
+template <>
+inline std::unique_ptr<YAMLNode> ValToNode(const char32_t* val)
+{
+    std::u32string wstr(val);
+    return ValToNode<const std::u32string&>(wstr);
+}
+
 class YAMLDocReader
 {
     std::unique_ptr<YAMLNode> m_rootNode;
@@ -1105,6 +1157,26 @@ public:
     inline void writeWString(const char* name, const wchar_t* val)
     {
         writeVal<const wchar_t*>(name, val);
+    }
+
+    inline void writeU16String(const char* name, const std::u16string& val)
+    {
+        writeVal<std::u16string>(name, val);
+    }
+
+    inline void writeU16String(const char* name, const char16_t* val)
+    {
+        writeVal<const char16_t*>(name, val);
+    }
+
+    inline void writeU32String(const char* name, const std::u32string& val)
+    {
+        writeVal<std::u32string>(name, val);
+    }
+
+    inline void writeU32String(const char* name, const char32_t* val)
+    {
+        writeVal<const char32_t*>(name, val);
     }
 };
 
