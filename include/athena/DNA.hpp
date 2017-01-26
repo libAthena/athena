@@ -44,7 +44,7 @@ struct WStringAsString;
 template <Endian DNAE>
 struct DNA
 {
-    virtual ~DNA() {}
+    virtual ~DNA() = default;
 
     /**
      * @brief Common virtual read function for all DNA types

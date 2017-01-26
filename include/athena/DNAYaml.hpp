@@ -1203,14 +1203,14 @@ struct WStringAsStringYaml;
 template <Endian DNAE>
 struct DNAYaml : DNA<DNAE>
 {
-    virtual ~DNAYaml() {}
+    virtual ~DNAYaml() = default;
 
-    using DNA<DNAE>::read;
-    using DNA<DNAE>::write;
+    virtual void read(IStreamReader& r)=0;
+    virtual void write(IStreamWriter& w) const=0;
     virtual void read(YAMLDocReader& in)=0;
     virtual void write(YAMLDocWriter& out) const=0;
-    static const char* DNAType() {return nullptr;}
-    virtual const char* DNATypeV() const {return nullptr;}
+    static const char* DNAType() { return nullptr; }
+    virtual const char* DNATypeV() const { return nullptr; }
 
     template <size_t sizeVar>
     using Buffer = struct athena::io::BufferYaml<sizeVar, DNAE>;
