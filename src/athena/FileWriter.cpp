@@ -17,7 +17,7 @@ FileWriter::FileWriter(const std::string& filename, bool overwrite, bool globalE
       m_globalErr(globalErr)
 {
 #if _WIN32
-    m_filename = utility::utf8ToWide(m_filename);
+    m_filename = utility::utf8ToWide(filename);
 #else
     m_filename = filename;
 #endif
