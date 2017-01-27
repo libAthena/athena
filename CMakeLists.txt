@@ -29,7 +29,7 @@ if(WIN32)
 list(APPEND CORE_EXTRA src/win32_largefilewrapper.c include/win32_largefilewrapper.h
      src/athena/FileWriterWin32.cpp src/athena/FileReaderWin32.cpp)
 else()
-list(APPEND CORE_EXTRA src/athena/FileWriter.cpp src/athena/FileReader.cpp)
+list(APPEND CORE_EXTRA src/athena/FileWriterNix.cpp src/athena/FileReader.cpp)
 if(APPLE OR GEKKO OR ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 list(APPEND CORE_EXTRA src/osx_largefilewrapper.c include/osx_largefilewrapper.h)
 if(GEKKO)
@@ -42,6 +42,7 @@ add_library(athena-core
     src/athena/Utility.cpp
     src/athena/MemoryReader.cpp
     src/athena/MemoryWriter.cpp
+    src/athena/FileWriterGeneric.cpp
     src/athena/Global.cpp
     src/athena/Checksums.cpp
     src/athena/Compression.cpp
