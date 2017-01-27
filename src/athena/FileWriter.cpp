@@ -16,7 +16,11 @@ FileWriter::FileWriter(const std::string& filename, bool overwrite, bool globalE
       m_bytePosition(0),
       m_globalErr(globalErr)
 {
+#if _WIN32
+    m_filename = utility::utf8ToWide(m_filename);
+#else
     m_filename = filename;
+#endif
     open(overwrite);
 }
 
@@ -25,7 +29,11 @@ FileWriter::FileWriter(const std::wstring& filename, bool overwrite, bool global
       m_bytePosition(0),
       m_globalErr(globalErr)
 {
+#if _WIN32
+    m_filename = filename;
+#else
     m_filename = utility::wideToUtf8(filename);
+#endif
     open(overwrite);
 }
 
@@ -119,6 +127,34 @@ void FileWriter::writeUBytes(const atUint8* data, atUint64 len)
             atError("Unable to write to stream");
         setError();
     }
+}
+
+void TransactionalFileWriter::seek(atInt64 pos, SeekOrigin origin)
+{
+    switch (origin)
+    {
+    case SeekOrigin::Begin:
+        m_position = pos;
+        break;
+    case SeekOrigin::Current:
+        m_position += pos;
+        break;
+    case SeekOrigin::End:
+        break;
+    }
+}
+
+void TransactionalFileWriter::writeUBytes(const atUint8* data, atUint64 len)
+{
+    atUint64 neededSz = m_position + len;
+    if (neededSz > m_deferredBuffer.size())
+    {
+        m_deferredBuffer.reserve(neededSz * 2);
+        m_deferredBuffer.resize(neededSz);
+    }
+
+    memmove(m_deferredBuffer.data() + m_position, data, len);
+    m_position += len;
 }
 
 }

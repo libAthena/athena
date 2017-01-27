@@ -66,6 +66,56 @@ private:
     atUint64     m_bytePosition;
     bool         m_globalErr;
 };
+
+class TransactionalFileWriter : public IStreamWriter
+{
+#if _WIN32
+    std::wstring m_filename;
+#else
+    std::string  m_filename;
+#endif
+    bool m_overwrite, m_globalErr;
+    std::vector<uint8_t> m_deferredBuffer;
+    atUint64 m_position = 0;
+public:
+    TransactionalFileWriter(const std::string& filename, bool overwrite = true, bool globalErr=true)
+    : m_overwrite(overwrite), m_globalErr(globalErr)
+    {
+#if _WIN32
+        m_filename = utility::utf8ToWide(m_filename);
+#else
+        m_filename = filename;
+#endif
+    }
+    TransactionalFileWriter(const std::wstring& filename, bool overwrite = true, bool globalErr=true)
+    : m_overwrite(overwrite), m_globalErr(globalErr)
+    {
+#if _WIN32
+        m_filename = filename;
+#else
+        m_filename = utility::wideToUtf8(filename);
+#endif
+    }
+
+    void flush()
+    {
+        if (m_deferredBuffer.size())
+        {
+            FileWriter w(m_filename, m_overwrite, m_globalErr);
+            w.writeUBytes(m_deferredBuffer.data(), m_deferredBuffer.size());
+            cancel();
+        }
+    }
+
+    void cancel() { m_deferredBuffer.clear(); m_position = 0; }
+
+    inline atUint64 position() const { return m_position; }
+    inline atUint64 length() const { return m_deferredBuffer.size(); }
+    void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
+    void writeUBytes(const atUint8* data, atUint64 len);
+
+    ~TransactionalFileWriter() { flush(); }
+};
 }
 } // Athena
 
