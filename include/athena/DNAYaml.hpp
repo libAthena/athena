@@ -18,6 +18,140 @@ namespace athena
 namespace io
 {
 
+struct YAMLNode
+{
+    yaml_node_type_t m_type;
+    std::string m_scalarString;
+    std::vector<std::unique_ptr<YAMLNode>> m_seqChildren;
+    std::vector<std::pair<std::string, std::unique_ptr<YAMLNode>>> m_mapChildren;
+    YAMLNode(yaml_node_type_t type) : m_type(type) {}
+    inline const YAMLNode* findMapChild(const char* key) const
+    {
+        for (const auto& item : m_mapChildren)
+            if (!item.first.compare(key))
+                return item.second.get();
+        return nullptr;
+    }
+};
+
+template <typename RETURNTYPE>
+RETURNTYPE NodeToVal(const YAMLNode* node);
+
+template <>
+bool NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(bool val);
+
+template <>
+atInt8 NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(atInt8 val);
+
+template <>
+atUint8 NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(atUint8 val);
+
+template <>
+atInt16 NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(atInt16 val);
+
+template <>
+atUint16 NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(atUint16 val);
+
+template <>
+atInt32 NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(atInt32 val);
+
+template <>
+atUint32 NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(atUint32 val);
+
+template <>
+atInt64 NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(atInt64 val);
+
+template <>
+atUint64 NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(atUint64 val);
+
+template <>
+float NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(float val);
+
+template <>
+double NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(double val);
+
+template <typename RETURNTYPE>
+RETURNTYPE NodeToVec(const YAMLNode* node);
+
+template <>
+atVec2f NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(const atVec2f& val);
+
+template <>
+atVec3f NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(const atVec3f& val);
+
+template <>
+atVec4f NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(const atVec4f& val);
+
+template <>
+atVec2d NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(const atVec2d& val);
+
+template <>
+atVec3d NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(const atVec3d& val);
+
+template <>
+atVec4d NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(const atVec4d& val);
+
+template <>
+std::unique_ptr<atUint8[]> NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(const std::unique_ptr<atUint8[]>& val, size_t byteCount);
+
+template <>
+std::string NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(const std::string& val);
+
+std::unique_ptr<YAMLNode> ValToNode(const char* val);
+
+template <>
+std::wstring NodeToVal(const YAMLNode* node);
+
+std::unique_ptr<YAMLNode> ValToNode(const std::wstring& val);
+
+std::unique_ptr<YAMLNode> ValToNode(const wchar_t* val);
+
+std::unique_ptr<YAMLNode> ValToNode(const std::u16string& val);
+
+std::unique_ptr<YAMLNode> ValToNode(const char16_t* val);
+
+std::unique_ptr<YAMLNode> ValToNode(const std::u32string& val);
+
+std::unique_ptr<YAMLNode> ValToNode(const char32_t* val);
+
 std::string base64_encode(const atUint8* bytes_to_encode, size_t in_len);
 std::unique_ptr<atUint8[]> base64_decode(const std::string& encoded_string);
 
@@ -38,513 +172,6 @@ int YAMLStdStringReader(YAMLStdStringReaderState* str,
                         unsigned char* buffer, size_t size, size_t* size_read);
 int YAMLStdStringWriter(std::string* str, unsigned char* buffer, size_t size);
 
-struct YAMLNode
-{
-    yaml_node_type_t m_type;
-    std::string m_scalarString;
-    std::vector<std::unique_ptr<YAMLNode>> m_seqChildren;
-    std::vector<std::pair<std::string, std::unique_ptr<YAMLNode>>> m_mapChildren;
-    YAMLNode(yaml_node_type_t type) : m_type(type) {}
-    inline const YAMLNode* findMapChild(const char* key) const
-    {
-        for (const auto& item : m_mapChildren)
-            if (!item.first.compare(key))
-                return item.second.get();
-        return nullptr;
-    }
-};
-
-template <typename RETURNTYPE>
-RETURNTYPE NodeToVal(const YAMLNode* node);
-
-template <typename INTYPE>
-std::unique_ptr<YAMLNode> ValToNode(const INTYPE& val);
-template <typename INTYPE>
-std::unique_ptr<YAMLNode> ValToNode(const INTYPE* val);
-template <typename INTYPE>
-std::unique_ptr<YAMLNode> ValToNode(const INTYPE& val, size_t byteCount);
-
-template <>
-inline bool NodeToVal(const YAMLNode* node)
-{
-    char firstCh = tolower(node->m_scalarString[0]);
-    if (firstCh == 't')
-        return true;
-    else if (firstCh == 'f')
-        return false;
-    else if (isdigit(firstCh) && firstCh != 0)
-        return true;
-    return false;
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const bool& val)
-{
-    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString = val?"True":"False";
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline atInt8 NodeToVal(const YAMLNode* node)
-{
-    return strtol(node->m_scalarString.c_str(), NULL, 0);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const atInt8& val)
-{
-    char str[32];
-    snprintf(str, 32, "%d", int(val));
-    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString = str;
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline atUint8 NodeToVal(const YAMLNode* node)
-{
-    return strtoul(node->m_scalarString.c_str(), NULL, 0);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const atUint8& val)
-{
-    char str[32];
-    snprintf(str, 32, "0x%02X", val);
-    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString = str;
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline atInt16 NodeToVal(const YAMLNode* node)
-{
-    return strtol(node->m_scalarString.c_str(), NULL, 0);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const atInt16& val)
-{
-    char str[32];
-    snprintf(str, 32, "%d", int(val));
-    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString = str;
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline atUint16 NodeToVal(const YAMLNode* node)
-{
-    return strtoul(node->m_scalarString.c_str(), NULL, 0);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const atUint16& val)
-{
-    char str[32];
-    snprintf(str, 32, "0x%04X", val);
-    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString = str;
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline atInt32 NodeToVal(const YAMLNode* node)
-{
-    return strtol(node->m_scalarString.c_str(), NULL, 0);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const atInt32& val)
-{
-    char str[32];
-    snprintf(str, 32, "%d", int(val));
-    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString = str;
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline atUint32 NodeToVal(const YAMLNode* node)
-{
-    return strtoul(node->m_scalarString.c_str(), NULL, 0);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const atUint32& val)
-{
-    char str[32];
-    snprintf(str, 32, "0x%08X", val);
-    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString = str;
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline atInt64 NodeToVal(const YAMLNode* node)
-{
-#if _WIN32
-    return _strtoi64(node->m_scalarString.c_str(), NULL, 0);
-#else
-    return strtoq(node->m_scalarString.c_str(), NULL, 0);
-#endif
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const atInt64& val)
-{
-    char str[32];
-    snprintf(str, 32, "%" PRId64, val);
-    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString = str;
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline atUint64 NodeToVal(const YAMLNode* node)
-{
-#if _WIN32
-    return _strtoui64(node->m_scalarString.c_str(), NULL, 0);
-#else
-    return strtouq(node->m_scalarString.c_str(), NULL, 0);
-#endif
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const atUint64& val)
-{
-    char str[32];
-    snprintf(str, 32, "0x%016" PRIX64, val);
-    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString = str;
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline float NodeToVal(const YAMLNode* node)
-{
-    return strtof(node->m_scalarString.c_str(), NULL);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const float& val)
-{
-    char str[64];
-    snprintf(str, 64, "%f", val);
-    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString = str;
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline double NodeToVal(const YAMLNode* node)
-{
-    return strtod(node->m_scalarString.c_str(), NULL);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const double& val)
-{
-    char str[64];
-    snprintf(str, 64, "%f", val);
-    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString = str;
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <typename RETURNTYPE>
-inline RETURNTYPE NodeToVec(const YAMLNode* node)
-{
-    RETURNTYPE retval = {};
-    auto it = node->m_seqChildren.begin();
-    for (size_t i=0;
-         i<4 && it != node->m_seqChildren.end();
-         ++i, ++it)
-    {
-        YAMLNode* snode = it->get();
-        if (snode->m_type == YAML_SCALAR_NODE)
-        {
-            if (std::is_same<RETURNTYPE, atVec2d>::value ||
-                std::is_same<RETURNTYPE, atVec3d>::value ||
-                std::is_same<RETURNTYPE, atVec4d>::value)
-                retval.vec[i] = NodeToVal<double>(snode);
-            else
-                retval.vec[i] = NodeToVal<float>(snode);
-        }
-        else
-            retval.vec[i] = 0.0;
-    }
-    return retval;
-}
-
-template <>
-inline atVec2f NodeToVal(const YAMLNode* node)
-{
-    return NodeToVec<atVec2f>(node);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const atVec2f& val)
-{
-    YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
-    ret->m_seqChildren.reserve(2);
-    for (size_t i=0 ; i<2 ; ++i)
-    {
-        char str[64];
-        snprintf(str, 64, "%f", val.vec[i]);
-        YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
-        comp->m_scalarString = str;
-        ret->m_seqChildren.emplace_back(comp);
-    }
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline atVec3f NodeToVal(const YAMLNode* node)
-{
-    return NodeToVec<atVec3f>(node);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const atVec3f& val)
-{
-    YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
-    ret->m_seqChildren.reserve(3);
-    for (size_t i=0 ; i<3 ; ++i)
-    {
-        char str[64];
-        snprintf(str, 64, "%f", val.vec[i]);
-        YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
-        comp->m_scalarString = str;
-        ret->m_seqChildren.emplace_back(comp);
-    }
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline atVec4f NodeToVal(const YAMLNode* node)
-{
-    return NodeToVec<atVec4f>(node);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const atVec4f& val)
-{
-    YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
-    ret->m_seqChildren.reserve(4);
-    for (size_t i=0 ; i<4 ; ++i)
-    {
-        char str[64];
-        snprintf(str, 64, "%f", val.vec[i]);
-        YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
-        comp->m_scalarString = str;
-        ret->m_seqChildren.emplace_back(comp);
-    }
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline atVec2d NodeToVal(const YAMLNode* node)
-{
-    return NodeToVec<atVec2d>(node);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const atVec2d& val)
-{
-    YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
-    ret->m_seqChildren.reserve(2);
-    for (size_t i=0 ; i<2 ; ++i)
-    {
-        char str[64];
-        snprintf(str, 64, "%f", val.vec[i]);
-        YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
-        comp->m_scalarString = str;
-        ret->m_seqChildren.emplace_back(comp);
-    }
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline atVec3d NodeToVal(const YAMLNode* node)
-{
-    return NodeToVec<atVec3d>(node);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const atVec3d& val)
-{
-    YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
-    ret->m_seqChildren.reserve(3);
-    for (size_t i=0 ; i<3 ; ++i)
-    {
-        char str[64];
-        snprintf(str, 64, "%f", val.vec[i]);
-        YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
-        comp->m_scalarString = str;
-        ret->m_seqChildren.emplace_back(comp);
-    }
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline atVec4d NodeToVal(const YAMLNode* node)
-{
-    return NodeToVec<atVec4d>(node);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const atVec4d& val)
-{
-    YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
-    ret->m_seqChildren.reserve(4);
-    for (size_t i=0 ; i<4 ; ++i)
-    {
-        char str[64];
-        snprintf(str, 64, "%f", val.vec[i]);
-        YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
-        comp->m_scalarString = str;
-        ret->m_seqChildren.emplace_back(comp);
-    }
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline std::unique_ptr<atUint8[]> NodeToVal(const YAMLNode* node)
-{
-    return base64_decode(node->m_scalarString);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const std::unique_ptr<atUint8[]>& val, size_t byteCount)
-{
-    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString = base64_encode(val.get(), byteCount);
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline std::string NodeToVal(const YAMLNode* node)
-{
-    return node->m_scalarString;
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const std::string& val)
-{
-    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString = val;
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const char* val)
-{
-    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString = val;
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline std::wstring NodeToVal(const YAMLNode* node)
-{
-    std::wstring retval;
-    retval.reserve(node->m_scalarString.length());
-    const utf8proc_uint8_t* buf = reinterpret_cast<const utf8proc_uint8_t*>(node->m_scalarString.c_str());
-    while (*buf)
-    {
-        utf8proc_int32_t wc;
-        utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
-        if (len < 0)
-        {
-            atWarning("invalid UTF-8 character while decoding");
-            return retval;
-        }
-        buf += len;
-        retval += wchar_t(wc);
-    }
-    return retval;
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const std::wstring& val)
-{
-    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString.reserve(val.length());
-    for (wchar_t ch : val)
-    {
-        utf8proc_uint8_t mb[4];
-        utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(ch), mb);
-        if (c < 0)
-        {
-            atWarning("invalid UTF-8 character while encoding");
-            return std::unique_ptr<YAMLNode>(ret);
-        }
-        ret->m_scalarString.append(reinterpret_cast<char*>(mb), c);
-    }
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const wchar_t* val)
-{
-    std::wstring wstr(val);
-    return ValToNode<const std::wstring&>(wstr);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const std::u16string& val)
-{
-    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString.reserve(val.length());
-    for (char16_t ch : val)
-    {
-        utf8proc_uint8_t mb[4];
-        utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(ch), mb);
-        if (c < 0)
-        {
-            atWarning("invalid UTF-8 character while encoding");
-            return std::unique_ptr<YAMLNode>(ret);
-        }
-        ret->m_scalarString.append(reinterpret_cast<char*>(mb), c);
-    }
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const char16_t* val)
-{
-    std::u16string wstr(val);
-    return ValToNode<const std::u16string&>(wstr);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const std::u32string& val)
-{
-    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString.reserve(val.length());
-    for (char32_t ch : val)
-    {
-        utf8proc_uint8_t mb[4];
-        utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(ch), mb);
-        if (c < 0)
-        {
-            atWarning("invalid UTF-8 character while encoding");
-            return std::unique_ptr<YAMLNode>(ret);
-        }
-        ret->m_scalarString.append(reinterpret_cast<char*>(mb), c);
-    }
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-template <>
-inline std::unique_ptr<YAMLNode> ValToNode(const char32_t* val)
-{
-    std::u32string wstr(val);
-    return ValToNode<const std::u32string&>(wstr);
-}
-
 class YAMLDocReader
 {
     std::unique_ptr<YAMLNode> m_rootNode;
@@ -554,79 +181,24 @@ class YAMLDocReader
     std::unique_ptr<YAMLNode> ParseEvents(athena::io::IStreamReader* reader);
 
 public:
-    YAMLDocReader()
-    {
-        if (!yaml_parser_initialize(&m_parser))
-        {
-            HandleYAMLParserError(&m_parser);
-            return;
-        }
-    }
-    ~YAMLDocReader()
-    {
-        yaml_parser_delete(&m_parser);
-    }
+    YAMLDocReader();
+    ~YAMLDocReader();
 
-    void reset()
-    {
-        yaml_parser_delete(&m_parser);
-        if (!yaml_parser_initialize(&m_parser))
-            HandleYAMLParserError(&m_parser);
-    }
+    void reset();
 
-    yaml_parser_t* getParser() {return &m_parser;}
-    bool parse(athena::io::IStreamReader* reader)
-    {
-        std::unique_ptr<YAMLNode> newRoot = ParseEvents(reader);
-        if (!newRoot)
-            return false;
-        m_rootNode = std::move(newRoot);
-        m_subStack.clear();
-        m_subStack.push_back(m_rootNode.get());
-        m_seqTrackerStack.clear();
-        return true;
-    }
+    inline yaml_parser_t* getParser() { return &m_parser; }
+
+    bool parse(athena::io::IStreamReader* reader);
 
     bool ClassTypeOperation(std::function<bool(const char* dnaType)> func);
     bool ValidateClassType(const char* expectedType);
 
-    inline const YAMLNode* getRootNode() const {return m_rootNode.get();}
-    inline const YAMLNode* getCurNode() const {return m_subStack.empty() ? nullptr : m_subStack.back();}
-    std::unique_ptr<YAMLNode> releaseRootNode() {return std::move(m_rootNode);}
+    inline const YAMLNode* getRootNode() const { return m_rootNode.get(); }
+    inline const YAMLNode* getCurNode() const { return m_subStack.empty() ? nullptr : m_subStack.back(); }
+    std::unique_ptr<YAMLNode> releaseRootNode() { return std::move(m_rootNode); }
 
-    bool enterSubRecord(const char* name)
-    {
-        YAMLNode* curSub = m_subStack.back();
-        if (curSub->m_type == YAML_SEQUENCE_NODE)
-        {
-            int& seqIdx = m_seqTrackerStack.back();
-            m_subStack.push_back(curSub->m_seqChildren[seqIdx++].get());
-            if (m_subStack.back()->m_type == YAML_SEQUENCE_NODE)
-                m_seqTrackerStack.push_back(0);
-            return true;
-        }
-        for (const auto& item : curSub->m_mapChildren)
-        {
-            if (!item.first.compare(name))
-            {
-                m_subStack.push_back(item.second.get());
-                if (m_subStack.back()->m_type == YAML_SEQUENCE_NODE)
-                    m_seqTrackerStack.push_back(0);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    void leaveSubRecord()
-    {
-        if (m_subStack.size() > 1)
-        {
-            if (m_subStack.back()->m_type == YAML_SEQUENCE_NODE)
-                m_seqTrackerStack.pop_back();
-            m_subStack.pop_back();
-        }
-    }
+    bool enterSubRecord(const char* name);
+    void leaveSubRecord();
 
     template <class T>
     void enumerate(const char* name, T& record)
@@ -636,50 +208,9 @@ public:
         leaveSubRecord();
     }
 
-    bool enterSubVector(const char* name, size_t& countOut)
-    {
-        YAMLNode* curSub = m_subStack.back();
-        if (!name && curSub->m_type == YAML_SEQUENCE_NODE)
-        {
-            m_subStack.push_back(curSub);
-            m_seqTrackerStack.push_back(0);
-            countOut = curSub->m_seqChildren.size();
-            return true;
-        }
-        else
-        {
-            for (const auto& item : curSub->m_mapChildren)
-            {
-                if (!item.first.compare(name))
-                {
-                    YAMLNode* nextSub = item.second.get();
-                    if (nextSub->m_type == YAML_SEQUENCE_NODE)
-                    {
-                        countOut = nextSub->m_seqChildren.size();
-                    }
-                    else
-                    {
-                        atError("'%s' is not a vector field", name);
-                        countOut = 0;
-                    }
-                    m_subStack.push_back(nextSub);
-                    m_seqTrackerStack.push_back(0);
-                    return true;
-                }
-            }
-        }
-        countOut = 0;
-        return false;
-    }
+    bool enterSubVector(const char* name, size_t& countOut);
+    void leaveSubVector();
 
-    void leaveSubVector()
-    {
-        if (m_subStack.size() > 1)
-        {
-            m_subStack.pop_back();
-            m_seqTrackerStack.pop_back();
-        }
-    }
     template <class T>
     size_t enumerate(const char* name, std::vector<T>& vector,
                      typename std::enable_if<!std::is_arithmetic<T>::value &&
@@ -739,135 +270,27 @@ public:
     }
 
     template <typename RETURNTYPE>
-    RETURNTYPE readVal(const char* name)
-    {
-        if (m_subStack.size())
-        {
-            const YAMLNode* mnode = m_subStack.back();
-            if (mnode->m_type == YAML_SCALAR_NODE)
-            {
-                return NodeToVal<RETURNTYPE>(mnode);
-            }
-            else if (mnode->m_type == YAML_SEQUENCE_NODE)
-            {
-                int& seqIdx = m_seqTrackerStack.back();
-                return NodeToVal<RETURNTYPE>(mnode->m_seqChildren[seqIdx++].get());
-            }
-            else if (mnode->m_type == YAML_MAPPING_NODE && name)
-            {
-                for (const auto& item : mnode->m_mapChildren)
-                {
-                    if (!item.first.compare(name))
-                    {
-                        return NodeToVal<RETURNTYPE>(item.second.get());
-                    }
-                }
-            }
-        }
-        if (name)
-            atWarning("Unable to find field '%s'; returning 0", name);
-        return RETURNTYPE();
-    }
-
-    inline bool readBool(const char* name)
-    {
-        return readVal<bool>(name);
-    }
-
-    inline atInt8 readByte(const char* name)
-    {
-        return readVal<atInt8>(name);
-    }
-
-    inline atUint8 readUByte(const char* name)
-    {
-        return readVal<atUint8>(name);
-    }
-
-    inline atInt16 readInt16(const char* name)
-    {
-        return readVal<atInt16>(name);
-    }
-
-    inline atUint16 readUint16(const char* name)
-    {
-        return readVal<atUint16>(name);
-    }
-
-    inline atInt32 readInt32(const char* name)
-    {
-        return readVal<atInt32>(name);
-    }
-
-    inline atUint32 readUint32(const char* name)
-    {
-        return readVal<atUint32>(name);
-    }
-
-    inline atInt64 readInt64(const char* name)
-    {
-        return readVal<atInt64>(name);
-    }
-
-    inline atUint64 readUint64(const char* name)
-    {
-        return readVal<atUint64>(name);
-    }
-
-    inline float readFloat(const char* name)
-    {
-        return readVal<float>(name);
-    }
-
-    inline double readDouble(const char* name)
-    {
-        return readVal<double>(name);
-    }
-
-    inline atVec2f readVec2f(const char* name)
-    {
-        return readVal<atVec2f>(name);
-    }
-
-    inline atVec3f readVec3f(const char* name)
-    {
-        return readVal<atVec3f>(name);
-    }
-    inline atVec4f readVec4f(const char* name)
-    {
-        return readVal<atVec4f>(name);
-    }
-
-    inline atVec2d readVec2d(const char* name)
-    {
-        return readVal<atVec2d>(name);
-    }
-
-    inline atVec3d readVec3d(const char* name)
-    {
-        return readVal<atVec3d>(name);
-    }
-
-    inline atVec4d readVec4d(const char* name)
-    {
-        return readVal<atVec4d>(name);
-    }
-
-    inline std::unique_ptr<atUint8[]> readUBytes(const char* name)
-    {
-        return readVal<std::unique_ptr<atUint8[]>>(name);
-    }
-
-    inline std::string readString(const char* name)
-    {
-        return readVal<std::string>(name);
-    }
-
-    inline std::wstring readWString(const char* name)
-    {
-        return readVal<std::wstring>(name);
-    }
-
+    RETURNTYPE readVal(const char* name);
+    bool readBool(const char* name);
+    atInt8 readByte(const char* name);
+    atUint8 readUByte(const char* name);
+    atInt16 readInt16(const char* name);
+    atUint16 readUint16(const char* name);
+    atInt32 readInt32(const char* name);
+    atUint32 readUint32(const char* name);
+    atInt64 readInt64(const char* name);
+    atUint64 readUint64(const char* name);
+    float readFloat(const char* name);
+    double readDouble(const char* name);
+    atVec2f readVec2f(const char* name);
+    atVec3f readVec3f(const char* name);
+    atVec4f readVec4f(const char* name);
+    atVec2d readVec2d(const char* name);
+    atVec3d readVec3d(const char* name);
+    atVec4d readVec4d(const char* name);
+    std::unique_ptr<atUint8[]> readUBytes(const char* name);
+    std::string readString(const char* name);
+    std::wstring readWString(const char* name);
 };
 
 class YAMLDocWriter
@@ -877,79 +300,17 @@ class YAMLDocWriter
     yaml_emitter_t m_emitter;
     static bool RecursiveFinish(yaml_emitter_t* doc, const YAMLNode& node);
 public:
-    YAMLDocWriter(const char* classType) : m_rootNode(YAML_MAPPING_NODE)
-    {
-        if (!yaml_emitter_initialize(&m_emitter))
-        {
-            HandleYAMLEmitterError(&m_emitter);
-            return;
-        }
-        yaml_emitter_set_unicode(&m_emitter, true);
-        yaml_emitter_set_width(&m_emitter, -1);
+    YAMLDocWriter(const char* classType);
+    ~YAMLDocWriter();
 
-        m_subStack.emplace_back(&m_rootNode);
-        if (classType)
-        {
-            YAMLNode* classVal = new YAMLNode(YAML_SCALAR_NODE);
-            classVal->m_scalarString.assign(classType);
-            m_rootNode.m_mapChildren.emplace_back("DNAType", std::unique_ptr<YAMLNode>(classVal));
-        }
-    }
-
-    ~YAMLDocWriter()
-    {
-        yaml_emitter_delete(&m_emitter);
-    }
-
-    yaml_emitter_t* getEmitter() {return &m_emitter;}
+    yaml_emitter_t* getEmitter() { return &m_emitter; }
 
     bool finish(athena::io::IStreamWriter* fout);
 
-    inline YAMLNode* getCurNode() const {return m_subStack.empty() ? nullptr : m_subStack.back();}
+    inline YAMLNode* getCurNode() const { return m_subStack.empty() ? nullptr : m_subStack.back(); }
 
-    void enterSubRecord(const char* name)
-    {
-        YAMLNode* curSub = m_subStack.back();
-        if (curSub->m_type != YAML_MAPPING_NODE &&
-            curSub->m_type != YAML_SEQUENCE_NODE)
-            return;
-        YAMLNode* newNode = new YAMLNode(YAML_MAPPING_NODE);
-        if (curSub->m_type == YAML_MAPPING_NODE)
-            curSub->m_mapChildren.emplace_back(name?std::string(name):std::string(), std::unique_ptr<YAMLNode>(newNode));
-        else if (curSub->m_type == YAML_SEQUENCE_NODE)
-            curSub->m_seqChildren.emplace_back(newNode);
-        m_subStack.push_back(newNode);
-    }
-
-    void leaveSubRecord()
-    {
-        if (m_subStack.size() > 1)
-        {
-            YAMLNode* curSub = m_subStack.back();
-            /* Automatically lower to scalar or sequence if there's only one unnamed node */
-            if (curSub->m_mapChildren.size() == 1 &&
-                curSub->m_mapChildren[0].first.empty())
-            {
-                auto& item = curSub->m_mapChildren[0];
-                if (item.first.empty())
-                {
-                    if (item.second->m_type == YAML_SCALAR_NODE)
-                    {
-                        curSub->m_type = YAML_SCALAR_NODE;
-                        curSub->m_scalarString = std::move(item.second->m_scalarString);
-                        curSub->m_mapChildren.clear();
-                    }
-                    else if (item.second->m_type == YAML_SEQUENCE_NODE)
-                    {
-                        curSub->m_type = YAML_SEQUENCE_NODE;
-                        curSub->m_seqChildren = std::move(item.second->m_seqChildren);
-                        curSub->m_mapChildren.clear();
-                    }
-                }
-            }
-            m_subStack.pop_back();
-        }
-    }
+    void enterSubRecord(const char* name);
+    void leaveSubRecord();
 
     template <class T>
     void enumerate(const char* name, T& record)
@@ -959,25 +320,8 @@ public:
         leaveSubRecord();
     }
 
-    void enterSubVector(const char* name)
-    {
-        YAMLNode* curSub = m_subStack.back();
-        if (curSub->m_type != YAML_MAPPING_NODE &&
-            curSub->m_type != YAML_SEQUENCE_NODE)
-            return;
-        YAMLNode* newNode = new YAMLNode(YAML_SEQUENCE_NODE);
-        if (curSub->m_type == YAML_MAPPING_NODE)
-            curSub->m_mapChildren.emplace_back(name?std::string(name):std::string(), std::unique_ptr<YAMLNode>(newNode));
-        else if (curSub->m_type == YAML_SEQUENCE_NODE)
-            curSub->m_seqChildren.emplace_back(newNode);
-        m_subStack.push_back(newNode);
-    }
-
-    void leaveSubVector()
-    {
-        if (m_subStack.size() > 1)
-            m_subStack.pop_back();
-    }
+    void enterSubVector(const char* name);
+    void leaveSubVector();
 
     template <class T>
     void enumerate(const char* name, const std::vector<T>& vector,
@@ -987,7 +331,7 @@ public:
                                            !std::is_same<T, atVec4f>::value &&
                                            !std::is_same<T, atVec2d>::value &&
                                            !std::is_same<T, atVec3d>::value &&
-                                           !std::is_same<T, atVec4d>::value>::type* = 0)
+                                            !std::is_same<T, atVec4d>::value>::type* = 0)
     {
         enterSubVector(name);
         for (const T& item : vector)
@@ -1030,154 +374,35 @@ public:
     }
 
     template <typename INTYPE>
-    void writeVal(const char* name, const INTYPE& val)
-    {
-        YAMLNode* curSub = m_subStack.back();
-        if (curSub->m_type == YAML_MAPPING_NODE)
-            curSub->m_mapChildren.emplace_back(name?name:std::string(), std::move(ValToNode(val)));
-        else if (curSub->m_type == YAML_SEQUENCE_NODE)
-            curSub->m_seqChildren.emplace_back(std::move(ValToNode(val)));
-    }
-
+    void writeVal(const char* name, const INTYPE& val);
     template <typename INTYPE>
-    void writeVal(const char* name, const INTYPE& val, size_t byteCount)
-    {
-        YAMLNode* curSub = m_subStack.back();
-        if (curSub->m_type == YAML_MAPPING_NODE)
-            curSub->m_mapChildren.emplace_back(name?name:std::string(), std::move(ValToNode(val, byteCount)));
-        else if (curSub->m_type == YAML_SEQUENCE_NODE)
-            curSub->m_seqChildren.emplace_back(std::move(ValToNode(val, byteCount)));
-    }
-
-    inline void writeBool(const char* name, const bool& val)
-    {
-        writeVal<bool>(name, val);
-    }
-
-    inline void writeByte(const char* name, const atInt8& val)
-    {
-        writeVal<atInt8>(name, val);
-    }
-
-    inline void writeUByte(const char* name, const atUint8& val)
-    {
-        writeVal<atUint8>(name, val);
-    }
-
-    inline void writeInt16(const char* name, const atInt16& val)
-    {
-        writeVal<atInt16>(name, val);
-    }
-
-    inline void writeUint16(const char* name, const atUint16& val)
-    {
-        writeVal<atUint16>(name, val);
-    }
-
-    inline void writeInt32(const char* name, const atInt32& val)
-    {
-        writeVal<atInt32>(name, val);
-    }
-
-    inline void writeUint32(const char* name, const atUint32& val)
-    {
-        writeVal<atUint32>(name, val);
-    }
-
-    inline void writeInt64(const char* name, const atInt64& val)
-    {
-        writeVal<atInt64>(name, val);
-    }
-
-    inline void writeUint64(const char* name, const atUint64& val)
-    {
-        writeVal<atUint64>(name, val);
-    }
-
-    inline void writeFloat(const char* name, const float& val)
-    {
-        writeVal<float>(name, val);
-    }
-
-    inline void writeDouble(const char* name, const double& val)
-    {
-        writeVal<double>(name, val);
-    }
-
-    inline void writeVec2f(const char* name, const atVec2f& val)
-    {
-        writeVal<atVec2f>(name, val);
-    }
-
-    inline void writeVec3f(const char* name, const atVec3f& val)
-    {
-        writeVal<atVec3f>(name, val);
-    }
-
-    inline void writeVec4f(const char* name, const atVec4f& val)
-    {
-        writeVal<atVec4f>(name, val);
-    }
-
-    inline void writeVec2d(const char* name, const atVec2d& val)
-    {
-        writeVal<atVec2d>(name, val);
-    }
-
-    inline void writeVec3d(const char* name, const atVec3d& val)
-    {
-        writeVal<atVec3d>(name, val);
-    }
-
-    inline void writeVec4d(const char* name, const atVec4d& val)
-    {
-        writeVal<atVec4d>(name, val);
-    }
-
-    inline void writeUBytes(const char* name, const std::unique_ptr<atUint8[]>& val, size_t byteCount)
-    {
-        writeVal<const std::unique_ptr<atUint8[]>&>(name, val, byteCount);
-    }
-
-    inline void writeString(const char* name, const std::string& val)
-    {
-        writeVal<std::string>(name, val);
-    }
-
-    inline void writeString(const char* name, const char* val)
-    {
-        writeVal<const char*>(name, val);
-    }
-
-    inline void writeWString(const char* name, const std::wstring& val)
-    {
-        writeVal<std::wstring>(name, val);
-    }
-
-    inline void writeWString(const char* name, const wchar_t* val)
-    {
-        writeVal<const wchar_t*>(name, val);
-    }
-
-    inline void writeU16String(const char* name, const std::u16string& val)
-    {
-        writeVal<std::u16string>(name, val);
-    }
-
-    inline void writeU16String(const char* name, const char16_t* val)
-    {
-        writeVal<const char16_t*>(name, val);
-    }
-
-    inline void writeU32String(const char* name, const std::u32string& val)
-    {
-        writeVal<std::u32string>(name, val);
-    }
-
-    inline void writeU32String(const char* name, const char32_t* val)
-    {
-        writeVal<const char32_t*>(name, val);
-    }
+    void writeVal(const char* name, const INTYPE& val, size_t byteCount);
+    void writeBool(const char* name, const bool& val);
+    void writeByte(const char* name, const atInt8& val);
+    void writeUByte(const char* name, const atUint8& val);
+    void writeInt16(const char* name, const atInt16& val);
+    void writeUint16(const char* name, const atUint16& val);
+    void writeInt32(const char* name, const atInt32& val);
+    void writeUint32(const char* name, const atUint32& val);
+    void writeInt64(const char* name, const atInt64& val);
+    void writeUint64(const char* name, const atUint64& val);
+    void writeFloat(const char* name, const float& val);
+    void writeDouble(const char* name, const double& val);
+    void writeVec2f(const char* name, const atVec2f& val);
+    void writeVec3f(const char* name, const atVec3f& val);
+    void writeVec4f(const char* name, const atVec4f& val);
+    void writeVec2d(const char* name, const atVec2d& val);
+    void writeVec3d(const char* name, const atVec3d& val);
+    void writeVec4d(const char* name, const atVec4d& val);
+    void writeUBytes(const char* name, const std::unique_ptr<atUint8[]>& val, size_t byteCount);
+    void writeString(const char* name, const std::string& val);
+    void writeString(const char* name, const char* val);
+    void writeWString(const char* name, const std::wstring& val);
+    void writeWString(const char* name, const wchar_t* val);
+    void writeU16String(const char* name, const std::u16string& val);
+    void writeU16String(const char* name, const char16_t* val);
+    void writeU32String(const char* name, const std::u32string& val);
+    void writeU32String(const char* name, const char32_t* val);
 };
 
 int YAMLAthenaReader(athena::io::IStreamReader* reader,
