@@ -589,21 +589,22 @@ err:
     return false;
 }
 
-void YAMLDocWriter::enterSubRecord(const char* name)
+YAMLDocWriter::RecordRAII YAMLDocWriter::enterSubRecord(const char* name)
 {
     YAMLNode* curSub = m_subStack.back();
     if (curSub->m_type != YAML_MAPPING_NODE &&
         curSub->m_type != YAML_SEQUENCE_NODE)
-        return;
+        return {};
     YAMLNode* newNode = new YAMLNode(YAML_MAPPING_NODE);
     if (curSub->m_type == YAML_MAPPING_NODE)
         curSub->m_mapChildren.emplace_back(name?std::string(name):std::string(), std::unique_ptr<YAMLNode>(newNode));
     else if (curSub->m_type == YAML_SEQUENCE_NODE)
         curSub->m_seqChildren.emplace_back(newNode);
     m_subStack.push_back(newNode);
+    return RecordRAII{this};
 }
 
-void YAMLDocWriter::leaveSubRecord()
+void YAMLDocWriter::_leaveSubRecord()
 {
     if (m_subStack.size() > 1)
     {
@@ -633,21 +634,22 @@ void YAMLDocWriter::leaveSubRecord()
     }
 }
 
-void YAMLDocWriter::enterSubVector(const char* name)
+YAMLDocWriter::VectorRAII YAMLDocWriter::enterSubVector(const char* name)
 {
     YAMLNode* curSub = m_subStack.back();
     if (curSub->m_type != YAML_MAPPING_NODE &&
         curSub->m_type != YAML_SEQUENCE_NODE)
-        return;
+        return {};
     YAMLNode* newNode = new YAMLNode(YAML_SEQUENCE_NODE);
     if (curSub->m_type == YAML_MAPPING_NODE)
         curSub->m_mapChildren.emplace_back(name?std::string(name):std::string(), std::unique_ptr<YAMLNode>(newNode));
     else if (curSub->m_type == YAML_SEQUENCE_NODE)
         curSub->m_seqChildren.emplace_back(newNode);
     m_subStack.push_back(newNode);
+    return VectorRAII{this};
 }
 
-void YAMLDocWriter::leaveSubVector()
+void YAMLDocWriter::_leaveSubVector()
 {
     if (m_subStack.size() > 1)
         m_subStack.pop_back();
@@ -1016,7 +1018,7 @@ bool YAMLDocReader::ValidateClassType(const char* expectedType)
     });
 }
 
-bool YAMLDocReader::enterSubRecord(const char* name)
+YAMLDocReader::RecordRAII YAMLDocReader::enterSubRecord(const char* name)
 {
     YAMLNode* curSub = m_subStack.back();
     if (curSub->m_type == YAML_SEQUENCE_NODE)
@@ -1025,7 +1027,11 @@ bool YAMLDocReader::enterSubRecord(const char* name)
         m_subStack.push_back(curSub->m_seqChildren[seqIdx++].get());
         if (m_subStack.back()->m_type == YAML_SEQUENCE_NODE)
             m_seqTrackerStack.push_back(0);
-        return true;
+        return RecordRAII{this};
+    }
+    else if (!name)
+    {
+        atError("Expected YAML sequence");
     }
     for (const auto& item : curSub->m_mapChildren)
     {
@@ -1034,13 +1040,13 @@ bool YAMLDocReader::enterSubRecord(const char* name)
             m_subStack.push_back(item.second.get());
             if (m_subStack.back()->m_type == YAML_SEQUENCE_NODE)
                 m_seqTrackerStack.push_back(0);
-            return true;
+            return RecordRAII{this};
         }
     }
-    return false;
+    return {};
 }
 
-void YAMLDocReader::leaveSubRecord()
+void YAMLDocReader::_leaveSubRecord()
 {
     if (m_subStack.size() > 1)
     {
@@ -1050,7 +1056,7 @@ void YAMLDocReader::leaveSubRecord()
     }
 }
 
-bool YAMLDocReader::enterSubVector(const char* name, size_t& countOut)
+YAMLDocReader::VectorRAII YAMLDocReader::enterSubVector(const char* name, size_t& countOut)
 {
     YAMLNode* curSub = m_subStack.back();
     if (!name && curSub->m_type == YAML_SEQUENCE_NODE)
@@ -1058,7 +1064,7 @@ bool YAMLDocReader::enterSubVector(const char* name, size_t& countOut)
         m_subStack.push_back(curSub);
         m_seqTrackerStack.push_back(0);
         countOut = curSub->m_seqChildren.size();
-        return true;
+        return VectorRAII{this};
     }
     else
     {
@@ -1078,15 +1084,15 @@ bool YAMLDocReader::enterSubVector(const char* name, size_t& countOut)
                 }
                 m_subStack.push_back(nextSub);
                 m_seqTrackerStack.push_back(0);
-                return true;
+                return VectorRAII{this};
             }
         }
     }
     countOut = 0;
-    return false;
+    return {};
 }
 
-void YAMLDocReader::leaveSubVector()
+void YAMLDocReader::_leaveSubVector()
 {
     if (m_subStack.size() > 1)
     {

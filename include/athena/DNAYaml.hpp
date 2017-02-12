@@ -179,6 +179,8 @@ class YAMLDocReader
     std::vector<int> m_seqTrackerStack;
     yaml_parser_t m_parser;
     std::unique_ptr<YAMLNode> ParseEvents(athena::io::IStreamReader* reader);
+    void _leaveSubRecord();
+    void _leaveSubVector();
 
 public:
     YAMLDocReader();
@@ -197,19 +199,40 @@ public:
     inline const YAMLNode* getCurNode() const { return m_subStack.empty() ? nullptr : m_subStack.back(); }
     std::unique_ptr<YAMLNode> releaseRootNode() { return std::move(m_rootNode); }
 
-    bool enterSubRecord(const char* name);
-    void leaveSubRecord();
+    class RecordRAII
+    {
+        friend class YAMLDocReader;
+        YAMLDocReader* m_r = nullptr;
+        RecordRAII(YAMLDocReader* r) : m_r(r) {}
+        RecordRAII() = default;
+    public:
+        operator bool() const { return m_r != nullptr; }
+        ~RecordRAII() { if (m_r) m_r->_leaveSubRecord(); }
+    };
+    friend class RecordRAII;
+
+    RecordRAII enterSubRecord(const char* name);
 
     template <class T>
     void enumerate(const char* name, T& record)
     {
-        enterSubRecord(name);
-        record.read(*this);
-        leaveSubRecord();
+        if (auto rec = enterSubRecord(name))
+            record.read(*this);
     }
 
-    bool enterSubVector(const char* name, size_t& countOut);
-    void leaveSubVector();
+    class VectorRAII
+    {
+        friend class YAMLDocReader;
+        YAMLDocReader* m_r = nullptr;
+        VectorRAII(YAMLDocReader* r) : m_r(r) {}
+        VectorRAII() = default;
+    public:
+        operator bool() const { return m_r != nullptr; }
+        ~VectorRAII() { if (m_r) m_r->_leaveSubVector(); }
+    };
+    friend class VectorRAII;
+
+    VectorRAII enterSubVector(const char* name, size_t& countOut);
 
     template <class T>
     size_t enumerate(const char* name, std::vector<T>& vector,
@@ -219,17 +242,17 @@ public:
                                              !std::is_same<T, atVec4f>::value>::type* = 0)
     {
         size_t countOut;
-        enterSubVector(name, countOut);
-        vector.clear();
-        vector.reserve(countOut);
-        for (size_t i=0 ; i<countOut ; ++i)
+        if (auto v = enterSubVector(name, countOut))
         {
-            vector.emplace_back();
-            enterSubRecord(nullptr);
-            vector.back().read(*this);
-            leaveSubRecord();
+            vector.clear();
+            vector.reserve(countOut);
+            for (size_t i=0 ; i<countOut ; ++i)
+            {
+                vector.emplace_back();
+                if (auto rec = enterSubRecord(nullptr))
+                    vector.back().read(*this);
+            }
         }
-        leaveSubVector();
         return countOut;
     }
 
@@ -241,12 +264,13 @@ public:
                                              std::is_same<T, atVec4f>::value>::type* = 0)
     {
         size_t countOut;
-        enterSubVector(name, countOut);
-        vector.clear();
-        vector.reserve(countOut);
-        for (size_t i=0 ; i<countOut ; ++i)
-            vector.push_back(readVal<T>(name));
-        leaveSubVector();
+        if (auto v = enterSubVector(name, countOut))
+        {
+            vector.clear();
+            vector.reserve(countOut);
+            for (size_t i=0 ; i<countOut ; ++i)
+                vector.push_back(readVal<T>(name));
+        }
         return countOut;
     }
 
@@ -255,17 +279,17 @@ public:
                      std::function<void(YAMLDocReader&, T&)> readf)
     {
         size_t countOut;
-        enterSubVector(name, countOut);
-        vector.clear();
-        vector.reserve(countOut);
-        for (size_t i=0 ; i<countOut ; ++i)
+        if (auto v = enterSubVector(name, countOut))
         {
-            vector.emplace_back();
-            enterSubRecord(nullptr);
-            readf(*this, vector.back());
-            leaveSubRecord();
+            vector.clear();
+            vector.reserve(countOut);
+            for (size_t i=0 ; i<countOut ; ++i)
+            {
+                vector.emplace_back();
+                if (auto rec = enterSubRecord(nullptr))
+                    readf(*this, vector.back());
+            }
         }
-        leaveSubVector();
         return countOut;
     }
 
@@ -299,6 +323,8 @@ class YAMLDocWriter
     std::vector<YAMLNode*> m_subStack;
     yaml_emitter_t m_emitter;
     static bool RecursiveFinish(yaml_emitter_t* doc, const YAMLNode& node);
+    void _leaveSubRecord();
+    void _leaveSubVector();
 public:
     YAMLDocWriter(const char* classType);
     ~YAMLDocWriter();
@@ -309,19 +335,40 @@ public:
 
     inline YAMLNode* getCurNode() const { return m_subStack.empty() ? nullptr : m_subStack.back(); }
 
-    void enterSubRecord(const char* name);
-    void leaveSubRecord();
+    class RecordRAII
+    {
+        friend class YAMLDocWriter;
+        YAMLDocWriter* m_w = nullptr;
+        RecordRAII(YAMLDocWriter* w) : m_w(w) {}
+        RecordRAII() = default;
+    public:
+        operator bool() const { return m_w != nullptr; }
+        ~RecordRAII() { if (m_w) m_w->_leaveSubRecord(); }
+    };
+    friend class RecordRAII;
+
+    RecordRAII enterSubRecord(const char* name);
 
     template <class T>
     void enumerate(const char* name, T& record)
     {
-        enterSubRecord(name);
-        record.write(*this);
-        leaveSubRecord();
+        if (auto rec = enterSubRecord(name))
+            record.write(*this);
     }
 
-    void enterSubVector(const char* name);
-    void leaveSubVector();
+    class VectorRAII
+    {
+        friend class YAMLDocWriter;
+        YAMLDocWriter* m_w = nullptr;
+        VectorRAII(YAMLDocWriter* w) : m_w(w) {}
+        VectorRAII() = default;
+    public:
+        operator bool() const { return m_w != nullptr; }
+        ~VectorRAII() { if (m_w) m_w->_leaveSubVector(); }
+    };
+    friend class VectorRAII;
+
+    VectorRAII enterSubVector(const char* name);
 
     template <class T>
     void enumerate(const char* name, const std::vector<T>& vector,
@@ -333,14 +380,10 @@ public:
                                            !std::is_same<T, atVec3d>::value &&
                                             !std::is_same<T, atVec4d>::value>::type* = 0)
     {
-        enterSubVector(name);
-        for (const T& item : vector)
-        {
-            enterSubRecord(nullptr);
-            item.write(*this);
-            leaveSubRecord();
-        }
-        leaveSubVector();
+        if (auto v = enterSubVector(name))
+            for (const T& item : vector)
+                if (auto rec = enterSubRecord(nullptr))
+                    item.write(*this);
     }
 
     template <class T>
@@ -353,24 +396,19 @@ public:
                                            std::is_same<T, atVec3d>::value ||
                                            std::is_same<T, atVec4d>::value>::type* = 0)
     {
-        enterSubVector(name);
-        for (T item : vector)
-            writeVal<T>(nullptr, item);
-        leaveSubVector();
+        if (auto v = enterSubVector(name))
+            for (T item : vector)
+                writeVal<T>(nullptr, item);
     }
 
     template <class T>
     void enumerate(const char* name, const std::vector<T>& vector,
                    std::function<void(YAMLDocWriter&, const T&)> writef)
     {
-        enterSubVector(name);
-        for (const T& item : vector)
-        {
-            enterSubRecord(nullptr);
-            writef(*this, item);
-            leaveSubRecord();
-        }
-        leaveSubVector();
+        if (auto v = enterSubVector(name))
+            for (const T& item : vector)
+                if (auto rec = enterSubRecord(nullptr))
+                    writef(*this, item);
     }
 
     template <typename INTYPE>

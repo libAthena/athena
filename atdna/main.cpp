@@ -110,20 +110,18 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
         {
             if (m_output)
             {
-                out << "    /* " << m_fieldName << " */\n";
+                if (m_fieldName.size())
+                    out << "    /* " << m_fieldName << " */\n";
                 switch (m_type)
                 {
                 case Type::EnterSubVector:
                     if (!p)
-                        out << "    size_t __" << m_fieldName << "Count;\n    " ATHENA_YAML_READER ".enterSubVector(\"" << m_fieldName << "\", __" << m_fieldName << "Count);\n";
+                        out << "    size_t __" << m_fieldName << "Count;\n    if (auto __v = " ATHENA_YAML_READER ".enterSubVector(\"" << m_fieldName << "\", __" << m_fieldName << "Count))\n    {\n";
                     else
-                        out << "    " ATHENA_YAML_WRITER ".enterSubVector(\"" << m_fieldName << "\");\n";
+                        out << "    if (auto __v = " ATHENA_YAML_WRITER ".enterSubVector(\"" << m_fieldName << "\"))\n    {\n";
                     break;
                 case Type::LeaveSubVector:
-                    if (!p)
-                        out << "    " ATHENA_YAML_READER ".leaveSubVector();\n";
-                    else
-                        out << "    " ATHENA_YAML_WRITER ".leaveSubVector();\n";
+                    out << "    }\n";
                     break;
                 case Type::Value:
                     if (!p)
