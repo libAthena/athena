@@ -665,6 +665,18 @@ void YAMLDocWriter::writeVal(const char* name, const INTYPE& val)
         curSub->m_seqChildren.emplace_back(std::move(ValToNode(val)));
 }
 
+template void YAMLDocWriter::writeVal<atInt8>(const char* name, const atInt8& val);
+template void YAMLDocWriter::writeVal<atUint8>(const char* name, const atUint8& val);
+template void YAMLDocWriter::writeVal<atInt16>(const char* name, const atInt16& val);
+template void YAMLDocWriter::writeVal<atUint16>(const char* name, const atUint16& val);
+template void YAMLDocWriter::writeVal<atInt32>(const char* name, const atInt32& val);
+template void YAMLDocWriter::writeVal<atUint32>(const char* name, const atUint32& val);
+template void YAMLDocWriter::writeVal<float>(const char* name, const float& val);
+template void YAMLDocWriter::writeVal<double>(const char* name, const double& val);
+template void YAMLDocWriter::writeVal<atVec3f>(const char* name, const atVec3f& val);
+template void YAMLDocWriter::writeVal<atVec4f>(const char* name, const atVec4f& val);
+template void YAMLDocWriter::writeVal<bool>(const char* name, const bool& val);
+
 template <typename INTYPE>
 void YAMLDocWriter::writeVal(const char* name, const INTYPE& val, size_t byteCount)
 {
@@ -1131,6 +1143,18 @@ RETURNTYPE YAMLDocReader::readVal(const char* name)
         atWarning("Unable to find field '%s'; returning 0", name);
     return RETURNTYPE();
 }
+
+template atInt8 YAMLDocReader::readVal<atInt8>(const char* name);
+template atUint8 YAMLDocReader::readVal<atUint8>(const char* name);
+template atInt16 YAMLDocReader::readVal<atInt16>(const char* name);
+template atUint16 YAMLDocReader::readVal<atUint16>(const char* name);
+template atInt32 YAMLDocReader::readVal<atInt32>(const char* name);
+template atUint32 YAMLDocReader::readVal<atUint32>(const char* name);
+template float YAMLDocReader::readVal<float>(const char* name);
+template double YAMLDocReader::readVal<double>(const char* name);
+template atVec3f YAMLDocReader::readVal<atVec3f>(const char* name);
+template atVec4f YAMLDocReader::readVal<atVec4f>(const char* name);
+template bool YAMLDocReader::readVal<bool>(const char* name);
 
 bool YAMLDocReader::readBool(const char* name)
 {
