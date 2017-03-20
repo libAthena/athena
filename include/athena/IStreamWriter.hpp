@@ -24,6 +24,17 @@ public:
      */
     inline void seekAlign32() {seek(ROUND_UP_32(position()), SeekOrigin::Begin);}
 
+    /** @brief Writes zero up to specified absolute offset.<br />
+     */
+    inline void writeZeroTo(atInt64 pos)
+    {
+        atInt64 delta = pos - position();
+        if (delta <= 0)
+            return;
+        for (atInt64 i=0 ; i<delta ; ++i)
+            writeUByte(0);
+    }
+
     /** @brief Returns whether or not the stream is at the end.
      *
      *  @return True if at end; False otherwise.

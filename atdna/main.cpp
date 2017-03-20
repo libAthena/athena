@@ -1870,26 +1870,19 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                             if (alignVal)
                             {
                                 fileOut << "    /* " << fieldName << " */\n";
-                                if (alignVal == 32)
-                                {
-                                    if (!p)
-                                        fileOut << "    " ATHENA_DNA_READER ".seekAlign32();\n";
-                                    else
-                                        fileOut << "    " ATHENA_DNA_WRITER ".seekAlign32();\n";
-                                }
-                                else if (align.isPowerOf2())
+                                if (align.isPowerOf2())
                                 {
                                     if (!p)
                                         fileOut << "    " ATHENA_DNA_READER ".seek((" ATHENA_DNA_READER ".position() + " << alignVal-1 << ") & ~" << alignVal-1 << ", athena::Begin);\n";
                                     else
-                                        fileOut << "    " ATHENA_DNA_WRITER ".seek((" ATHENA_DNA_WRITER ".position() + " << alignVal-1 << ") & ~" << alignVal-1 << ", athena::Begin);\n";
+                                        fileOut << "    " ATHENA_DNA_WRITER ".writeZeroTo((" ATHENA_DNA_WRITER ".position() + " << alignVal-1 << ") & ~" << alignVal-1 << ");\n";
                                 }
                                 else
                                 {
                                     if (!p)
                                         fileOut << "    " ATHENA_DNA_READER ".seek((" ATHENA_DNA_READER ".position() + " << alignVal-1 << ") / " << alignVal << " * " << alignVal << ", athena::Begin);\n";
                                     else
-                                        fileOut << "    " ATHENA_DNA_WRITER ".seek((" ATHENA_DNA_WRITER ".position() + " << alignVal-1 << ") / " << alignVal << " * " << alignVal << ", athena::Begin);\n";
+                                        fileOut << "    " ATHENA_DNA_WRITER ".writeZeroTo((" ATHENA_DNA_WRITER ".position() + " << alignVal-1 << ") / " << alignVal << " * " << alignVal << ");\n";
                                 }
                             }
                         }
