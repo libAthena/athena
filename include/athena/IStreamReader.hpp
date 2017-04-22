@@ -39,6 +39,10 @@ public:
      */
     inline void seekAlign16() {seek(ROUND_UP_16(position()), SeekOrigin::Begin); }
 
+    /** @brief Sets the buffer's position relative to the next 4-byte aligned position.<br />
+     */
+    inline void seekAlign4() {seek(ROUND_UP_4(position()), SeekOrigin::Begin); }
+
     /** @brief Returns whether or not the stream is at the end.
      *
      *  @return True if at end; False otherwise.
