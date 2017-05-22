@@ -102,7 +102,6 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
         std::string m_fieldName;
         std::string m_sizeExpr;
         std::string m_ioOp;
-        bool m_isDNAType;
         bool m_output = true;
 
         YAMLFieldNode(Type tp) : m_type(tp) {}
@@ -125,17 +124,10 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                     out << "    }\n";
                     break;
                 case Type::Value:
-                    if (m_isDNAType)
-                    {
-                        out << "    " << m_fieldName << "." << m_ioOp << ";\n";
-                    }
+                    if (!p)
+                        out << "    " << m_fieldName << " = " << m_ioOp << ";\n";
                     else
-                    {
-                        if (!p)
-                            out << "    " << m_fieldName << " = " << m_ioOp << ";\n";
-                        else
-                            out << "    " << m_ioOp << "\n";
-                    }
+                        out << "    " << m_ioOp << "\n";
                     break;
                 case Type::VectorRefSize:
                     if (!p)
@@ -2041,11 +2033,20 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                             if (ioOp.empty())
                                 continue;
 
-                            outputNodes.emplace_back(YAMLFieldNode::Type::Value);
-                            YAMLFieldNode& outNode = outputNodes.back();
-                            outNode.m_fieldName = fieldName;
-                            outNode.m_isDNAType = isDNAType;
-                            outNode.m_ioOp = ioOp;
+                            if (isDNAType)
+                            {
+                                outputNodes.emplace_back(YAMLFieldNode::Type::Record);
+                                YAMLFieldNode& outNode = outputNodes.back();
+                                outNode.m_fieldName = fieldName;
+                                outNode.m_fieldNameBare = fieldNameBare;
+                            }
+                            else
+                            {
+                                outputNodes.emplace_back(YAMLFieldNode::Type::Value);
+                                YAMLFieldNode& outNode = outputNodes.back();
+                                outNode.m_fieldName = fieldName;
+                                outNode.m_ioOp = ioOp;
+                            }
                         }
                         else if (!tsDecl->getName().compare("Vector"))
                         {
