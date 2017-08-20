@@ -13,10 +13,16 @@ find_package(Athena REQUIRED)
 
 # Super handy macro for adding atdna target
 macro(atdna out)
+  # Ninja wants invocations in root binary dir for DEPFILE application
+  file(RELATIVE_PATH out_rel ${CMAKE_BINARY_DIR} "${CMAKE_CURRENT_BINARY_DIR}/${out}")
+
   # Make input files source-relative
   set(ins "")
+  set(ins_impdeps "")
   foreach(arg ${ARGN})
     list(APPEND ins ${CMAKE_CURRENT_SOURCE_DIR}/${arg})
+    list(APPEND ins_impdeps CXX)
+    list(APPEND ins_impdeps ${CMAKE_CURRENT_SOURCE_DIR}/${arg})
   endforeach()
 
   # Get local include directories for atdna
@@ -50,9 +56,23 @@ macro(atdna out)
   endif()
 
   # Make target
-  add_custom_command(OUTPUT ${out} COMMAND $<TARGET_FILE:atdna> 
-                     ARGS ${extraargs} -o ${out} ${cdefcli} ${inccli} "-I${ATHENA_INCLUDE_DIR}"
-                     -isystem "@CONF_CLANG_INCLUDE_DIR@" ${ins}
-                     DEPENDS ${ins} COMMENT "Generating DNA ${out}")
+  if(${CMAKE_GENERATOR} STREQUAL "Ninja")
+    # Use Ninja's DEPFILE parser in cooperation with atdna
+    add_custom_command(OUTPUT ${out} COMMAND $<TARGET_FILE:atdna>
+                       ARGS ${extraargs} -o ${out_rel} -MD -MT ${out_rel} -MF ${out_rel}.d ${cdefcli} ${inccli}
+                       "-I${ATHENA_INCLUDE_DIR}" -isystem "${CLANG_INCLUDE_DIR}" ${ins}
+                       DEPENDS atdna ${ins} IMPLICIT_DEPENDS ${ins_impdeps}
+                       DEPFILE "${CMAKE_CURRENT_BINARY_DIR}/${out}.d"
+                       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                       COMMENT "Generating DNA ${out_rel}")
+  else()
+    # Use CMake's built-in dependency scanner for makefile targets
+    add_custom_command(OUTPUT ${out} COMMAND $<TARGET_FILE:atdna>
+                       ARGS ${extraargs} -o ${out_rel} ${cdefcli} ${inccli}
+                       "-I${ATHENA_INCLUDE_DIR}" -isystem "${CLANG_INCLUDE_DIR}" ${ins}
+                       DEPENDS atdna ${ins} IMPLICIT_DEPENDS ${ins_impdeps}
+                       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                       COMMENT "Generating DNA ${out_rel}")
+  endif()
 endmacro()
 

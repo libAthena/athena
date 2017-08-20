@@ -4,6 +4,7 @@
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/FrontendAction.h"
+#include "clang/Frontend/Utils.h"
 #include "clang/Tooling/Tooling.h"
 #include "clang/Lex/Preprocessor.h"
 #include "clang/Sema/Sema.h"
@@ -60,6 +61,14 @@ static llvm::cl::list<std::string> SystemIncludeSearchPaths("isystem",
 
 static llvm::cl::opt<std::string> StandardCXXLib("stdlib",
                                                  llvm::cl::desc("Standard C++ library"));
+
+static llvm::cl::opt<bool> DepFile("MD", llvm::cl::desc("Make Dependency file"));
+
+static llvm::cl::opt<std::string> DepFileOut("MF",
+                                             llvm::cl::desc("Dependency file out path"));
+
+static llvm::cl::list<std::string> DepFileTargets("MT",
+                                                  llvm::cl::desc("Dependency file targets"));
 
 static llvm::cl::list<std::string> SystemIncRoot("isysroot",
                                                  llvm::cl::desc("System include root"));
@@ -2372,11 +2381,20 @@ class ATDNAAction : public clang::ASTFrontendAction
         return {};
     }
 
+    std::unique_ptr<clang::DependencyFileGenerator> TheDependencyFileGenerator;
+
 public:
-    explicit ATDNAAction() {}
+    explicit ATDNAAction() = default;
     std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(clang::CompilerInstance& compiler,
                                                           llvm::StringRef /*filename*/)
     {
+        clang::DependencyOutputOptions DepOpts;
+        DepOpts.OutputFile = DepFileOut;
+        DepOpts.Targets = DepFileTargets;
+        if (!DepOpts.OutputFile.empty())
+            TheDependencyFileGenerator.reset(
+                clang::DependencyFileGenerator::CreateAndAttachToPreprocessor(compiler.getPreprocessor(), DepOpts));
+
         std::unique_ptr<StreamOut> fileout;
         StreamOut* fileoutOld;
         if (OutputFilename.size())
@@ -2406,7 +2424,8 @@ int main(int argc, const char** argv)
         args.push_back(argv[a]);
 
     llvm::IntrusiveRefCntPtr<clang::FileManager> fman(new clang::FileManager(clang::FileSystemOptions()));
-    clang::tooling::ToolInvocation TI(args, new ATDNAAction, fman.get());
+    ATDNAAction* action = new ATDNAAction();
+    clang::tooling::ToolInvocation TI(args, action, fman.get());
     if (!TI.run())
         return 1;
 
