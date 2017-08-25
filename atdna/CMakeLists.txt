@@ -188,15 +188,16 @@ macro(atdna out)
       list(APPEND extraargs -fms-compatibility-version=19.00)
     elseif(MSVC_VERSION EQUAL 1910)
       list(APPEND extraargs -fms-compatibility-version=19.10)
-    endif()
+  endif()
 
   # OSX Extra
   elseif(APPLE)
     if (NOT EXISTS "${CMAKE_OSX_SYSROOT}")
       message(FATAL_ERROR "CMAKE_OSX_SYSROOT not set")
     endif()
-    list(APPEND extraargs -isysroot ${CMAKE_OSX_SYSROOT} -I ${CMAKE_OSX_SYSROOT}/usr/include -isysroot
-         ${CMAKE_OSX_SYSROOT}/../../../../../Toolchains/XcodeDefault.xctoolchain)
+    list(APPEND extraargs -isysroot ${CMAKE_OSX_SYSROOT} -isysroot ${CMAKE_OSX_SYSROOT}/usr/include
+         -I ${CMAKE_OSX_SYSROOT}/../../../../../Toolchains/XcodeDefault.xctoolchain
+         -I ${CMAKE_OSX_SYSROOT}/../../../../../Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1)
   endif()
 
   # Make target
