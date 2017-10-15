@@ -14,8 +14,12 @@ if(NOT LLVM_FOUND)
     message(STATUS "Unable to locate LLVM installation; skipping atdna")
 else()
 find_library(LLVMDEMANGLE_LIB LLVMDemangle HINTS "${LLVM_ROOT_DIR}/lib")
+find_library(LLVMBINARYFORMAT_LIB LLVMBinaryFormat HINTS "${LLVM_ROOT_DIR}/lib")
 if (NOT LLVMDEMANGLE_LIB)
     set(LLVMDEMANGLE_LIB "")
+endif()
+if (NOT LLVMBINARYFORMAT_LIB)
+    set(LLVMBINARYFORMAT_LIB "")
 endif()
 list(APPEND LLVM_LIBS
      clangFrontend
@@ -33,7 +37,9 @@ list(APPEND LLVM_LIBS
      LLVMOption
      LLVMMCParser
      LLVMBitReader
+     ${LLVMBINARYFORMAT_LIB}
      LLVMMC
+     LLVMDemangle
      LLVMProfileData
      LLVMSupport
      ${LLVMDEMANGLE_LIB})
