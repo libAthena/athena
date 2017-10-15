@@ -39,7 +39,6 @@ list(APPEND LLVM_LIBS
      LLVMBitReader
      ${LLVMBINARYFORMAT_LIB}
      LLVMMC
-     LLVMDemangle
      LLVMProfileData
      LLVMSupport
      ${LLVMDEMANGLE_LIB})
