@@ -49,6 +49,8 @@ macro(atdna out)
       list(APPEND extraargs -fms-compatibility-version=19.00)
     elseif(MSVC_VERSION EQUAL 1910)
       list(APPEND extraargs -fms-compatibility-version=19.10)
+    elseif(MSVC_VERSION EQUAL 1911)
+      list(APPEND extraargs -fms-compatibility-version=19.11)
   endif()
 
   # OSX Extra
