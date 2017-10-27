@@ -142,7 +142,7 @@ atUint8* MemoryReader::data() const
 
 atUint64 MemoryReader::readUBytesToBuf(void* buf, atUint64 length)
 {
-    if (m_position + length > m_length)
+    if (m_position >= m_length)
     {
         if (m_globalErr)
             atFatal("Position %0.8X outside stream bounds ", m_position);
@@ -151,6 +151,7 @@ atUint64 MemoryReader::readUBytesToBuf(void* buf, atUint64 length)
         return 0;
     }
 
+    length = std::min(length, m_length - m_position);
     memmove(buf, reinterpret_cast<const atUint8*>(m_data) + m_position, length);
     m_position += length;
     return length;
