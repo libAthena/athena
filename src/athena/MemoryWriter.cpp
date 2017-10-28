@@ -26,13 +26,6 @@ MemoryWriter::MemoryWriter(atUint8* data, atUint64 length, bool takeOwnership)
         setError();
         return;
     }
-
-    if (length == 0)
-    {
-        atError("length cannot be 0");
-        setError();
-        return;
-    }
 }
 
 MemoryWriter::~MemoryWriter()
