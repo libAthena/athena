@@ -5,10 +5,14 @@
 #include <vector>
 #include <iostream>
 #include <cstring>
+#include <algorithm>
 
 #ifdef HW_RVL
 #include <malloc.h>
 #endif // HW_RVL
+
+#undef min
+#undef max
 
 namespace athena
 {
