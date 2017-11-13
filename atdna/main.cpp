@@ -2389,7 +2389,7 @@ public:
                                                           llvm::StringRef /*filename*/) override
     {
         clang::DependencyOutputOptions DepOpts;
-        DepOpts.OutputFile = DepFileOut;
+        DepOpts.OutputFile = DepFileOut.getValue();
         DepOpts.Targets = DepFileTargets;
         if (!DepOpts.OutputFile.empty())
             TheDependencyFileGenerator.reset(
