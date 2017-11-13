@@ -42,9 +42,10 @@ void fillRandom(atUint8* rndArea, atUint64 count)
     }
 }
 
-std::vector<std::string>& split(const std::string& s, char delim, std::vector<std::string>& elems)
+static std::vector<std::string>& split(std::string_view s, char delim, std::vector<std::string>& elems)
 {
-    std::stringstream ss(s);
+    std::string tmps(s);
+    std::stringstream ss(tmps);
     std::string item;
 
     while (std::getline(ss, item, delim))
@@ -54,17 +55,17 @@ std::vector<std::string>& split(const std::string& s, char delim, std::vector<st
 }
 
 
-std::vector<std::string> split(const std::string& s, char delim)
+std::vector<std::string> split(std::string_view s, char delim)
 {
     std::vector<std::string> elems;
     split(s, delim, elems);
     return elems;
 }
 
-std::string join(const std::vector<std::string>& elems, const std::string& delims)
+std::string join(const std::vector<std::string>& elems, std::string_view delims)
 {
     std::ostringstream ret;
-    std::copy(elems.begin(), elems.end(), std::ostream_iterator<std::string>(ret, delims.c_str()));
+    std::copy(elems.begin(), elems.end(), std::ostream_iterator<std::string>(ret, delims.data()));
 
     return ret.str();
 }
@@ -108,9 +109,9 @@ std::string sprintf(const char* fmt, ...)
     return ret;
 }
 
-bool parseBool(const std::string& boolean, bool* valid)
+bool parseBool(std::string_view boolean, bool* valid)
 {
-    std::string val = boolean;
+    std::string val(boolean);
     // compare must be case insensitive
     // This is the cleanest solution since I only need to do it once
     tolower(val);
@@ -141,7 +142,7 @@ bool parseBool(const std::string& boolean, bool* valid)
     return false;
 }
 
-int countChar(const std::string& str, const char chr, int* lastOccur)
+int countChar(std::string_view str, const char chr, int* lastOccur)
 {
     int ret = 0;
 
@@ -163,18 +164,18 @@ int countChar(const std::string& str, const char chr, int* lastOccur)
     return ret;
 }
 
-atUint64 fileSize(const std::string& filename)
+atUint64 fileSize(std::string_view filename)
 {
     atStat64_t st;
-    atStat64(filename.c_str(), &st);
+    atStat64(filename.data(), &st);
     return st.st_size;
 }
 
 #ifdef _MSC_VER
-atUint64 fileSize(const std::wstring& filename)
+atUint64 fileSize(std::wstring_view filename)
 {
     atStat64_t st;
-    _wstati64(filename.c_str(), &st);
+    _wstati64(filename.data(), &st);
     return st.st_size;
 }
 #endif
@@ -216,7 +217,7 @@ atUint64 rand64()
     return r0 | r1 | r2 | r3;
 }
 
-std::string wideToUtf8(const std::wstring& src)
+std::string wideToUtf8(std::wstring_view src)
 {
     std::string retval;
     retval.reserve(src.length());
@@ -234,11 +235,11 @@ std::string wideToUtf8(const std::wstring& src)
     return retval;
 }
 
-std::wstring utf8ToWide(const std::string& src)
+std::wstring utf8ToWide(std::string_view src)
 {
     std::wstring retval;
     retval.reserve(src.length());
-    const utf8proc_uint8_t* buf = reinterpret_cast<const utf8proc_uint8_t*>(src.c_str());
+    const utf8proc_uint8_t* buf = reinterpret_cast<const utf8proc_uint8_t*>(src.data());
     while (*buf)
     {
         utf8proc_int32_t wc;

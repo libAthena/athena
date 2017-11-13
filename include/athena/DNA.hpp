@@ -180,7 +180,7 @@ struct String : public DNA<VE>, public std::string
     {writer.writeString(*this, sizeVar);}
     size_t binarySize(size_t __isz) const
     {return __isz + ((sizeVar<0)?(this->size()+1):sizeVar);}
-    std::string& operator=(const std::string& __str)
+    std::string& operator=(std::string_view __str)
     {return this->assign(__str);}
     std::string& operator=(std::string&& __str)
     {this->swap(__str); return *this;}
@@ -205,7 +205,7 @@ struct WString : public DNA<VE>, public std::wstring
     }
     size_t binarySize(size_t __isz) const
     {return __isz + (((sizeVar<0)?(this->size()+1):sizeVar)*2);}
-    std::wstring& operator=(const std::wstring& __str)
+    std::wstring& operator=(std::wstring_view __str)
     {return this->assign(__str);}
     std::wstring& operator=(std::wstring&& __str)
     {this->swap(__str); return *this;}
@@ -224,7 +224,7 @@ struct WStringAsString : public DNA<VE>, public std::string
     {writer.writeStringAsWString(*this, sizeVar);}
     size_t binarySize(size_t __isz) const
     {return __isz + (((sizeVar<0)?(this->size()+1):sizeVar)*2);}
-    std::string& operator=(const std::string& __str)
+    std::string& operator=(std::string_view __str)
     {return this->assign(__str);}
     std::string& operator=(std::string&& __str)
     {this->swap(__str); return *this;}

@@ -11,7 +11,7 @@ namespace athena
 {
 namespace io
 {
-FileReader::FileReader(const std::string& filename, atInt32 cacheSize, bool globalErr)
+FileReader::FileReader(std::string_view filename, atInt32 cacheSize, bool globalErr)
     : m_fileHandle(nullptr),
       m_cacheData(nullptr),
       m_offset(0),
@@ -22,7 +22,7 @@ FileReader::FileReader(const std::string& filename, atInt32 cacheSize, bool glob
     setCacheSize(cacheSize);
 }
 
-FileReader::FileReader(const std::wstring& filename, atInt32 cacheSize, bool globalErr)
+FileReader::FileReader(std::wstring_view filename, atInt32 cacheSize, bool globalErr)
     : m_fileHandle(nullptr),
       m_cacheData(nullptr),
       m_offset(0),

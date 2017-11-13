@@ -13,7 +13,7 @@ SpriteFileWriter::SpriteFileWriter(atUint8* data, atUint64 length)
 {
 }
 
-SpriteFileWriter::SpriteFileWriter(const std::string& filepath)
+SpriteFileWriter::SpriteFileWriter(std::string_view filepath)
     : MemoryCopyWriter(filepath)
 {
 }

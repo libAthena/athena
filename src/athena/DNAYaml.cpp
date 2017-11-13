@@ -353,14 +353,7 @@ std::string NodeToVal(const YAMLNode* node)
     return node->m_scalarString;
 }
 
-std::unique_ptr<YAMLNode> ValToNode(const std::string& val)
-{
-    YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString = val;
-    return std::unique_ptr<YAMLNode>(ret);
-}
-
-std::unique_ptr<YAMLNode> ValToNode(const char* val)
+std::unique_ptr<YAMLNode> ValToNode(std::string_view val)
 {
     YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
     ret->m_scalarString = val;
@@ -388,7 +381,7 @@ std::wstring NodeToVal(const YAMLNode* node)
     return retval;
 }
 
-std::unique_ptr<YAMLNode> ValToNode(const std::wstring& val)
+std::unique_ptr<YAMLNode> ValToNode(std::wstring_view val)
 {
     YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
     ret->m_scalarString.reserve(val.length());
@@ -406,13 +399,7 @@ std::unique_ptr<YAMLNode> ValToNode(const std::wstring& val)
     return std::unique_ptr<YAMLNode>(ret);
 }
 
-std::unique_ptr<YAMLNode> ValToNode(const wchar_t* val)
-{
-    std::wstring wstr(val);
-    return ValToNode(wstr);
-}
-
-std::unique_ptr<YAMLNode> ValToNode(const std::u16string& val)
+std::unique_ptr<YAMLNode> ValToNode(std::u16string_view val)
 {
     YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
     ret->m_scalarString.reserve(val.length());
@@ -430,13 +417,7 @@ std::unique_ptr<YAMLNode> ValToNode(const std::u16string& val)
     return std::unique_ptr<YAMLNode>(ret);
 }
 
-std::unique_ptr<YAMLNode> ValToNode(const char16_t* val)
-{
-    std::u16string wstr(val);
-    return ValToNode(wstr);
-}
-
-std::unique_ptr<YAMLNode> ValToNode(const std::u32string& val)
+std::unique_ptr<YAMLNode> ValToNode(std::u32string_view val)
 {
     YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
     ret->m_scalarString.reserve(val.length());
@@ -452,12 +433,6 @@ std::unique_ptr<YAMLNode> ValToNode(const std::u32string& val)
         ret->m_scalarString.append(reinterpret_cast<char*>(mb), c);
     }
     return std::unique_ptr<YAMLNode>(ret);
-}
-
-std::unique_ptr<YAMLNode> ValToNode(const char32_t* val)
-{
-    std::u32string wstr(val);
-    return ValToNode(wstr);
 }
 
 static const char* ErrorString(yaml_error_type_t errt)
@@ -494,7 +469,7 @@ void HandleYAMLEmitterError(yaml_emitter_t* emitter)
     atError("YAML error: %s: %s", ErrorString(emitter->error), emitter->problem?emitter->problem:"");
 }
 
-int YAMLStdStringReader(YAMLStdStringReaderState* reader,
+int YAMLStdStringReader(YAMLStdStringViewReaderState* reader,
                         unsigned char* buffer, size_t size, size_t* size_read)
 {
     size_t diff = reader->end - reader->begin;
@@ -779,44 +754,24 @@ void YAMLDocWriter::writeUBytes(const char* name,
     writeVal<const std::unique_ptr<atUint8[]>&>(name, val, byteCount);
 }
 
-void YAMLDocWriter::writeString(const char* name, const std::string& val)
+void YAMLDocWriter::writeString(const char* name, std::string_view val)
 {
-    writeVal<std::string>(name, val);
+    writeVal<std::string_view>(name, val);
 }
 
-void YAMLDocWriter::writeString(const char* name, const char* val)
+void YAMLDocWriter::writeWString(const char* name, std::wstring_view val)
 {
-    writeVal<const char*>(name, val);
+    writeVal<std::wstring_view>(name, val);
 }
 
-void YAMLDocWriter::writeWString(const char* name, const std::wstring& val)
+void YAMLDocWriter::writeU16String(const char* name, std::u16string_view val)
 {
-    writeVal<std::wstring>(name, val);
+    writeVal<std::u16string_view>(name, val);
 }
 
-void YAMLDocWriter::writeWString(const char* name, const wchar_t* val)
+void YAMLDocWriter::writeU32String(const char* name, std::u32string_view val)
 {
-    writeVal<const wchar_t*>(name, val);
-}
-
-void YAMLDocWriter::writeU16String(const char* name, const std::u16string& val)
-{
-    writeVal<std::u16string>(name, val);
-}
-
-void YAMLDocWriter::writeU16String(const char* name, const char16_t* val)
-{
-    writeVal<const char16_t*>(name, val);
-}
-
-void YAMLDocWriter::writeU32String(const char* name, const std::u32string& val)
-{
-    writeVal<std::u32string>(name, val);
-}
-
-void YAMLDocWriter::writeU32String(const char* name, const char32_t* val)
-{
-    writeVal<const char32_t*>(name, val);
+    writeVal<std::u32string_view>(name, val);
 }
 
 static inline void InsertNode(std::vector<YAMLNode*>& nodeStack,
@@ -1407,7 +1362,7 @@ std::string base64_encode(const atUint8* bytes_to_encode, size_t in_len)
     return ret;
 
 }
-std::unique_ptr<atUint8[]> base64_decode(const std::string& encoded_string)
+std::unique_ptr<atUint8[]> base64_decode(std::string_view encoded_string)
 {
     int in_len = encoded_string.size();
     int i = 0;

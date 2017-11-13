@@ -5,7 +5,7 @@ namespace athena
 {
 namespace io
 {
-FileWriter::FileWriter(const std::string& filename, bool overwrite, bool globalErr)
+FileWriter::FileWriter(std::string_view filename, bool overwrite, bool globalErr)
     : m_fileHandle(0),
       m_bytePosition(0),
       m_globalErr(globalErr)
@@ -14,7 +14,7 @@ FileWriter::FileWriter(const std::string& filename, bool overwrite, bool globalE
     open(overwrite);
 }
 
-FileWriter::FileWriter(const std::wstring& filename, bool overwrite, bool globalErr)
+FileWriter::FileWriter(std::wstring_view filename, bool overwrite, bool globalErr)
     : m_fileHandle(0),
       m_bytePosition(0),
       m_globalErr(globalErr)

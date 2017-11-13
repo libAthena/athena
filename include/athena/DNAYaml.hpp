@@ -25,7 +25,7 @@ struct YAMLNode
     std::vector<std::unique_ptr<YAMLNode>> m_seqChildren;
     std::vector<std::pair<std::string, std::unique_ptr<YAMLNode>>> m_mapChildren;
     YAMLNode(yaml_node_type_t type) : m_type(type) {}
-    inline const YAMLNode* findMapChild(const char* key) const
+    inline const YAMLNode* findMapChild(std::string_view key) const
     {
         for (const auto& item : m_mapChildren)
             if (!item.first.compare(key))
@@ -133,42 +133,34 @@ std::unique_ptr<YAMLNode> ValToNode(const std::unique_ptr<atUint8[]>& val, size_
 template <>
 std::string NodeToVal(const YAMLNode* node);
 
-std::unique_ptr<YAMLNode> ValToNode(const std::string& val);
-
-std::unique_ptr<YAMLNode> ValToNode(const char* val);
+std::unique_ptr<YAMLNode> ValToNode(std::string_view val);
 
 template <>
 std::wstring NodeToVal(const YAMLNode* node);
 
-std::unique_ptr<YAMLNode> ValToNode(const std::wstring& val);
+std::unique_ptr<YAMLNode> ValToNode(std::wstring_view val);
 
-std::unique_ptr<YAMLNode> ValToNode(const wchar_t* val);
+std::unique_ptr<YAMLNode> ValToNode(std::u16string_view val);
 
-std::unique_ptr<YAMLNode> ValToNode(const std::u16string& val);
-
-std::unique_ptr<YAMLNode> ValToNode(const char16_t* val);
-
-std::unique_ptr<YAMLNode> ValToNode(const std::u32string& val);
-
-std::unique_ptr<YAMLNode> ValToNode(const char32_t* val);
+std::unique_ptr<YAMLNode> ValToNode(std::u32string_view val);
 
 std::string base64_encode(const atUint8* bytes_to_encode, size_t in_len);
-std::unique_ptr<atUint8[]> base64_decode(const std::string& encoded_string);
+std::unique_ptr<atUint8[]> base64_decode(std::string_view encoded_string);
 
 void HandleYAMLParserError(yaml_parser_t* parser);
 void HandleYAMLEmitterError(yaml_emitter_t* emitter);
 
-struct YAMLStdStringReaderState
+struct YAMLStdStringViewReaderState
 {
-    std::string::const_iterator begin;
-    std::string::const_iterator end;
-    YAMLStdStringReaderState(const std::string& str)
+    std::string_view::const_iterator begin;
+    std::string_view::const_iterator end;
+    YAMLStdStringViewReaderState(std::string_view str)
     {
         begin = str.begin();
         end = str.end();
     }
 };
-int YAMLStdStringReader(YAMLStdStringReaderState* str,
+int YAMLStdStringReader(YAMLStdStringViewReaderState* str,
                         unsigned char* buffer, size_t size, size_t* size_read);
 int YAMLStdStringWriter(std::string* str, unsigned char* buffer, size_t size);
 
@@ -433,14 +425,10 @@ public:
     void writeVec3d(const char* name, const atVec3d& val);
     void writeVec4d(const char* name, const atVec4d& val);
     void writeUBytes(const char* name, const std::unique_ptr<atUint8[]>& val, size_t byteCount);
-    void writeString(const char* name, const std::string& val);
-    void writeString(const char* name, const char* val);
-    void writeWString(const char* name, const std::wstring& val);
-    void writeWString(const char* name, const wchar_t* val);
-    void writeU16String(const char* name, const std::u16string& val);
-    void writeU16String(const char* name, const char16_t* val);
-    void writeU32String(const char* name, const std::u32string& val);
-    void writeU32String(const char* name, const char32_t* val);
+    void writeString(const char* name, std::string_view val);
+    void writeWString(const char* name, std::wstring_view val);
+    void writeU16String(const char* name, std::u16string_view val);
+    void writeU32String(const char* name, std::u32string_view val);
 };
 
 int YAMLAthenaReader(athena::io::IStreamReader* reader,
@@ -503,9 +491,9 @@ struct DNAYaml : DNA<DNAE>
         return res;
     }
 
-    bool fromYAMLString(const std::string& str)
+    bool fromYAMLString(std::string_view str)
     {
-        YAMLStdStringReaderState reader(str);
+        YAMLStdStringViewReaderState reader(str);
         YAMLDocReader docReader;
         yaml_parser_set_input(docReader.getParser(), (yaml_read_handler_t*)YAMLStdStringReader, &reader);
         if (!docReader.parse(nullptr))
@@ -515,9 +503,9 @@ struct DNAYaml : DNA<DNAE>
     }
 
     template<class DNASubtype>
-    static bool ValidateFromYAMLString(const std::string& str)
+    static bool ValidateFromYAMLString(std::string_view str)
     {
-        YAMLStdStringReaderState reader(str);
+        YAMLStdStringViewReaderState reader(str);
         YAMLDocReader docReader;
         yaml_parser_set_input(docReader.getParser(), (yaml_read_handler_t*)YAMLStdStringReader, &reader);
         bool retval = docReader.ValidateClassType(DNASubtype::DNAType());
@@ -622,9 +610,9 @@ struct StringYaml : public DNAYaml<VE>, public std::string
     void write(athena::io::YAMLDocWriter& writer) const
     {writer.writeString(nullptr, *this);}
     StringYaml() = default;
-    StringYaml(const std::string& __str) : std::string(__str) {}
+    StringYaml(std::string_view __str) : std::string(__str) {}
     StringYaml(std::string&& __str) : std::string(std::move(__str)) {}
-    std::string& operator=(const std::string& __str)
+    std::string& operator=(std::string_view __str)
     {return this->assign(__str);}
     std::string& operator=(std::string&& __str)
     {static_cast<std::string&>(*this) = std::move(__str); return *this;}
@@ -650,7 +638,7 @@ struct WStringYaml : public DNAYaml<VE>, public std::wstring
     {this->assign(std::move(reader.readWString(nullptr)));}
     void write(athena::io::YAMLDocWriter& writer) const
     {writer.writeWString(nullptr, *this);}
-    std::wstring& operator=(const std::wstring& __str)
+    std::wstring& operator=(std::wstring_view __str)
     {return this->assign(__str);}
     std::wstring& operator=(std::wstring&& __str)
     {this->swap(__str); return *this;}
@@ -670,7 +658,7 @@ struct WStringAsStringYaml : public DNAYaml<VE>, public std::string
     {this->assign(std::move(reader.readString(nullptr)));}
     void write(athena::io::YAMLDocWriter& writer) const
     {writer.writeString(nullptr, *this);}
-    std::string& operator=(const std::string& __str)
+    std::string& operator=(std::string_view __str)
     {return this->assign(__str);}
     std::string& operator=(std::string&& __str)
     {this->swap(__str); return *this;}

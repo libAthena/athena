@@ -21,8 +21,8 @@ namespace io
 class FileReader : public IStreamReader
 {
 public:
-    FileReader(const std::string& filename, atInt32 cacheSize = (32 * 1024), bool globalErr=true);
-    FileReader(const std::wstring& filename, atInt32 cacheSize = (32 * 1024), bool globalErr=true);
+    FileReader(std::string_view filename, atInt32 cacheSize = (32 * 1024), bool globalErr=true);
+    FileReader(std::wstring_view filename, atInt32 cacheSize = (32 * 1024), bool globalErr=true);
     virtual ~FileReader();
 
     inline std::string filename() const

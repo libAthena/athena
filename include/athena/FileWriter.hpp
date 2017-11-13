@@ -18,8 +18,8 @@ namespace io
 class FileWriter : public IStreamWriter
 {
 public:
-    FileWriter(const std::string& filename, bool overwrite = true, bool globalErr=true);
-    FileWriter(const std::wstring& filename, bool overwrite = true, bool globalErr=true);
+    FileWriter(std::string_view filename, bool overwrite = true, bool globalErr=true);
+    FileWriter(std::wstring_view filename, bool overwrite = true, bool globalErr=true);
     virtual ~FileWriter();
 
     inline std::string filename() const
@@ -78,7 +78,7 @@ class TransactionalFileWriter : public IStreamWriter
     std::vector<uint8_t> m_deferredBuffer;
     atUint64 m_position = 0;
 public:
-    TransactionalFileWriter(const std::string& filename, bool overwrite = true, bool globalErr=true)
+    TransactionalFileWriter(std::string_view filename, bool overwrite = true, bool globalErr=true)
     : m_overwrite(overwrite), m_globalErr(globalErr)
     {
 #if _WIN32
@@ -87,7 +87,7 @@ public:
         m_filename = filename;
 #endif
     }
-    TransactionalFileWriter(const std::wstring& filename, bool overwrite = true, bool globalErr=true)
+    TransactionalFileWriter(std::wstring_view filename, bool overwrite = true, bool globalErr=true)
     : m_overwrite(overwrite), m_globalErr(globalErr)
     {
 #if _WIN32

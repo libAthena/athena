@@ -2349,7 +2349,7 @@ public:
       fileOutOld(*foOld),
       emitVisitor(context, *foOld) {}
 
-    void HandleTranslationUnit(clang::ASTContext& context)
+    void HandleTranslationUnit(clang::ASTContext& context) override
     {
         /* Write file head */
         fileOutOld << "/* Auto generated atdna implementation */\n"
@@ -2386,7 +2386,7 @@ class ATDNAAction : public clang::ASTFrontendAction
 public:
     explicit ATDNAAction() = default;
     std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(clang::CompilerInstance& compiler,
-                                                          llvm::StringRef /*filename*/)
+                                                          llvm::StringRef /*filename*/) override
     {
         clang::DependencyOutputOptions DepOpts;
         DepOpts.OutputFile = DepFileOut;
@@ -2414,7 +2414,7 @@ int main(int argc, const char** argv)
 
     std::vector<std::string> args = {"clang-tool",
                                      "-fsyntax-only",
-                                     "-std=c++14",
+                                     "-std=c++1z",
                                      "-D__atdna__=1",
                                      "-Wno-expansion-to-defined",
                                      "-Wno-nullability-completeness",

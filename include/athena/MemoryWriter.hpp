@@ -89,7 +89,7 @@ public:
      *
      *   @param filename If not empty, the filename to save to
      */
-    void save(const std::string& filename = "");
+    void save(std::string_view filename = {});
 
     /*! @brief Writes the given buffer with the specified length, buffers can be bigger than the length
      *  however it's undefined behavior to try and write a buffer which is smaller than the given length.
@@ -124,7 +124,7 @@ public:
      *
      * @param filename The file to create the stream from
      */
-    MemoryCopyWriter(const std::string& filename);
+    MemoryCopyWriter(std::string_view filename);
 
     /*! @brief Sets the buffers position relative to the specified position.<br />
      *         It seeks relative to the current position by default.

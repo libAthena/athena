@@ -694,11 +694,11 @@ public:
      *
      *  Endianness is set with setEndian
      */
-    inline void writeStringAsWString(const std::string& str, atInt32 fixedLen = -1)
+    inline void writeStringAsWString(std::string_view str, atInt32 fixedLen = -1)
     {
         if (fixedLen == 0)
             return;
-        std::string tmpStr = "\xEF\xBB\xBF" + str;
+        std::string tmpStr = std::string("\xEF\xBB\xBF") + str.data();
         const utf8proc_uint8_t* buf = reinterpret_cast<const utf8proc_uint8_t*>(tmpStr.c_str());
         if (fixedLen < 0)
         {
@@ -752,11 +752,11 @@ public:
      *
      *  Endianness is little
      */
-    inline void writeStringAsWStringLittle(const std::string& str, atInt32 fixedLen = -1)
+    inline void writeStringAsWStringLittle(std::string_view str, atInt32 fixedLen = -1)
     {
         if (fixedLen == 0)
             return;
-        std::string tmpStr = "\xEF\xBB\xBF" + str;
+        std::string tmpStr = std::string("\xEF\xBB\xBF") + str.data();
         const utf8proc_uint8_t* buf = reinterpret_cast<const utf8proc_uint8_t*>(tmpStr.c_str());
         if (fixedLen < 0)
         {
@@ -810,12 +810,12 @@ public:
      *
      *  Endianness is big
      */
-    inline void writeStringAsWStringBig(const std::string& str, atInt32 fixedLen = -1)
+    inline void writeStringAsWStringBig(std::string_view str, atInt32 fixedLen = -1)
     {
         if (fixedLen == 0)
             return;
 
-        std::string tmpStr = "\xEF\xBB\xBF" + str;
+        std::string tmpStr = std::string("\xEF\xBB\xBF") + str.data();
         const utf8proc_uint8_t* buf = reinterpret_cast<const utf8proc_uint8_t*>(tmpStr.c_str());
         if (fixedLen < 0)
         {
@@ -866,7 +866,7 @@ public:
      *  @param str The string to write to the buffer
      *  @param fixedLen If not -1, the number of characters to zero-fill string to
      */
-    inline void writeString(const std::string& str, atInt32 fixedLen = -1)
+    inline void writeString(std::string_view str, atInt32 fixedLen = -1)
     {
         if (fixedLen == 0)
             return;
@@ -896,7 +896,7 @@ public:
             }
         }
     }
-    inline void writeVal(const std::string& val) {writeString(val);}
+    inline void writeVal(std::string_view val) {writeString(val);}
 
     /** @brief Writes an wstring to the buffer and advances the buffer.
      *
@@ -905,7 +905,7 @@ public:
      *
      *  Endianness is set with setEndian
      */
-    inline void writeWString(const std::wstring& str, atInt32 fixedLen = -1)
+    inline void writeWString(std::wstring_view str, atInt32 fixedLen = -1)
     {
         if (fixedLen == 0)
             return;
@@ -935,7 +935,7 @@ public:
             }
         }
     }
-    inline void writeVal(const std::wstring& val) {writeWString(val);}
+    inline void writeVal(std::wstring_view val) {writeWString(val);}
 
     /** @brief Writes an wstring to the buffer and advances the buffer.
      *
@@ -944,7 +944,7 @@ public:
      *
      *  Endianness is little
      */
-    inline void writeWStringLittle(const std::wstring& str, atInt32 fixedLen = -1)
+    inline void writeWStringLittle(std::wstring_view str, atInt32 fixedLen = -1)
     {
         if (fixedLen == 0)
             return;
@@ -974,7 +974,7 @@ public:
             }
         }
     }
-    inline void writeValLittle(const std::wstring& val) {writeWStringLittle(val);}
+    inline void writeValLittle(std::wstring_view val) {writeWStringLittle(val);}
 
     /** @brief Writes an wstring to the buffer and advances the buffer.
      *
@@ -983,7 +983,7 @@ public:
      *
      *  Endianness is big
      */
-    inline void writeWStringBig(const std::wstring& str, atInt32 fixedLen = -1)
+    inline void writeWStringBig(std::wstring_view str, atInt32 fixedLen = -1)
     {
         if (fixedLen == 0)
             return;
@@ -1013,7 +1013,7 @@ public:
             }
         }
     }
-    inline void writeValBig(const std::wstring& val) {writeWStringBig(val);}
+    inline void writeValBig(std::wstring_view val) {writeWStringBig(val);}
 
     /** @brief Writes a u16string to the buffer and advances the buffer.
      *
@@ -1022,7 +1022,7 @@ public:
      *
      *  Endianness is big
      */
-    inline void writeU16StringBig(const std::u16string& str, atInt32 fixedLen = -1)
+    inline void writeU16StringBig(std::u16string_view str, atInt32 fixedLen = -1)
     {
         if (fixedLen == 0)
             return;
@@ -1052,7 +1052,7 @@ public:
             }
         }
     }
-    inline void writeValBig(const std::u16string& val) {writeU16StringBig(val);}
+    inline void writeValBig(std::u16string_view val) {writeU16StringBig(val);}
 
     /** @brief Writes a u16string to the buffer and advances the buffer.
      *
@@ -1061,7 +1061,7 @@ public:
      *
      *  Endianness is big
      */
-    inline void writeU32StringBig(const std::u32string& str, atInt32 fixedLen = -1)
+    inline void writeU32StringBig(std::u32string_view str, atInt32 fixedLen = -1)
     {
         if (fixedLen == 0)
             return;
@@ -1091,7 +1091,7 @@ public:
             }
         }
     }
-    inline void writeValBig(const std::u32string& val) {writeU32StringBig(val);}
+    inline void writeValBig(std::u32string_view val) {writeU32StringBig(val);}
 
     inline void fill(atUint8 val, atUint64 length)
     {

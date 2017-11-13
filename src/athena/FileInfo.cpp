@@ -32,7 +32,7 @@
 namespace athena
 {
 
-FileInfo::FileInfo(const std::string& path)
+FileInfo::FileInfo(std::string_view path)
     : m_path(path)
 {
 }

@@ -55,7 +55,7 @@ MemoryCopyWriter::MemoryCopyWriter(atUint8* data, atUint64 length)
         memmove(m_data, data, length);
 }
 
-MemoryCopyWriter::MemoryCopyWriter(const std::string& filename)
+MemoryCopyWriter::MemoryCopyWriter(std::string_view filename)
 {
     m_filepath = filename;
     m_length = 0x10;
@@ -210,7 +210,7 @@ atUint8* MemoryWriter::data() const
 }
 
 
-void MemoryWriter::save(const std::string& filename)
+void MemoryWriter::save(std::string_view filename)
 {
     if (filename.empty() && m_filepath.empty())
     {

@@ -19,7 +19,7 @@
 
 namespace athena
 {
-Dir::Dir(const std::string &path)
+Dir::Dir(std::string_view path)
     : m_path(path)
 {
 }
@@ -39,7 +39,7 @@ bool Dir::isDir() const
     return (S_ISDIR(st.st_mode));
 }
 
-bool Dir::cd(const std::string& path)
+bool Dir::cd(std::string_view path)
 {
     Dir tmp(path);
     if (tmp.isDir())
@@ -51,9 +51,9 @@ bool Dir::cd(const std::string& path)
     return false;
 }
 
-bool Dir::rm(const std::string& path)
+bool Dir::rm(std::string_view path)
 {
-    return !(remove((m_path + "/" + path).c_str()) < 0);
+    return !(remove((m_path + "/" + path.data()).c_str()) < 0);
 }
 
 bool Dir::touch()
@@ -67,16 +67,16 @@ bool Dir::touch()
     return false;
 }
 
-bool Dir::mkdir(const std::string& dir, mode_t mode)
+bool Dir::mkdir(std::string_view dir, mode_t mode)
 {
 #if _WIN32
     return !(::_mkdir(dir.c_str()) < 0);
 #else
-    return !(::mkdir(dir.c_str(), mode) < 0);
+    return !(::mkdir(dir.data(), mode) < 0);
 #endif
 }
 
-bool Dir::mkpath(const std::string& path, mode_t mode)
+bool Dir::mkpath(std::string_view path, mode_t mode)
 {
     std::vector<std::string> dirs = utility::split(path, '/');
     if (dirs.empty())

@@ -18,7 +18,7 @@ class SpriteFileWriter : public MemoryCopyWriter
 public:
     SpriteFileWriter(atUint8* data, atUint64 length);
 
-    SpriteFileWriter(const std::string& filepath);
+    SpriteFileWriter(std::string_view filepath);
 
     void writeFile(Sakura::SpriteFile* file);
 };

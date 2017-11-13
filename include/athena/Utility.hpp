@@ -188,16 +188,16 @@ inline double BigDouble(double& val)
 }
 
 void fillRandom(atUint8 * rndArea, atUint64 count);
-std::vector<std::string> split(const std::string &s, char delim);
+std::vector<std::string> split(std::string_view s, char delim);
 atUint64 rand64();
-std::string join(const std::vector<std::string>& elems, const std::string& delims);
+std::string join(const std::vector<std::string>& elems, std::string_view delims);
 void tolower(std::string& str);
 void toupper(std::string& str);
 std::string vsprintf(const char* fmt, va_list list);
 std::string sprintf(const char* fmt, ...);
-bool parseBool(const std::string& boolean, bool* valid = NULL);
+bool parseBool(std::string_view boolean, bool* valid = NULL);
 
-int countChar(const std::string& str, const char chr, int* lastOccur = NULL);
+int countChar(std::string_view str, const char chr, int* lastOccur = NULL);
 
 // trim from start
 std::string& ltrim(std::string& s);
@@ -207,14 +207,14 @@ std::string& rtrim(std::string& s);
 
 // trim from both ends
 std::string& trim(std::string& s);
-atUint64 fileSize(const std::string& filename);
+atUint64 fileSize(std::string_view filename);
 #ifdef _MSC_VER
-atUint64 fileSize(const std::wstring& filename);
+atUint64 fileSize(std::wstring_view filename);
 #endif
 
-std::string wideToUtf8(const std::wstring& src);
+std::string wideToUtf8(std::wstring_view src);
 
-std::wstring utf8ToWide(const std::string& src);
+std::wstring utf8ToWide(std::string_view src);
 
 } // utility
 } // Athena
