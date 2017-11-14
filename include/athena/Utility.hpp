@@ -2,6 +2,7 @@
 #define __UTILITY_H__
 
 #include <string>
+#include <string_view>
 #include <vector>
 #include <stdarg.h>
 #include <string.h>

@@ -70,7 +70,7 @@ bool Dir::touch()
 bool Dir::mkdir(std::string_view dir, mode_t mode)
 {
 #if _WIN32
-    return !(::_mkdir(dir.c_str()) < 0);
+    return !(::_mkdir(dir.data()) < 0);
 #else
     return !(::mkdir(dir.data(), mode) < 0);
 #endif

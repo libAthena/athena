@@ -90,7 +90,6 @@ if(WIN32)
 endif()
 
 # ATDNA target
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 include_directories(${LLVM_INCLUDE_DIRS})
 link_directories(${LLVM_LIBRARY_DIRS})
 add_executable(atdna main.cpp test.hpp ${PLAT_SRCS})
@@ -102,8 +101,7 @@ set_target_properties(atdna PROPERTIES
                       COMPILE_FLAGS "/GR-")
 else()
 set_target_properties(atdna PROPERTIES
-                      COMPILE_FLAGS "-std=c++11 -fno-rtti -Wno-unused-parameter"
-                      LINK_FLAGS -std=c++11)
+                      COMPILE_FLAGS "-fno-rtti -Wno-unused-parameter")
 endif()
 
 # Define installs
