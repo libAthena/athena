@@ -35,8 +35,12 @@ FileReader::~FileReader()
 
 void FileReader::open()
 {
-    m_fileHandle = CreateFileW(m_filename.c_str(), GENERIC_READ, FILE_SHARE_READ,
-                               nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    int attempt = 0;
+    do
+    {
+        m_fileHandle = CreateFileW(m_filename.c_str(), GENERIC_READ, FILE_SHARE_READ,
+                                   nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    } while (m_fileHandle == INVALID_HANDLE_VALUE && attempt++ < 100);
 
     if (m_fileHandle == INVALID_HANDLE_VALUE)
     {

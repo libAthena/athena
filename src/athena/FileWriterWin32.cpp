@@ -31,16 +31,20 @@ FileWriter::~FileWriter()
 
 void FileWriter::open(bool overwrite)
 {
-    if (overwrite)
+    int attempt = 0;
+    do
     {
-        m_fileHandle = CreateFileW(m_filename.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE,
-                                   nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-    }
-    else
-    {
-        m_fileHandle = CreateFileW(m_filename.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE,
-                                   nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-    }
+        if (overwrite)
+        {
+            m_fileHandle = CreateFileW(m_filename.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE,
+                                       nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+        }
+        else
+        {
+            m_fileHandle = CreateFileW(m_filename.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE,
+                                       nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+        }
+    } while (m_fileHandle == INVALID_HANDLE_VALUE && attempt++ < 100);
 
     if (m_fileHandle == INVALID_HANDLE_VALUE)
     {
@@ -65,6 +69,7 @@ void FileWriter::close()
         return;
     }
 
+    FlushFileBuffers(m_fileHandle);
     CloseHandle(m_fileHandle);
     m_fileHandle = 0;
 }
