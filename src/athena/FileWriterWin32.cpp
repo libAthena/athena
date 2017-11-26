@@ -36,7 +36,8 @@ void FileWriter::open(bool overwrite)
     {
         if (overwrite)
         {
-            m_fileHandle = CreateFileW(m_filename.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE,
+            std::wstring tmpFilename = m_filename + L'~';
+            m_fileHandle = CreateFileW(tmpFilename.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE,
                                        nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
         }
         else
@@ -72,6 +73,9 @@ void FileWriter::close()
     FlushFileBuffers(m_fileHandle);
     CloseHandle(m_fileHandle);
     m_fileHandle = 0;
+
+    std::wstring tmpFilename = m_filename + L'~';
+    MoveFileExW(tmpFilename.c_str(), m_filename.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH);
 }
 
 void FileWriter::seek(atInt64 pos, SeekOrigin origin)

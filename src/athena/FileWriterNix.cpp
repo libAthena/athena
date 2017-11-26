@@ -46,7 +46,10 @@ FileWriter::~FileWriter()
 void FileWriter::open(bool overwrite)
 {
     if (overwrite)
-        m_fileHandle = fopen(m_filename.c_str(), "w+b");
+    {
+        std::string tmpFilename = m_filename + '~';
+        m_fileHandle = fopen(tmpFilename.c_str(), "w+b");
+    }
     else
     {
         m_fileHandle = fopen(m_filename.c_str(), "a+b");
@@ -81,6 +84,9 @@ void FileWriter::close()
 
     fclose(m_fileHandle);
     m_fileHandle = NULL;
+
+    std::string tmpFilename = m_filename + '~';
+    rename(tmpFilename.c_str(), m_filename.c_str());
 }
 
 void FileWriter::seek(atInt64 pos, SeekOrigin origin)
