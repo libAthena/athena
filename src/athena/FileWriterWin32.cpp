@@ -37,13 +37,23 @@ void FileWriter::open(bool overwrite)
         if (overwrite)
         {
             std::wstring tmpFilename = m_filename + L'~';
+#if WINDOWS_STORE
+            m_fileHandle = CreateFile2(tmpFilename.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE,
+                                       CREATE_ALWAYS, nullptr);
+#else
             m_fileHandle = CreateFileW(tmpFilename.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE,
                                        nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+#endif
         }
         else
         {
+#if WINDOWS_STORE
+            m_fileHandle = CreateFile2(m_filename.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE,
+                                       OPEN_ALWAYS, nullptr);
+#else
             m_fileHandle = CreateFileW(m_filename.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE,
                                        nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+#endif
         }
     } while (m_fileHandle == INVALID_HANDLE_VALUE && attempt++ < 100);
 

@@ -38,8 +38,13 @@ void FileReader::open()
     int attempt = 0;
     do
     {
-        m_fileHandle = CreateFileW(m_filename.c_str(), GENERIC_READ, FILE_SHARE_READ,
-                                   nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+#if WINDOWS_STORE
+            m_fileHandle = CreateFile2(m_filename.c_str(), GENERIC_READ, FILE_SHARE_READ,
+                                       OPEN_EXISTING, nullptr);
+#else
+            m_fileHandle = CreateFileW(m_filename.c_str(), GENERIC_READ, FILE_SHARE_READ,
+                                       nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+#endif
     } while (m_fileHandle == INVALID_HANDLE_VALUE && attempt++ < 100);
 
     if (m_fileHandle == INVALID_HANDLE_VALUE)

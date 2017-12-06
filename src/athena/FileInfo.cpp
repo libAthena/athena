@@ -128,7 +128,9 @@ bool FileInfo::touch() const
     HANDLE fh;
     wchar_t date[80], time[80];
 
+#if !WINDOWS_STORE
     fh = CreateFileA(m_path.c_str(), GENERIC_READ | FILE_WRITE_ATTRIBUTES, 0, NULL, CREATE_NEW, 0, NULL);
+    
     if (fh == INVALID_HANDLE_VALUE)
         return false;
 
@@ -168,6 +170,7 @@ bool FileInfo::touch() const
     }
 
     CloseHandle(fh);
+#endif
 #elif (defined(HW_RVL) || defined(HW_DOL)) && defined(GEKKO)
     // Generic portable version, not extremely reliable but does work
     atUint64 val = 0xCDCDCDCDCD;

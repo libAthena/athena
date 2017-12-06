@@ -8,6 +8,12 @@
 #ifdef _MSC_VER
 #pragma warning(disable : 4996)
 
+#if defined(WINAPI_FAMILY) && WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP
+#define WINDOWS_STORE 1
+#else
+#define WINDOWS_STORE 0
+#endif
+
 #include <sys/stat.h>
 
 #if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)

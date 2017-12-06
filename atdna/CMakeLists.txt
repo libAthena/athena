@@ -178,6 +178,9 @@ macro(atdna out)
   get_property(cdefs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_DEFINITIONS)
   set(cdefcli "")
   foreach(def ${cdefs})
+    if(def MATCHES "^WINAPI_FAMILY.*")
+      continue() # C++/CX gives clang a stomach ache
+    endif()
     list(APPEND cdefcli "-D${def}")
   endforeach()
 
