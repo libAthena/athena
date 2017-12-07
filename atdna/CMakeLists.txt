@@ -2,6 +2,8 @@
 # ATDNA Build #
 ###############
 
+if(NOT CMAKE_CROSSCOMPILING)
+
 # Force this binary to Release flags (to make MSVC happy)
 if(MSVC)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -113,7 +115,7 @@ install(DIRECTORY ${CLANG_INCLUDE_DIR}/ DESTINATION ${INSTALL_INCLUDE_DIR}/athen
 ##################
 
 # Add all targets to the build-tree export set
-export(TARGETS atdna FILE "${PROJECT_BINARY_DIR}/atdnaTargets.cmake")
+export(TARGETS atdna FILE "${CMAKE_CURRENT_BINARY_DIR}/atdnaTargets.cmake")
 
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)
@@ -122,17 +124,17 @@ export(PACKAGE atdna)
 # Create the atdnaConfig.cmake
 # ... for the build tree
 set(CONF_CLANG_INCLUDE_DIR "${CLANG_INCLUDE_DIR}")
-configure_file(atdnaConfig.cmake.in "${PROJECT_BINARY_DIR}/atdnaConfig.cmake" @ONLY)
+configure_file(atdnaConfig.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/atdnaConfig.cmake" @ONLY)
 # ... for the install tree
 set(CONF_CLANG_INCLUDE_DIR "\${ATHENA_INCLUDE_DIR}/clang")
-configure_file(atdnaConfig.cmake.in "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/atdnaConfig.cmake" @ONLY)
+configure_file(atdnaConfig.cmake.in "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/atdnaConfig.cmake" @ONLY)
 # ... for both
-configure_file(atdnaConfigVersion.cmake.in "${PROJECT_BINARY_DIR}/atdnaConfigVersion.cmake" @ONLY)
+configure_file(atdnaConfigVersion.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/atdnaConfigVersion.cmake" @ONLY)
 
 # Install atdnaConfig.cmake
 install(FILES
-  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/atdnaConfig.cmake"
-  "${PROJECT_BINARY_DIR}/atdnaConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/atdnaConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/atdnaConfigVersion.cmake"
   DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT atdna)
 
 # Install the export set for use with the install-tree
@@ -228,3 +230,5 @@ macro(atdna out)
                        COMMENT "Generating DNA ${out_rel}")
   endif()
 endmacro()
+
+endif()

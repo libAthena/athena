@@ -192,7 +192,7 @@ install(FILES Athena.ico DESTINATION ${INSTALL_LIB_DIR} COMPONENT athena)
 elseif(UNIX)
 configure_file(libAthena.pc.in libAthena.pc @ONLY)
 configure_file(PKGBUILD.in ${CMAKE_CURRENT_SOURCE_DIR}/PKGBUILD @ONLY)
-install(FILES ${PROJECT_BINARY_DIR}/libAthena.pc 
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libAthena.pc
         DESTINATION ${INSTALL_LIB_DIR}/pkgconfig COMPONENT athena)
 endif()
 
@@ -201,7 +201,7 @@ endif()
 ##################
 
 # Add all targets to the build-tree export set
-export(TARGETS athena-core FILE "${PROJECT_BINARY_DIR}/AthenaTargets.cmake")
+export(TARGETS athena-core FILE "${CMAKE_CURRENT_BINARY_DIR}/AthenaTargets.cmake")
 
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)
@@ -211,20 +211,20 @@ export(PACKAGE athena)
 # ... for the build tree
 set(CONF_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include/athena")
 set(CONF_ICON_DIR "${PROJECT_SOURCE_DIR}/Athena.ico")
-configure_file(AthenaConfig.cmake.in "${PROJECT_BINARY_DIR}/AthenaConfig.cmake" @ONLY)
+configure_file(AthenaConfig.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/AthenaConfig.cmake" @ONLY)
 # ... for the install tree
 file(RELATIVE_PATH REL_INCLUDE_DIR "${ABS_INSTALL_CMAKE_DIR}" "${ABS_INSTALL_INCLUDE_DIR}")
 file(RELATIVE_PATH REL_ICON_DIR "${ABS_INSTALL_CMAKE_DIR}" "${ABS_INSTALL_LIB_DIR}/Athena.ico")
 set(CONF_INCLUDE_DIR "\${ATHENA_CMAKE_DIR}/${REL_INCLUDE_DIR}/athena")
 set(CONF_ICON_DIR "\${ATHENA_CMAKE_DIR}/${REL_ICON_DIR}")
-configure_file(AthenaConfig.cmake.in "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/AthenaConfig.cmake" @ONLY)
+configure_file(AthenaConfig.cmake.in "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/AthenaConfig.cmake" @ONLY)
 # ... for both
-configure_file(AthenaConfigVersion.cmake.in "${PROJECT_BINARY_DIR}/AthenaConfigVersion.cmake" @ONLY)
+configure_file(AthenaConfigVersion.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/AthenaConfigVersion.cmake" @ONLY)
 
 # Install AthenaConfig.cmake
 install(FILES
-  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/AthenaConfig.cmake"
-  "${PROJECT_BINARY_DIR}/AthenaConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/AthenaConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/AthenaConfigVersion.cmake"
   DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT athena)
 
 # Install the export set for use with the install-tree
