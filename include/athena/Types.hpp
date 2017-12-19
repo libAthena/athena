@@ -14,8 +14,7 @@ using atUint64 = uint64_t;
 
 // Vector types
 #if __SSE__
-#include <xmmintrin.h>
-#include <emmintrin.h>
+#include <immintrin.h>
 #ifndef _WIN32
 #include <mm_malloc.h>
 #endif
@@ -27,6 +26,16 @@ void* operator new(size_t bytes) noexcept \
 {return _mm_malloc(bytes, 16);} \
 void* operator new[](size_t bytes) noexcept \
 {return _mm_malloc(bytes, 16);} \
+void operator delete(void* buf) noexcept \
+{_mm_free(buf);} \
+void operator delete[](void* buf) noexcept \
+{_mm_free(buf);}
+
+#define AT_ALIGNED_ALLOCATOR32 \
+void* operator new(size_t bytes) noexcept \
+{return _mm_malloc(bytes, 32);} \
+void* operator new[](size_t bytes) noexcept \
+{return _mm_malloc(bytes, 32);} \
 void operator delete(void* buf) noexcept \
 {_mm_free(buf);} \
 void operator delete[](void* buf) noexcept \
@@ -77,20 +86,30 @@ typedef union alignas(16)
     double vec[2];
 } atVec2d;
 
-typedef union alignas(16)
+typedef union alignas(32)
 {
+#if __AVX__
+    __m256d mVec256;
+    AT_ALIGNED_ALLOCATOR32
+#elif __SSE__
+    AT_ALIGNED_ALLOCATOR
+#endif
 #if __SSE__
     __m128d mVec128[2];
-    AT_ALIGNED_ALLOCATOR
 #endif
     double vec[3];
 } atVec3d;
 
-typedef union alignas(16)
+typedef union alignas(32)
 {
+#if __AVX__
+    __m256d mVec256;
+    AT_ALIGNED_ALLOCATOR32
+#elif __SSE__
+    AT_ALIGNED_ALLOCATOR
+#endif
 #if __SSE__
     __m128d mVec128[2];
-    AT_ALIGNED_ALLOCATOR
 #endif
     double vec[4];
 } atVec4d;
