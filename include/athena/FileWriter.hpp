@@ -7,13 +7,11 @@
 #endif
 #include <windows.h>
 #else
-#include <stdio.h>
+#include <cstdio>
 #endif
 #include "athena/IStreamWriter.hpp"
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 class FileWriter : public IStreamWriter
 {
@@ -116,7 +114,6 @@ public:
 
     ~TransactionalFileWriter() { flush(); }
 };
-}
 } // Athena
 
 #ifndef FILEWRITER_BASE

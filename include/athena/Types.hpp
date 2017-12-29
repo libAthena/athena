@@ -1,7 +1,7 @@
 #ifndef TYPES_HPP
 #define TYPES_HPP
-#include <stdint.h>
-#include <inttypes.h>
+#include <cstdint>
+#include <cinttypes>
 
 using atInt8 = int8_t;
 using atUint8 = uint8_t;

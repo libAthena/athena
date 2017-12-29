@@ -6,9 +6,7 @@
 #include <functional>
 #include "athena/IStreamReader.hpp"
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 /*! \class MemoryReader
  *  \brief A Stream class for reading data from a memory position
@@ -118,7 +116,6 @@ protected:
     std::string   m_filepath; //!< Path to the target file
 };
 
-} // io
 } // Athena
 
 

@@ -78,9 +78,9 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <stdio.h>
-#include <string.h>
+#include <cstring>
 #ifndef __APPLE__
 #include <malloc.h>
 #endif

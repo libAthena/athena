@@ -4,9 +4,7 @@
 #include "athena/SpritePart.hpp"
 #include "athena/SpriteFrame.hpp"
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 SpriteFileWriter::SpriteFileWriter(atUint8* data, atUint64 length)
     : MemoryCopyWriter(data, length)
@@ -78,5 +76,4 @@ void SpriteFileWriter::writeFile(Sakura::SpriteFile* file)
     save();
 }
 
-} // io
 } // zelda

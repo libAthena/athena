@@ -5,9 +5,7 @@
 #include "athena/SakuraGlobal.hpp"
 
 #include <vector>
-namespace athena
-{
-namespace Sakura
+namespace athena::Sakura
 {
 
 class Sprite;
@@ -48,7 +46,6 @@ private:
     std::vector<SpritePart*> m_parts;
 };
 
-} // Sakura
 } // zelda
 
 #endif // SSPRITEFRAME_HPP

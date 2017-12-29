@@ -6,9 +6,7 @@
 #include "utf8proc.h"
 #include "IStream.hpp"
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 /** @brief The IStreamReader class defines a basic API for reading from streams, Implementors are provided with one pure virtual
  *  function that must be implemented in order to interact with the stream.
@@ -1302,7 +1300,6 @@ IStreamReader& operator>>(IStreamReader& lhs, T& rhs)
 {
     rhs = lhs.readVal<T>();
     return lhs;
-}
 }
 }
 #endif // ISTREAMREADER

@@ -13,9 +13,7 @@
 #include <vector>
 #include <memory>
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 
 /* forward-declaration dance for recursively-derived types */
@@ -250,7 +248,6 @@ struct WStringAsString : public DNA<VE>, public std::string
 #define DNA_COUNT(cnt) 0
 #endif
 
-}
 }
 
 #endif // DNA_HPP

@@ -7,9 +7,7 @@
 #include "osx_largefilewrapper.h"
 #endif
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 FileWriter::FileWriter(std::string_view filename, bool overwrite, bool globalErr)
     : m_fileHandle(NULL),
@@ -133,6 +131,5 @@ void FileWriter::writeUBytes(const atUint8* data, atUint64 len)
             atError("Unable to write to stream");
         setError();
     }
-}
 }
 } // Athena

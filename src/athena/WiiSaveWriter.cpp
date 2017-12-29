@@ -14,9 +14,9 @@
 #include "md5.h"
 #include "sha1.h"
 
-#include <stdio.h>
+#include <cstdio>
 #include <vector>
-#include <string.h>
+#include <cstring>
 #include <sys/stat.h>
 #include <iostream>
 #include <iomanip>

@@ -7,16 +7,14 @@
 #endif
 #include <windows.h>
 #else
-#include <stdio.h>
+#include <cstdio>
 #endif
 
 #include <string>
 #include <memory>
 #include "athena/IStreamReader.hpp"
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 class FileReader : public IStreamReader
 {
@@ -75,7 +73,6 @@ protected:
     atUint64     m_offset;
     bool         m_globalErr;
 };
-} // io
 } // Athena
 
 #ifndef FILEREADER_BASE

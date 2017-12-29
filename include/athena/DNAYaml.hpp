@@ -7,15 +7,13 @@
  * Any changes to the types or namespacing must be reflected in 'atdna/main.cpp'
  */
 
-#include <string.h>
+#include <cstring>
 #include <yaml.h>
 #include <utf8proc.h>
 #include "DNA.hpp"
 #include "FileReader.hpp"
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 
 struct YAMLNode
@@ -679,7 +677,6 @@ struct WStringAsStringYaml : public DNAYaml<VE>, public std::string
     static const char* DNAType(); \
     const char* DNATypeV() const {return DNAType();} \
 
-}
 }
 
 #endif // DNAYAML_HPP

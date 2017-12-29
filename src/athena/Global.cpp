@@ -1,7 +1,7 @@
 #include "athena/Global.hpp"
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdarg>
+#include <cstdlib>
 
 std::ostream& operator<<(std::ostream& os, const athena::SeekOrigin& origin)
 {

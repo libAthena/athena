@@ -1,8 +1,6 @@
 #include "athena/FileWriter.hpp"
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 void TransactionalFileWriter::seek(atInt64 pos, SeekOrigin origin)
 {
@@ -30,6 +28,5 @@ void TransactionalFileWriter::writeUBytes(const atUint8* data, atUint64 len)
 
     memmove(m_deferredBuffer.data() + m_position, data, len);
     m_position += len;
-}
 }
 }

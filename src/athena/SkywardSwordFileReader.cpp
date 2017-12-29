@@ -3,9 +3,7 @@
 #include "athena/SkywardSwordQuest.hpp"
 #include <iostream>
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 
 SkywardSwordFileReader::SkywardSwordFileReader(atUint8* data, atUint64 length)
@@ -65,5 +63,4 @@ SkywardSwordFile* SkywardSwordFileReader::read()
     return file;
 }
 
-} // io
 } // zelda

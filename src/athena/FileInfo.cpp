@@ -2,10 +2,10 @@
 #include "athena/Utility.hpp"
 #include "athena/FileWriter.hpp"
 #include "athena/FileReader.hpp"
-#include <time.h>
-#include <stdio.h>
+#include <ctime>
+#include <cstdio>
 #include <limits.h>
-#include <stdlib.h>
+#include <cstdlib>
 
 #ifndef _WIN32
 #include <sys/time.h>
@@ -20,7 +20,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#include <wchar.h>
+#include <cwchar>
 #endif
 
 #ifdef _MSC_VER

@@ -1,7 +1,7 @@
 #include "athena/MemoryReader.hpp"
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <vector>
 #include <iostream>
 #include <cstring>
@@ -14,9 +14,7 @@
 #undef min
 #undef max
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 MemoryReader::MemoryReader(const void* data, atUint64 length, bool takeOwnership, bool globalErr)
     : m_data(data),
@@ -212,5 +210,4 @@ void MemoryCopyReader::loadData()
     m_position = 0;
 }
 
-}
 }

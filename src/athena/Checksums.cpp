@@ -3,9 +3,7 @@
 #include <iostream>
 #include <iomanip>
 
-namespace athena
-{
-namespace Checksums
+namespace athena::Checksums
 {
 
 atUint32 crc32(const atUint8* data, atUint64 length, atUint32 mask, atUint32 seed)
@@ -150,4 +148,3 @@ atUint16 crc16(const atUint8* data, atUint64 length)
 }
 
 } // Checksums
-} // zelda

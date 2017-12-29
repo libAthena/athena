@@ -5,11 +5,7 @@
 #include "LZ77/LZType10.hpp"
 #include "LZ77/LZType11.hpp"
 
-namespace athena
-{
-namespace io
-{
-namespace Compression
+namespace athena::io::Compression
 {
 
 atInt32 decompressZlib(const atUint8* src, atUint32 srcLen, atUint8* dst, atUint32 dstLen)
@@ -357,5 +353,3 @@ atUint32 compressLZ77(const atUint8* src, atUint32 srcLen, atUint8** dst, bool e
 }
 
 } // Compression
-} // io
-} // zelda

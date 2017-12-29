@@ -5,9 +5,9 @@
 #include "athena/MemoryWriter.hpp"
 #include "athena/Utility.hpp"
 
-#include <stdio.h>
+#include <cstdio>
 #include <vector>
-#include <string.h>
+#include <cstring>
 #include <sys/stat.h>
 #include <iostream>
 #include <iomanip>

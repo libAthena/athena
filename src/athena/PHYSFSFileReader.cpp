@@ -3,9 +3,7 @@
 #include "athena/FileNotFoundException.hpp"
 #include "athena/IOException.hpp"
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 
 PHYSFSFileReader::PHYSFSFileReader(const std::string& path)
@@ -199,7 +197,6 @@ bool PHYSFSFileReader::isLittleEndian() const
     return m_endian == Endian::LittleEndian;
 }
 
-}
 }
 
 #endif

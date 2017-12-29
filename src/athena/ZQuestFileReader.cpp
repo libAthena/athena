@@ -7,9 +7,7 @@
 #include <iostream>
 #include <iomanip>
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 
 ZQuestFileReader::ZQuestFileReader(atUint8* data, atUint64 length)
@@ -107,5 +105,4 @@ ZQuestFile* ZQuestFileReader::read()
     return new ZQuestFile(game, BOM == 0xFEFF ? Endian::BigEndian : Endian::LittleEndian, std::move(data), uncompressedLen, gameString);
 }
 
-} // io
 } // zelda

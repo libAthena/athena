@@ -39,7 +39,7 @@
  */
 
 #include "sha1.h"
-#include <string.h>
+#include <cstring>
 #include "athena/Utility.hpp"
 
 /*

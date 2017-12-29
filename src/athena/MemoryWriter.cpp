@@ -1,7 +1,7 @@
 #include "athena/MemoryWriter.hpp"
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <vector>
 #include <iostream>
 
@@ -9,9 +9,7 @@
 #include <malloc.h>
 #endif // HW_RVL
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 
 MemoryWriter::MemoryWriter(atUint8* data, atUint64 length, bool takeOwnership)
@@ -316,5 +314,4 @@ void MemoryCopyWriter::resize(atUint64 newSize)
     m_length = newSize;
 }
 
-} // io
 } // Athena

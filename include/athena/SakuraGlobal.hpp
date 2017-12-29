@@ -3,9 +3,7 @@
 
 #include "athena/Global.hpp"
 
-namespace athena
-{
-namespace Sakura
+namespace athena::Sakura
 {
 template <typename T>
 class Vector2D
@@ -30,6 +28,5 @@ public:
 typedef Vector2D<int> Vector2Di;
 typedef Vector2D<float> Vector2Df;
 } // Sakura
-} // Athena
 
 #endif // SAKURAGLOBAL_HPP

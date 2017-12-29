@@ -1,8 +1,6 @@
 #include "athena/DNAYaml.hpp"
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 
 template <>
@@ -1405,5 +1403,4 @@ std::unique_ptr<atUint8[]> base64_decode(std::string_view encoded_string)
     return ret;
 }
 
-}
 }

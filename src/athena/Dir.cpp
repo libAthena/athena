@@ -1,15 +1,15 @@
 #include "athena/Dir.hpp"
 #include <sys/stat.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <limits.h>
 #define __STDC_FORMAT_MACROS
-#include <inttypes.h>
+#include <cinttypes>
 
 #ifndef _WIN32
 #include <dirent.h>
 #include <unistd.h>
 #else
-#include <time.h>
+#include <ctime>
 #include <direct.h>
 #endif
 

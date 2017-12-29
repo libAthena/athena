@@ -4,14 +4,12 @@
 #include <string>
 #include <string_view>
 #include <vector>
-#include <stdarg.h>
-#include <string.h>
+#include <cstdarg>
+#include <cstring>
 #include "athena/Global.hpp"
 #include "athena/Types.hpp"
 
-namespace athena
-{
-namespace utility
+namespace athena::utility
 {
 inline bool isEmpty(atInt8* buf, atUint32 size) {return !memcmp(buf, buf + 1, size - 1);}
 inline bool isSystemBigEndian() {return (*(atUint16*)"\xFE\xFF" == 0xFEFF);}
@@ -217,6 +215,5 @@ std::string wideToUtf8(std::wstring_view src);
 
 std::wstring utf8ToWide(std::string_view src);
 
-} // utility
 } // Athena
 #endif

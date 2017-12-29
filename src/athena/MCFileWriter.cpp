@@ -1,8 +1,6 @@
 #include "athena/MCFileWriter.hpp"
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 
 MCFileWriter::MCFileWriter(atUint8* data, atUint64 length)
@@ -48,5 +46,4 @@ atUint16 MCFileWriter::calculateChecksum(atUint8* data, atUint32 length)
     return sum;
 }
 
-} // io
 } // zelda

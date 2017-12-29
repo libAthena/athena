@@ -7,9 +7,7 @@
 #include <string>
 #include "athena/SakuraGlobal.hpp"
 
-namespace athena
-{
-namespace Sakura
+namespace athena::Sakura
 {
 struct STexture
 {
@@ -191,7 +189,6 @@ private:
     Vector2Df              m_origin;
     std::unordered_map<std::string, Sprite*> m_sprites;
 };
-} // Sakura
 } // Zelda
 
 #endif // SSPRITE_HPP

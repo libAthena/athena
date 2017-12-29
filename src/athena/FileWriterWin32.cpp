@@ -1,9 +1,7 @@
 #include "athena/FileWriter.hpp"
 #include "win32_largefilewrapper.h"
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 FileWriter::FileWriter(std::string_view filename, bool overwrite, bool globalErr)
     : m_fileHandle(0),
@@ -141,5 +139,4 @@ void FileWriter::writeUBytes(const atUint8* data, atUint64 len)
     }
 }
 
-}
 } // Athena

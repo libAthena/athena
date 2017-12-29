@@ -3,9 +3,7 @@
 
 #include "athena/MemoryReader.hpp"
 
-namespace athena
-{
-namespace Sakura
+namespace athena::Sakura
 {
 class SpriteFile;
 } // Sakura
@@ -21,7 +19,6 @@ public:
 
     Sakura::SpriteFile* readFile();
 };
-} // io
 } // zelda
 
 

@@ -4,9 +4,7 @@
 #include <iostream>
 #include "athena/Global.hpp"
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 
 ALTTPFileReader::ALTTPFileReader(atUint8* data, atUint64 length)
@@ -236,4 +234,3 @@ ALTTPDungeonItemFlags ALTTPFileReader::readDungeonFlags()
 }
 
 } // io
-} // zelda

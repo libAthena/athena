@@ -5,9 +5,7 @@
 #include "athena/SpriteFrame.hpp"
 #include "athena/Utility.hpp"
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 SpriteFileReader::SpriteFileReader(atUint8* data, atUint64 length)
     : MemoryCopyReader(data, length)
@@ -204,5 +202,4 @@ Sakura::SpriteFile* SpriteFileReader::readFile()
 
     return ret;
 }
-} // io
 } // zelda

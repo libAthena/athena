@@ -11,7 +11,7 @@
 #include "sha1.h"
 #include <iostream>
 #include <iomanip>
-#include <string.h>
+#include <cstring>
 
 namespace athena
 {

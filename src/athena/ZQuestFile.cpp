@@ -1,6 +1,6 @@
 #include "athena/ZQuestFile.hpp"
 
-#include <string.h>
+#include <cstring>
 
 namespace athena
 {

@@ -3,9 +3,7 @@
 #include "athena/Compression.hpp"
 #include "athena/Checksums.hpp"
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 
 ZQuestFileWriter::ZQuestFileWriter(atUint8* data, atUint64 length)
@@ -75,5 +73,4 @@ void ZQuestFileWriter::write(ZQuestFile* quest, bool compress)
     }
 }
 
-} // io
 } // zelda

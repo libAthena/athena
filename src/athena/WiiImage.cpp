@@ -1,7 +1,7 @@
 #include "athena/WiiImage.hpp"
 #include "athena/Utility.hpp"
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdlib>
 
 namespace athena
 {

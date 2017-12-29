@@ -3,9 +3,7 @@
 #include "athena/Sprite.hpp"
 #include <algorithm>
 
-namespace athena
-{
-namespace Sakura
+namespace athena::Sakura
 {
 
 SpritePart::SpritePart(SpriteFrame* root)
@@ -113,6 +111,5 @@ bool SpritePart::flippedVertically() const
 SpriteFrame* SpritePart::root() const
 {
     return m_root;
-}
 }
 }

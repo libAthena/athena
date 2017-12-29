@@ -2,7 +2,7 @@
 #define DIR_HPP
 
 #include "athena/FileInfo.hpp"
-#include <stdio.h>
+#include <cstdio>
 
 #if _WIN32
 typedef int mode_t;

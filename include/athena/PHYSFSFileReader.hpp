@@ -5,9 +5,7 @@
 #include "athena/Stream.hpp"
 #include <physfs.h>
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 class PHYSFSFileReader : public Stream
 {
@@ -50,7 +48,6 @@ private:
     atUint64     m_length;
     PHYSFS_File* m_handle;
 };
-}
 }
 
 #ifndef PHYSFSFILEREADER_BASE

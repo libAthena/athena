@@ -6,9 +6,7 @@
 #include <functional>
 #include "athena/IStreamWriter.hpp"
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 
 /*! @class MemoryWriter
@@ -158,7 +156,6 @@ private:
     void resize(atUint64 newSize);
 };
 
-}
 }
 
 #endif // MEMORYWRITER_HPP

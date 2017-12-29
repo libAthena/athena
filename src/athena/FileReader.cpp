@@ -7,9 +7,7 @@
 #include "osx_largefilewrapper.h"
 #endif
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 FileReader::FileReader(std::string_view filename, atInt32 cacheSize, bool globalErr)
     : m_fileHandle(nullptr),
@@ -206,5 +204,4 @@ void FileReader::setCacheSize(const atInt32 blockSize)
         m_cacheData.reset(new atUint8[m_blockSize]);
 }
 
-} // io
 } // Athena

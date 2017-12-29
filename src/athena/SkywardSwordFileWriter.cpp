@@ -2,9 +2,7 @@
 #include "athena/SkywardSwordFile.hpp"
 #include "athena/SkywardSwordQuest.hpp"
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 
 SkywardSwordFileWriter::SkywardSwordFileWriter(atUint8* data, atUint64 len)
@@ -62,5 +60,4 @@ void SkywardSwordFileWriter::write(SkywardSwordFile* file)
     save();
 }
 
-} // io
 } // zelda

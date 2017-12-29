@@ -2,9 +2,7 @@
 #include "athena/SpritePart.hpp"
 #include "athena/Sprite.hpp"
 
-namespace athena
-{
-namespace Sakura
+namespace athena::Sakura
 {
 
 SpriteFrame::SpriteFrame()
@@ -52,5 +50,4 @@ Sprite* SpriteFrame::root() const
     return m_root;
 }
 
-} // Sakura
 } // zelda

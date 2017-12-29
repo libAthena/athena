@@ -6,9 +6,7 @@
 
 #include <string>
 
-namespace athena
-{
-namespace Sakura
+namespace athena::Sakura
 {
 class SpriteFrame;
 
@@ -113,7 +111,6 @@ private:
     bool m_flippedV;
     atUint32 m_frameIndex;
 };
-}
 }
 
 #endif // SSPRITEPART_HPP

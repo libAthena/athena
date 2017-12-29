@@ -5,9 +5,7 @@
 #include <string>
 #include "athena/SakuraGlobal.hpp"
 
-namespace athena
-{
-namespace Sakura
+namespace athena::Sakura
 {
 class SpriteFile;
 class SpriteFrame;
@@ -69,7 +67,6 @@ private:
     atUint32 m_currentFrame;
 };
 
-} // Sakura
 } // zelda
 
 #endif // SSPRITE_HPP

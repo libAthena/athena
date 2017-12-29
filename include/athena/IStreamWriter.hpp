@@ -5,9 +5,7 @@
 #include "IStream.hpp"
 #include <memory>
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 class IStreamWriter : public IStream
 {
@@ -1174,7 +1172,6 @@ IStreamWriter& operator<<(IStreamWriter& lhs, const T& rhs)
 {
     lhs.writeVal(rhs);
     return lhs;
-}
 }
 }
 #endif // STREAMWRITER_HPP

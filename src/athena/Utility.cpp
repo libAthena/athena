@@ -1,10 +1,10 @@
 ﻿#include "athena/Utility.hpp"
 #include <iostream>
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdlib>
 #include <sstream>
 #include <algorithm>
-#include <stdarg.h>
+#include <cstdarg>
 #include <iterator>
 #include <cstdio>
 #include <sys/types.h>
@@ -17,9 +17,7 @@
 #include <locale>
 #endif
 
-namespace athena
-{
-namespace utility
+namespace athena::utility
 {
 
 void fillRandom(atUint8* rndArea, atUint64 count)
@@ -255,5 +253,4 @@ std::wstring utf8ToWide(std::string_view src)
     return retval;
 }
 
-} // utility
 } // Athena

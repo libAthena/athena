@@ -3,9 +3,7 @@
 #include "athena/Utility.hpp"
 #include <iostream>
 
-namespace athena
-{
-namespace Sakura
+namespace athena::Sakura
 {
 const atUint32 SpriteFile::Major = 1;
 const atUint32 SpriteFile::Minor = 0;
@@ -216,5 +214,4 @@ void SpriteFile::setTextures(std::vector<STexture*> textures)
     m_textures = textures;
 }
 
-} // Sakura
 } // zelda

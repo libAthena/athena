@@ -7,9 +7,7 @@
 #include <QVector>
 #endif
 
-namespace athena
-{
-namespace Sakura
+namespace athena::Sakura
 {
 Sprite::Sprite(SpriteFile* root)
     : m_root(root),
@@ -230,6 +228,5 @@ void Sprite::setRoot(SpriteFile* root)
 SpriteFile* Sprite::root() const
 {
     return m_root;
-}
 }
 }

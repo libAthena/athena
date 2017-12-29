@@ -3,9 +3,7 @@
 
 #include "Global.hpp"
 
-namespace athena
-{
-namespace io
+namespace athena::io
 {
 std::ostream& operator<<(std::ostream& os, Endian& endian);
 
@@ -33,6 +31,5 @@ protected:
     Endian m_endian = LittleEndian;
 #endif
 };
-}
 }
 #endif // STREAM_HPP
