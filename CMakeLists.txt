@@ -44,6 +44,7 @@ add_library(athena-core
     src/athena/Global.cpp
     src/athena/Checksums.cpp
     src/athena/Compression.cpp
+    src/athena/Socket.cpp
     src/LZ77/LZLookupTable.cpp
     src/LZ77/LZType10.cpp
     src/LZ77/LZType11.cpp
