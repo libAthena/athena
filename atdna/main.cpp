@@ -50,7 +50,7 @@ static llvm::cl::opt<std::string> FMSCompatVersion("fms-compatibility-version",
 
 static llvm::cl::list<std::string> InputFilenames(llvm::cl::Positional,
                                                   llvm::cl::desc("<Input files>"),
-                                                  llvm::cl::OneOrMore);
+                                                  llvm::cl::ZeroOrMore);
 
 static llvm::cl::list<std::string> IncludeSearchPaths("I",
                                                       llvm::cl::desc("Header search path"),
@@ -2413,6 +2413,9 @@ int main(int argc, const char** argv)
         llvm::cl::PrintHelpMessage();
 
     std::vector<std::string> args = {"clang-tool",
+#ifdef __linux__
+                                     "--gcc-toolchain=/usr",
+#endif
                                      "-fsyntax-only",
                                      "-std=c++1z",
                                      "-D__atdna__=1",
