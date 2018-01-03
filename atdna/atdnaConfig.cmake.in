@@ -52,12 +52,15 @@ macro(atdna out)
 
   # OSX Extra
   elseif(APPLE)
+    get_filename_component(COMPILER_DIR "${CMAKE_CXX_COMPILER}" DIRECTORY)
     if (NOT EXISTS "${CMAKE_OSX_SYSROOT}")
       message(FATAL_ERROR "CMAKE_OSX_SYSROOT not set")
     endif()
-    list(APPEND extraargs -isysroot ${CMAKE_OSX_SYSROOT} -isysroot ${CMAKE_OSX_SYSROOT}/usr/include
-         -I ${CMAKE_OSX_SYSROOT}/../../../../../Toolchains/XcodeDefault.xctoolchain
-         -I ${CMAKE_OSX_SYSROOT}/../../../../../Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1)
+    list(APPEND extraargs
+         -isysroot ${CMAKE_OSX_SYSROOT}
+         -isysroot ${CMAKE_OSX_SYSROOT}/usr/include
+         -I ${COMPILER_DIR}/../..
+         -I ${COMPILER_DIR}/../include/c++/v1)
   endif()
 
   # Make target
