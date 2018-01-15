@@ -283,6 +283,19 @@ public:
         return countOut;
     }
 
+    bool hasVal(const char* name) const
+    {
+        if (m_subStack.size())
+        {
+            const YAMLNode* mnode = m_subStack.back();
+            if (mnode->m_type == YAML_MAPPING_NODE && name)
+                for (const auto& item : mnode->m_mapChildren)
+                    if (!item.first.compare(name))
+                        return true;
+        }
+        return false;
+    }
+
     template <typename RETURNTYPE>
     RETURNTYPE readVal(const char* name);
     bool readBool(const char* name);
