@@ -12,9 +12,17 @@
 #include <utf8proc.h>
 #include "DNA.hpp"
 #include "FileReader.hpp"
+#include "FileWriter.hpp"
 
 namespace athena::io
 {
+
+enum class YAMLNodeStyle
+{
+    Any,
+    Flow,
+    Block
+};
 
 struct YAMLNode
 {
@@ -22,6 +30,7 @@ struct YAMLNode
     std::string m_scalarString;
     std::vector<std::unique_ptr<YAMLNode>> m_seqChildren;
     std::vector<std::pair<std::string, std::unique_ptr<YAMLNode>>> m_mapChildren;
+    YAMLNodeStyle m_style = YAMLNodeStyle::Any;
     YAMLNode(yaml_node_type_t type) : m_type(type) {}
     inline const YAMLNode* findMapChild(std::string_view key) const
     {
@@ -29,6 +38,16 @@ struct YAMLNode
             if (!item.first.compare(key))
                 return item.second.get();
         return nullptr;
+    }
+    inline void assignMapChild(std::string_view key, std::unique_ptr<YAMLNode>&& node)
+    {
+        for (auto& item : m_mapChildren)
+            if (!item.first.compare(key))
+            {
+                item.second = std::move(node);
+                return;
+            }
+        m_mapChildren.emplace_back(key, std::move(node));
     }
 };
 
@@ -322,14 +341,14 @@ public:
 
 class YAMLDocWriter
 {
-    YAMLNode m_rootNode;
+    std::unique_ptr<YAMLNode> m_rootNode;
     std::vector<YAMLNode*> m_subStack;
     yaml_emitter_t m_emitter;
     static bool RecursiveFinish(yaml_emitter_t* doc, const YAMLNode& node);
     void _leaveSubRecord();
     void _leaveSubVector();
 public:
-    YAMLDocWriter(const char* classType);
+    YAMLDocWriter(const char* classType, athena::io::IStreamReader* reader = nullptr);
     ~YAMLDocWriter();
 
     yaml_emitter_t* getEmitter() { return &m_emitter; }
@@ -440,6 +459,8 @@ public:
     void writeWString(const char* name, std::wstring_view val);
     void writeU16String(const char* name, std::u16string_view val);
     void writeU32String(const char* name, std::u32string_view val);
+
+    void setStyle(YAMLNodeStyle s);
 };
 
 int YAMLAthenaReader(athena::io::IStreamReader* reader,
@@ -569,6 +590,20 @@ struct DNAYaml : DNA<DNAE>
             return false;
         (this->*fn)(docReader);
         return true;
+    }
+
+    template <typename NameT>
+    bool mergeToYAMLFile(const NameT& filename)
+    {
+        athena::io::FileReader r(filename);
+        YAMLDocWriter docWriter(DNATypeV(), r.isOpen() ? &r : nullptr);
+        r.close();
+
+        write(docWriter);
+        athena::io::FileWriter w(filename);
+        if (!w.isOpen())
+            return false;
+        return docWriter.finish(&w);
     }
 
     template<class DNASubtype>
