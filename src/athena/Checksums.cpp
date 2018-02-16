@@ -5,14 +5,8 @@
 
 namespace athena::Checksums
 {
-atUint64 crc64(const atUint8* data, atUint64 length, atUint64 mask, atUint64 seed)
+atUint64 crc64(const atUint8* data, atUint64 length, atUint64 seed, atUint64 final)
 {
-    if (!data)
-        return 0;
-
-    atUint64 checksum = seed;
-    int pos = 0;
-
     static const atUint64 crc64Table[256] =
     {
         0x0000000000000000, 0x42F0E1EBA9EA3693, 0x85E1C3D753D46D26, 0xC711223CFA3E5BB5,
@@ -81,13 +75,19 @@ atUint64 crc64(const atUint8* data, atUint64 length, atUint64 mask, atUint64 see
         0x5DEDC41A34BBEEB2, 0x1F1D25F19D51D821, 0xD80C07CD676F8394, 0x9AFCE626CE85B507,
     };
 
+    if (!data)
+        return seed;
+
+    atUint64 checksum = seed;
+    int pos = 0;
+
     while (length--)
         checksum = crc64Table[((checksum >> 56) ^ data[pos++]) & 0xff] ^ (checksum << 8);
 
-    return checksum ^ mask;
+    return checksum ^ final;
 }
 
-atUint32 crc32(const atUint8* data, atUint64 length, atUint32 mask, atUint32 seed)
+atUint32 crc32(const atUint8* data, atUint64 length, atUint32 seed, atUint32 final)
 {
     static const atUint32 crc32Table[256] =
     {
@@ -126,7 +126,7 @@ atUint32 crc32(const atUint8* data, atUint64 length, atUint32 mask, atUint32 see
     };
 
     if (!data)
-        return 0;
+        return seed;
 
     atUint32 checksum = seed;
     int pos = 0;
@@ -134,7 +134,7 @@ atUint32 crc32(const atUint8* data, atUint64 length, atUint32 mask, atUint32 see
     while (length--)
         checksum = (checksum >> 8) ^ crc32Table[(checksum & 0xFF) ^ data[pos++]];
 
-    return checksum ^ mask;
+    return checksum ^ final;
 }
 
 atUint16 crc16CCITT(const atUint8* data, atUint64 length, atUint16 seed, atUint16 final)
@@ -181,8 +181,11 @@ atUint16 crc16CCITT(const atUint8* data, atUint64 length, atUint16 seed, atUint1
     return checksum ^ final;
 }
 
-atUint16 crc16(const atUint8* data, atUint64 length)
+atUint16 crc16(const atUint8* data, atUint64 length, atUint16 seed, atUint64 final)
 {
+    if (data)
+        return seed;
+
     static const atUint16 crc16Table[256] =
     {
         0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241,
@@ -220,12 +223,12 @@ atUint16 crc16(const atUint8* data, atUint64 length)
     };
 
     atInt32 pos = 0;
-    atUint16 checksum = 0;
+    atUint16 checksum = seed;
 
     while (length--)
         checksum = (crc16Table[(checksum ^ data[pos++]) & 0xFF] ^ (checksum >> 8));
 
-    return checksum;
+    return checksum ^ final;
 }
 
 } // Checksums
