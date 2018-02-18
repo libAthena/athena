@@ -75,7 +75,7 @@ ZQuestFile* ZQuestFileReader::read()
 
     if (version >= ZQUEST_VERSION_CHECK(2, 0, 0))
     {
-        if (checksum != athena::Checksums::crc32(data.get(), compressedLen))
+        if (checksum != athena::checksums::crc32(data.get(), compressedLen))
         {
             atError("Checksum mismatch, data corrupt");
             return nullptr;
@@ -102,7 +102,7 @@ ZQuestFile* ZQuestFileReader::read()
         data.reset(dst);
     }
 
-    return new ZQuestFile(game, BOM == 0xFEFF ? Endian::BigEndian : Endian::LittleEndian, std::move(data), uncompressedLen, gameString);
+    return new ZQuestFile(game, BOM == 0xFEFF ? Endian::Big : Endian::Little, std::move(data), uncompressedLen, gameString);
 }
 
 } // zelda

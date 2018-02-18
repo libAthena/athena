@@ -137,7 +137,7 @@ public:
     {
         atInt16 val;
         readUBytesToBuf(&val, 2);
-        return m_endian == BigEndian ? utility::BigInt16(val) : utility::LittleInt16(val);
+        return m_endian == Big ? utility::BigInt16(val) : utility::LittleInt16(val);
     }
     template <class T>
     inline atInt16 readVal(typename std::enable_if<std::is_same<T, atInt16>::value>::type* = 0)
@@ -223,7 +223,7 @@ public:
     {
         atInt32 val;
         readUBytesToBuf(&val, 4);
-        return m_endian == BigEndian ? utility::BigInt32(val) : utility::LittleInt32(val);
+        return m_endian == Big ? utility::BigInt32(val) : utility::LittleInt32(val);
     }
     template <class T>
     inline atInt32 readVal(typename std::enable_if<std::is_same<T, atInt32>::value>::type* = 0)
@@ -309,7 +309,7 @@ public:
     {
         atInt64 val;
         readUBytesToBuf(&val, 8);
-        return m_endian == BigEndian ? utility::BigInt64(val) : utility::LittleInt64(val);
+        return m_endian == Big ? utility::BigInt64(val) : utility::LittleInt64(val);
     }
     template <class T>
     inline atInt64 readVal(typename std::enable_if<std::is_same<T, atInt64>::value>::type* = 0)
@@ -395,7 +395,7 @@ public:
     {
         float val;
         readUBytesToBuf(&val, 4);
-        return m_endian == BigEndian ? utility::BigFloat(val) : utility::LittleFloat(val);
+        return m_endian == Big ? utility::BigFloat(val) : utility::LittleFloat(val);
     }
     template <class T>
     inline float readVal(typename std::enable_if<std::is_same<T, float>::value>::type* = 0)
@@ -440,7 +440,7 @@ public:
     {
         double val;
         readUBytesToBuf(&val, 8);
-        return m_endian == BigEndian ? utility::BigDouble(val) : utility::LittleDouble(val);
+        return m_endian == Big ? utility::BigDouble(val) : utility::LittleDouble(val);
     }
     template <class T>
     inline double readVal(typename std::enable_if<std::is_same<T, double>::value>::type* = 0)
@@ -505,7 +505,7 @@ public:
     {
         atVec2f val;
         readUBytesToBuf(&val, 8);
-        if (m_endian == BigEndian)
+        if (m_endian == Big)
         {
             utility::BigFloat(val.vec[0]);
             utility::BigFloat(val.vec[1]);
@@ -564,7 +564,7 @@ public:
     {
         atVec3f val;
         readUBytesToBuf(&val, 12);
-        if (m_endian == BigEndian)
+        if (m_endian == Big)
         {
             utility::BigFloat(val.vec[0]);
             utility::BigFloat(val.vec[1]);
@@ -627,7 +627,7 @@ public:
     {
         atVec4f val;
         readUBytesToBuf(&val, 16);
-        if (m_endian == BigEndian)
+        if (m_endian == Big)
         {
             utility::BigFloat(val.vec[0]);
             utility::BigFloat(val.vec[1]);
@@ -694,7 +694,7 @@ public:
     {
         atVec2d val;
         readUBytesToBuf(&val, 16);
-        if (m_endian == BigEndian)
+        if (m_endian == Big)
         {
             utility::BigDouble(val.vec[0]);
             utility::BigDouble(val.vec[1]);
@@ -753,7 +753,7 @@ public:
     {
         atVec3d val;
         readUBytesToBuf(&val, 24);
-        if (m_endian == BigEndian)
+        if (m_endian == Big)
         {
             utility::BigDouble(val.vec[0]);
             utility::BigDouble(val.vec[1]);
@@ -816,7 +816,7 @@ public:
     {
         atVec4d val;
         readUBytesToBuf(&val, 32);
-        if (m_endian == BigEndian)
+        if (m_endian == Big)
         {
             utility::BigDouble(val.vec[0]);
             utility::BigDouble(val.vec[1]);
@@ -873,129 +873,6 @@ public:
     template <class T>
     inline atVec4d readValBig(typename std::enable_if<std::is_same<T, atVec4d>::value>::type* = 0)
     {return readVec4dBig();}
-
-    /** @brief Reads a wide-char string (using endianness from setEndian),
-     *         converts to UTF8 and advances the position in the file
-     *
-     *  @param fixedLen If non-negative, this is a fixed-length string read
-     *  @return The read string
-     */
-    inline std::string readWStringAsString(atInt32 fixedLen = -1)
-    {
-        if (fixedLen == 0)
-            return std::string();
-
-        std::string retval;
-        atUint16 chr = readUint16();
-
-        atInt32 i;
-        for (i=0 ;; ++i)
-        {
-            if (fixedLen >= 0 && i >= fixedLen - 1)
-                break;
-
-            if (!chr)
-                break;
-
-            utf8proc_uint8_t mb[4];
-            utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(chr), mb);
-            if (c < 0)
-            {
-                atWarning("invalid UTF-8 character while encoding");
-                return retval;
-            }
-
-            retval.append(reinterpret_cast<char*>(mb), c);
-            chr = readUint16();
-        }
-
-        if (fixedLen >= 0 && i < fixedLen)
-            seek(fixedLen - i);
-
-        return retval;
-    }
-
-    /** @brief Reads a wide-char string (against little-endian),
-     *         converts to UTF8 and advances the position in the file
-     *
-     *  @param fixedLen If non-negative, this is a fixed-length string read
-     *  @return The read string
-     */
-    inline std::string readWStringAsStringLittle(atInt32 fixedLen = -1)
-    {
-        if (fixedLen == 0)
-            return std::string();
-
-        std::string retval;
-        atUint16 chr = readUint16Little();
-
-        atInt32 i;
-        for (i=0 ;; ++i)
-        {
-            if (fixedLen >= 0 && i >= fixedLen - 1)
-                break;
-
-            if (!chr)
-                break;
-
-            utf8proc_uint8_t mb[4];
-            utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(chr), mb);
-            if (c < 0)
-            {
-                atWarning("invalid UTF-8 character while encoding");
-                return retval;
-            }
-
-            retval.append(reinterpret_cast<char*>(mb), c);
-            chr = readUint16Little();
-        }
-
-        if (fixedLen >= 0 && i < fixedLen)
-            seek(fixedLen - i);
-
-        return retval;
-    }
-
-    /** @brief Reads a wide-char string (against big-endian),
-     *         converts to UTF8 and advances the position in the file
-     *
-     *  @param fixedLen If non-negative, this is a fixed-length string read
-     *  @return The read string
-     */
-    inline std::string readWStringAsStringBig(atInt32 fixedLen = -1)
-    {
-        if (fixedLen == 0)
-            return std::string();
-
-        std::string retval;
-        atUint16 chr = readUint16Big();
-
-        atInt32 i;
-        for (i = 0 ;; ++i)
-        {
-            if (fixedLen >= 0 && i >= fixedLen - 1)
-                break;
-
-            if (!chr)
-                break;
-
-            utf8proc_uint8_t mb[4];
-            utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(chr), mb);
-            if (c < 0)
-            {
-                atWarning("invalid UTF-8 character while encoding");
-                return retval;
-            }
-
-            retval.append(reinterpret_cast<char*>(mb), c);
-            chr = readUint16Big();
-        }
-
-        if (fixedLen >= 0 && i < fixedLen)
-            seek(fixedLen - i);
-
-        return retval;
-    }
 
     /** @brief Reads a string and advances the position in the file
      *

@@ -59,8 +59,8 @@ void ZQuestFileWriter::write(ZQuestFile* quest, bool compress)
 
     writeUint32(quest->length());
     writeBytes((atInt8*)quest->gameString().substr(0, 0x0A).c_str(), 0x0A);
-    writeUint16(quest->endian() == Endian::BigEndian ? 0xFFFE : 0xFEFF);
-    writeUint32(athena::Checksums::crc32(questData, compLen));
+    writeUint16(quest->endian() == Endian::Big ? 0xFFFE : 0xFEFF);
+    writeUint32(athena::checksums::crc32(questData, compLen));
     writeUBytes(questData, compLen);
 
     save();

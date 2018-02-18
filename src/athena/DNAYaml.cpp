@@ -341,7 +341,8 @@ std::unique_ptr<atUint8[]> NodeToVal(const YAMLNode* node)
 std::unique_ptr<YAMLNode> ValToNode(const std::unique_ptr<atUint8[]>& val, size_t byteCount)
 {
     YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-    ret->m_scalarString = base64_encode(val.get(), byteCount);
+    if (val)
+        ret->m_scalarString = base64_encode(val.get(), byteCount);
     return std::unique_ptr<YAMLNode>(ret);
 }
 

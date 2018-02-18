@@ -1,11 +1,11 @@
 #include <athena/DNAYaml.hpp>
 
 using namespace athena;
-typedef io::DNAYaml<BigEndian> BigDNA;
+typedef io::DNA<Big> BigDNA;
 
 struct TESTSubFile : public BigDNA
 {
-    DECL_YAML
+    AT_DECL_DNA
     enum ETest : atUint8
     {
         ZERO,
@@ -20,30 +20,30 @@ struct TESTSubFile : public BigDNA
 
 struct TESTSubClassFile : public TESTSubFile
 {
-    DECL_YAML
+    AT_DECL_DNA
     Value<atUint32> sub3;
     Value<atUint32> sub4;
 };
 
 struct TESTSubSubClassFile : public TESTSubClassFile
 {
-    DECL_YAML
+    AT_DECL_DNA
     Value<atUint32> sub5;
     Value<atUint32> sub6;
 };
 
 struct TESTFile : public BigDNA
 {
-    DECL_YAML
+    AT_DECL_DNA
     Value<bool> varBool;
-    Value<atUint32> var32;
-    Value<atUint16> var16;
+    AT_OVERRIDE_RCRC32(12345678) Value<atUint32> x4_var32;
+    AT_OVERRIDE_RCRC32(deadbabe) Value<atUint16> x8_var16;
     Value<atVec3f> vec3;
     Value<atVec4f> vec4;
 
     struct TESTNestedSubFile : public BigDNA
     {
-        DECL_YAML
+        AT_DECL_DNA
         Value<atUint32> nestSub1;
         Value<atUint32> nestSub2;
     } nestedSubFile; 
@@ -55,12 +55,12 @@ struct TESTFile : public BigDNA
 
     struct TESTExplicitSubFile : public BigDNA
     {
-        DECL_YAML
+        AT_DECL_DNA
         Value<atUint32> explSub1;
         Value<atUint32> explSub2;
     } explSubFile;
 
-    Value<atUint32, LittleEndian> arrCount[2];
+    Value<atUint32, Little> arrCount[2];
     Vector<atUint32, DNA_COUNT(arrCount[0])> array;
 
     Seek<21, Current> seek;
@@ -73,6 +73,5 @@ struct TESTFile : public BigDNA
 
     String<32> str;
     WString<64> wstr;
-    WStringAsString<> utf8str[5];
 };
 

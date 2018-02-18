@@ -35,7 +35,8 @@ public:
      * \param m_banner
      * \param icons
      */
-    WiiBanner(atUint32 gameId, const std::string& title, const std::string& subtitle, WiiImage* m_banner, std::vector<WiiImage*> icons);
+    WiiBanner(atUint32 gameId, const std::u16string& title, const std::u16string& subtitle,
+              WiiImage* m_banner, std::vector<WiiImage*> icons);
     virtual ~WiiBanner();
 
     /*!
@@ -78,25 +79,25 @@ public:
      * \brief setTitle
      * \param title
      */
-    void setTitle(const std::string& title);
+    void setTitle(const std::u16string& title);
 
     /*!
      * \brief title
      * \return
      */
-    std::string title() const;
+    const std::u16string& title() const;
 
     /*!
      * \brief setSubtitle
      * \param subtitle
      */
-    void setSubtitle(const std::string& subtitle);
+    void setSubtitle(const std::u16string& subtitle);
 
     /*!
      * \brief subtitle
      * \return
      */
-    std::string subtitle() const;
+    const std::u16string& subtitle() const;
 
     /*!
      * \brief addIcon
@@ -168,8 +169,8 @@ private:
     atUint32                 m_flags;
     atUint32                 m_bannerSize;
     std::vector<WiiImage*> m_icons;
-    std::string            m_title;
-    std::string            m_subtitle;
+    std::u16string            m_title;
+    std::u16string            m_subtitle;
 };
 } // zelda
 

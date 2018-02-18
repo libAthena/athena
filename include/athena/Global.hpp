@@ -134,8 +134,8 @@ enum SeekOrigin
 
 enum Endian
 {
-    LittleEndian,
-    BigEndian
+    Little,
+    Big
 };
 } // Athena
 

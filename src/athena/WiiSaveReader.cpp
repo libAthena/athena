@@ -22,13 +22,13 @@ namespace io
 WiiSaveReader::WiiSaveReader(const atUint8* data, atUint64 length)
     : MemoryCopyReader(data, length)
 {
-    setEndian(Endian::BigEndian);
+    setEndian(Endian::Big);
 }
 
 WiiSaveReader::WiiSaveReader(const std::string& filename)
     : MemoryCopyReader(filename)
 {
-    setEndian(Endian::BigEndian);
+    setEndian(Endian::Big);
 }
 
 std::unique_ptr<WiiSave> WiiSaveReader::readSave()
@@ -164,8 +164,8 @@ WiiBanner* WiiSaveReader::readBanner()
     int magic;
     int flags;
     short animSpeed;
-    std::string gameTitle;
-    std::string subTitle;
+    std::u16string gameTitle;
+    std::u16string subTitle;
 
     magic = readUint32();
 
@@ -183,12 +183,12 @@ WiiBanner* WiiSaveReader::readBanner()
     animSpeed = readUint16();
     seek(22);
 
-    gameTitle = readWStringAsString();
+    gameTitle = readU16StringBig();
 
     if (position() != 0x0080)
         seek(0x0080, SeekOrigin::Begin);
 
-    subTitle = readWStringAsString();
+    subTitle = readU16StringBig();
 
     if (position() != 0x00C0)
         seek(0x00C0, SeekOrigin::Begin);

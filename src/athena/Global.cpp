@@ -28,11 +28,11 @@ std::ostream& operator<<(std::ostream& os, const athena::Endian& endian)
 {
     switch (endian)
     {
-        case athena::Endian::LittleEndian:
+        case athena::Endian::Little:
             os << "LittleEndian";
             break;
 
-        case athena::Endian::BigEndian:
+        case athena::Endian::Big:
             os << "BigEndian";
             break;
     }

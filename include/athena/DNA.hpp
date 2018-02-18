@@ -10,25 +10,12 @@
 #include "Global.hpp"
 #include "IStreamReader.hpp"
 #include "IStreamWriter.hpp"
+#include "DNAOp.hpp"
 #include <vector>
 #include <memory>
 
 namespace athena::io
 {
-
-/* forward-declaration dance for recursively-derived types */
-
-template <size_t sizeVar, Endian VE>
-struct Buffer;
-
-template <atInt32 sizeVar, Endian VE>
-struct String;
-
-template <atInt32 sizeVar, Endian VE>
-struct WString;
-
-template <atInt32 sizeVar, Endian VE>
-struct WStringAsString;
 
 /**
  * @brief Base DNA class used against 'atdna'
@@ -42,22 +29,10 @@ struct WStringAsString;
 template <Endian DNAE>
 struct DNA
 {
-    virtual ~DNA() = default;
-
     /**
-     * @brief Common virtual read function for all DNA types
+     * @brief Designated byte-order used for serializing fields
      */
-    virtual void read(IStreamReader&)=0;
-    /**
-     * @brief Common virtual write function for all DNA types
-     */
-    virtual void write(IStreamWriter&) const=0;
-    /**
-     * @brief Common virtual binary size computation for all DNA types
-     * @param __isz initial cumulative value to add result to
-     * @return Cumulative size
-     */
-    virtual size_t binarySize(size_t __isz) const=0;
+    static constexpr Endian DNAEndian = DNAE;
 
     /**
      * @brief Template type signaling atdna to capture the value where it's used
@@ -82,7 +57,7 @@ struct DNA
      * @tparam sizeVar C++ expression wrapped in DNA_COUNT macro to determine number of bytes for buffer
      */
     template <size_t sizeVar>
-    using Buffer = struct athena::io::Buffer<sizeVar, DNAE>;
+    using Buffer = std::unique_ptr<atUint8[]>;
 
     /**
      * @brief Template type wrapping std::string and signaling atdna to read string data where it's used
@@ -90,7 +65,7 @@ struct DNA
      *                 -1 literal indicates null-terminated string
      */
     template <atInt32 sizeVar = -1>
-    using String = struct athena::io::String<sizeVar, DNAE>;
+    using String = std::string;
 
     /**
      * @brief Template type wrapping std::wstring and signaling atdna to read wstring data where it's used
@@ -98,15 +73,7 @@ struct DNA
      *                 -1 literal indicates null-terminated wstring
      */
     template <atInt32 sizeVar = -1, Endian VE = DNAE>
-    using WString = struct athena::io::WString<sizeVar, VE>;
-
-    /**
-     * @brief Template type wrapping std::string and signaling atdna to read wstring data where it's used
-     * @tparam sizeVar C++ expression wrapped in DNA_COUNT macro to determine number of characters for string
-     *                 -1 literal indicates null-terminated string
-     */
-    template <atInt32 sizeVar = -1>
-    using WStringAsString = struct athena::io::WStringAsString<sizeVar, DNAE>;
+    using WString = std::wstring;
 
     /**
      * @brief Meta Template signaling atdna to insert a stream seek where it's used
@@ -127,119 +94,7 @@ struct DNA
      * @brief Meta Template preventing atdna from emitting read/write implementations
      */
     struct Delete {};
-
-    /**
-     * @brief Internal DNA helper for accumulating binarySize
-     * @param __isz initial size value
-     * @param v Vector to enumerate
-     * @return Cumulative total
-     */
-    template <typename T>
-    static size_t __EnumerateSize(size_t __isz, const T& v)
-    {
-        for (const auto& val : v)
-            __isz = val.binarySize(__isz);
-        return __isz;
-    }
 };
-
-/**
- * @brief Concrete buffer type used by DNA::Buffer
- */
-template <size_t sizeVar, Endian VE>
-struct Buffer : public DNA<VE>, public std::unique_ptr<atUint8[]>
-{
-    typename DNA<VE>::Delete expl;
-    void read(IStreamReader& reader)
-    {
-        reset(new atUint8[sizeVar]);
-        reader.readUBytesToBuf(get(), sizeVar);
-    }
-    void write(IStreamWriter& writer) const
-    {
-        writer.writeUBytes(get(), sizeVar);
-    }
-    size_t binarySize(size_t __isz) const
-    {
-        return __isz + sizeVar;
-    }
-};
-
-/**
- * @brief Concrete string type used by DNA::String
- */
-template <atInt32 sizeVar, Endian VE>
-struct String : public DNA<VE>, public std::string
-{
-    typename DNA<VE>::Delete expl;
-    void read(IStreamReader& reader)
-    {this->assign(std::move(reader.readString(sizeVar)));}
-    void write(IStreamWriter& writer) const
-    {writer.writeString(*this, sizeVar);}
-    size_t binarySize(size_t __isz) const
-    {return __isz + ((sizeVar<0)?(this->size()+1):sizeVar);}
-    std::string& operator=(std::string_view __str)
-    {return this->assign(__str);}
-    std::string& operator=(std::string&& __str)
-    {this->swap(__str); return *this;}
-};
-
-/**
- * @brief Concrete wstring type used by DNA::WString
- */
-template <atInt32 sizeVar, Endian VE>
-struct WString : public DNA<VE>, public std::wstring
-{
-    typename DNA<VE>::Delete expl;
-    void read(IStreamReader& reader)
-    {
-        reader.setEndian(VE);
-        this->assign(std::move(reader.readWString(sizeVar)));
-    }
-    void write(IStreamWriter& writer) const
-    {
-        writer.setEndian(VE);
-        writer.writeWString(*this, sizeVar);
-    }
-    size_t binarySize(size_t __isz) const
-    {return __isz + (((sizeVar<0)?(this->size()+1):sizeVar)*2);}
-    std::wstring& operator=(std::wstring_view __str)
-    {return this->assign(__str);}
-    std::wstring& operator=(std::wstring&& __str)
-    {this->swap(__str); return *this;}
-};
-
-/**
- * @brief Concrete converting-wstring type used by DNA::WStringAsString
- */
-template <atInt32 sizeVar, Endian VE>
-struct WStringAsString : public DNA<VE>, public std::string
-{
-    typename DNA<VE>::Delete expl;
-    void read(IStreamReader& reader)
-    {*this = reader.readWStringAsString(sizeVar);}
-    void write(IStreamWriter& writer) const
-    {writer.writeStringAsWString(*this, sizeVar);}
-    size_t binarySize(size_t __isz) const
-    {return __isz + (((sizeVar<0)?(this->size()+1):sizeVar)*2);}
-    std::string& operator=(std::string_view __str)
-    {return this->assign(__str);}
-    std::string& operator=(std::string&& __str)
-    {this->swap(__str); return *this;}
-};
-
-/** Macro to automatically declare read/write methods in subclasses */
-#define DECL_DNA \
-    void read(athena::io::IStreamReader&); \
-    void write(athena::io::IStreamWriter&) const; \
-    size_t binarySize(size_t __isz) const;
-
-/** Macro to automatically declare read/write methods and prevent outputting implementation */
-#define DECL_EXPLICIT_DNA \
-    void read(athena::io::IStreamReader&); \
-    void write(athena::io::IStreamWriter&) const; \
-    size_t binarySize(size_t __isz) const; \
-    Delete __dna_delete;
 
 /** Macro to supply count variable to atdna and mute it for other compilers */
 #ifdef __clang__

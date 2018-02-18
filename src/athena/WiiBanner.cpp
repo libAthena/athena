@@ -11,14 +11,12 @@ WiiBanner::WiiBanner() :
     m_gameId(0),
     m_banner(NULL),
     m_flags(0),
-    m_bannerSize(0),
-    m_title(""),
-    m_subtitle("")
+    m_bannerSize(0)
 {
 }
 
-WiiBanner::WiiBanner(atUint32 gameId, const std::string& title,
-                     const std::string& subtitle, WiiImage* banner, std::vector<WiiImage*> icons) :
+WiiBanner::WiiBanner(atUint32 gameId, const std::u16string& title,
+                     const std::u16string& subtitle, WiiImage* banner, std::vector<WiiImage*> icons) :
     m_gameId(gameId),
     m_banner(banner),
     m_flags(0),
@@ -44,22 +42,22 @@ atUint64 WiiBanner::gameID() const
 {
     return m_gameId;
 }
-void WiiBanner::setTitle(const std::string& title)
+void WiiBanner::setTitle(const std::u16string& title)
 {
     m_title = title;
 }
 
-std::string WiiBanner::title() const
+const std::u16string& WiiBanner::title() const
 {
     return m_title;
 }
 
-void WiiBanner::setSubtitle(const std::string& subtitle)
+void WiiBanner::setSubtitle(const std::u16string& subtitle)
 {
     m_subtitle = subtitle;
 }
 
-std::string WiiBanner::subtitle() const
+const std::u16string& WiiBanner::subtitle() const
 {
     return m_subtitle;
 }

@@ -39,7 +39,7 @@ const atUint32 ZQuestFile::Magic   = 'Z' | ('Q' << 8) | ('S' << 16) | (('0' + ZQ
 
 ZQuestFile::ZQuestFile()
     : m_game(NoGame),
-      m_endian(Endian::LittleEndian),
+      m_endian(Endian::Little),
       m_length(0)
 {
     initGameStrings();

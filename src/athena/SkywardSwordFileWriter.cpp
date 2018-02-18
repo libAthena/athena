@@ -8,13 +8,13 @@ namespace athena::io
 SkywardSwordFileWriter::SkywardSwordFileWriter(atUint8* data, atUint64 len)
     : MemoryCopyWriter(data, len)
 {
-    setEndian(Endian::BigEndian);
+    setEndian(Endian::Big);
 }
 
 SkywardSwordFileWriter::SkywardSwordFileWriter(const std::string& filename)
     : MemoryCopyWriter(filename)
 {
-    setEndian(Endian::BigEndian);
+    setEndian(Endian::Big);
 }
 
 void SkywardSwordFileWriter::write(SkywardSwordFile* file)

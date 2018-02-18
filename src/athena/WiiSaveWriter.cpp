@@ -30,7 +30,7 @@ namespace io
 WiiSaveWriter::WiiSaveWriter(const std::string& filename)
     : MemoryCopyWriter(filename)
 {
-    setEndian(Endian::BigEndian);
+    setEndian(Endian::Big);
 }
 
 
@@ -83,7 +83,7 @@ bool WiiSaveWriter::writeSave(WiiSave* save, atUint8* macAddress, atUint32 ngId,
 
 void WiiSaveWriter::writeBanner(WiiBanner* banner)
 {
-    setEndian(Endian::BigEndian);
+    setEndian(Endian::Big);
     writeInt64(banner->gameID());
     writeInt32((0x60a0 + 0x1200) * (atUint32)banner->icons().size());
     writeByte((atInt8)banner->permissions());

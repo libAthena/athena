@@ -15,8 +15,8 @@ public:
 
     inline void setEndian(Endian endian) { m_endian = endian; }
     inline Endian endian() const { return m_endian; }
-    inline bool isBigEndian() const { return (m_endian == Endian::BigEndian); }
-    inline bool isLittleEndian() const { return (m_endian == Endian::LittleEndian); }
+    inline bool isBigEndian() const { return (m_endian == Endian::Big); }
+    inline bool isLittleEndian() const { return (m_endian == Endian::Little); }
     virtual void seek(atInt64, SeekOrigin) = 0;
     virtual bool atEnd() const = 0;
     virtual atUint64 position() const = 0;
@@ -26,7 +26,7 @@ protected:
     void setError() { m_hasError = true; }
     bool m_hasError = false;
 #if __BYTE_ORDER == __BIG_ENDIAN
-    Endian m_endian = BigEndian;
+    Endian m_endian = Big;
 #else
     Endian m_endian = LittleEndian;
 #endif

@@ -9,13 +9,13 @@ namespace athena::io
 SkywardSwordFileReader::SkywardSwordFileReader(atUint8* data, atUint64 length)
     : MemoryCopyReader(data, length)
 {
-    setEndian(Endian::BigEndian);
+    setEndian(Endian::Big);
 }
 
 SkywardSwordFileReader::SkywardSwordFileReader(const std::string& filename)
     : MemoryCopyReader(filename)
 {
-    setEndian(Endian::BigEndian);
+    setEndian(Endian::Big);
 }
 
 SkywardSwordFile* SkywardSwordFileReader::read()

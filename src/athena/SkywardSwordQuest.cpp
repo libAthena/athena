@@ -38,7 +38,7 @@ union AmmoValues
 };
 
 SkywardSwordQuest::SkywardSwordQuest(std::unique_ptr<atUint8[]>&& data, atUint32 len)
-    : ZQuestFile(ZQuestFile::SS, Endian::BigEndian, std::move(data), len)
+    : ZQuestFile(ZQuestFile::SS, Endian::Big, std::move(data), len)
 {
 }
 
@@ -240,11 +240,11 @@ atUint32 SkywardSwordQuest::skipChecksum()
 
 void SkywardSwordQuest::fixChecksums()
 {
-    atUint32 checksum = Checksums::crc32(m_data.get(), priv::CHECKSUM_OFFSET);
+    atUint32 checksum = checksums::crc32(m_data.get(), priv::CHECKSUM_OFFSET);
     utility::BigUint32(checksum);
     *(atUint32*)(m_data.get() + priv::CHECKSUM_OFFSET) = checksum;
 
-    checksum = Checksums::crc32(m_skipData.get(), priv::SKIP_CHECKSUM_OFFSET);
+    checksum = checksums::crc32(m_skipData.get(), priv::SKIP_CHECKSUM_OFFSET);
     utility::BigUint32(checksum);
     *(atUint32*)(m_skipData.get() + priv::SKIP_CHECKSUM_OFFSET) = checksum;
 }

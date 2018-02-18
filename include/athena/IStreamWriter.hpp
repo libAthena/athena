@@ -90,7 +90,7 @@ public:
      */
     inline void writeInt16(atInt16 val)
     {
-        if (m_endian == BigEndian)
+        if (m_endian == Big)
             utility::BigInt16(val);
         else
             utility::LittleInt16(val);
@@ -153,7 +153,7 @@ public:
      */
     inline void writeInt32(atInt32 val)
     {
-        if (m_endian == BigEndian)
+        if (m_endian == Big)
             utility::BigInt32(val);
         else
             utility::LittleInt32(val);
@@ -216,7 +216,7 @@ public:
      */
     inline void writeInt64(atInt64 val)
     {
-        if (m_endian == BigEndian)
+        if (m_endian == Big)
             utility::BigInt64(val);
         else
             utility::LittleInt64(val);
@@ -279,7 +279,7 @@ public:
      */
     inline void writeFloat(float val)
     {
-        if (m_endian == BigEndian)
+        if (m_endian == Big)
             utility::BigFloat(val);
         else
             utility::LittleFloat(val);
@@ -318,7 +318,7 @@ public:
      */
     inline void writeDouble(double val)
     {
-        if (m_endian == BigEndian)
+        if (m_endian == Big)
             utility::BigDouble(val);
         else
             utility::LittleDouble(val);
@@ -368,7 +368,7 @@ public:
     inline void writeVec2f(const atVec2f& vec)
     {
         atVec2f tmp = vec;
-        if (m_endian == BigEndian)
+        if (m_endian == Big)
         {
             utility::BigFloat(tmp.vec[0]);
             utility::BigFloat(tmp.vec[1]);
@@ -418,7 +418,7 @@ public:
     inline void writeVec3f(const atVec3f& vec)
     {
         atVec3f tmp = vec;
-        if (m_endian == BigEndian)
+        if (m_endian == Big)
         {
             utility::BigFloat(tmp.vec[0]);
             utility::BigFloat(tmp.vec[1]);
@@ -472,7 +472,7 @@ public:
     inline void writeVec4f(const atVec4f& vec)
     {
         atVec4f tmp = vec;
-        if (m_endian == BigEndian)
+        if (m_endian == Big)
         {
             utility::BigFloat(tmp.vec[0]);
             utility::BigFloat(tmp.vec[1]);
@@ -530,7 +530,7 @@ public:
     inline void writeVec2d(const atVec2d& vec)
     {
         atVec2d tmp = vec;
-        if (m_endian == BigEndian)
+        if (m_endian == Big)
         {
             utility::BigDouble(tmp.vec[0]);
             utility::BigDouble(tmp.vec[1]);
@@ -580,7 +580,7 @@ public:
     inline void writeVec3d(const atVec3d& vec)
     {
         atVec3d tmp = vec;
-        if (m_endian == BigEndian)
+        if (m_endian == Big)
         {
             utility::BigDouble(tmp.vec[0]);
             utility::BigDouble(tmp.vec[1]);
@@ -634,7 +634,7 @@ public:
     inline void writeVec4d(const atVec4d& vec)
     {
         atVec4d tmp = vec;
-        if (m_endian == BigEndian)
+        if (m_endian == Big)
         {
             utility::BigDouble(tmp.vec[0]);
             utility::BigDouble(tmp.vec[1]);
