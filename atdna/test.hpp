@@ -3,26 +3,29 @@
 using namespace athena;
 typedef io::DNA<Big> BigDNA;
 
-struct TESTSubFile : public BigDNA
+enum ETest : atUint8
+{
+    ZERO,
+    ONE,
+    TWO,
+    THREE
+};
+
+template <ETest EVal>
+struct AT_SPECIALIZE_PARMS(ETest::ZERO, ETest::ONE, ETest::TWO, ETest::THREE)
+TESTSubFile : public BigDNA
 {
     AT_DECL_DNA
-    enum ETest : atUint8
-    {
-        ZERO,
-        ONE,
-        TWO,
-        THREE
-    };
-    Value<ETest> varE;
+    Value<ETest> varE = EVal;
     Value<atUint32> sub1;
     Value<atUint32> sub2;
 };
 
-struct TESTSubClassFile : public TESTSubFile
+struct TESTSubClassFile : public TESTSubFile<ETest::ONE>
 {
     AT_DECL_DNA
     Value<atUint32> sub3;
-    Value<atUint32> sub4;
+    Value<atUint16> sub4;
 };
 
 struct TESTSubSubClassFile : public TESTSubClassFile
@@ -32,11 +35,13 @@ struct TESTSubSubClassFile : public TESTSubClassFile
     Value<atUint32> sub6;
 };
 
-struct TESTFile : public BigDNA
+template <class Var32Tp, int Var32Val>
+struct AT_SPECIALIZE_PARMS(atUint16, 42, atUint32, 87, atUint32, 2)
+TESTFile : public BigDNA
 {
     AT_DECL_DNA
     Value<bool> varBool;
-    AT_OVERRIDE_RCRC32(12345678) Value<atUint32> x4_var32;
+    AT_OVERRIDE_RCRC32(12345678) Value<Var32Tp> x4_var32 = Var32Val;
     AT_OVERRIDE_RCRC32(deadbabe) Value<atUint16> x8_var16;
     Value<atVec3f> vec3;
     Value<atVec4f> vec4;
@@ -48,25 +53,32 @@ struct TESTFile : public BigDNA
         Value<atUint32> nestSub2;
     } nestedSubFile; 
 
-    using TESTSubFileUsing = TESTSubFile;
+    using TESTSubFileUsing = TESTSubFile<ETest::TWO>;
     TESTSubFileUsing subFile;
 
     Align<4> align;
 
-    struct TESTExplicitSubFile : public BigDNA
+    template <class NestedTp, int NestedVal>
+    struct AT_SPECIALIZE_PARMS(atInt32, 36, atInt64, 96)
+    TESTTemplateSubFile : public BigDNA
     {
         AT_DECL_DNA
-        Value<atUint32> explSub1;
-        Value<atUint32> explSub2;
-    } explSubFile;
+        Value<NestedTp> explSub1 = NestedVal;
+        Value<Var32Tp> explSub2 = Var32Val;
+    };
+    TESTTemplateSubFile<atInt32, 36> nestedTemplate1;
+    TESTTemplateSubFile<atInt64, 96> nestedTemplate2;
 
     Value<atUint32, Little> arrCount[2];
     Vector<atUint32, DNA_COUNT(arrCount[0])> array;
 
+    Value<atUint32> arrAltCount;
+    Vector<atUint32, DNA_COUNT(arrAltCount)> arrayAlt;
+
     Seek<21, Current> seek;
 
     Value<atUint32> arrCount2;
-    Vector<TESTSubFile, DNA_COUNT(arrCount[1] + arrCount2)> array2;
+    Vector<TESTSubFile<ETest::ZERO>, DNA_COUNT(arrCount[1] + arrCount2)> array2;
 
     Value<atUint32> bufSz;
     Buffer<DNA_COUNT(bufSz)> buf;

@@ -3,7 +3,8 @@
 
 #include "IStreamReader.hpp"
 #include "IStreamWriter.hpp"
-#include "DNAYaml.hpp"
+#include "YAMLDocReader.hpp"
+#include "YAMLDocWriter.hpp"
 #include "ChecksumsLiterals.hpp"
 
 namespace athena::io
@@ -50,6 +51,12 @@ constexpr PropId operator "" _propid(const char* s, size_t len)
 #  define AT_OVERRIDE_RCRC32(rcrc32)
 #endif
 
+#if defined(__atdna__)
+#  define AT_SPECIALIZE_PARMS(...) __attribute__((annotate("specparms=" #__VA_ARGS__)))
+#else
+#  define AT_SPECIALIZE_PARMS(...)
+#endif
+
 enum class PropType
 {
     None,
@@ -60,13 +67,49 @@ enum class PropType
 template <class T>
 static inline constexpr bool __IsPODType()
 {
-    return std::is_arithmetic<T>::value ||
-           std::is_same<T, atVec2f>::value ||
-           std::is_same<T, atVec3f>::value ||
-           std::is_same<T, atVec4f>::value ||
-           std::is_same<T, atVec2d>::value ||
-           std::is_same<T, atVec3d>::value ||
-           std::is_same<T, atVec4d>::value;
+    return std::is_arithmetic_v<T> ||
+           std::is_convertible_v<T&, atVec2f&> ||
+           std::is_convertible_v<T&, atVec3f&> ||
+           std::is_convertible_v<T&, atVec4f&> ||
+           std::is_convertible_v<T&, atVec2d&> ||
+           std::is_convertible_v<T&, atVec3d&> ||
+           std::is_convertible_v<T&, atVec4d&>;
+}
+
+template <Endian DNAE>
+static inline uint16_t __Read16(IStreamReader& r)
+{
+    return DNAE == Endian::Big ? r.readUint16Big() : r.readUint16Little();
+}
+
+template <Endian DNAE>
+static inline void __Write16(IStreamWriter& w, uint16_t v)
+{
+    DNAE == Endian::Big ? w.writeUint16Big(v) : w.writeUint16Little(v);
+}
+
+template <Endian DNAE>
+static inline uint32_t __Read32(IStreamReader& r)
+{
+    return DNAE == Endian::Big ? r.readUint32Big() : r.readUint32Little();
+}
+
+template <Endian DNAE>
+static inline void __Write32(IStreamWriter& w, uint32_t v)
+{
+    DNAE == Endian::Big ? w.writeUint32Big(v) : w.writeUint32Little(v);
+}
+
+template <Endian DNAE>
+static inline uint64_t __Read64(IStreamReader& r)
+{
+    return DNAE == Endian::Big ? r.readUint64Big() : r.readUint64Little();
+}
+
+template <Endian DNAE>
+static inline void __Write64(IStreamWriter& w, uint64_t v)
+{
+    DNAE == Endian::Big ? w.writeUint64Big(v) : w.writeUint64Little(v);
 }
 
 template <PropType PropOp>
@@ -98,30 +141,53 @@ struct BinarySize
         BinarySize<PropType::None>::Do<T, DNAE>(id, var, s);
     }
     template <class T, Endian DNAE>
-    static typename std::enable_if_t<!std::is_enum_v<T> && !__IsPODType<T>()>
+    static typename std::enable_if_t<__IsDNARecord<T>() && PropOp != PropType::None>
     Do(const PropId& id, T& var, StreamT& s)
     {
-        if (PropOp != PropType::None)
-        {
-            /* Accessed via Enumerate, header */
-            s += 6;
-            var.template Enumerate<BinarySize<PropOp>>(s);
-        }
-        else
-            var.template Enumerate<BinarySize>(s);
+        /* Accessed via Enumerate, header */
+        s += 6;
+        var.template Enumerate<BinarySize<PropOp>>(s);
     }
     template <class T, Endian DNAE>
-    static void Do(const PropId& id, std::vector<T>& vector, size_t count, StreamT& s)
+    static typename std::enable_if_t<__IsDNARecord<T>() && PropOp == PropType::None>
+    Do(const PropId& id, T& var, StreamT& s)
+    {
+        var.template Enumerate<BinarySize<PropType::None>>(s);
+    }
+    template <class T, Endian DNAE>
+    static typename std::enable_if_t<std::is_array_v<T>>
+    Do(const PropId& id, T& var, StreamT& s)
+    {
+        for (auto& v : var)
+            BinarySize<PropOp>::Do<std::remove_reference_t<decltype(v)>, DNAE>(id, v, s);
+    }
+    template <class T, Endian DNAE>
+    static void DoSize(const PropId& id, T& var, StreamT& s)
+    {
+        BinarySize<PropOp>::Do<T, DNAE>(id, var, s);
+    }
+    template <class T, class S, Endian DNAE>
+    static typename std::enable_if_t<!std::is_same_v<T, bool>>
+    Do(const PropId& id, std::vector<T>& vector, const S& count, StreamT& s)
     {
         for (T& v : vector)
             BinarySize<PropOp>::Do<T, DNAE>(id, v, s);
+    }
+    template <class T, class S, Endian DNAE>
+    static typename std::enable_if_t<std::is_same_v<T, bool>>
+    Do(const PropId& id, std::vector<T>& vector, const S& count, StreamT& s)
+    {
+        /* libc++ specializes vector<bool> as a bitstream */
+        s += vector.size();
     }
     static void Do(const PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, StreamT& s)
     {
         if (buf)
             s += count;
     }
-    static void Do(const PropId& id, std::string& str, StreamT& s)
+    template <class T, Endian DNAE>
+    static typename std::enable_if_t<std::is_same_v<T, std::string>>
+    Do(const PropId& id, T& str, StreamT& s)
     {
         s += str.size() + 1;
     }
@@ -129,8 +195,9 @@ struct BinarySize
     {
         s += count;
     }
-    template <Endian DNAE>
-    static void Do(const PropId& id, std::wstring& str, StreamT& s)
+    template <class T, Endian DNAE>
+    static typename std::enable_if_t<std::is_same_v<T, std::wstring>>
+    Do(const PropId& id, T& str, StreamT& s)
     {
         s += str.size() * 2 + 2;
     }
@@ -158,40 +225,42 @@ struct BinarySize
         s = (s + amount-1) / amount * amount;
     }
 };
-template <> template <> inline void BinarySize<PropType::None>::Do<bool, Endian::Big>(const PropId& id, bool& var, BinarySize::StreamT& s) { s += 1; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atInt8, Endian::Big>(const PropId& id, atInt8& var, BinarySize::StreamT& s) { s += 1; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atUint8, Endian::Big>(const PropId& id, atUint8& var, BinarySize::StreamT& s) { s += 1; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atInt16, Endian::Big>(const PropId& id, atInt16& var, BinarySize::StreamT& s) { s += 2; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atUint16, Endian::Big>(const PropId& id, atUint16& var, BinarySize::StreamT& s) { s += 2; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atInt32, Endian::Big>(const PropId& id, atInt32& var, BinarySize::StreamT& s) { s += 4; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atUint32, Endian::Big>(const PropId& id, atUint32& var, BinarySize::StreamT& s) { s += 4; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atInt64, Endian::Big>(const PropId& id, atInt64& var, BinarySize::StreamT& s) { s += 8; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atUint64, Endian::Big>(const PropId& id, atUint64& var, BinarySize::StreamT& s) { s += 8; }
-template <> template <> inline void BinarySize<PropType::None>::Do<float, Endian::Big>(const PropId& id, float& var, BinarySize::StreamT& s) { s += 4; }
-template <> template <> inline void BinarySize<PropType::None>::Do<double, Endian::Big>(const PropId& id, double& var, BinarySize::StreamT& s) { s += 8; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atVec2f, Endian::Big>(const PropId& id, atVec2f& var, BinarySize::StreamT& s) { s += 8; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atVec2d, Endian::Big>(const PropId& id, atVec2d& var, BinarySize::StreamT& s) { s += 16; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atVec3f, Endian::Big>(const PropId& id, atVec3f& var, BinarySize::StreamT& s) { s += 12; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atVec3d, Endian::Big>(const PropId& id, atVec3d& var, BinarySize::StreamT& s) { s += 24; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atVec4f, Endian::Big>(const PropId& id, atVec4f& var, BinarySize::StreamT& s) { s += 16; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atVec4d, Endian::Big>(const PropId& id, atVec4d& var, BinarySize::StreamT& s) { s += 32; }
-template <> template <> inline void BinarySize<PropType::None>::Do<bool, Endian::Little>(const PropId& id, bool& var, BinarySize::StreamT& s) { s += 1; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atInt8, Endian::Little>(const PropId& id, atInt8& var, BinarySize::StreamT& s) { s += 1; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atUint8, Endian::Little>(const PropId& id, atUint8& var, BinarySize::StreamT& s) { s += 1; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atInt16, Endian::Little>(const PropId& id, atInt16& var, BinarySize::StreamT& s) { s += 2; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atUint16, Endian::Little>(const PropId& id, atUint16& var, BinarySize::StreamT& s) { s += 2; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atInt32, Endian::Little>(const PropId& id, atInt32& var, BinarySize::StreamT& s) { s += 4; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atUint32, Endian::Little>(const PropId& id, atUint32& var, BinarySize::StreamT& s) { s += 4; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atInt64, Endian::Little>(const PropId& id, atInt64& var, BinarySize::StreamT& s) { s += 8; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atUint64, Endian::Little>(const PropId& id, atUint64& var, BinarySize::StreamT& s) { s += 8; }
-template <> template <> inline void BinarySize<PropType::None>::Do<float, Endian::Little>(const PropId& id, float& var, BinarySize::StreamT& s) { s += 4; }
-template <> template <> inline void BinarySize<PropType::None>::Do<double, Endian::Little>(const PropId& id, double& var, BinarySize::StreamT& s) { s += 8; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atVec2f, Endian::Little>(const PropId& id, atVec2f& var, BinarySize::StreamT& s) { s += 8; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atVec2d, Endian::Little>(const PropId& id, atVec2d& var, BinarySize::StreamT& s) { s += 16; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atVec3f, Endian::Little>(const PropId& id, atVec3f& var, BinarySize::StreamT& s) { s += 12; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atVec3d, Endian::Little>(const PropId& id, atVec3d& var, BinarySize::StreamT& s) { s += 24; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atVec4f, Endian::Little>(const PropId& id, atVec4f& var, BinarySize::StreamT& s) { s += 16; }
-template <> template <> inline void BinarySize<PropType::None>::Do<atVec4d, Endian::Little>(const PropId& id, atVec4d& var, BinarySize::StreamT& s) { s += 32; }
+#define __BINARY_SIZE_S(type, endian) template <> template <> inline void BinarySize<PropType::None>::Do<type, endian> \
+    (const PropId& id, type& var, BinarySize::StreamT& s)
+__BINARY_SIZE_S(bool, Endian::Big) { s += 1; }
+__BINARY_SIZE_S(atInt8, Endian::Big) { s += 1; }
+__BINARY_SIZE_S(atUint8, Endian::Big) { s += 1; }
+__BINARY_SIZE_S(atInt16, Endian::Big) { s += 2; }
+__BINARY_SIZE_S(atUint16, Endian::Big) { s += 2; }
+__BINARY_SIZE_S(atInt32, Endian::Big) { s += 4; }
+__BINARY_SIZE_S(atUint32, Endian::Big) { s += 4; }
+__BINARY_SIZE_S(atInt64, Endian::Big) { s += 8; }
+__BINARY_SIZE_S(atUint64, Endian::Big) { s += 8; }
+__BINARY_SIZE_S(float, Endian::Big) { s += 4; }
+__BINARY_SIZE_S(double, Endian::Big) { s += 8; }
+__BINARY_SIZE_S(atVec2f, Endian::Big) { s += 8; }
+__BINARY_SIZE_S(atVec2d, Endian::Big) { s += 16; }
+__BINARY_SIZE_S(atVec3f, Endian::Big) { s += 12; }
+__BINARY_SIZE_S(atVec3d, Endian::Big) { s += 24; }
+__BINARY_SIZE_S(atVec4f, Endian::Big) { s += 16; }
+__BINARY_SIZE_S(atVec4d, Endian::Big) { s += 32; }
+__BINARY_SIZE_S(bool, Endian::Little) { s += 1; }
+__BINARY_SIZE_S(atInt8, Endian::Little) { s += 1; }
+__BINARY_SIZE_S(atUint8, Endian::Little) { s += 1; }
+__BINARY_SIZE_S(atInt16, Endian::Little) { s += 2; }
+__BINARY_SIZE_S(atUint16, Endian::Little) { s += 2; }
+__BINARY_SIZE_S(atInt32, Endian::Little) { s += 4; }
+__BINARY_SIZE_S(atUint32, Endian::Little) { s += 4; }
+__BINARY_SIZE_S(atInt64, Endian::Little) { s += 8; }
+__BINARY_SIZE_S(atUint64, Endian::Little) { s += 8; }
+__BINARY_SIZE_S(float, Endian::Little) { s += 4; }
+__BINARY_SIZE_S(double, Endian::Little) { s += 8; }
+__BINARY_SIZE_S(atVec2f, Endian::Little) { s += 8; }
+__BINARY_SIZE_S(atVec2d, Endian::Little) { s += 16; }
+__BINARY_SIZE_S(atVec3f, Endian::Little) { s += 12; }
+__BINARY_SIZE_S(atVec3d, Endian::Little) { s += 24; }
+__BINARY_SIZE_S(atVec4f, Endian::Little) { s += 16; }
+__BINARY_SIZE_S(atVec4d, Endian::Little) { s += 32; }
 
 template <PropType PropOp>
 struct PropCount
@@ -205,7 +274,12 @@ struct PropCount
         s += 1;
     }
     template <class T, Endian DNAE>
-    static void Do(const PropId& id, std::vector<T>& vector, size_t count, StreamT& s)
+    static void DoSize(const PropId& id, T& var, StreamT& s)
+    {
+        PropCount<PropOp>::Do<T, DNAE>(id, var, s);
+    }
+    template <class T, class S, Endian DNAE>
+    static void Do(const PropId& id, std::vector<T>& vector, const S& count, StreamT& s)
     {
         /* Only reports one level of properties */
         s += 1;
@@ -215,7 +289,9 @@ struct PropCount
         /* Only reports one level of properties */
         s += 1;
     }
-    static void Do(const PropId& id, std::string& str, StreamT& s)
+    template <class T, Endian DNAE>
+    static typename std::enable_if_t<std::is_same_v<T, std::string>>
+    Do(const PropId& id, T& str, StreamT& s)
     {
         /* Only reports one level of properties */
         s += 1;
@@ -225,8 +301,9 @@ struct PropCount
         /* Only reports one level of properties */
         s += 1;
     }
-    template <Endian DNAE>
-    static void Do(const PropId& id, std::wstring& str, StreamT& s)
+    template <class T, Endian DNAE>
+    static typename std::enable_if_t<std::is_same_v<T, std::wstring>>
+    Do(const PropId& id, T& str, StreamT& s)
     {
         /* Only reports one level of properties */
         s += 1;
@@ -260,33 +337,47 @@ struct Read
         Read<PropType::None>::Do<T, DNAE>(id, var, r);
     }
     template <class T, Endian DNAE>
-    static typename std::enable_if_t<!std::is_enum_v<T> && !__IsPODType<T>()>
+    static typename std::enable_if_t<__IsDNARecord<T>() && PropOp == PropType::None>
     Do(const PropId& id, T& var, StreamT& r)
     {
-        if (PropOp != PropType::None)
-        {
-            /* Accessed via Lookup, no header */
-            atUint16 propCount = T::DNAEndian == Endian::Big ? r.readUint16Big() : r.readUint16Little();
-            for (atUint32 i = 0; i < propCount; ++i)
-            {
-                atUint64 hash;
-                if (PropOp == PropType::CRC64)
-                    hash = T::DNAEndian == Endian::Big ? r.readUint64Big() : r.readUint64Little();
-                else
-                    hash = T::DNAEndian == Endian::Big ? r.readUint32Big() : r.readUint32Little();
-                atInt64 size = T::DNAEndian == Endian::Big ? r.readUint16Big() : r.readUint16Little();
-                atInt64 start = r.position();
-                var.template Lookup<Read<PropOp>>(hash, r);
-                atInt64 actualRead = r.position() - start;
-                if (actualRead != size)
-                    r.seek(size - actualRead);
-            }
-        }
-        else
-            var.template Enumerate<Read<PropOp>>(r);
+        var.template Enumerate<Read<PropType::None>>(r);
     }
     template <class T, Endian DNAE>
-    static void Do(const PropId& id, std::vector<T>& vector, size_t count, StreamT& r)
+    static typename std::enable_if_t<__IsDNARecord<T>() && PropOp != PropType::None>
+    Do(const PropId& id, T& var, StreamT& r)
+    {
+        /* Accessed via Lookup, no header */
+        atUint16 propCount = __Read16<T::DNAEndian>(r);
+        for (atUint32 i = 0; i < propCount; ++i)
+        {
+            atUint64 hash;
+            if (PropOp == PropType::CRC64)
+                hash = __Read64<T::DNAEndian>(r);
+            else
+                hash = __Read32<T::DNAEndian>(r);
+            atInt64 size = __Read16<T::DNAEndian>(r);
+            atInt64 start = r.position();
+            var.template Lookup<Read<PropOp>>(hash, r);
+            atInt64 actualRead = r.position() - start;
+            if (actualRead != size)
+                r.seek(size - actualRead);
+        }
+    }
+    template <class T, Endian DNAE>
+    static typename std::enable_if_t<std::is_array_v<T>>
+    Do(const PropId& id, T& var, StreamT& s)
+    {
+        for (auto& v : var)
+            Read<PropOp>::Do<std::remove_reference_t<decltype(v)>, DNAE>(id, v, s);
+    }
+    template <class T, Endian DNAE>
+    static void DoSize(const PropId& id, T& var, StreamT& s)
+    {
+        Read<PropOp>::Do<T, DNAE>(id, var, s);
+    }
+    template <class T, class S, Endian DNAE>
+    static typename std::enable_if_t<!std::is_same_v<T, bool>>
+    Do(const PropId& id, std::vector<T>& vector, const S& count, StreamT& r)
     {
         vector.clear();
         vector.reserve(count);
@@ -296,12 +387,24 @@ struct Read
             Read<PropOp>::Do<T, DNAE>(id, vector.back(), r);
         }
     }
+    template <class T, class S, Endian DNAE>
+    static typename std::enable_if_t<std::is_same_v<T, bool>>
+    Do(const PropId& id, std::vector<T>& vector, const S& count, StreamT& r)
+    {
+        /* libc++ specializes vector<bool> as a bitstream */
+        vector.clear();
+        vector.reserve(count);
+        for (size_t i = 0; i < count; ++i)
+            vector.push_back(r.readBool());
+    }
     static void Do(const PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, StreamT& r)
     {
         buf.reset(new atUint8[count]);
         r.readUBytesToBuf(buf.get(), count);
     }
-    static void Do(const PropId& id, std::string& str, StreamT& r)
+    template <class T, Endian DNAE>
+    static typename std::enable_if_t<std::is_same_v<T, std::string>>
+    Do(const PropId& id, T& str, StreamT& r)
     {
         str = r.readString();
     }
@@ -309,8 +412,9 @@ struct Read
     {
         str = r.readString(count);
     }
-    template <Endian DNAE>
-    static void Do(const PropId& id, std::wstring& str, StreamT& r)
+    template <class T, Endian DNAE>
+    static typename std::enable_if_t<std::is_same_v<T, std::wstring>>
+    Do(const PropId& id, T& str, StreamT& r)
     {
         Read<PropType::None>::Do<DNAE>(id, str, r);
     }
@@ -328,44 +432,50 @@ struct Read
         r.seek((r.position() + amount-1) / amount * amount, athena::Begin);
     }
 };
-template <> template <> inline void Read<PropType::None>::Do<bool, Endian::Big>(const PropId& id, bool& var, Read::StreamT& r) { var = r.readBool(); }
-template <> template <> inline void Read<PropType::None>::Do<atInt8, Endian::Big>(const PropId& id, atInt8& var, Read::StreamT& r) { var = r.readByte(); }
-template <> template <> inline void Read<PropType::None>::Do<atUint8, Endian::Big>(const PropId& id, atUint8& var, Read::StreamT& r) { var = r.readUByte(); }
-template <> template <> inline void Read<PropType::None>::Do<atInt16, Endian::Big>(const PropId& id, atInt16& var, Read::StreamT& r) { var = r.readInt16Big(); }
-template <> template <> inline void Read<PropType::None>::Do<atUint16, Endian::Big>(const PropId& id, atUint16& var, Read::StreamT& r) { var = r.readUint16Big(); }
-template <> template <> inline void Read<PropType::None>::Do<atInt32, Endian::Big>(const PropId& id, atInt32& var, Read::StreamT& r) { var = r.readInt32Big(); }
-template <> template <> inline void Read<PropType::None>::Do<atUint32, Endian::Big>(const PropId& id, atUint32& var, Read::StreamT& r) { var = r.readUint32Big(); }
-template <> template <> inline void Read<PropType::None>::Do<atInt64, Endian::Big>(const PropId& id, atInt64& var, Read::StreamT& r) { var = r.readInt64Big(); }
-template <> template <> inline void Read<PropType::None>::Do<atUint64, Endian::Big>(const PropId& id, atUint64& var, Read::StreamT& r) { var = r.readUint64Big(); }
-template <> template <> inline void Read<PropType::None>::Do<float, Endian::Big>(const PropId& id, float& var, Read::StreamT& r) { var = r.readFloatBig(); }
-template <> template <> inline void Read<PropType::None>::Do<double, Endian::Big>(const PropId& id, double& var, Read::StreamT& r) { var = r.readDoubleBig(); }
-template <> template <> inline void Read<PropType::None>::Do<atVec2f, Endian::Big>(const PropId& id, atVec2f& var, Read::StreamT& r) { var = r.readVec2fBig(); }
-template <> template <> inline void Read<PropType::None>::Do<atVec2d, Endian::Big>(const PropId& id, atVec2d& var, Read::StreamT& r) { var = r.readVec2dBig(); }
-template <> template <> inline void Read<PropType::None>::Do<atVec3f, Endian::Big>(const PropId& id, atVec3f& var, Read::StreamT& r) { var = r.readVec3fBig(); }
-template <> template <> inline void Read<PropType::None>::Do<atVec3d, Endian::Big>(const PropId& id, atVec3d& var, Read::StreamT& r) { var = r.readVec3dBig(); }
-template <> template <> inline void Read<PropType::None>::Do<atVec4f, Endian::Big>(const PropId& id, atVec4f& var, Read::StreamT& r) { var = r.readVec4fBig(); }
-template <> template <> inline void Read<PropType::None>::Do<atVec4d, Endian::Big>(const PropId& id, atVec4d& var, Read::StreamT& r) { var = r.readVec4dBig(); }
-template <> template <> inline void Read<PropType::None>::Do<Endian::Big>(const PropId& id, std::wstring& str, StreamT& r) { str = r.readWStringBig(); }
-template <> template <> inline void Read<PropType::None>::Do<Endian::Big>(const PropId& id, std::wstring& str, size_t count, StreamT& r) { str = r.readWStringBig(count); }
-template <> template <> inline void Read<PropType::None>::Do<bool, Endian::Little>(const PropId& id, bool& var, Read::StreamT& r) { var = r.readBool(); }
-template <> template <> inline void Read<PropType::None>::Do<atInt8, Endian::Little>(const PropId& id, atInt8& var, Read::StreamT& r) { var = r.readByte(); }
-template <> template <> inline void Read<PropType::None>::Do<atUint8, Endian::Little>(const PropId& id, atUint8& var, Read::StreamT& r) { var = r.readUByte(); }
-template <> template <> inline void Read<PropType::None>::Do<atInt16, Endian::Little>(const PropId& id, atInt16& var, Read::StreamT& r) { var = r.readInt16Little(); }
-template <> template <> inline void Read<PropType::None>::Do<atUint16, Endian::Little>(const PropId& id, atUint16& var, Read::StreamT& r) { var = r.readUint16Little(); }
-template <> template <> inline void Read<PropType::None>::Do<atInt32, Endian::Little>(const PropId& id, atInt32& var, Read::StreamT& r) { var = r.readInt32Little(); }
-template <> template <> inline void Read<PropType::None>::Do<atUint32, Endian::Little>(const PropId& id, atUint32& var, Read::StreamT& r) { var = r.readUint32Little(); }
-template <> template <> inline void Read<PropType::None>::Do<atInt64, Endian::Little>(const PropId& id, atInt64& var, Read::StreamT& r) { var = r.readInt64Little(); }
-template <> template <> inline void Read<PropType::None>::Do<atUint64, Endian::Little>(const PropId& id, atUint64& var, Read::StreamT& r) { var = r.readUint64Little(); }
-template <> template <> inline void Read<PropType::None>::Do<float, Endian::Little>(const PropId& id, float& var, Read::StreamT& r) { var = r.readFloatLittle(); }
-template <> template <> inline void Read<PropType::None>::Do<double, Endian::Little>(const PropId& id, double& var, Read::StreamT& r) { var = r.readDoubleLittle(); }
-template <> template <> inline void Read<PropType::None>::Do<atVec2f, Endian::Little>(const PropId& id, atVec2f& var, Read::StreamT& r) { var = r.readVec2fLittle(); }
-template <> template <> inline void Read<PropType::None>::Do<atVec2d, Endian::Little>(const PropId& id, atVec2d& var, Read::StreamT& r) { var = r.readVec2dLittle(); }
-template <> template <> inline void Read<PropType::None>::Do<atVec3f, Endian::Little>(const PropId& id, atVec3f& var, Read::StreamT& r) { var = r.readVec3fLittle(); }
-template <> template <> inline void Read<PropType::None>::Do<atVec3d, Endian::Little>(const PropId& id, atVec3d& var, Read::StreamT& r) { var = r.readVec3dLittle(); }
-template <> template <> inline void Read<PropType::None>::Do<atVec4f, Endian::Little>(const PropId& id, atVec4f& var, Read::StreamT& r) { var = r.readVec4fLittle(); }
-template <> template <> inline void Read<PropType::None>::Do<atVec4d, Endian::Little>(const PropId& id, atVec4d& var, Read::StreamT& r) { var = r.readVec4dLittle(); }
-template <> template <> inline void Read<PropType::None>::Do<Endian::Little>(const PropId& id, std::wstring& str, StreamT& r) { str = r.readWStringLittle(); }
-template <> template <> inline void Read<PropType::None>::Do<Endian::Little>(const PropId& id, std::wstring& str, size_t count, StreamT& r) { str = r.readWStringLittle(count); }
+#define __READ_S(type, endian) template <> template <> inline void Read<PropType::None>::Do<type, endian> \
+    (const PropId& id, type& var, Read::StreamT& r)
+#define __READ_WSTR_S(endian) template <> template <> inline void Read<PropType::None>::Do<std::wstring, endian> \
+    (const PropId& id, std::wstring& str, Read::StreamT& r)
+#define __READ_WSTRC_S(endian) template <> template <> inline void Read<PropType::None>::Do<endian> \
+    (const PropId& id, std::wstring& str, size_t count, Read::StreamT& r)
+__READ_S(bool, Endian::Big) { var = r.readBool(); }
+__READ_S(atInt8, Endian::Big) { var = r.readByte(); }
+__READ_S(atUint8, Endian::Big) { var = r.readUByte(); }
+__READ_S(atInt16, Endian::Big) { var = r.readInt16Big(); }
+__READ_S(atUint16, Endian::Big) { var = r.readUint16Big(); }
+__READ_S(atInt32, Endian::Big) { var = r.readInt32Big(); }
+__READ_S(atUint32, Endian::Big) { var = r.readUint32Big(); }
+__READ_S(atInt64, Endian::Big) { var = r.readInt64Big(); }
+__READ_S(atUint64, Endian::Big) { var = r.readUint64Big(); }
+__READ_S(float, Endian::Big) { var = r.readFloatBig(); }
+__READ_S(double, Endian::Big) { var = r.readDoubleBig(); }
+__READ_S(atVec2f, Endian::Big) { var = r.readVec2fBig(); }
+__READ_S(atVec2d, Endian::Big) { var = r.readVec2dBig(); }
+__READ_S(atVec3f, Endian::Big) { var = r.readVec3fBig(); }
+__READ_S(atVec3d, Endian::Big) { var = r.readVec3dBig(); }
+__READ_S(atVec4f, Endian::Big) { var = r.readVec4fBig(); }
+__READ_S(atVec4d, Endian::Big) { var = r.readVec4dBig(); }
+__READ_WSTR_S(Endian::Big) { str = r.readWStringBig(); }
+__READ_WSTRC_S(Endian::Big) { str = r.readWStringBig(count); }
+__READ_S(bool, Endian::Little) { var = r.readBool(); }
+__READ_S(atInt8, Endian::Little) { var = r.readByte(); }
+__READ_S(atUint8, Endian::Little) { var = r.readUByte(); }
+__READ_S(atInt16, Endian::Little) { var = r.readInt16Little(); }
+__READ_S(atUint16, Endian::Little) { var = r.readUint16Little(); }
+__READ_S(atInt32, Endian::Little) { var = r.readInt32Little(); }
+__READ_S(atUint32, Endian::Little) { var = r.readUint32Little(); }
+__READ_S(atInt64, Endian::Little) { var = r.readInt64Little(); }
+__READ_S(atUint64, Endian::Little) { var = r.readUint64Little(); }
+__READ_S(float, Endian::Little) { var = r.readFloatLittle(); }
+__READ_S(double, Endian::Little) { var = r.readDoubleLittle(); }
+__READ_S(atVec2f, Endian::Little) { var = r.readVec2fLittle(); }
+__READ_S(atVec2d, Endian::Little) { var = r.readVec2dLittle(); }
+__READ_S(atVec3f, Endian::Little) { var = r.readVec3fLittle(); }
+__READ_S(atVec3d, Endian::Little) { var = r.readVec3dLittle(); }
+__READ_S(atVec4f, Endian::Little) { var = r.readVec4fLittle(); }
+__READ_S(atVec4d, Endian::Little) { var = r.readVec4dLittle(); }
+__READ_WSTR_S(Endian::Little) { str = r.readWStringLittle(); }
+__READ_WSTRC_S(Endian::Little) { str = r.readWStringLittle(count); }
 
 template <PropType PropOp>
 struct Write
@@ -380,9 +490,9 @@ struct Write
         {
             /* Accessed via Enumerate, header */
             if (PropOp == PropType::CRC64)
-                DNAE == Endian::Big ? w.writeUint64Big(id.crc64) : w.writeUint64Little(id.crc64);
+                __Write64<DNAE>(w, id.crc64);
             else
-                DNAE == Endian::Big ? w.writeUint32Big(id.rcrc32) : w.writeUint32Little(id.rcrc32);
+                __Write32<DNAE>(w, id.rcrc32);
             size_t binarySize = 0;
             BinarySize<PropType::None>::Do<T, DNAE>(id, var, binarySize);
             DNAE == Endian::Big ? w.writeUint16Big(atUint16(binarySize)) : w.writeUint16Little(atUint16(binarySize));
@@ -398,50 +508,74 @@ struct Write
         {
             /* Accessed via Enumerate, header */
             if (PropOp == PropType::CRC64)
-                DNAE == Endian::Big ? w.writeUint64Big(id.crc64) : w.writeUint64Little(id.crc64);
+                __Write64<DNAE>(w, id.crc64);
             else
-                DNAE == Endian::Big ? w.writeUint32Big(id.rcrc32) : w.writeUint32Little(id.rcrc32);
+                __Write32<DNAE>(w, id.rcrc32);
             size_t binarySize = 0;
             BinarySize<PropType::None>::Do<T, DNAE>(id, var, binarySize);
-            DNAE == Endian::Big ? w.writeUint16Big(atUint16(binarySize)) : w.writeUint16Little(atUint16(binarySize));
+            __Write16<DNAE>(w, atUint16(binarySize));
         }
         Write<PropType::None>::Do<T, DNAE>(id, var, w);
     }
     template <class T, Endian DNAE>
-    static typename std::enable_if_t<!std::is_enum_v<T> && !__IsPODType<T>()>
+    static typename std::enable_if_t<__IsDNARecord<T>() && PropOp != PropType::None>
     Do(const PropId& id, T& var, StreamT& w)
     {
-        if (PropOp != PropType::None)
-        {
-            /* Accessed via Enumerate, header */
-            if (PropOp == PropType::CRC64)
-                T::DNAEndian == Endian::Big ? w.writeUint64Big(id.crc64) : w.writeUint64Little(id.crc64);
-            else
-                T::DNAEndian == Endian::Big ? w.writeUint32Big(id.rcrc32) : w.writeUint32Little(id.rcrc32);
-            size_t binarySize = 0;
-            var.template Enumerate<BinarySize<PropOp>>(binarySize);
-            T::DNAEndian == Endian::Big ? w.writeUint16Big(atUint16(binarySize)) : w.writeUint16Little(atUint16(binarySize));
-
-            size_t propCount = 0;
-            var.template Enumerate<PropCount<PropOp>>(propCount);
-            T::DNAEndian == Endian::Big ? w.writeUint16Big(atUint16(propCount)) : w.writeUint16Little(atUint16(propCount));
-            var.template Enumerate<Write<PropOp>>(w);
-        }
+        /* Accessed via Enumerate, header */
+        if (PropOp == PropType::CRC64)
+            __Write64<T::DNAEndian>(w, id.crc64);
         else
-            var.template Enumerate<Write<PropOp>>(w);
+            __Write32<T::DNAEndian>(w, id.rcrc32);
+        size_t binarySize = 0;
+        var.template Enumerate<BinarySize<PropOp>>(binarySize);
+        __Write16<T::DNAEndian>(w, atUint16(binarySize));
+
+        size_t propCount = 0;
+        var.template Enumerate<PropCount<PropOp>>(propCount);
+        __Write16<T::DNAEndian>(w, atUint16(propCount));
+        var.template Enumerate<Write<PropOp>>(w);
     }
     template <class T, Endian DNAE>
-    static void Do(const PropId& id, std::vector<T>& vector, size_t count, StreamT& w)
+    static typename std::enable_if_t<__IsDNARecord<T>() && PropOp == PropType::None>
+    Do(const PropId& id, T& var, StreamT& w)
+    {
+        var.template Enumerate<Write<PropType::None>>(w);
+    }
+    template <class T, Endian DNAE>
+    static typename std::enable_if_t<std::is_array_v<T>>
+    Do(const PropId& id, T& var, StreamT& s)
+    {
+        for (auto& v : var)
+            Write<PropOp>::Do<std::remove_reference_t<decltype(v)>, DNAE>(id, v, s);
+    }
+    template <class T, Endian DNAE>
+    static void DoSize(const PropId& id, T& var, StreamT& s)
+    {
+        Write<PropOp>::Do<T, DNAE>(id, var, s);
+    }
+    template <class T, class S, Endian DNAE>
+    static typename std::enable_if_t<!std::is_same_v<T, bool>>
+    Do(const PropId& id, std::vector<T>& vector, const S& count, StreamT& w)
     {
         for (T& v : vector)
             Write<PropOp>::Do<T, DNAE>(id, v, w);
+    }
+    template <class T, class S, Endian DNAE>
+    static typename std::enable_if_t<std::is_same_v<T, bool>>
+    Do(const PropId& id, std::vector<T>& vector, const S& count, StreamT& w)
+    {
+        /* libc++ specializes vector<bool> as a bitstream */
+        for (const T& v : vector)
+            w.writeBool(v);
     }
     static void Do(const PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, StreamT& w)
     {
         if (buf)
             w.writeUBytes(buf.get(), count);
     }
-    static void Do(const PropId& id, std::string& str, StreamT& w)
+    template <class T, Endian DNAE>
+    static typename std::enable_if_t<std::is_same_v<T, std::string>>
+    Do(const PropId& id, std::string& str, StreamT& w)
     {
         w.writeString(str);
     }
@@ -449,8 +583,9 @@ struct Write
     {
         w.writeString(str, count);
     }
-    template <Endian DNAE>
-    static void Do(const PropId& id, std::wstring& str, StreamT& w)
+    template <class T, Endian DNAE>
+    static typename std::enable_if_t<std::is_same_v<T, std::wstring>>
+    Do(const PropId& id, std::wstring& str, StreamT& w)
     {
         Write<PropType::None>::Do<DNAE>(id, str, w);
     }
@@ -468,44 +603,50 @@ struct Write
         w.writeZeroTo((w.position() + amount-1) / amount * amount);
     }
 };
-template <> template <> inline void Write<PropType::None>::Do<bool, Endian::Big>(const PropId& id, bool& var, Write::StreamT& w) { w.writeBool(var); }
-template <> template <> inline void Write<PropType::None>::Do<atInt8, Endian::Big>(const PropId& id, atInt8& var, Write::StreamT& w) { w.writeByte(var); }
-template <> template <> inline void Write<PropType::None>::Do<atUint8, Endian::Big>(const PropId& id, atUint8& var, Write::StreamT& w) { w.writeUByte(var); }
-template <> template <> inline void Write<PropType::None>::Do<atInt16, Endian::Big>(const PropId& id, atInt16& var, Write::StreamT& w) { w.writeInt16Big(var); }
-template <> template <> inline void Write<PropType::None>::Do<atUint16, Endian::Big>(const PropId& id, atUint16& var, Write::StreamT& w) { w.writeUint16Big(var); }
-template <> template <> inline void Write<PropType::None>::Do<atInt32, Endian::Big>(const PropId& id, atInt32& var, Write::StreamT& w) { w.writeInt32Big(var); }
-template <> template <> inline void Write<PropType::None>::Do<atUint32, Endian::Big>(const PropId& id, atUint32& var, Write::StreamT& w) { w.writeUint32Big(var); }
-template <> template <> inline void Write<PropType::None>::Do<atInt64, Endian::Big>(const PropId& id, atInt64& var, Write::StreamT& w) { w.writeInt64Big(var); }
-template <> template <> inline void Write<PropType::None>::Do<atUint64, Endian::Big>(const PropId& id, atUint64& var, Write::StreamT& w) { w.writeUint64Big(var); }
-template <> template <> inline void Write<PropType::None>::Do<float, Endian::Big>(const PropId& id, float& var, Write::StreamT& w) { w.writeFloatBig(var); }
-template <> template <> inline void Write<PropType::None>::Do<double, Endian::Big>(const PropId& id, double& var, Write::StreamT& w) { w.writeDoubleBig(var); }
-template <> template <> inline void Write<PropType::None>::Do<atVec2f, Endian::Big>(const PropId& id, atVec2f& var, Write::StreamT& w) { w.writeVec2fBig(var); }
-template <> template <> inline void Write<PropType::None>::Do<atVec2d, Endian::Big>(const PropId& id, atVec2d& var, Write::StreamT& w) { w.writeVec2dBig(var); }
-template <> template <> inline void Write<PropType::None>::Do<atVec3f, Endian::Big>(const PropId& id, atVec3f& var, Write::StreamT& w) { w.writeVec3fBig(var); }
-template <> template <> inline void Write<PropType::None>::Do<atVec3d, Endian::Big>(const PropId& id, atVec3d& var, Write::StreamT& w) { w.writeVec3dBig(var); }
-template <> template <> inline void Write<PropType::None>::Do<atVec4f, Endian::Big>(const PropId& id, atVec4f& var, Write::StreamT& w) { w.writeVec4fBig(var); }
-template <> template <> inline void Write<PropType::None>::Do<atVec4d, Endian::Big>(const PropId& id, atVec4d& var, Write::StreamT& w) { w.writeVec4dBig(var); }
-template <> template <> inline void Write<PropType::None>::Do<Endian::Big>(const PropId& id, std::wstring& str, StreamT& w) { w.writeWStringBig(str); }
-template <> template <> inline void Write<PropType::None>::Do<Endian::Big>(const PropId& id, std::wstring& str, size_t count, StreamT& w) { w.writeWStringBig(str, count); }
-template <> template <> inline void Write<PropType::None>::Do<bool, Endian::Little>(const PropId& id, bool& var, Write::StreamT& w) { w.writeBool(var); }
-template <> template <> inline void Write<PropType::None>::Do<atInt8, Endian::Little>(const PropId& id, atInt8& var, Write::StreamT& w) { w.writeByte(var); }
-template <> template <> inline void Write<PropType::None>::Do<atUint8, Endian::Little>(const PropId& id, atUint8& var, Write::StreamT& w) { w.writeUByte(var); }
-template <> template <> inline void Write<PropType::None>::Do<atInt16, Endian::Little>(const PropId& id, atInt16& var, Write::StreamT& w) { w.writeInt16Little(var); }
-template <> template <> inline void Write<PropType::None>::Do<atUint16, Endian::Little>(const PropId& id, atUint16& var, Write::StreamT& w) { w.writeUint16Little(var); }
-template <> template <> inline void Write<PropType::None>::Do<atInt32, Endian::Little>(const PropId& id, atInt32& var, Write::StreamT& w) { w.writeInt32Little(var); }
-template <> template <> inline void Write<PropType::None>::Do<atUint32, Endian::Little>(const PropId& id, atUint32& var, Write::StreamT& w) { w.writeUint32Little(var); }
-template <> template <> inline void Write<PropType::None>::Do<atInt64, Endian::Little>(const PropId& id, atInt64& var, Write::StreamT& w) { w.writeInt64Little(var); }
-template <> template <> inline void Write<PropType::None>::Do<atUint64, Endian::Little>(const PropId& id, atUint64& var, Write::StreamT& w) { w.writeUint64Little(var); }
-template <> template <> inline void Write<PropType::None>::Do<float, Endian::Little>(const PropId& id, float& var, Write::StreamT& w) { w.writeFloatLittle(var); }
-template <> template <> inline void Write<PropType::None>::Do<double, Endian::Little>(const PropId& id, double& var, Write::StreamT& w) { w.writeDoubleLittle(var); }
-template <> template <> inline void Write<PropType::None>::Do<atVec2f, Endian::Little>(const PropId& id, atVec2f& var, Write::StreamT& w) { w.writeVec2fLittle(var); }
-template <> template <> inline void Write<PropType::None>::Do<atVec2d, Endian::Little>(const PropId& id, atVec2d& var, Write::StreamT& w) { w.writeVec2dLittle(var); }
-template <> template <> inline void Write<PropType::None>::Do<atVec3f, Endian::Little>(const PropId& id, atVec3f& var, Write::StreamT& w) { w.writeVec3fLittle(var); }
-template <> template <> inline void Write<PropType::None>::Do<atVec3d, Endian::Little>(const PropId& id, atVec3d& var, Write::StreamT& w) { w.writeVec3dLittle(var); }
-template <> template <> inline void Write<PropType::None>::Do<atVec4f, Endian::Little>(const PropId& id, atVec4f& var, Write::StreamT& w) { w.writeVec4fLittle(var); }
-template <> template <> inline void Write<PropType::None>::Do<atVec4d, Endian::Little>(const PropId& id, atVec4d& var, Write::StreamT& w) { w.writeVec4dLittle(var); }
-template <> template <> inline void Write<PropType::None>::Do<Endian::Little>(const PropId& id, std::wstring& str, StreamT& w) { w.writeWStringLittle(str); }
-template <> template <> inline void Write<PropType::None>::Do<Endian::Little>(const PropId& id, std::wstring& str, size_t count, StreamT& w) { w.writeWStringLittle(str, count); }
+#define __WRITE_S(type, endian) template <> template <> inline void Write<PropType::None>::Do<type, endian> \
+    (const PropId& id, type& var, Write::StreamT& w)
+#define __WRITE_WSTR_S(endian) template <> template <> inline void Write<PropType::None>::Do<std::wstring, endian> \
+    (const PropId& id, std::wstring& str, Write::StreamT& w)
+#define __WRITE_WSTRC_S(endian) template <> template <> inline void Write<PropType::None>::Do<endian> \
+    (const PropId& id, std::wstring& str, size_t count, Write::StreamT& w)
+__WRITE_S(bool, Endian::Big) { w.writeBool(var); }
+__WRITE_S(atInt8, Endian::Big) { w.writeByte(var); }
+__WRITE_S(atUint8, Endian::Big) { w.writeUByte(var); }
+__WRITE_S(atInt16, Endian::Big) { w.writeInt16Big(var); }
+__WRITE_S(atUint16, Endian::Big) { w.writeUint16Big(var); }
+__WRITE_S(atInt32, Endian::Big) { w.writeInt32Big(var); }
+__WRITE_S(atUint32, Endian::Big) { w.writeUint32Big(var); }
+__WRITE_S(atInt64, Endian::Big) { w.writeInt64Big(var); }
+__WRITE_S(atUint64, Endian::Big) { w.writeUint64Big(var); }
+__WRITE_S(float, Endian::Big) { w.writeFloatBig(var); }
+__WRITE_S(double, Endian::Big) { w.writeDoubleBig(var); }
+__WRITE_S(atVec2f, Endian::Big) { w.writeVec2fBig(var); }
+__WRITE_S(atVec2d, Endian::Big) { w.writeVec2dBig(var); }
+__WRITE_S(atVec3f, Endian::Big) { w.writeVec3fBig(var); }
+__WRITE_S(atVec3d, Endian::Big) { w.writeVec3dBig(var); }
+__WRITE_S(atVec4f, Endian::Big) { w.writeVec4fBig(var); }
+__WRITE_S(atVec4d, Endian::Big) { w.writeVec4dBig(var); }
+__WRITE_WSTR_S(Endian::Big) { w.writeWStringBig(str); }
+__WRITE_WSTRC_S(Endian::Big) { w.writeWStringBig(str, count); }
+__WRITE_S(bool, Endian::Little) { w.writeBool(var); }
+__WRITE_S(atInt8, Endian::Little) { w.writeByte(var); }
+__WRITE_S(atUint8, Endian::Little) { w.writeUByte(var); }
+__WRITE_S(atInt16, Endian::Little) { w.writeInt16Little(var); }
+__WRITE_S(atUint16, Endian::Little) { w.writeUint16Little(var); }
+__WRITE_S(atInt32, Endian::Little) { w.writeInt32Little(var); }
+__WRITE_S(atUint32, Endian::Little) { w.writeUint32Little(var); }
+__WRITE_S(atInt64, Endian::Little) { w.writeInt64Little(var); }
+__WRITE_S(atUint64, Endian::Little) { w.writeUint64Little(var); }
+__WRITE_S(float, Endian::Little) { w.writeFloatLittle(var); }
+__WRITE_S(double, Endian::Little) { w.writeDoubleLittle(var); }
+__WRITE_S(atVec2f, Endian::Little) { w.writeVec2fLittle(var); }
+__WRITE_S(atVec2d, Endian::Little) { w.writeVec2dLittle(var); }
+__WRITE_S(atVec3f, Endian::Little) { w.writeVec3fLittle(var); }
+__WRITE_S(atVec3d, Endian::Little) { w.writeVec3dLittle(var); }
+__WRITE_S(atVec4f, Endian::Little) { w.writeVec4fLittle(var); }
+__WRITE_S(atVec4d, Endian::Little) { w.writeVec4dLittle(var); }
+__WRITE_WSTR_S(Endian::Little) { w.writeWStringLittle(str); }
+__WRITE_WSTRC_S(Endian::Little) { w.writeWStringLittle(str, count); }
 
 template <PropType PropOp>
 struct ReadYaml
@@ -526,28 +667,67 @@ struct ReadYaml
         ReadYaml<PropType::None>::Do<T, DNAE>(id, var, r);
     }
     template <class T, Endian DNAE>
-    static typename std::enable_if_t<!std::is_enum_v<T> && !__IsPODType<T>()>
+    static typename std::enable_if_t<__IsDNARecord<T>()>
     Do(const PropId& id, T& var, StreamT& r)
     {
         if (auto rec = r.enterSubRecord(id.name))
             var.template Enumerate<ReadYaml<PropOp>>(r);
     }
     template <class T, Endian DNAE>
-    static void Do(const PropId& id, std::vector<T>& vector, size_t count, StreamT& r)
+    static typename std::enable_if_t<std::is_array_v<T>>
+    Do(const PropId& id, T& var, StreamT& r)
     {
+        size_t _count;
+        if (auto __v = r.enterSubVector(id.name, _count))
+            for (size_t i = 0; i < _count && i < std::extent_v<T>; ++i)
+                ReadYaml<PropOp>::Do<std::remove_reference_t<decltype(var[i])>, DNAE>({}, var[i], r);
+    }
+    template <class T, Endian DNAE>
+    static void DoSize(const PropId& id, T& var, StreamT& s)
+    {
+        /* Squelch size field access */
+    }
+    template <class T, class S, Endian DNAE>
+    static typename std::enable_if_t<!std::is_same_v<T, bool>>
+    Do(const PropId& id, std::vector<T>& vector, const S& count, StreamT& r)
+    {
+        size_t _count;
         vector.clear();
-        vector.reserve(count);
-        for (size_t i = 0; i < count; ++i)
+        if (auto __v = r.enterSubVector(id.name, _count))
         {
-            vector.emplace_back();
-            ReadYaml<PropOp>::Do<T, DNAE>(id, vector.back(), r);
+            vector.reserve(_count);
+            for (size_t i = 0; i < _count; ++i)
+            {
+                vector.emplace_back();
+                ReadYaml<PropOp>::Do<T, DNAE>({}, vector.back(), r);
+            }
         }
+        /* Horrible reference abuse (but it works) */
+        const_cast<S&>(count) = vector.size();
+    }
+    template <class T, class S, Endian DNAE>
+    static typename std::enable_if_t<std::is_same_v<T, bool>>
+    Do(const PropId& id, std::vector<T>& vector, const S& count, StreamT& r)
+    {
+        /* libc++ specializes vector<bool> as a bitstream */
+        size_t _count;
+        vector.clear();
+        if (auto __v = r.enterSubVector(id.name, _count))
+        {
+            vector.reserve(_count);
+            for (size_t i = 0; i < _count; ++i)
+                vector.push_back(r.readBool(nullptr));
+        }
+        /* Horrible reference abuse (but it works) */
+        const_cast<S&>(count) = vector.size();
     }
     static void Do(const PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, StreamT& r)
     {
         buf = r.readUBytes(id.name);
     }
-    static void Do(const PropId& id, std::string& str, StreamT& r)
+    template <class T, Endian DNAE>
+    static typename std::enable_if_t<std::is_same_v<T, std::string>>
+    Do(const PropId& id, T& str, StreamT& r)
     {
         str = r.readString(id.name);
     }
@@ -555,8 +735,9 @@ struct ReadYaml
     {
         str = r.readString(id.name);
     }
-    template <Endian DNAE>
-    static void Do(const PropId& id, std::wstring& str, StreamT& r)
+    template <class T, Endian DNAE>
+    static typename std::enable_if_t<std::is_same_v<T, std::wstring>>
+    Do(const PropId& id, T& str, StreamT& r)
     {
         str = r.readWString(id.name);
     }
@@ -568,40 +749,42 @@ struct ReadYaml
     static void DoSeek(atInt64 amount, SeekOrigin whence, StreamT& r) {}
     static void DoAlign(atInt64 amount, StreamT& r) {}
 };
-template <> template <> inline void ReadYaml<PropType::None>::Do<bool, Endian::Big>(const PropId& id, bool& var, ReadYaml::StreamT& r) { var = r.readBool(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atInt8, Endian::Big>(const PropId& id, atInt8& var, ReadYaml::StreamT& r) { var = r.readByte(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atUint8, Endian::Big>(const PropId& id, atUint8& var, ReadYaml::StreamT& r) { var = r.readUByte(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atInt16, Endian::Big>(const PropId& id, atInt16& var, ReadYaml::StreamT& r) { var = r.readInt16(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atUint16, Endian::Big>(const PropId& id, atUint16& var, ReadYaml::StreamT& r) { var = r.readUint16(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atInt32, Endian::Big>(const PropId& id, atInt32& var, ReadYaml::StreamT& r) { var = r.readInt32(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atUint32, Endian::Big>(const PropId& id, atUint32& var, ReadYaml::StreamT& r) { var = r.readUint32(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atInt64, Endian::Big>(const PropId& id, atInt64& var, ReadYaml::StreamT& r) { var = r.readInt64(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atUint64, Endian::Big>(const PropId& id, atUint64& var, ReadYaml::StreamT& r) { var = r.readUint64(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<float, Endian::Big>(const PropId& id, float& var, ReadYaml::StreamT& r) { var = r.readFloat(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<double, Endian::Big>(const PropId& id, double& var, ReadYaml::StreamT& r) { var = r.readDouble(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atVec2f, Endian::Big>(const PropId& id, atVec2f& var, ReadYaml::StreamT& r) { var = r.readVec2f(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atVec2d, Endian::Big>(const PropId& id, atVec2d& var, ReadYaml::StreamT& r) { var = r.readVec2d(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atVec3f, Endian::Big>(const PropId& id, atVec3f& var, ReadYaml::StreamT& r) { var = r.readVec3f(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atVec3d, Endian::Big>(const PropId& id, atVec3d& var, ReadYaml::StreamT& r) { var = r.readVec3d(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atVec4f, Endian::Big>(const PropId& id, atVec4f& var, ReadYaml::StreamT& r) { var = r.readVec4f(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atVec4d, Endian::Big>(const PropId& id, atVec4d& var, ReadYaml::StreamT& r) { var = r.readVec4d(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<bool, Endian::Little>(const PropId& id, bool& var, ReadYaml::StreamT& r) { var = r.readBool(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atInt8, Endian::Little>(const PropId& id, atInt8& var, ReadYaml::StreamT& r) { var = r.readByte(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atUint8, Endian::Little>(const PropId& id, atUint8& var, ReadYaml::StreamT& r) { var = r.readUByte(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atInt16, Endian::Little>(const PropId& id, atInt16& var, ReadYaml::StreamT& r) { var = r.readInt16(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atUint16, Endian::Little>(const PropId& id, atUint16& var, ReadYaml::StreamT& r) { var = r.readUint16(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atInt32, Endian::Little>(const PropId& id, atInt32& var, ReadYaml::StreamT& r) { var = r.readInt32(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atUint32, Endian::Little>(const PropId& id, atUint32& var, ReadYaml::StreamT& r) { var = r.readUint32(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atInt64, Endian::Little>(const PropId& id, atInt64& var, ReadYaml::StreamT& r) { var = r.readInt64(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atUint64, Endian::Little>(const PropId& id, atUint64& var, ReadYaml::StreamT& r) { var = r.readUint64(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<float, Endian::Little>(const PropId& id, float& var, ReadYaml::StreamT& r) { var = r.readFloat(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<double, Endian::Little>(const PropId& id, double& var, ReadYaml::StreamT& r) { var = r.readDouble(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atVec2f, Endian::Little>(const PropId& id, atVec2f& var, ReadYaml::StreamT& r) { var = r.readVec2f(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atVec2d, Endian::Little>(const PropId& id, atVec2d& var, ReadYaml::StreamT& r) { var = r.readVec2d(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atVec3f, Endian::Little>(const PropId& id, atVec3f& var, ReadYaml::StreamT& r) { var = r.readVec3f(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atVec3d, Endian::Little>(const PropId& id, atVec3d& var, ReadYaml::StreamT& r) { var = r.readVec3d(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atVec4f, Endian::Little>(const PropId& id, atVec4f& var, ReadYaml::StreamT& r) { var = r.readVec4f(id.name); }
-template <> template <> inline void ReadYaml<PropType::None>::Do<atVec4d, Endian::Little>(const PropId& id, atVec4d& var, ReadYaml::StreamT& r) { var = r.readVec4d(id.name); }
+#define __READ_YAML_S(type, endian) template <> template <> inline void ReadYaml<PropType::None>::Do<type, endian> \
+    (const PropId& id, type& var, ReadYaml::StreamT& r)
+__READ_YAML_S(bool, Endian::Big) { var = r.readBool(id.name); }
+__READ_YAML_S(atInt8, Endian::Big) { var = r.readByte(id.name); }
+__READ_YAML_S(atUint8, Endian::Big) { var = r.readUByte(id.name); }
+__READ_YAML_S(atInt16, Endian::Big) { var = r.readInt16(id.name); }
+__READ_YAML_S(atUint16, Endian::Big) { var = r.readUint16(id.name); }
+__READ_YAML_S(atInt32, Endian::Big) { var = r.readInt32(id.name); }
+__READ_YAML_S(atUint32, Endian::Big) { var = r.readUint32(id.name); }
+__READ_YAML_S(atInt64, Endian::Big) { var = r.readInt64(id.name); }
+__READ_YAML_S(atUint64, Endian::Big) { var = r.readUint64(id.name); }
+__READ_YAML_S(float, Endian::Big) { var = r.readFloat(id.name); }
+__READ_YAML_S(double, Endian::Big) { var = r.readDouble(id.name); }
+__READ_YAML_S(atVec2f, Endian::Big) { var = r.readVec2f(id.name); }
+__READ_YAML_S(atVec2d, Endian::Big) { var = r.readVec2d(id.name); }
+__READ_YAML_S(atVec3f, Endian::Big) { var = r.readVec3f(id.name); }
+__READ_YAML_S(atVec3d, Endian::Big) { var = r.readVec3d(id.name); }
+__READ_YAML_S(atVec4f, Endian::Big) { var = r.readVec4f(id.name); }
+__READ_YAML_S(atVec4d, Endian::Big) { var = r.readVec4d(id.name); }
+__READ_YAML_S(bool, Endian::Little) { var = r.readBool(id.name); }
+__READ_YAML_S(atInt8, Endian::Little) { var = r.readByte(id.name); }
+__READ_YAML_S(atUint8, Endian::Little) { var = r.readUByte(id.name); }
+__READ_YAML_S(atInt16, Endian::Little) { var = r.readInt16(id.name); }
+__READ_YAML_S(atUint16, Endian::Little) { var = r.readUint16(id.name); }
+__READ_YAML_S(atInt32, Endian::Little) { var = r.readInt32(id.name); }
+__READ_YAML_S(atUint32, Endian::Little) { var = r.readUint32(id.name); }
+__READ_YAML_S(atInt64, Endian::Little) { var = r.readInt64(id.name); }
+__READ_YAML_S(atUint64, Endian::Little) { var = r.readUint64(id.name); }
+__READ_YAML_S(float, Endian::Little) { var = r.readFloat(id.name); }
+__READ_YAML_S(double, Endian::Little) { var = r.readDouble(id.name); }
+__READ_YAML_S(atVec2f, Endian::Little) { var = r.readVec2f(id.name); }
+__READ_YAML_S(atVec2d, Endian::Little) { var = r.readVec2d(id.name); }
+__READ_YAML_S(atVec3f, Endian::Little) { var = r.readVec3f(id.name); }
+__READ_YAML_S(atVec3d, Endian::Little) { var = r.readVec3d(id.name); }
+__READ_YAML_S(atVec4f, Endian::Little) { var = r.readVec4f(id.name); }
+__READ_YAML_S(atVec4d, Endian::Little) { var = r.readVec4d(id.name); }
 
 template <PropType PropOp>
 struct WriteYaml
@@ -622,23 +805,49 @@ struct WriteYaml
         WriteYaml<PropType::None>::Do<T, DNAE>(id, var, w);
     }
     template <class T, Endian DNAE>
-    static typename std::enable_if_t<!std::is_enum_v<T> && !__IsPODType<T>()>
+    static typename std::enable_if_t<__IsDNARecord<T>()>
     Do(const PropId& id, T& var, StreamT& w)
     {
         if (auto rec = w.enterSubRecord(id.name))
             var.template Enumerate<WriteYaml<PropOp>>(w);
     }
     template <class T, Endian DNAE>
-    static void Do(const PropId& id, std::vector<T>& vector, size_t count, StreamT& w)
+    static typename std::enable_if_t<std::is_array_v<T>>
+    Do(const PropId& id, T& var, StreamT& w)
     {
-        for (T& v : vector)
-            WriteYaml<PropOp>::Do<T, DNAE>(id, v, w);
+        if (auto __v = w.enterSubVector(id.name))
+            for (auto& v : var)
+                WriteYaml<PropOp>::Do<std::remove_reference_t<decltype(v)>, DNAE>({}, v, w);
+    }
+    template <class T, Endian DNAE>
+    static void DoSize(const PropId& id, T& var, StreamT& s)
+    {
+        /* Squelch size field access */
+    }
+    template <class T, class S, Endian DNAE>
+    static typename std::enable_if_t<!std::is_same_v<T, bool>>
+    Do(const PropId& id, std::vector<T>& vector, const S& count, StreamT& w)
+    {
+        if (auto __v = w.enterSubVector(id.name))
+            for (T& v : vector)
+                WriteYaml<PropOp>::Do<T, DNAE>(id, v, w);
+    }
+    template <class T, class S, Endian DNAE>
+    static typename std::enable_if_t<std::is_same_v<T, bool>>
+    Do(const PropId& id, std::vector<T>& vector, const S& count, StreamT& w)
+    {
+        /* libc++ specializes vector<bool> as a bitstream */
+        if (auto __v = w.enterSubVector(id.name))
+            for (const T& v : vector)
+                w.writeBool(nullptr, v);
     }
     static void Do(const PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, StreamT& w)
     {
         w.writeUBytes(id.name, buf, count);
     }
-    static void Do(const PropId& id, std::string& str, StreamT& w)
+    template <class T, Endian DNAE>
+    static typename std::enable_if_t<std::is_same_v<T, std::string>>
+    Do(const PropId& id, T& str, StreamT& w)
     {
         w.writeString(id.name, str);
     }
@@ -646,8 +855,9 @@ struct WriteYaml
     {
         w.writeString(id.name, str);
     }
-    template <Endian DNAE>
-    static void Do(const PropId& id, std::wstring& str, StreamT& w)
+    template <class T, Endian DNAE>
+    static typename std::enable_if_t<std::is_same_v<T, std::wstring>>
+    Do(const PropId& id, T& str, StreamT& w)
     {
         w.writeWString(id.name, str);
     }
@@ -659,40 +869,42 @@ struct WriteYaml
     static void DoSeek(atInt64 amount, SeekOrigin whence, StreamT& w) {}
     static void DoAlign(atInt64 amount, StreamT& w) {}
 };
-template <> template <> inline void WriteYaml<PropType::None>::Do<bool, Endian::Big>(const PropId& id, bool& var, WriteYaml::StreamT& w) { w.writeBool(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atInt8, Endian::Big>(const PropId& id, atInt8& var, WriteYaml::StreamT& w) { w.writeByte(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atUint8, Endian::Big>(const PropId& id, atUint8& var, WriteYaml::StreamT& w) { w.writeUByte(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atInt16, Endian::Big>(const PropId& id, atInt16& var, WriteYaml::StreamT& w) { w.writeInt16(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atUint16, Endian::Big>(const PropId& id, atUint16& var, WriteYaml::StreamT& w) { w.writeUint16(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atInt32, Endian::Big>(const PropId& id, atInt32& var, WriteYaml::StreamT& w) { w.writeInt32(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atUint32, Endian::Big>(const PropId& id, atUint32& var, WriteYaml::StreamT& w) { w.writeUint32(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atInt64, Endian::Big>(const PropId& id, atInt64& var, WriteYaml::StreamT& w) { w.writeInt64(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atUint64, Endian::Big>(const PropId& id, atUint64& var, WriteYaml::StreamT& w) { w.writeUint64(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<float, Endian::Big>(const PropId& id, float& var, WriteYaml::StreamT& w) { w.writeFloat(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<double, Endian::Big>(const PropId& id, double& var, WriteYaml::StreamT& w) { w.writeDouble(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atVec2f, Endian::Big>(const PropId& id, atVec2f& var, WriteYaml::StreamT& w) { w.writeVec2f(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atVec2d, Endian::Big>(const PropId& id, atVec2d& var, WriteYaml::StreamT& w) { w.writeVec2d(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atVec3f, Endian::Big>(const PropId& id, atVec3f& var, WriteYaml::StreamT& w) { w.writeVec3f(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atVec3d, Endian::Big>(const PropId& id, atVec3d& var, WriteYaml::StreamT& w) { w.writeVec3d(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atVec4f, Endian::Big>(const PropId& id, atVec4f& var, WriteYaml::StreamT& w) { w.writeVec4f(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atVec4d, Endian::Big>(const PropId& id, atVec4d& var, WriteYaml::StreamT& w) { w.writeVec4d(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<bool, Endian::Little>(const PropId& id, bool& var, WriteYaml::StreamT& w) { w.writeBool(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atInt8, Endian::Little>(const PropId& id, atInt8& var, WriteYaml::StreamT& w) { w.writeByte(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atUint8, Endian::Little>(const PropId& id, atUint8& var, WriteYaml::StreamT& w) { w.writeUByte(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atInt16, Endian::Little>(const PropId& id, atInt16& var, WriteYaml::StreamT& w) { w.writeInt16(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atUint16, Endian::Little>(const PropId& id, atUint16& var, WriteYaml::StreamT& w) { w.writeUint16(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atInt32, Endian::Little>(const PropId& id, atInt32& var, WriteYaml::StreamT& w) { w.writeInt32(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atUint32, Endian::Little>(const PropId& id, atUint32& var, WriteYaml::StreamT& w) { w.writeUint32(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atInt64, Endian::Little>(const PropId& id, atInt64& var, WriteYaml::StreamT& w) { w.writeInt64(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atUint64, Endian::Little>(const PropId& id, atUint64& var, WriteYaml::StreamT& w) { w.writeUint64(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<float, Endian::Little>(const PropId& id, float& var, WriteYaml::StreamT& w) { w.writeFloat(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<double, Endian::Little>(const PropId& id, double& var, WriteYaml::StreamT& w) { w.writeDouble(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atVec2f, Endian::Little>(const PropId& id, atVec2f& var, WriteYaml::StreamT& w) { w.writeVec2f(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atVec2d, Endian::Little>(const PropId& id, atVec2d& var, WriteYaml::StreamT& w) { w.writeVec2d(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atVec3f, Endian::Little>(const PropId& id, atVec3f& var, WriteYaml::StreamT& w) { w.writeVec3f(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atVec3d, Endian::Little>(const PropId& id, atVec3d& var, WriteYaml::StreamT& w) { w.writeVec3d(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atVec4f, Endian::Little>(const PropId& id, atVec4f& var, WriteYaml::StreamT& w) { w.writeVec4f(id.name, var); }
-template <> template <> inline void WriteYaml<PropType::None>::Do<atVec4d, Endian::Little>(const PropId& id, atVec4d& var, WriteYaml::StreamT& w) { w.writeVec4d(id.name, var); }
+#define __WRITE_YAML_S(type, endian) template <> template <> inline void WriteYaml<PropType::None>::Do<type, endian> \
+    (const PropId& id, type& var, WriteYaml::StreamT& w)
+__WRITE_YAML_S(bool, Endian::Big) { w.writeBool(id.name, var); }
+__WRITE_YAML_S(atInt8, Endian::Big) { w.writeByte(id.name, var); }
+__WRITE_YAML_S(atUint8, Endian::Big) { w.writeUByte(id.name, var); }
+__WRITE_YAML_S(atInt16, Endian::Big) { w.writeInt16(id.name, var); }
+__WRITE_YAML_S(atUint16, Endian::Big) { w.writeUint16(id.name, var); }
+__WRITE_YAML_S(atInt32, Endian::Big) { w.writeInt32(id.name, var); }
+__WRITE_YAML_S(atUint32, Endian::Big) { w.writeUint32(id.name, var); }
+__WRITE_YAML_S(atInt64, Endian::Big) { w.writeInt64(id.name, var); }
+__WRITE_YAML_S(atUint64, Endian::Big) { w.writeUint64(id.name, var); }
+__WRITE_YAML_S(float, Endian::Big) { w.writeFloat(id.name, var); }
+__WRITE_YAML_S(double, Endian::Big) { w.writeDouble(id.name, var); }
+__WRITE_YAML_S(atVec2f, Endian::Big) { w.writeVec2f(id.name, var); }
+__WRITE_YAML_S(atVec2d, Endian::Big) { w.writeVec2d(id.name, var); }
+__WRITE_YAML_S(atVec3f, Endian::Big) { w.writeVec3f(id.name, var); }
+__WRITE_YAML_S(atVec3d, Endian::Big) { w.writeVec3d(id.name, var); }
+__WRITE_YAML_S(atVec4f, Endian::Big) { w.writeVec4f(id.name, var); }
+__WRITE_YAML_S(atVec4d, Endian::Big) { w.writeVec4d(id.name, var); }
+__WRITE_YAML_S(bool, Endian::Little) { w.writeBool(id.name, var); }
+__WRITE_YAML_S(atInt8, Endian::Little) { w.writeByte(id.name, var); }
+__WRITE_YAML_S(atUint8, Endian::Little) { w.writeUByte(id.name, var); }
+__WRITE_YAML_S(atInt16, Endian::Little) { w.writeInt16(id.name, var); }
+__WRITE_YAML_S(atUint16, Endian::Little) { w.writeUint16(id.name, var); }
+__WRITE_YAML_S(atInt32, Endian::Little) { w.writeInt32(id.name, var); }
+__WRITE_YAML_S(atUint32, Endian::Little) { w.writeUint32(id.name, var); }
+__WRITE_YAML_S(atInt64, Endian::Little) { w.writeInt64(id.name, var); }
+__WRITE_YAML_S(atUint64, Endian::Little) { w.writeUint64(id.name, var); }
+__WRITE_YAML_S(float, Endian::Little) { w.writeFloat(id.name, var); }
+__WRITE_YAML_S(double, Endian::Little) { w.writeDouble(id.name, var); }
+__WRITE_YAML_S(atVec2f, Endian::Little) { w.writeVec2f(id.name, var); }
+__WRITE_YAML_S(atVec2d, Endian::Little) { w.writeVec2d(id.name, var); }
+__WRITE_YAML_S(atVec3f, Endian::Little) { w.writeVec3f(id.name, var); }
+__WRITE_YAML_S(atVec3d, Endian::Little) { w.writeVec3d(id.name, var); }
+__WRITE_YAML_S(atVec4f, Endian::Little) { w.writeVec4f(id.name, var); }
+__WRITE_YAML_S(atVec4d, Endian::Little) { w.writeVec4d(id.name, var); }
 
 template <class Op, class T, Endian DNAE>
 static inline void __Do(const PropId& id, T& var, typename Op::StreamT& s)
@@ -701,9 +913,15 @@ static inline void __Do(const PropId& id, T& var, typename Op::StreamT& s)
 }
 
 template <class Op, class T, Endian DNAE>
-static inline void __Do(const PropId& id, std::vector<T>& vector, size_t count, typename Op::StreamT& s)
+static inline void __DoSize(const PropId& id, T& var, typename Op::StreamT& s)
 {
-    Op::template Do<T, DNAE>(id, vector, count, s);
+    Op::template DoSize<T, DNAE>(id, var, s);
+}
+
+template <class Op, class T, class S, Endian DNAE>
+static inline void __Do(const PropId& id, std::vector<T>& vector, const S& count, typename Op::StreamT& s)
+{
+    Op::template Do<T, S, DNAE>(id, vector, count, s);
 }
 
 template <class Op>
@@ -713,21 +931,9 @@ static inline void __Do(const PropId& id, std::unique_ptr<atUint8[]>& buf, size_
 }
 
 template <class Op>
-static inline void __Do(const PropId& id, std::string& str, typename Op::StreamT& s)
-{
-    Op::Do(id, str, s);
-}
-
-template <class Op>
 static inline void __Do(const PropId& id, std::string& str, size_t count, typename Op::StreamT& s)
 {
     Op::Do(id, str, count, s);
-}
-
-template <class Op, Endian DNAE>
-static inline void __Do(const PropId& id, std::wstring& str, typename Op::StreamT& s)
-{
-    Op::template Do<DNAE>(id, str, s);
 }
 
 template <class Op, Endian DNAE>
@@ -838,27 +1044,96 @@ static inline void __BinarySizeProp64(const T& obj, size_t& s)
 
 #define AT_DECL_DNA \
 template <class Op, athena::Endian DNAE = DNAEndian, class T> \
-void Do(const athena::io::PropId& id, T& var, typename Op::StreamT& s) { athena::io::__Do<Op, T, DNAE>(id, var, s); } \
+void Do(const athena::io::PropId& id, T& var, typename Op::StreamT& s) \
+    { athena::io::__Do<Op, T, DNAE>(id, var, s); } \
 template <class Op, athena::Endian DNAE = DNAEndian, class T> \
-void Do(const athena::io::PropId& id, std::vector<T>& var, size_t count, typename Op::StreamT& s) { athena::io::__Do<Op, T, DNAE>(id, var, count, s); } \
+void DoSize(const athena::io::PropId& id, T& var, typename Op::StreamT& s) \
+    { athena::io::__DoSize<Op, T, DNAE>(id, var, s); } \
+template <class Op, athena::Endian DNAE = DNAEndian, class T, class S> \
+void Do(const athena::io::PropId& id, std::vector<T>& var, const S& count, typename Op::StreamT& s) \
+    { athena::io::__Do<Op, T, S, DNAE>(id, var, count, s); } \
 template <class Op> \
-void Do(const athena::io::PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, typename Op::StreamT& s) { athena::io::__Do<Op>(id, buf, count, s); } \
+void Do(const athena::io::PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, typename Op::StreamT& s) \
+    { athena::io::__Do<Op>(id, buf, count, s); } \
 template <class Op> \
-void Do(const athena::io::PropId& id, std::string& str, typename Op::StreamT& s) { athena::io::__Do<Op>(id, str, s); } \
-template <class Op> \
-void Do(const athena::io::PropId& id, std::string& str, size_t count, typename Op::StreamT& s) { athena::io::__Do<Op>(id, str, count, s); } \
+void Do(const athena::io::PropId& id, std::string& str, size_t count, typename Op::StreamT& s) \
+    { athena::io::__Do<Op>(id, str, count, s); } \
 template <class Op, athena::Endian DNAE = DNAEndian> \
-void Do(const athena::io::PropId& id, std::wstring& str, typename Op::StreamT& s) { athena::io::__Do<Op, DNAE>(id, str, s); } \
+void Do(const athena::io::PropId& id, std::wstring& str, size_t count, typename Op::StreamT& s) \
+    { athena::io::__Do<Op, DNAE>(id, str, count, s); } \
+template <class Op> \
+void DoSeek(atInt64 delta, athena::SeekOrigin whence, typename Op::StreamT& s) \
+    { athena::io::__DoSeek<Op>(delta, whence, s); } \
+template <class Op> \
+void DoAlign(atInt64 amount, typename Op::StreamT& s) \
+    { athena::io::__DoAlign<Op>(amount, s); } \
+template <class Op> \
+void Enumerate(typename Op::StreamT& s); \
+static const char* DNAType(); \
+void read(athena::io::IStreamReader& r) { athena::io::__Read(*this, r); } \
+void write(athena::io::IStreamWriter& w) const { athena::io::__Write(*this, w); } \
+void binarySize(size_t& s) const { athena::io::__BinarySize(*this, s); }
+
+#define AT_DECL_DNA_YAML \
+AT_DECL_DNA \
+void read(athena::io::YAMLDocReader& r) { athena::io::__ReadYaml(*this, r); } \
+void write(athena::io::YAMLDocWriter& w) const { athena::io::__WriteYaml(*this, w); }
+
+#define AT_DECL_EXPLICIT_DNA \
+AT_DECL_DNA \
+Delete __d;
+
+#define AT_DECL_EXPLICIT_DNA_YAML \
+AT_DECL_DNA_YAML \
+Delete __d;
+
+#define AT_DECL_DNAV const char* DNATypeV() const {return DNAType();}
+
+#define AT_SPECIALIZE_DNA(...) \
+template void __VA_ARGS__::Enumerate<athena::io::Read<athena::io::PropType::None>>\
+    (athena::io::Read<athena::io::PropType::None>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::Write<athena::io::PropType::None>>\
+    (athena::io::Write<athena::io::PropType::None>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::BinarySize<athena::io::PropType::None>>\
+    (athena::io::BinarySize<athena::io::PropType::None>::StreamT& s);
+
+#define AT_SPECIALIZE_DNA_YAML(...) \
+AT_SPECIALIZE_DNA(__VA_ARGS__) \
+template void __VA_ARGS__::Enumerate<athena::io::ReadYaml<athena::io::PropType::None>>\
+    (athena::io::ReadYaml<athena::io::PropType::None>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::WriteYaml<athena::io::PropType::None>>\
+    (athena::io::WriteYaml<athena::io::PropType::None>::StreamT& s);
+
+#define AT_DECL_PROPDNA \
+template <class Op, athena::Endian DNAE = DNAEndian, class T> \
+void Do(const athena::io::PropId& id, T& var, typename Op::StreamT& s) \
+    { athena::io::__Do<Op, T, DNAE>(id, var, s); } \
+template <class Op, athena::Endian DNAE = DNAEndian, class T> \
+void DoSize(const athena::io::PropId& id, T& var, typename Op::StreamT& s) \
+    { athena::io::__DoSize<Op, T, DNAE>(id, var, s); } \
+template <class Op, athena::Endian DNAE = DNAEndian, class T, class S> \
+void Do(const athena::io::PropId& id, std::vector<T>& var, const S& count, typename Op::StreamT& s) \
+    { athena::io::__Do<Op, T, S, DNAE>(id, var, count, s); } \
+template <class Op> \
+void Do(const athena::io::PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, typename Op::StreamT& s) \
+    { athena::io::__Do<Op>(id, buf, count, s); } \
+template <class Op> \
+void Do(const athena::io::PropId& id, std::string& str, size_t count, typename Op::StreamT& s) \
+    { athena::io::__Do<Op>(id, str, count, s); } \
 template <class Op, athena::Endian DNAE = DNAEndian> \
-void Do(const athena::io::PropId& id, std::wstring& str, size_t count, typename Op::StreamT& s) { athena::io::__Do<Op, DNAE>(id, str, count, s); } \
+void Do(const athena::io::PropId& id, std::wstring& str, size_t count, typename Op::StreamT& s) \
+    { athena::io::__Do<Op, DNAE>(id, str, count, s); } \
 template <class Op> \
-void DoSeek(atInt64 delta, athena::SeekOrigin whence, typename Op::StreamT& s) { athena::io::__DoSeek<Op>(delta, whence, s); } \
+void DoSeek(atInt64 delta, athena::SeekOrigin whence, typename Op::StreamT& s) \
+    { athena::io::__DoSeek<Op>(delta, whence, s); } \
 template <class Op> \
-void DoAlign(atInt64 amount, typename Op::StreamT& s) { athena::io::__DoAlign<Op>(amount, s); } \
+void DoAlign(atInt64 amount, typename Op::StreamT& s) \
+    { athena::io::__DoAlign<Op>(amount, s); } \
 template <class Op> \
 void Enumerate(typename Op::StreamT& s); \
 template <class Op> \
 bool Lookup(uint64_t hash, typename Op::StreamT& s); \
+static const char* DNAType(); \
 void read(athena::io::IStreamReader& r) { athena::io::__Read(*this, r); } \
 void write(athena::io::IStreamWriter& w) const { athena::io::__Write(*this, w); } \
 void binarySize(size_t& s) const { athena::io::__BinarySize(*this, s); } \
@@ -872,37 +1147,110 @@ void readProp64(athena::io::IStreamReader& r) { athena::io::__ReadProp64(*this, 
 void writeProp64(athena::io::IStreamWriter& w) const { athena::io::__WriteProp64(*this, w); } \
 void binarySizeProp64(size_t& s) const { athena::io::__BinarySizeProp64(*this, s); } \
 
-#define AT_SPECIALIZE_DNA(__Type) \
-template void __Type::Enumerate<athena::io::Read<athena::io::PropType::None>>(athena::io::Read<athena::io::PropType::None>::StreamT& s); \
-template void __Type::Enumerate<athena::io::Write<athena::io::PropType::None>>(athena::io::Write<athena::io::PropType::None>::StreamT& s); \
-template void __Type::Enumerate<athena::io::BinarySize<athena::io::PropType::None>>(athena::io::BinarySize<athena::io::PropType::None>::StreamT& s); \
-template void __Type::Enumerate<athena::io::ReadYaml<athena::io::PropType::None>>(athena::io::ReadYaml<athena::io::PropType::None>::StreamT& s); \
-template void __Type::Enumerate<athena::io::WriteYaml<athena::io::PropType::None>>(athena::io::WriteYaml<athena::io::PropType::None>::StreamT& s); \
-template bool __Type::Lookup<athena::io::Read<athena::io::PropType::CRC32>>(uint64_t hash, athena::io::Read<athena::io::PropType::CRC32>::StreamT& s); \
-template void __Type::Enumerate<athena::io::Read<athena::io::PropType::CRC32>>(athena::io::Read<athena::io::PropType::CRC32>::StreamT& s); \
-template bool __Type::Lookup<athena::io::Write<athena::io::PropType::CRC32>>(uint64_t hash, athena::io::Write<athena::io::PropType::CRC32>::StreamT& s); \
-template void __Type::Enumerate<athena::io::Write<athena::io::PropType::CRC32>>(athena::io::Write<athena::io::PropType::CRC32>::StreamT& s); \
-template bool __Type::Lookup<athena::io::BinarySize<athena::io::PropType::CRC32>>(uint64_t hash, athena::io::BinarySize<athena::io::PropType::CRC32>::StreamT& s); \
-template void __Type::Enumerate<athena::io::BinarySize<athena::io::PropType::CRC32>>(athena::io::BinarySize<athena::io::PropType::CRC32>::StreamT& s); \
-template bool __Type::Lookup<athena::io::PropCount<athena::io::PropType::CRC32>>(uint64_t hash, athena::io::PropCount<athena::io::PropType::CRC32>::StreamT& s); \
-template void __Type::Enumerate<athena::io::PropCount<athena::io::PropType::CRC32>>(athena::io::PropCount<athena::io::PropType::CRC32>::StreamT& s); \
-template bool __Type::Lookup<athena::io::ReadYaml<athena::io::PropType::CRC32>>(uint64_t hash, athena::io::ReadYaml<athena::io::PropType::CRC32>::StreamT& s); \
-template void __Type::Enumerate<athena::io::ReadYaml<athena::io::PropType::CRC32>>(athena::io::ReadYaml<athena::io::PropType::CRC32>::StreamT& s); \
-template bool __Type::Lookup<athena::io::WriteYaml<athena::io::PropType::CRC32>>(uint64_t hash, athena::io::WriteYaml<athena::io::PropType::CRC32>::StreamT& s); \
-template void __Type::Enumerate<athena::io::WriteYaml<athena::io::PropType::CRC32>>(athena::io::WriteYaml<athena::io::PropType::CRC32>::StreamT& s); \
-template bool __Type::Lookup<athena::io::Read<athena::io::PropType::CRC64>>(uint64_t hash, athena::io::Read<athena::io::PropType::CRC64>::StreamT& s); \
-template void __Type::Enumerate<athena::io::Read<athena::io::PropType::CRC64>>(athena::io::Read<athena::io::PropType::CRC64>::StreamT& s); \
-template bool __Type::Lookup<athena::io::Write<athena::io::PropType::CRC64>>(uint64_t hash, athena::io::Write<athena::io::PropType::CRC64>::StreamT& s); \
-template void __Type::Enumerate<athena::io::Write<athena::io::PropType::CRC64>>(athena::io::Write<athena::io::PropType::CRC64>::StreamT& s); \
-template bool __Type::Lookup<athena::io::BinarySize<athena::io::PropType::CRC64>>(uint64_t hash, athena::io::BinarySize<athena::io::PropType::CRC64>::StreamT& s); \
-template void __Type::Enumerate<athena::io::BinarySize<athena::io::PropType::CRC64>>(athena::io::BinarySize<athena::io::PropType::CRC64>::StreamT& s); \
-template bool __Type::Lookup<athena::io::PropCount<athena::io::PropType::CRC64>>(uint64_t hash, athena::io::PropCount<athena::io::PropType::CRC64>::StreamT& s); \
-template void __Type::Enumerate<athena::io::PropCount<athena::io::PropType::CRC64>>(athena::io::PropCount<athena::io::PropType::CRC64>::StreamT& s); \
-template bool __Type::Lookup<athena::io::ReadYaml<athena::io::PropType::CRC64>>(uint64_t hash, athena::io::ReadYaml<athena::io::PropType::CRC64>::StreamT& s); \
-template void __Type::Enumerate<athena::io::ReadYaml<athena::io::PropType::CRC64>>(athena::io::ReadYaml<athena::io::PropType::CRC64>::StreamT& s); \
-template bool __Type::Lookup<athena::io::WriteYaml<athena::io::PropType::CRC64>>(uint64_t hash, athena::io::WriteYaml<athena::io::PropType::CRC64>::StreamT& s); \
-template void __Type::Enumerate<athena::io::WriteYaml<athena::io::PropType::CRC64>>(athena::io::WriteYaml<athena::io::PropType::CRC64>::StreamT& s);
+#define AT_DECL_EXPLICIT_PROPDNA \
+AT_DECL_PROPDNA \
+Delete __d;
 
-using namespace athena::io::literals;
+#define AT_SPECIALIZE_PROPDNA(...) \
+template void __VA_ARGS__::Enumerate<athena::io::Read<athena::io::PropType::None>>\
+    (athena::io::Read<athena::io::PropType::None>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::Write<athena::io::PropType::None>>\
+    (athena::io::Write<athena::io::PropType::None>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::BinarySize<athena::io::PropType::None>>\
+    (athena::io::BinarySize<athena::io::PropType::None>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::ReadYaml<athena::io::PropType::None>>\
+    (athena::io::ReadYaml<athena::io::PropType::None>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::WriteYaml<athena::io::PropType::None>>\
+    (athena::io::WriteYaml<athena::io::PropType::None>::StreamT& s); \
+template bool __VA_ARGS__::Lookup<athena::io::Read<athena::io::PropType::CRC32>>\
+    (uint64_t hash, athena::io::Read<athena::io::PropType::CRC32>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::Read<athena::io::PropType::CRC32>>\
+    (athena::io::Read<athena::io::PropType::CRC32>::StreamT& s); \
+template bool __VA_ARGS__::Lookup<athena::io::Write<athena::io::PropType::CRC32>>\
+    (uint64_t hash, athena::io::Write<athena::io::PropType::CRC32>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::Write<athena::io::PropType::CRC32>>\
+    (athena::io::Write<athena::io::PropType::CRC32>::StreamT& s); \
+template bool __VA_ARGS__::Lookup<athena::io::BinarySize<athena::io::PropType::CRC32>>\
+    (uint64_t hash, athena::io::BinarySize<athena::io::PropType::CRC32>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::BinarySize<athena::io::PropType::CRC32>>\
+    (athena::io::BinarySize<athena::io::PropType::CRC32>::StreamT& s); \
+template bool __VA_ARGS__::Lookup<athena::io::PropCount<athena::io::PropType::CRC32>>\
+    (uint64_t hash, athena::io::PropCount<athena::io::PropType::CRC32>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::PropCount<athena::io::PropType::CRC32>>\
+    (athena::io::PropCount<athena::io::PropType::CRC32>::StreamT& s); \
+template bool __VA_ARGS__::Lookup<athena::io::ReadYaml<athena::io::PropType::CRC32>>\
+    (uint64_t hash, athena::io::ReadYaml<athena::io::PropType::CRC32>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::ReadYaml<athena::io::PropType::CRC32>>\
+    (athena::io::ReadYaml<athena::io::PropType::CRC32>::StreamT& s); \
+template bool __VA_ARGS__::Lookup<athena::io::WriteYaml<athena::io::PropType::CRC32>>\
+    (uint64_t hash, athena::io::WriteYaml<athena::io::PropType::CRC32>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::WriteYaml<athena::io::PropType::CRC32>>\
+    (athena::io::WriteYaml<athena::io::PropType::CRC32>::StreamT& s); \
+template bool __VA_ARGS__::Lookup<athena::io::Read<athena::io::PropType::CRC64>>\
+    (uint64_t hash, athena::io::Read<athena::io::PropType::CRC64>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::Read<athena::io::PropType::CRC64>>\
+    (athena::io::Read<athena::io::PropType::CRC64>::StreamT& s); \
+template bool __VA_ARGS__::Lookup<athena::io::Write<athena::io::PropType::CRC64>>\
+    (uint64_t hash, athena::io::Write<athena::io::PropType::CRC64>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::Write<athena::io::PropType::CRC64>>\
+    (athena::io::Write<athena::io::PropType::CRC64>::StreamT& s); \
+template bool __VA_ARGS__::Lookup<athena::io::BinarySize<athena::io::PropType::CRC64>>\
+    (uint64_t hash, athena::io::BinarySize<athena::io::PropType::CRC64>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::BinarySize<athena::io::PropType::CRC64>>\
+    (athena::io::BinarySize<athena::io::PropType::CRC64>::StreamT& s); \
+template bool __VA_ARGS__::Lookup<athena::io::PropCount<athena::io::PropType::CRC64>>\
+    (uint64_t hash, athena::io::PropCount<athena::io::PropType::CRC64>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::PropCount<athena::io::PropType::CRC64>>\
+    (athena::io::PropCount<athena::io::PropType::CRC64>::StreamT& s); \
+template bool __VA_ARGS__::Lookup<athena::io::ReadYaml<athena::io::PropType::CRC64>>\
+    (uint64_t hash, athena::io::ReadYaml<athena::io::PropType::CRC64>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::ReadYaml<athena::io::PropType::CRC64>>\
+    (athena::io::ReadYaml<athena::io::PropType::CRC64>::StreamT& s); \
+template bool __VA_ARGS__::Lookup<athena::io::WriteYaml<athena::io::PropType::CRC64>>\
+    (uint64_t hash, athena::io::WriteYaml<athena::io::PropType::CRC64>::StreamT& s); \
+template void __VA_ARGS__::Enumerate<athena::io::WriteYaml<athena::io::PropType::CRC64>>\
+    (athena::io::WriteYaml<athena::io::PropType::CRC64>::StreamT& s);
+
+#define AT_SUBDECL_DNA \
+void _read(athena::io::IStreamReader& r); \
+void _write(athena::io::IStreamWriter& w) const; \
+void _binarySize(size_t& s) const; \
+void _read(athena::io::YAMLDocReader& r); \
+void _write(athena::io::YAMLDocWriter& w) const;
+
+#define AT_SUBDECL_DNA_YAML \
+AT_SUBDECL_DNA \
+void _read(athena::io::YAMLDocReader& r); \
+void _write(athena::io::YAMLDocWriter& w) const;
+
+#define AT_SUBSPECIALIZE_DNA(...) \
+template <> template <> \
+void __VA_ARGS__::Enumerate<athena::io::DNA<athena::Big>::BinarySize>(typename BinarySize::StreamT& s) \
+{ \
+    _binarySize(s); \
+} \
+template <> template <> \
+void __VA_ARGS__::Enumerate<athena::io::DNA<athena::Big>::Read>(typename Read::StreamT& r) \
+{ \
+    _read(r); \
+} \
+template <> template <> \
+void __VA_ARGS__::Enumerate<athena::io::DNA<athena::Big>::Write>(typename Write::StreamT& w) \
+{ \
+    _write(w); \
+}
+
+#define AT_SUBSPECIALIZE_DNA_YAML(...) \
+template <> template <> \
+void __VA_ARGS__::Enumerate<athena::io::DNA<athena::Big>::ReadYaml>(typename ReadYaml::StreamT& r) \
+{ \
+    _read(r); \
+} \
+template <> template <> \
+void __VA_ARGS__::Enumerate<athena::io::DNA<athena::Big>::WriteYaml>(typename WriteYaml::StreamT& w) \
+{ \
+    _write(w); \
+} \
+AT_SUBSPECIALIZE_DNA(__VA_ARGS__)
 
 #endif // AT_OP_HPP

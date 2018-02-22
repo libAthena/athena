@@ -5,7 +5,7 @@
 
 int main(int argc, const char** argv)
 {
-    TESTFile file = {};
+    TESTFile<atUint32, 2> file = {};
     file.arrCount[0] = 2;
     file.array.push_back(42);
     file.array.push_back(64);

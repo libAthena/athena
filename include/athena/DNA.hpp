@@ -94,6 +94,51 @@ struct DNA
      * @brief Meta Template preventing atdna from emitting read/write implementations
      */
     struct Delete {};
+
+    /* Bring fundamental operations into DNA subclasses for easier per-op overrides */
+    using Read = athena::io::Read<PropType::None>;
+    using Write = athena::io::Write<PropType::None>;
+    using BinarySize = athena::io::BinarySize<PropType::None>;
+    using PropCount = athena::io::PropCount<PropType::None>;
+    using ReadYaml = athena::io::ReadYaml<PropType::None>;
+    using WriteYaml = athena::io::WriteYaml<PropType::None>;
+};
+
+/**
+ * @brief Virtual DNA wrapper for subclasses that utilize virtual method calls
+ * @tparam DNAE Default-endianness for contained DNA values
+ *
+ * Typically, static template-based DNA resolution is sufficient; however, formats
+ * with a tree of variously-typed data structures would benefit from having a vtable.
+ *
+ * Note: It's not recommended to implement these directly. Instead, use the AT_DECL_DNA or
+ * AT_DECL_EXPLCIT_DNA macro in the subclasses. Specializing the Enumerate method
+ * is the proper way to override individual I/O operations. Owners of the virtualized
+ * subclass will typically use a unique_ptr to reference the data; specializing their own
+ * Enumerate methods as such:
+ *
+ * template <> void MySubclass::Enumerate<Read>(typename Read::StreamT& r)
+ * { (Do stuff with `r`) }
+ */
+template <Endian DNAE>
+struct DNAV : DNA<DNAE>
+{
+    virtual ~DNAV() = default;
+    virtual void read(athena::io::IStreamReader& r) = 0;
+    virtual void write(athena::io::IStreamWriter& w) const = 0;
+    virtual void binarySize(size_t& s) const = 0;
+    virtual const char* DNATypeV() const = 0;
+};
+
+template <Endian DNAE>
+struct DNAVYaml : DNAV<DNAE>
+{
+    virtual ~DNAVYaml() = default;
+    virtual void read(athena::io::IStreamReader& r) = 0;
+    virtual void write(athena::io::IStreamWriter& w) const = 0;
+    virtual void binarySize(size_t& s) const = 0;
+    virtual void read(athena::io::YAMLDocReader& r) = 0;
+    virtual void write(athena::io::YAMLDocWriter& w) const = 0;
 };
 
 /** Macro to supply count variable to atdna and mute it for other compilers */

@@ -48,7 +48,8 @@ public:
     RecordRAII enterSubRecord(const char* name);
 
     template <class T>
-    void enumerate(const char* name, T& record)
+    void enumerate(const char* name, T& record,
+                   typename std::enable_if_t<__IsDNARecord<T>()>* = 0)
     {
         if (auto rec = enterSubRecord(name))
             record.read(*this);
@@ -70,10 +71,10 @@ public:
 
     template <class T>
     size_t enumerate(const char* name, std::vector<T>& vector,
-                     typename std::enable_if<!std::is_arithmetic<T>::value &&
-                                             !std::is_same<T, atVec2f>::value &&
-                                             !std::is_same<T, atVec3f>::value &&
-                                             !std::is_same<T, atVec4f>::value>::type* = 0)
+                     typename std::enable_if_t<!std::is_arithmetic<T>::value &&
+                                               !std::is_same<T, atVec2f>::value &&
+                                               !std::is_same<T, atVec3f>::value &&
+                                               !std::is_same<T, atVec4f>::value>* = 0)
     {
         size_t countOut;
         if (auto v = enterSubVector(name, countOut))
@@ -92,10 +93,10 @@ public:
 
     template <class T>
     size_t enumerate(const char* name, std::vector<T>& vector,
-                     typename std::enable_if<std::is_arithmetic<T>::value ||
-                                             std::is_same<T, atVec2f>::value ||
-                                             std::is_same<T, atVec3f>::value ||
-                                             std::is_same<T, atVec4f>::value>::type* = 0)
+                     typename std::enable_if_t<std::is_arithmetic<T>::value ||
+                                               std::is_same<T, atVec2f>::value ||
+                                               std::is_same<T, atVec3f>::value ||
+                                               std::is_same<T, atVec4f>::value>* = 0)
     {
         size_t countOut;
         if (auto v = enterSubVector(name, countOut))

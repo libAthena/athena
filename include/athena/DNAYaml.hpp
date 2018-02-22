@@ -11,9 +11,23 @@ namespace athena::io
 {
 
 template <class T>
+static inline const char* __GetDNAName(const T& dna,
+    typename std::enable_if_t<athena::io::__IsDNAVRecord<T>()>* = 0)
+{
+    return dna.DNATypeV();
+}
+
+template <class T>
+static inline const char* __GetDNAName(const T& dna,
+    typename std::enable_if_t<!athena::io::__IsDNAVRecord<T>()>* = 0)
+{
+    return dna.DNAType();
+}
+
+template <class T>
 static inline std::string ToYAMLString(const T& dna)
 {
-    YAMLDocWriter docWriter(dna.DNAType());
+    YAMLDocWriter docWriter(__GetDNAName(dna));
 
     std::string res;
     yaml_emitter_set_output(docWriter.getEmitter(), (yaml_write_handler_t*)YAMLStdStringWriter, &res);
@@ -52,7 +66,7 @@ static inline bool ValidateFromYAMLString(std::string_view str)
 template <class T>
 static inline bool ToYAMLStream(const T& dna, athena::io::IStreamWriter& fout)
 {
-    YAMLDocWriter docWriter(dna.DNAType());
+    YAMLDocWriter docWriter(__GetDNAName(dna));
 
     yaml_emitter_set_unicode(docWriter.getEmitter(), true);
     yaml_emitter_set_width(docWriter.getEmitter(), -1);
@@ -65,12 +79,12 @@ template <class T>
 static inline bool ToYAMLStream(const T& dna, athena::io::IStreamWriter& fout,
                                 void(T::*fn)(YAMLDocWriter& out)const)
 {
-    YAMLDocWriter docWriter(dna.DNAType());
+    YAMLDocWriter docWriter(__GetDNAName(dna));
 
     yaml_emitter_set_unicode(docWriter.getEmitter(), true);
     yaml_emitter_set_width(docWriter.getEmitter(), -1);
 
-    (dna->*fn)(docWriter);
+    (dna.*fn)(docWriter);
     return docWriter.finish(&fout);
 }
 
@@ -91,7 +105,7 @@ static inline bool FromYAMLStream(T& dna, athena::io::IStreamReader& fin,
     YAMLDocReader docReader;
     if (!docReader.parse(&fin))
         return false;
-    (dna->*fn)(docReader);
+    (dna.*fn)(docReader);
     return true;
 }
 
@@ -99,7 +113,7 @@ template <class T, typename NameT>
 static inline bool MergeToYAMLFile(const T& dna, const NameT& filename)
 {
     athena::io::FileReader r(filename);
-    YAMLDocWriter docWriter(dna.DNAType(), r.isOpen() ? &r : nullptr);
+    YAMLDocWriter docWriter(__GetDNAName(dna), r.isOpen() ? &r : nullptr);
     r.close();
 
     dna.write(docWriter);

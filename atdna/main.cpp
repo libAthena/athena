@@ -118,7 +118,10 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                 hasWrite = true;
                         }
                         if (hasRead && hasWrite)
-                            baseDNA = rDecl->getQualifiedNameAsString();
+                        {
+                            std::string templateStmt;
+                            GetNestedTypeName(rDecl, templateStmt, baseDNA);
+                        }
                         return true;
                     }
                 }
@@ -191,510 +194,6 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
         return 0;
     }
 
-#if 0
-    std::string GetOpString(const clang::Type* theType, unsigned width,
-                            const std::string& fieldName, bool writerPass,
-                            const std::string& funcPrefix, bool& isDNATypeOut)
-    {
-        isDNATypeOut = false;
-        if (writerPass)
-        {
-            if (theType->isEnumeralType())
-            {
-                clang::EnumType* eType = (clang::EnumType*)theType;
-                clang::EnumDecl* eDecl = eType->getDecl();
-                theType = eDecl->getIntegerType().getCanonicalType().getTypePtr();
-
-                const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
-                if (bType->isBooleanType())
-                {
-                    return ATHENA_DNA_WRITER ".writeBool(bool(" + fieldName + "));";
-                }
-                else if (bType->isUnsignedInteger())
-                {
-                    if (width == 8)
-                        return ATHENA_DNA_WRITER ".writeUByte(atUint8(" + fieldName + "));";
-                    else if (width == 16)
-                        return ATHENA_DNA_WRITER ".writeUint16" + funcPrefix + "(atUint16(" + fieldName + "));";
-                    else if (width == 32)
-                        return ATHENA_DNA_WRITER ".writeUint32" + funcPrefix + "(atUint32(" + fieldName + "));";
-                    else if (width == 64)
-                        return ATHENA_DNA_WRITER ".writeUint64" + funcPrefix + "(atUint64(" + fieldName + "));";
-                }
-                else if (bType->isSignedInteger())
-                {
-                    if (width == 8)
-                        return ATHENA_DNA_WRITER ".writeByte(atInt8(" + fieldName + "));";
-                    else if (width == 16)
-                        return ATHENA_DNA_WRITER ".writeInt16" + funcPrefix + "(atInt16(" + fieldName + "));";
-                    else if (width == 32)
-                        return ATHENA_DNA_WRITER ".writeInt32" + funcPrefix + "(atInt32(" + fieldName + "));";
-                    else if (width == 64)
-                        return ATHENA_DNA_WRITER ".writeInt64" + funcPrefix + "(atInt64(" + fieldName + "));";
-                }
-            }
-            else if (theType->isBuiltinType())
-            {
-                const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
-                if (bType->isBooleanType())
-                {
-                    return ATHENA_DNA_WRITER ".writeBool(" + fieldName + ");";
-                }
-                else if (bType->isUnsignedInteger())
-                {
-                    if (width == 8)
-                        return ATHENA_DNA_WRITER ".writeUByte(" + fieldName + ");";
-                    else if (width == 16)
-                        return ATHENA_DNA_WRITER ".writeUint16" + funcPrefix + "(" + fieldName + ");";
-                    else if (width == 32)
-                        return ATHENA_DNA_WRITER ".writeUint32" + funcPrefix + "(" + fieldName + ");";
-                    else if (width == 64)
-                        return ATHENA_DNA_WRITER ".writeUint64" + funcPrefix + "(" + fieldName + ");";
-                }
-                else if (bType->isSignedInteger())
-                {
-                    if (width == 8)
-                        return ATHENA_DNA_WRITER ".writeByte(" + fieldName + ");";
-                    else if (width == 16)
-                        return ATHENA_DNA_WRITER ".writeInt16" + funcPrefix + "(" + fieldName + ");";
-                    else if (width == 32)
-                        return ATHENA_DNA_WRITER ".writeInt32" + funcPrefix + "(" + fieldName + ");";
-                    else if (width == 64)
-                        return ATHENA_DNA_WRITER ".writeInt64" + funcPrefix + "(" + fieldName + ");";
-                }
-                else if (bType->isFloatingPoint())
-                {
-                    if (width == 32)
-                        return ATHENA_DNA_WRITER ".writeFloat" + funcPrefix + "(" + fieldName + ");";
-                    else if (width == 64)
-                        return ATHENA_DNA_WRITER ".writeDouble" + funcPrefix + "(" + fieldName + ");";
-                }
-            }
-            else if (theType->isRecordType())
-            {
-                const clang::CXXRecordDecl* rDecl = theType->getAsCXXRecordDecl();
-                for (const clang::FieldDecl* field : rDecl->fields())
-                {
-                    if (!field->getName().compare("clangVec"))
-                    {
-                        const clang::VectorType* vType = (clang::VectorType*)field->getType().getTypePtr();
-                        if (vType->isVectorType())
-                        {
-                            const clang::BuiltinType* eType = (clang::BuiltinType*)vType->getElementType().getTypePtr();
-                            const uint64_t width = context.getTypeInfo(eType).Width;
-                            if (!eType->isBuiltinType() || !eType->isFloatingPoint() ||
-                                (width != 32 && width != 64))
-                                continue;
-                            if (vType->getNumElements() == 2)
-                            {
-                                if (width == 32)
-                                    return ATHENA_DNA_WRITER ".writeVec2f" + funcPrefix + "(" + fieldName + ");";
-                                else if (width == 64)
-                                    return ATHENA_DNA_WRITER ".writeVec2d" + funcPrefix + "(" + fieldName + ");";
-                            }
-                            else if (vType->getNumElements() == 3)
-                            {
-                                if (width == 32)
-                                    return ATHENA_DNA_WRITER ".writeVec3f" + funcPrefix + "(" + fieldName + ");";
-                                else if (width == 64)
-                                    return ATHENA_DNA_WRITER ".writeVec3d" + funcPrefix + "(" + fieldName + ");";
-                            }
-                            else if (vType->getNumElements() == 4)
-                            {
-                                if (width == 32)
-                                    return ATHENA_DNA_WRITER ".writeVec4f" + funcPrefix + "(" + fieldName + ");";
-                                else if (width == 64)
-                                    return ATHENA_DNA_WRITER ".writeVec4d" + funcPrefix + "(" + fieldName + ");";
-                            }
-                        }
-                    }
-                }
-                std::string baseDNA;
-                bool isYAML = false;
-                if (isDNARecord(rDecl, baseDNA, isYAML))
-                {
-                    isDNATypeOut = true;
-                    return "write(" ATHENA_DNA_WRITER ");";
-                }
-            }
-        }
-        else
-        {
-            if (theType->isEnumeralType())
-            {
-                clang::EnumType* eType = (clang::EnumType*)theType;
-                clang::EnumDecl* eDecl = eType->getDecl();
-                theType = eDecl->getIntegerType().getCanonicalType().getTypePtr();
-                std::string qName = eDecl->getQualifiedNameAsString();
-
-                const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
-                if (bType->isBooleanType())
-                {
-                    return qName + "(" ATHENA_DNA_READER ".readBool())";
-                }
-                else if (bType->isUnsignedInteger())
-                {
-                    if (width == 8)
-                        return qName + "(" ATHENA_DNA_READER ".readUByte())";
-                    else if (width == 16)
-                        return qName + "(" ATHENA_DNA_READER ".readUint16" + funcPrefix + "())";
-                    else if (width == 32)
-                        return qName + "(" ATHENA_DNA_READER ".readUint32" + funcPrefix + "())";
-                    else if (width == 64)
-                        return qName + "(" ATHENA_DNA_READER ".readUint64" + funcPrefix + "())";
-                }
-                else if (bType->isSignedInteger())
-                {
-                    if (width == 8)
-                        return qName + "(" ATHENA_DNA_READER ".readByte()";
-                    else if (width == 16)
-                        return qName + "(" ATHENA_DNA_READER ".readInt16" + funcPrefix + "())";
-                    else if (width == 32)
-                        return qName + "(" ATHENA_DNA_READER ".readInt32" + funcPrefix + "())";
-                    else if (width == 64)
-                        return qName + "(" ATHENA_DNA_READER ".readInt64" + funcPrefix + "())";
-                }
-            }
-            else if (theType->isBuiltinType())
-            {
-                const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
-                if (bType->isBooleanType())
-                {
-                    return ATHENA_DNA_READER ".readBool()";
-                }
-                else if (bType->isUnsignedInteger())
-                {
-                    if (width == 8)
-                        return ATHENA_DNA_READER ".readUByte()";
-                    else if (width == 16)
-                        return ATHENA_DNA_READER ".readUint16" + funcPrefix + "()";
-                    else if (width == 32)
-                        return ATHENA_DNA_READER ".readUint32" + funcPrefix + "()";
-                    else if (width == 64)
-                        return ATHENA_DNA_READER ".readUint64" + funcPrefix + "()";
-                }
-                else if (bType->isSignedInteger())
-                {
-                    if (width == 8)
-                        return ATHENA_DNA_READER ".readByte()";
-                    else if (width == 16)
-                        return ATHENA_DNA_READER ".readInt16" + funcPrefix + "()";
-                    else if (width == 32)
-                        return ATHENA_DNA_READER ".readInt32" + funcPrefix + "()";
-                    else if (width == 64)
-                        return ATHENA_DNA_READER ".readInt64" + funcPrefix + "()";
-                }
-                else if (bType->isFloatingPoint())
-                {
-                    if (width == 32)
-                        return ATHENA_DNA_READER ".readFloat" + funcPrefix + "()";
-                    else if (width == 64)
-                        return ATHENA_DNA_READER ".readDouble" + funcPrefix + "()";
-                }
-            }
-            else if (theType->isRecordType())
-            {
-                const clang::CXXRecordDecl* rDecl = theType->getAsCXXRecordDecl();
-                for (const clang::FieldDecl* field : rDecl->fields())
-                {
-                    if (!field->getName().compare("clangVec"))
-                    {
-                        const clang::VectorType* vType = (clang::VectorType*)field->getType().getTypePtr();
-                        if (vType->isVectorType())
-                        {
-                            const clang::BuiltinType* eType = (clang::BuiltinType*)vType->getElementType().getTypePtr();
-                            const uint64_t width = context.getTypeInfo(eType).Width;
-                            if (!eType->isBuiltinType() || !eType->isFloatingPoint() ||
-                                (width != 32 && width != 64))
-                                continue;
-                            if (vType->getNumElements() == 2)
-                            {
-                                if (width == 32)
-                                    return ATHENA_DNA_READER ".readVec2f" + funcPrefix + "()";
-                                else if (width == 64)
-                                    return ATHENA_DNA_READER ".readVec2d" + funcPrefix + "()";
-                            }
-                            else if (vType->getNumElements() == 3)
-                            {
-                                if (width == 32)
-                                    return ATHENA_DNA_READER ".readVec3f" + funcPrefix + "()";
-                                else if (width == 64)
-                                    return ATHENA_DNA_READER ".readVec3d" + funcPrefix + "()";
-                            }
-                            else if (vType->getNumElements() == 4)
-                            {
-                                if (width == 32)
-                                    return ATHENA_DNA_READER ".readVec4f" + funcPrefix + "()";
-                                else if (width == 64)
-                                    return ATHENA_DNA_READER ".readVec4d" + funcPrefix + "()";
-                            }
-                        }
-                    }
-                }
-                std::string baseDNA;
-                bool isYAML = false;
-                if (isDNARecord(rDecl, baseDNA, isYAML))
-                {
-                    isDNATypeOut = true;
-                    return "read(" ATHENA_DNA_READER ");";
-                }
-            }
-        }
-        return std::string();
-    }
-
-    std::string GetYAMLString(const clang::Type* theType, unsigned width,
-                              const std::string& fieldName, const std::string& bareFieldName,
-                              bool writerPass, bool& isDNATypeOut)
-    {
-        isDNATypeOut = false;
-        if (writerPass)
-        {
-            if (theType->isEnumeralType())
-            {
-                clang::EnumType* eType = (clang::EnumType*)theType;
-                clang::EnumDecl* eDecl = eType->getDecl();
-                theType = eDecl->getIntegerType().getCanonicalType().getTypePtr();
-
-                const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
-                if (bType->isBooleanType())
-                {
-                    return ATHENA_YAML_WRITER ".writeBool(\"" + bareFieldName + "\", bool(" + fieldName + "));";
-                }
-                else if (bType->isUnsignedInteger())
-                {
-                    if (width == 8)
-                        return ATHENA_YAML_WRITER ".writeUByte(\"" + bareFieldName + "\", atUint8(" + fieldName + "));";
-                    else if (width == 16)
-                        return ATHENA_YAML_WRITER ".writeUint16(\"" + bareFieldName + "\", atUint16(" + fieldName + "));";
-                    else if (width == 32)
-                        return ATHENA_YAML_WRITER ".writeUint32(\"" + bareFieldName + "\", atUint32(" + fieldName + "));";
-                    else if (width == 64)
-                        return ATHENA_YAML_WRITER ".writeUint64(\"" + bareFieldName + "\", atUint64(" + fieldName + "));";
-                }
-                else if (bType->isSignedInteger())
-                {
-                    if (width == 8)
-                        return ATHENA_YAML_WRITER ".writeByte(\"" + bareFieldName + "\", atInt8(" + fieldName + "));";
-                    else if (width == 16)
-                        return ATHENA_YAML_WRITER ".writeInt16(\"" + bareFieldName + "\", atInt16(" + fieldName + "));";
-                    else if (width == 32)
-                        return ATHENA_YAML_WRITER ".writeInt32(\"" + bareFieldName + "\", atInt32(" + fieldName + "));";
-                    else if (width == 64)
-                        return ATHENA_YAML_WRITER ".writeInt64(\"" + bareFieldName + "\", atInt64(" + fieldName + "));";
-                }
-            }
-            else if (theType->isBuiltinType())
-            {
-                const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
-                if (bType->isBooleanType())
-                {
-                    return ATHENA_YAML_WRITER ".writeBool(\"" + bareFieldName + "\", " + fieldName + ");";
-                }
-                else if (bType->isUnsignedInteger())
-                {
-                    if (width == 8)
-                        return ATHENA_YAML_WRITER ".writeUByte(\"" + bareFieldName + "\", " + fieldName + ");";
-                    else if (width == 16)
-                        return ATHENA_YAML_WRITER ".writeUint16(\"" + bareFieldName + "\", " + fieldName + ");";
-                    else if (width == 32)
-                        return ATHENA_YAML_WRITER ".writeUint32(\"" + bareFieldName + "\", " + fieldName + ");";
-                    else if (width == 64)
-                        return ATHENA_YAML_WRITER ".writeUint64(\"" + bareFieldName + "\", " + fieldName + ");";
-                }
-                else if (bType->isSignedInteger())
-                {
-                    if (width == 8)
-                        return ATHENA_YAML_WRITER ".writeByte(\"" + bareFieldName + "\", " + fieldName + ");";
-                    else if (width == 16)
-                        return ATHENA_YAML_WRITER ".writeInt16(\"" + bareFieldName + "\", " + fieldName + ");";
-                    else if (width == 32)
-                        return ATHENA_YAML_WRITER ".writeInt32(\"" + bareFieldName + "\", " + fieldName + ");";
-                    else if (width == 64)
-                        return ATHENA_YAML_WRITER ".writeInt64(\"" + bareFieldName + "\", " + fieldName + ");";
-                }
-                else if (bType->isFloatingPoint())
-                {
-                    if (width == 32)
-                        return ATHENA_YAML_WRITER ".writeFloat(\"" + bareFieldName + "\", " + fieldName + ");";
-                    else if (width == 64)
-                        return ATHENA_YAML_WRITER ".writeDouble(\"" + bareFieldName + "\", " + fieldName + ");";
-                }
-            }
-            else if (theType->isRecordType())
-            {
-                const clang::CXXRecordDecl* rDecl = theType->getAsCXXRecordDecl();
-                for (const clang::FieldDecl* field : rDecl->fields())
-                {
-                    if (!field->getName().compare("clangVec"))
-                    {
-                        const clang::VectorType* vType = (clang::VectorType*)field->getType().getTypePtr();
-                        if (vType->isVectorType())
-                        {
-                            const clang::BuiltinType* eType = (clang::BuiltinType*)vType->getElementType().getTypePtr();
-                            const uint64_t width = context.getTypeInfo(eType).Width;
-                            if (!eType->isBuiltinType() || !eType->isFloatingPoint() ||
-                                (width != 32 && width != 64))
-                                continue;
-                            if (vType->getNumElements() == 2)
-                            {
-                                if (width == 32)
-                                    return ATHENA_YAML_WRITER ".writeVec2f(\"" + bareFieldName + "\", " + fieldName + ");";
-                                else if (width == 64)
-                                    return ATHENA_YAML_WRITER ".writeVec2d(\"" + bareFieldName + "\", " + fieldName + ");";
-                            }
-                            else if (vType->getNumElements() == 3)
-                            {
-                                if (width == 32)
-                                    return ATHENA_YAML_WRITER ".writeVec3f(\"" + bareFieldName + "\", " + fieldName + ");";
-                                else if (width == 64)
-                                    return ATHENA_YAML_WRITER ".writeVec3d(\"" + bareFieldName + "\", " + fieldName + ");";
-                            }
-                            else if (vType->getNumElements() == 4)
-                            {
-                                if (width == 32)
-                                    return ATHENA_YAML_WRITER ".writeVec4f(\"" + bareFieldName + "\", " + fieldName + ");";
-                                else if (width == 64)
-                                    return ATHENA_YAML_WRITER ".writeVec4d(\"" + bareFieldName + "\", " + fieldName + ");";
-                            }
-                        }
-                    }
-                }
-                std::string baseDNA;
-                bool isYAML = false;
-                if (isDNARecord(rDecl, baseDNA, isYAML))
-                {
-                    isDNATypeOut = true;
-                    return "write(" ATHENA_YAML_WRITER ");";
-                }
-            }
-        }
-        else
-        {
-            if (theType->isEnumeralType())
-            {
-                clang::EnumType* eType = (clang::EnumType*)theType;
-                clang::EnumDecl* eDecl = eType->getDecl();
-                theType = eDecl->getIntegerType().getCanonicalType().getTypePtr();
-                std::string qName = eDecl->getQualifiedNameAsString();
-
-                const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
-                if (bType->isBooleanType())
-                {
-                    return qName + "(" ATHENA_YAML_READER ".readBool(\"" + bareFieldName + "\"))";
-                }
-                else if (bType->isUnsignedInteger())
-                {
-                    if (width == 8)
-                        return qName + "(" ATHENA_YAML_READER ".readUByte(\"" + bareFieldName + "\"))";
-                    else if (width == 16)
-                        return qName + "(" ATHENA_YAML_READER ".readUint16(\"" + bareFieldName + "\"))";
-                    else if (width == 32)
-                        return qName + "(" ATHENA_YAML_READER ".readUint32(\"" + bareFieldName + "\"))";
-                    else if (width == 64)
-                        return qName + "(" ATHENA_YAML_READER ".readUint64(\"" + bareFieldName + "\"))";
-                }
-                else if (bType->isSignedInteger())
-                {
-                    if (width == 8)
-                        return qName + "(" ATHENA_YAML_READER ".readByte(\"" + bareFieldName + "\"))";
-                    else if (width == 16)
-                        return qName + "(" ATHENA_YAML_READER ".readInt16(\"" + bareFieldName + "\"))";
-                    else if (width == 32)
-                        return qName + "(" ATHENA_YAML_READER ".readInt32(\"" + bareFieldName + "\"))";
-                    else if (width == 64)
-                        return qName + "(" ATHENA_YAML_READER ".readInt64(\"" + bareFieldName + "\"))";
-                }
-            }
-            else if (theType->isBuiltinType())
-            {
-                const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
-                if (bType->isBooleanType())
-                {
-                    return ATHENA_YAML_READER ".readBool(\"" + bareFieldName + "\")";
-                }
-                else if (bType->isUnsignedInteger())
-                {
-                    if (width == 8)
-                        return ATHENA_YAML_READER ".readUByte(\"" + bareFieldName + "\")";
-                    else if (width == 16)
-                        return ATHENA_YAML_READER ".readUint16(\"" + bareFieldName + "\")";
-                    else if (width == 32)
-                        return ATHENA_YAML_READER ".readUint32(\"" + bareFieldName + "\")";
-                    else if (width == 64)
-                        return ATHENA_YAML_READER ".readUint64(\"" + bareFieldName + "\")";
-                }
-                else if (bType->isSignedInteger())
-                {
-                    if (width == 8)
-                        return ATHENA_YAML_READER ".readByte(\"" + bareFieldName + "\")";
-                    else if (width == 16)
-                        return ATHENA_YAML_READER ".readInt16(\"" + bareFieldName + "\")";
-                    else if (width == 32)
-                        return ATHENA_YAML_READER ".readInt32(\"" + bareFieldName + "\")";
-                    else if (width == 64)
-                        return ATHENA_YAML_READER ".readInt64(\"" + bareFieldName + "\")";
-                }
-                else if (bType->isFloatingPoint())
-                {
-                    if (width == 32)
-                        return ATHENA_YAML_READER ".readFloat(\"" + bareFieldName + "\")";
-                    else if (width == 64)
-                        return ATHENA_YAML_READER ".readDouble(\"" + bareFieldName + "\")";
-                }
-            }
-            else if (theType->isRecordType())
-            {
-                const clang::CXXRecordDecl* rDecl = theType->getAsCXXRecordDecl();
-                for (const clang::FieldDecl* field : rDecl->fields())
-                {
-                    if (!field->getName().compare("clangVec"))
-                    {
-                        const clang::VectorType* vType = (clang::VectorType*)field->getType().getTypePtr();
-                        if (vType->isVectorType())
-                        {
-                            const clang::BuiltinType* eType = (clang::BuiltinType*)vType->getElementType().getTypePtr();
-                            const uint64_t width = context.getTypeInfo(eType).Width;
-                            if (!eType->isBuiltinType() || !eType->isFloatingPoint() ||
-                                (width != 32 && width != 64))
-                                continue;
-                            if (vType->getNumElements() == 2)
-                            {
-                                if (width == 32)
-                                    return ATHENA_YAML_READER ".readVec2f(\"" + bareFieldName + "\")";
-                                else if (width == 64)
-                                    return ATHENA_YAML_READER ".readVec2d(\"" + bareFieldName + "\")";
-                            }
-                            else if (vType->getNumElements() == 3)
-                            {
-                                if (width == 32)
-                                    return ATHENA_YAML_READER ".readVec3f(\"" + bareFieldName + "\")";
-                                else if (width == 64)
-                                    return ATHENA_YAML_READER ".readVec3d(\"" + bareFieldName + "\")";
-                            }
-                            else if (vType->getNumElements() == 4)
-                            {
-                                if (width == 32)
-                                    return ATHENA_YAML_READER ".readVec4f(\"" + bareFieldName + "\")";
-                                else if (width == 64)
-                                    return ATHENA_YAML_READER ".readVec4d(\"" + bareFieldName + "\")";
-                            }
-                        }
-                    }
-                }
-                std::string baseDNA;
-                bool isYAML = false;
-                if (isDNARecord(rDecl, baseDNA, isYAML))
-                {
-                    isDNATypeOut = true;
-                    return "read(" ATHENA_YAML_READER ");";
-                }
-            }
-        }
-        return std::string();
-    }
-#endif
-
     static std::string GetFieldString(const std::string& fieldName)
     {
         size_t underscorePos = fieldName.find('_');
@@ -710,12 +209,12 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
         std::string propIdExpr = "\"" + fieldStr + "\"";
         for (clang::Attr* attr : field->attrs())
         {
-            if (clang::AnnotateAttr* annot = clang::dyn_cast<clang::AnnotateAttr>(attr))
+            if (clang::AnnotateAttr* annot = clang::dyn_cast_or_null<clang::AnnotateAttr>(attr))
             {
-                llvm::StringRef text_ref = annot->getAnnotation();
-                if (text_ref.startswith_lower("rcrc32="))
+                llvm::StringRef textRef = annot->getAnnotation();
+                if (textRef.startswith_lower("rcrc32="))
                 {
-                    unsigned long num = strtoul(text_ref.data() + 7, nullptr, 16);
+                    unsigned long num = strtoul(textRef.data() + 7, nullptr, 16);
                     std::string tmpS;
                     llvm::raw_string_ostream s(tmpS);
                     s << llvm::format("\"%s\", 0x%08X", fieldStr.c_str(), num);
@@ -730,32 +229,200 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
     static std::string GetOpString(const std::string& fieldName, const std::string& propIdExpr, int64_t endianVal)
     {
 
-        return "Do<Op, "s + (endianVal ? "Endian::Big" : "Endian::Little") + ">({" + propIdExpr + "}, " + fieldName + ", s)";
+        return "<Op, "s + (endianVal ? "Endian::Big" : "Endian::Little") + ">({" + propIdExpr + "}, " + fieldName + ", s)";
     }
 
     static std::string GetOpString(const std::string& fieldName, const std::string& propIdExpr)
     {
 
-        return "Do<Op>({" + propIdExpr + "}, " + fieldName + ", s)";
+        return "<Op>({" + propIdExpr + "}, " + fieldName + ", s)";
     }
 
     static std::string GetVectorOpString(const std::string& fieldName, const std::string& propIdExpr, const std::string& sizeExpr, int64_t endianVal)
     {
-        return "Do<Op, "s + (endianVal ? "Endian::Big" : "Endian::Little") + ">({" + propIdExpr + "}, " + fieldName + ", " + sizeExpr + ", s)";
+        return "<Op, "s + (endianVal ? "Endian::Big" : "Endian::Little") + ">({" + propIdExpr + "}, " + fieldName + ", " + sizeExpr + ", s)";
     }
 
     static std::string GetVectorOpString(const std::string& fieldName, const std::string& propIdExpr, const std::string& sizeExpr)
     {
-        return "Do<Op>({" + propIdExpr + "}, " + fieldName + ", " + sizeExpr + ", s)";
+        return "<Op>({" + propIdExpr + "}, " + fieldName + ", " + sizeExpr + ", s)";
+    }
+
+    static void RecurseNestedTypeName(const clang::DeclContext* decl, std::string& templateStmt, std::string& qualType)
+    {
+        if (!decl)
+            return;
+        RecurseNestedTypeName(decl->getParent(), templateStmt, qualType);
+        if (const clang::CXXRecordDecl* rec = clang::dyn_cast_or_null<clang::CXXRecordDecl>(decl))
+        {
+            if (!qualType.empty())
+                qualType += "::";
+            qualType += rec->getName();
+            if (const clang::ClassTemplateDecl* ct = rec->getDescribedClassTemplate())
+            {
+                templateStmt += "template <";
+                qualType += '<';
+                bool needsComma = false;
+                for (const clang::NamedDecl* parm : *ct->getTemplateParameters())
+                {
+                    if (const clang::TemplateTypeParmDecl* tpParm =
+                        clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parm))
+                    {
+                        if (needsComma)
+                        {
+                            templateStmt += ", ";
+                            qualType += ", ";
+                        }
+                        templateStmt += "class "s + tpParm->getName().data();
+                        qualType += tpParm->getName();
+                        needsComma = true;
+                    }
+                    else if (const clang::NonTypeTemplateParmDecl* nonTypeParm =
+                             clang::dyn_cast_or_null<clang::NonTypeTemplateParmDecl>(parm))
+                    {
+                        if (needsComma)
+                        {
+                            templateStmt += ", ";
+                            qualType += ", ";
+                        }
+                        templateStmt += nonTypeParm->getType().getAsString() + ' ' + nonTypeParm->getName().data();
+                        qualType += nonTypeParm->getName();
+                        needsComma = true;
+                    }
+                }
+                templateStmt += ">\n";
+                qualType += '>';
+            }
+        }
+        else if (const clang::NamedDecl* namedDecl = clang::dyn_cast_or_null<clang::NamedDecl>(decl))
+        {
+            if (!qualType.empty())
+                qualType += "::";
+            qualType += namedDecl->getName();
+        }
+    }
+
+    static void GetNestedTypeName(const clang::DeclContext* decl, std::string& templateStmt, std::string& qualType)
+    {
+        templateStmt.clear();
+        qualType.clear();
+        RecurseNestedTypeName(decl, templateStmt, qualType);
+    }
+
+    static void RecurseNestedTypeSpecializations(const clang::DeclContext* decl,
+                                                 std::vector<std::pair<std::string, int>>& specializations)
+    {
+        if (!decl)
+        {
+            specializations.emplace_back();
+            return;
+        }
+
+        std::vector<std::pair<std::string, int>> parentSpecializations;
+        RecurseNestedTypeSpecializations(decl->getParent(), parentSpecializations);
+        bool foundSpecializations = false;
+        if (const clang::CXXRecordDecl* rec = clang::dyn_cast_or_null<clang::CXXRecordDecl>(decl))
+        {
+            if (const clang::ClassTemplateDecl* ct = rec->getDescribedClassTemplate())
+            {
+                int numParms = 0;
+                for (const clang::NamedDecl* parm : *ct->getTemplateParameters())
+                    if (clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parm) ||
+                        clang::dyn_cast_or_null<clang::NonTypeTemplateParmDecl>(parm))
+                        ++numParms;
+
+                for (clang::Attr* attr : rec->attrs())
+                {
+                    if (clang::AnnotateAttr* annot = clang::dyn_cast_or_null<clang::AnnotateAttr>(attr))
+                    {
+                        llvm::StringRef textRef = annot->getAnnotation();
+                        if (textRef.startswith_lower("specparms="))
+                        {
+                            llvm::SmallVector<llvm::StringRef, 16> specParms;
+                            textRef.substr(10).split(specParms, ',');
+                            int numTuples = int(specParms.size()) / numParms;
+                            for (const auto& parent : parentSpecializations)
+                            {
+                                for (int i = 0; i < numTuples; ++i)
+                                {
+                                    if (parent.first.empty())
+                                        specializations.emplace_back(std::string(rec->getName().data()) + '<', 1);
+                                    else
+                                        specializations.emplace_back(parent.first + "::" + rec->getName().data() + '<',
+                                                                     parent.second + 1);
+                                    bool needsComma = false;
+                                    for (auto it = specParms.begin() + i * numParms;
+                                         it != specParms.end() && it != specParms.begin() + (i + 1) * numParms; ++it)
+                                    {
+                                        StringRef trimmed = it->trim();
+                                        if (needsComma)
+                                            specializations.back().first += ", ";
+                                        specializations.back().first += trimmed;
+                                        needsComma = true;
+                                    }
+                                    specializations.back().first += ">";
+                                }
+                            }
+                            foundSpecializations = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!foundSpecializations)
+            for (const auto& parent : parentSpecializations)
+            {
+                if (const clang::NamedDecl* namedDecl = clang::dyn_cast_or_null<clang::NamedDecl>(decl))
+                {
+                    if (parent.first.empty())
+                        specializations.emplace_back(namedDecl->getName().data(), parent.second);
+                    else
+                        specializations.emplace_back(parent.first + "::" + namedDecl->getName().data(), parent.second);
+                }
+                else
+                    specializations.push_back(parent);
+            }
+    }
+
+    static std::vector<std::pair<std::string, int>>
+    GetNestedTypeSpecializations(const clang::DeclContext* decl)
+    {
+        std::vector<std::pair<std::string, int>> ret;
+        RecurseNestedTypeSpecializations(decl, ret);
+        return ret;
     }
 
     void emitEnumerateFunc(clang::CXXRecordDecl* decl, const std::string& baseDNA)
     {
+        std::string templateStmt;
+        std::string qualTypeStr;
+        GetNestedTypeName(decl, templateStmt, qualTypeStr);
+
+        fileOut << templateStmt;
         fileOut << "template <class Op>\nvoid " <<
-            decl->getQualifiedNameAsString() << "::Enumerate(typename Op::StreamT& s)\n{\n";
+            qualTypeStr << "::Enumerate(typename Op::StreamT& s)\n{\n";
 
         if (baseDNA.size())
             fileOut << "    " << baseDNA << "::Enumerate<Op>(s);\n";
+
+        enum class NodeType
+        {
+            Do,
+            DoSeek,
+            DoAlign
+        };
+        struct OutputNode
+        {
+            NodeType m_type = NodeType::Do;
+            std::string m_fieldName;
+            std::string m_ioOp;
+            bool m_squelched = false;
+            OutputNode(NodeType type, const std::string& fieldName, const std::string& ioOp, bool squelched)
+            : m_type(type), m_fieldName(fieldName), m_ioOp(ioOp), m_squelched(squelched) {}
+        };
+        std::vector<OutputNode> outputNodes;
 
         for (const clang::FieldDecl* field : decl->fields())
         {
@@ -763,300 +430,355 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
             const clang::Type* regType = qualType.getTypePtrOrNull();
             if (!regType || regType->getTypeClass() == clang::Type::TemplateTypeParm)
                 continue;
-            clang::TypeInfo regTypeInfo = context.getTypeInfo(qualType);
             while (regType->getTypeClass() == clang::Type::Elaborated ||
                    regType->getTypeClass() == clang::Type::Typedef)
                 regType = regType->getUnqualifiedDesugaredType();
 
             /* Resolve constant array */
-            size_t arraySize = 1;
-            bool isArray = false;
             if (regType->getTypeClass() == clang::Type::ConstantArray)
             {
-                isArray = true;
                 const clang::ConstantArrayType* caType = (clang::ConstantArrayType*)regType;
-                arraySize = caType->getSize().getZExtValue();
                 qualType = caType->getElementType();
-                regTypeInfo = context.getTypeInfo(qualType);
                 regType = qualType.getTypePtrOrNull();
                 if (regType->getTypeClass() == clang::Type::Elaborated)
                     regType = regType->getUnqualifiedDesugaredType();
             }
 
-            for (int e=0 ; e<arraySize ; ++e)
+            std::string fieldName = field->getName();
+            std::string propIdExpr = GetPropIdExpr(field, fieldName);
+
+            if (regType->getTypeClass() == clang::Type::TemplateSpecialization)
             {
-                std::string fieldName;
-                if (isArray)
+                const clang::TemplateSpecializationType* tsType = (const clang::TemplateSpecializationType*)regType;
+                const clang::TemplateDecl* tsDecl = tsType->getTemplateName().getAsTemplateDecl();
+                const clang::TemplateParameterList* classParms = tsDecl->getTemplateParameters();
+
+                if (!tsDecl->getName().compare("Value"))
                 {
-                    char subscript[16];
-                    snprintf(subscript, 16, "[%d]", e);
-                    fieldName = field->getName().str() + subscript;
-                }
-                else
-                    fieldName = field->getName();
-
-                std::string propIdExpr = GetPropIdExpr(field, fieldName);
-
-                if (regType->getTypeClass() == clang::Type::TemplateSpecialization)
-                {
-                    const clang::TemplateSpecializationType* tsType = (const clang::TemplateSpecializationType*)regType;
-                    const clang::TemplateDecl* tsDecl = tsType->getTemplateName().getAsTemplateDecl();
-                    const clang::TemplateParameterList* classParms = tsDecl->getTemplateParameters();
-
-                    if (!tsDecl->getName().compare("Value"))
+                    llvm::APSInt endian(64, -1);
+                    const clang::Expr* endianExpr = nullptr;
+                    bool defaultEndian = true;
+                    if (classParms->size() >= 2)
                     {
-                        llvm::APSInt endian(64, -1);
-                        const clang::Expr* endianExpr = nullptr;
-                        if (classParms->size() >= 2)
+                        const clang::NamedDecl* endianParm = classParms->getParam(1);
+                        if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
                         {
-                            const clang::NamedDecl* endianParm = classParms->getParam(1);
-                            if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
+                            const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
+                            const clang::Expr* defArg = nttParm->getDefaultArgument();
+                            endianExpr = defArg;
+                            if (!defArg->isIntegerConstantExpr(endian, context))
                             {
-                                const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
-                                const clang::Expr* defArg = nttParm->getDefaultArgument();
-                                endianExpr = defArg;
-                                if (!defArg->isIntegerConstantExpr(endian, context))
-                                {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
-                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                    diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
-                                    continue;
-                                }
-                            }
-                        }
-
-                        for (const clang::TemplateArgument& arg : *tsType)
-                        {
-                            if (arg.getKind() == clang::TemplateArgument::Expression)
-                            {
-                                const clang::Expr* expr = arg.getAsExpr();
-                                endianExpr = expr;
-                                if (!expr->isIntegerConstantExpr(endian, context))
-                                {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                    diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
-                                    continue;
-                                }
-                            }
-                        }
-
-                        int64_t endianVal = endian.getSExtValue();
-                        if (endianVal != 0 && endianVal != 1)
-                        {
-                            if (endianExpr)
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
+                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
                                 diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
+                                diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
+                                continue;
                             }
+                        }
+                    }
+
+                    for (const clang::TemplateArgument& arg : *tsType)
+                    {
+                        if (arg.getKind() == clang::TemplateArgument::Expression)
+                        {
+                            const clang::Expr* expr = arg.getAsExpr();
+                            endianExpr = expr;
+                            defaultEndian = false;
+                            if (!expr->isIntegerConstantExpr(endian, context))
+                            {
+                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
+                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                continue;
+                            }
+                        }
+                    }
+
+                    int64_t endianVal = endian.getSExtValue();
+                    if (endianVal != 0 && endianVal != 1)
+                    {
+                        if (endianExpr)
+                        {
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
+                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                            diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
+                        }
+                        else
+                        {
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                        }
+                        continue;
+                    }
+
+                    std::string ioOp;
+                    bool isDNAType = false;
+                    for (const clang::TemplateArgument& arg : *tsType)
+                    {
+                        if (arg.getKind() == clang::TemplateArgument::Type)
+                        {
+                            if (defaultEndian)
+                                ioOp = GetOpString(fieldName, propIdExpr);
                             else
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                            }
-                            continue;
-                        }
-
-                        clang::QualType templateType;
-                        std::string ioOp;
-                        bool isDNAType = false;
-                        const clang::TemplateArgument* typeArg = nullptr;
-                        for (const clang::TemplateArgument& arg : *tsType)
-                        {
-                            if (arg.getKind() == clang::TemplateArgument::Type)
-                            {
-                                typeArg = &arg;
-                                templateType = arg.getAsType().getCanonicalType();
                                 ioOp = GetOpString(fieldName, propIdExpr, endianVal);
-                            }
                         }
-
-                        if (ioOp.empty())
-                        {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                            diag.AddString("Unable to use type '" + tsDecl->getName().str() + "' with Athena");
-                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                            continue;
-                        }
-
-                        fileOut << "    " << ioOp << ";\n";
                     }
-                    else if (!tsDecl->getName().compare("Vector"))
+
+                    if (ioOp.empty())
                     {
-                        llvm::APSInt endian(64, -1);
-                        const clang::Expr* endianExpr = nullptr;
-                        if (classParms->size() >= 3)
-                        {
-                            const clang::NamedDecl* endianParm = classParms->getParam(2);
-                            if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
-                            {
-                                const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
-                                const clang::Expr* defArg = nttParm->getDefaultArgument();
-                                endianExpr = defArg;
-                                if (!defArg->isIntegerConstantExpr(endian, context))
-                                {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
-                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                    diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
-                                    continue;
-                                }
-                            }
-                        }
-
-                        std::string sizeExpr;
-                        const clang::TemplateArgument* sizeArg = nullptr;
-                        size_t idx = 0;
-                        bool bad = false;
-                        for (const clang::TemplateArgument& arg : *tsType)
-                        {
-                            if (arg.getKind() == clang::TemplateArgument::Expression)
-                            {
-                                const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
-                                if (idx == 1)
-                                {
-                                    sizeArg = &arg;
-                                    const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
-                                    if (uExpr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
-                                        uExpr->getKind() == clang::UETT_SizeOf)
-                                    {
-                                        const clang::Expr* argExpr = uExpr->getArgumentExpr();
-                                        while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
-                                            argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
-                                        llvm::raw_string_ostream strStream(sizeExpr);
-                                        argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
-                                    }
-                                }
-                                else if (idx == 2)
-                                {
-                                    endianExpr = expr;
-                                    if (!expr->isIntegerConstantExpr(endian, context))
-                                    {
-                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                        diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                        diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
-                                        bad = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            ++idx;
-                        }
-                        if (bad)
-                            continue;
-
-                        int64_t endianVal = endian.getSExtValue();
-                        if (endianVal != 0 && endianVal != 1)
-                        {
-                            if (endianExpr)
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
-                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
-                            }
-                            else
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                            }
-                            continue;
-                        }
-
-                        clang::QualType templateType;
-                        std::string ioOp;
-                        bool isDNAType = false;
-                        const clang::TemplateArgument* typeArg = nullptr;
-                        for (const clang::TemplateArgument& arg : *tsType)
-                        {
-                            if (arg.getKind() == clang::TemplateArgument::Type)
-                            {
-                                typeArg = &arg;
-                                templateType = arg.getAsType().getCanonicalType();
-                                ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExpr, endianVal);
-                            }
-                        }
-
-                        if (ioOp.empty())
-                        {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                            diag.AddString("Unable to use type '" + templateType.getAsString() + "' with Athena");
-                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                            continue;
-                        }
-
-                        if (sizeExpr.empty())
-                        {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                            diag.AddString("Unable to use count variable with Athena");
-                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                            continue;
-                        }
-
-                        fileOut << "    " << ioOp << ";\n";
-
+                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                        diag.AddString("Unable to use type '" + tsDecl->getName().str() + "' with Athena");
+                        diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                        continue;
                     }
-                    else if (!tsDecl->getName().compare("Buffer"))
+
+                    outputNodes.emplace_back(NodeType::Do, fieldName, ioOp, false);
+                }
+                else if (!tsDecl->getName().compare("Vector"))
+                {
+                    llvm::APSInt endian(64, -1);
+                    const clang::Expr* endianExpr = nullptr;
+                    bool defaultEndian = true;
+                    if (classParms->size() >= 3)
                     {
-                        const clang::Expr* sizeExpr = nullptr;
-                        std::string sizeExprStr;
-                        for (const clang::TemplateArgument& arg : *tsType)
+                        const clang::NamedDecl* endianParm = classParms->getParam(2);
+                        if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
                         {
-                            if (arg.getKind() == clang::TemplateArgument::Expression)
+                            const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
+                            const clang::Expr* defArg = nttParm->getDefaultArgument();
+                            endianExpr = defArg;
+                            if (!defArg->isIntegerConstantExpr(endian, context))
                             {
-                                const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)arg.getAsExpr()->IgnoreImpCasts();
+                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
+                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
+                                continue;
+                            }
+                        }
+                    }
+
+                    std::string sizeExpr;
+                    size_t idx = 0;
+                    bool bad = false;
+                    for (const clang::TemplateArgument& arg : *tsType)
+                    {
+                        if (arg.getKind() == clang::TemplateArgument::Expression)
+                        {
+                            const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
+                            if (idx == 1)
+                            {
+                                const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
                                 if (uExpr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
                                     uExpr->getKind() == clang::UETT_SizeOf)
                                 {
                                     const clang::Expr* argExpr = uExpr->getArgumentExpr();
                                     while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
                                         argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
-                                    sizeExpr = argExpr;
-                                    llvm::raw_string_ostream strStream(sizeExprStr);
+
+                                    if (argExpr->getStmtClass() == clang::Stmt::DeclRefExprClass)
+                                    {
+                                        clang::DeclRefExpr* drExpr = (clang::DeclRefExpr*)argExpr;
+                                        std::string testName = drExpr->getFoundDecl()->getNameAsString();
+                                        for (auto i=outputNodes.rbegin() ; i != outputNodes.rend() ; ++i)
+                                        {
+                                            if (i->m_fieldName == testName)
+                                            {
+                                                i->m_squelched = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    llvm::raw_string_ostream strStream(sizeExpr);
                                     argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
                                 }
                             }
-                        }
-                        if (sizeExprStr.empty())
-                        {
-                            if (sizeExpr)
+                            else if (idx == 2)
                             {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(sizeExpr->getLocStart(), AthenaError);
-                                diag.AddString("Unable to use size variable with Athena");
-                                diag.AddSourceRange(clang::CharSourceRange(sizeExpr->getSourceRange(), true));
+                                defaultEndian = false;
+                                endianExpr = expr;
+                                if (!expr->isIntegerConstantExpr(endian, context))
+                                {
+                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
+                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                    diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                    bad = true;
+                                    break;
+                                }
                             }
-                            else
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                                diag.AddString("Unable to use size variable with Athena");
-                                diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                            }
-                            continue;
                         }
-
-                        std::string ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr);
-
-                        fileOut << "    " << ioOp << ";\n";
+                        ++idx;
                     }
-                    else if (!tsDecl->getName().compare("String"))
+                    if (bad)
+                        continue;
+
+                    int64_t endianVal = endian.getSExtValue();
+                    if (endianVal != 0 && endianVal != 1)
                     {
-                        const clang::Expr* sizeExpr = nullptr;
-                        std::string sizeExprStr;
-                        for (const clang::TemplateArgument& arg : *tsType)
+                        if (endianExpr)
                         {
-                            if (arg.getKind() == clang::TemplateArgument::Expression)
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
+                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                            diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
+                        }
+                        else
+                        {
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                        }
+                        continue;
+                    }
+
+                    clang::QualType templateType;
+                    std::string ioOp;
+                    bool isDNAType = false;
+                    for (const clang::TemplateArgument& arg : *tsType)
+                    {
+                        if (arg.getKind() == clang::TemplateArgument::Type)
+                        {
+                            templateType = arg.getAsType().getCanonicalType();
+                            if (defaultEndian)
+                                ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExpr);
+                            else
+                                ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExpr, endianVal);
+                        }
+                    }
+
+                    if (ioOp.empty())
+                    {
+                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                        diag.AddString("Unable to use type '" + templateType.getAsString() + "' with Athena");
+                        diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                        continue;
+                    }
+
+                    if (sizeExpr.empty())
+                    {
+                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                        diag.AddString("Unable to use count variable with Athena");
+                        diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                        continue;
+                    }
+
+                    outputNodes.emplace_back(NodeType::Do, fieldName, ioOp, false);
+                }
+                else if (!tsDecl->getName().compare("Buffer"))
+                {
+                    const clang::Expr* sizeExpr = nullptr;
+                    std::string sizeExprStr;
+                    for (const clang::TemplateArgument& arg : *tsType)
+                    {
+                        if (arg.getKind() == clang::TemplateArgument::Expression)
+                        {
+                            const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)arg.getAsExpr()->IgnoreImpCasts();
+                            if (uExpr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
+                                uExpr->getKind() == clang::UETT_SizeOf)
                             {
-                                const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
-                                const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
+                                const clang::Expr* argExpr = uExpr->getArgumentExpr();
+                                while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
+                                    argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                                sizeExpr = argExpr;
+                                llvm::raw_string_ostream strStream(sizeExprStr);
+                                argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
+                            }
+                        }
+                    }
+                    if (sizeExprStr.empty())
+                    {
+                        if (sizeExpr)
+                        {
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(sizeExpr->getLocStart(), AthenaError);
+                            diag.AddString("Unable to use size variable with Athena");
+                            diag.AddSourceRange(clang::CharSourceRange(sizeExpr->getSourceRange(), true));
+                        }
+                        else
+                        {
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                            diag.AddString("Unable to use size variable with Athena");
+                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                        }
+                        continue;
+                    }
+
+                    std::string ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr);
+
+                    outputNodes.emplace_back(NodeType::Do, fieldName, ioOp, false);
+                }
+                else if (!tsDecl->getName().compare("String"))
+                {
+                    std::string sizeExprStr;
+                    for (const clang::TemplateArgument& arg : *tsType)
+                    {
+                        if (arg.getKind() == clang::TemplateArgument::Expression)
+                        {
+                            const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
+                            const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
+                            llvm::APSInt sizeLiteral;
+                            if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
+                                uExpr->getKind() == clang::UETT_SizeOf)
+                            {
+                                const clang::Expr* argExpr = uExpr->getArgumentExpr();
+                                while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
+                                    argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                                llvm::raw_string_ostream strStream(sizeExprStr);
+                                argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
+                            }
+                            else if (expr->isIntegerConstantExpr(sizeLiteral, context))
+                            {
+                                sizeExprStr = sizeLiteral.toString(10);
+                            }
+                        }
+                    }
+
+                    std::string ioOp;
+                    if (!sizeExprStr.empty())
+                        ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr);
+                    else
+                        ioOp = GetOpString(fieldName, propIdExpr);
+
+                    outputNodes.emplace_back(NodeType::Do, fieldName, ioOp, false);
+                }
+                else if (!tsDecl->getName().compare("WString"))
+                {
+                    llvm::APSInt endian(64, -1);
+                    const clang::Expr* endianExpr = nullptr;
+                    bool defaultEndian = true;
+                    if (classParms->size() >= 2)
+                    {
+                        const clang::NamedDecl* endianParm = classParms->getParam(1);
+                        if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
+                        {
+                            const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
+                            const clang::Expr* defArg = nttParm->getDefaultArgument();
+                            endianExpr = defArg;
+                            if (!defArg->isIntegerConstantExpr(endian, context))
+                            {
+                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
+                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
+                                continue;
+                            }
+                        }
+                    }
+
+                    std::string sizeExprStr;
+                    size_t idx = 0;
+                    bool bad = false;
+                    for (const clang::TemplateArgument& arg : *tsType)
+                    {
+                        if (arg.getKind() == clang::TemplateArgument::Expression)
+                        {
+                            const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
+                            if (idx == 0)
+                            {
                                 llvm::APSInt sizeLiteral;
+                                const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
                                 if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
                                     uExpr->getKind() == clang::UETT_SizeOf)
                                 {
                                     const clang::Expr* argExpr = uExpr->getArgumentExpr();
                                     while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
                                         argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
-                                    sizeExpr = argExpr;
                                     llvm::raw_string_ostream strStream(sizeExprStr);
                                     argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
                                 }
@@ -1065,228 +787,190 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                     sizeExprStr = sizeLiteral.toString(10);
                                 }
                             }
-                        }
-
-                        std::string ioOp;
-                        if (!sizeExprStr.empty())
-                            ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr);
-                        else
-                            ioOp = GetOpString(fieldName, propIdExpr);
-
-                        fileOut << "    " << ioOp << ";\n";
-                    }
-                    else if (!tsDecl->getName().compare("WString"))
-                    {
-                        llvm::APSInt endian(64, -1);
-                        const clang::Expr* endianExpr = nullptr;
-                        if (classParms->size() >= 2)
-                        {
-                            const clang::NamedDecl* endianParm = classParms->getParam(1);
-                            if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
+                            else if (idx == 1)
                             {
-                                const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
-                                const clang::Expr* defArg = nttParm->getDefaultArgument();
-                                endianExpr = defArg;
-                                if (!defArg->isIntegerConstantExpr(endian, context))
-                                {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
-                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                    diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
-                                    continue;
-                                }
-                            }
-                        }
-
-                        const clang::Expr* sizeExpr = nullptr;
-                        std::string sizeExprStr;
-                        size_t idx = 0;
-                        bool bad = false;
-                        for (const clang::TemplateArgument& arg : *tsType)
-                        {
-                            if (arg.getKind() == clang::TemplateArgument::Expression)
-                            {
-                                const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
-                                if (idx == 0)
-                                {
-                                    llvm::APSInt sizeLiteral;
-                                    const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
-                                    if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
-                                        uExpr->getKind() == clang::UETT_SizeOf)
-                                    {
-                                        const clang::Expr* argExpr = uExpr->getArgumentExpr();
-                                        while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
-                                            argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
-                                        sizeExpr = argExpr;
-                                        llvm::raw_string_ostream strStream(sizeExprStr);
-                                        argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
-                                    }
-                                    else if (expr->isIntegerConstantExpr(sizeLiteral, context))
-                                    {
-                                        sizeExprStr = sizeLiteral.toString(10);
-                                    }
-                                }
-                                else if (idx == 1)
-                                {
-                                    endianExpr = expr;
-                                    if (!expr->isIntegerConstantExpr(endian, context))
-                                    {
-                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                        diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                        diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
-                                        bad = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            ++idx;
-                        }
-                        if (bad)
-                            continue;
-
-                        int64_t endianVal = endian.getSExtValue();
-                        if (endianVal != 0 && endianVal != 1)
-                        {
-                            if (endianExpr)
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
-                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
-                            }
-                            else
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                            }
-                            continue;
-                        }
-
-                        std::string ioOp;
-                        if (!sizeExprStr.empty())
-                            ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr, endianVal);
-                        else
-                            ioOp = GetOpString(fieldName, propIdExpr, endianVal);
-
-                        fileOut << "    " << ioOp << ";\n";
-                    }
-                    else if (!tsDecl->getName().compare("Seek"))
-                    {
-                        size_t idx = 0;
-                        const clang::Expr* offsetExpr = nullptr;
-                        std::string offsetExprStr;
-                        llvm::APSInt direction(64, 0);
-                        const clang::Expr* directionExpr = nullptr;
-                        bool bad = false;
-                        for (const clang::TemplateArgument& arg : *tsType)
-                        {
-                            if (arg.getKind() == clang::TemplateArgument::Expression)
-                            {
-                                const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
-                                if (!idx)
-                                {
-                                    offsetExpr = expr;
-                                    const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
-                                    llvm::APSInt offsetLiteral;
-                                    if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
-                                        uExpr->getKind() == clang::UETT_SizeOf)
-                                    {
-                                        const clang::Expr* argExpr = uExpr->getArgumentExpr();
-                                        while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
-                                            argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
-                                        offsetExpr = argExpr;
-                                        llvm::raw_string_ostream strStream(offsetExprStr);
-                                        argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
-                                    }
-                                    else if (expr->isIntegerConstantExpr(offsetLiteral, context))
-                                    {
-                                        offsetExprStr = offsetLiteral.toString(10);
-                                    }
-                                }
-                                else
-                                {
-                                    directionExpr = expr;
-                                    if (!expr->isIntegerConstantExpr(direction, context))
-                                    {
-                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                        diag.AddString("Unable to use non-constant direction expression in Athena");
-                                        diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
-                                        bad = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            ++idx;
-                        }
-                        if (bad)
-                            continue;
-
-                        int64_t directionVal = direction.getSExtValue();
-                        if (directionVal < 0 || directionVal > 2)
-                        {
-                            if (directionExpr)
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(directionExpr->getLocStart(), AthenaError);
-                                diag.AddString("Direction parameter must be 'Begin', 'Current', or 'End'");
-                                diag.AddSourceRange(clang::CharSourceRange(directionExpr->getSourceRange(), true));
-                            }
-                            else
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                                diag.AddString("Direction parameter must be 'Begin', 'Current', or 'End'");
-                                diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                            }
-                            continue;
-                        }
-
-                        if (directionVal == 0)
-                            fileOut << "    DoSeek<Op>(" << offsetExprStr << ", Begin, s);\n";
-                        else if (directionVal == 1)
-                            fileOut << "    DoSeek<Op>(" << offsetExprStr << ", Current, s);\n";
-                        else if (directionVal == 2)
-                            fileOut << "    DoSeek<Op>(" << offsetExprStr << ", End, s);\n";
-
-                    }
-                    else if (!tsDecl->getName().compare("Align"))
-                    {
-                        llvm::APSInt align(64, 0);
-                        bool bad = false;
-                        for (const clang::TemplateArgument& arg : *tsType)
-                        {
-                            if (arg.getKind() == clang::TemplateArgument::Expression)
-                            {
-                                const clang::Expr* expr = arg.getAsExpr();
-                                if (!expr->isIntegerConstantExpr(align, context))
+                                defaultEndian = false;
+                                endianExpr = expr;
+                                if (!expr->isIntegerConstantExpr(endian, context))
                                 {
                                     clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                    diag.AddString("Unable to use non-constant align expression in Athena");
+                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
                                     diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
                                     bad = true;
                                     break;
                                 }
                             }
                         }
-                        if (bad)
-                            continue;
+                        ++idx;
+                    }
+                    if (bad)
+                        continue;
 
-                        int64_t alignVal = align.getSExtValue();
-                        if (alignVal)
+                    int64_t endianVal = endian.getSExtValue();
+                    if (endianVal != 0 && endianVal != 1)
+                    {
+                        if (endianExpr)
                         {
-                            fileOut << "    DoAlign<Op>(" << alignVal << ", s);\n";
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
+                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                            diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
                         }
+                        else
+                        {
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                        }
+                        continue;
                     }
 
-                }
+                    std::string ioOp;
+                    if (!sizeExprStr.empty())
+                    {
+                        if (defaultEndian)
+                            ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr);
+                        else
+                            ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr, endianVal);
+                    }
+                    else
+                    {
+                        if (defaultEndian)
+                            ioOp = GetOpString(fieldName, propIdExpr);
+                        else
+                            ioOp = GetOpString(fieldName, propIdExpr, endianVal);
+                    }
 
-                else if (regType->getTypeClass() == clang::Type::Record)
+                    outputNodes.emplace_back(NodeType::Do, fieldName, ioOp, false);
+                }
+                else if (!tsDecl->getName().compare("Seek"))
                 {
-                    const clang::CXXRecordDecl* cxxRDecl = regType->getAsCXXRecordDecl();
-                    std::string baseDNA;
-                    if (cxxRDecl && isDNARecord(cxxRDecl, baseDNA))
-                        fileOut << "    " << GetOpString(fieldName, propIdExpr) << ";\n";
-                }
+                    size_t idx = 0;
+                    std::string offsetExprStr;
+                    llvm::APSInt direction(64, 0);
+                    const clang::Expr* directionExpr = nullptr;
+                    bool bad = false;
+                    for (const clang::TemplateArgument& arg : *tsType)
+                    {
+                        if (arg.getKind() == clang::TemplateArgument::Expression)
+                        {
+                            const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
+                            if (!idx)
+                            {
+                                const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
+                                llvm::APSInt offsetLiteral;
+                                if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
+                                    uExpr->getKind() == clang::UETT_SizeOf)
+                                {
+                                    const clang::Expr* argExpr = uExpr->getArgumentExpr();
+                                    while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
+                                        argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                                    llvm::raw_string_ostream strStream(offsetExprStr);
+                                    argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
+                                }
+                                else if (expr->isIntegerConstantExpr(offsetLiteral, context))
+                                {
+                                    offsetExprStr = offsetLiteral.toString(10);
+                                }
+                            }
+                            else
+                            {
+                                directionExpr = expr;
+                                if (!expr->isIntegerConstantExpr(direction, context))
+                                {
+                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
+                                    diag.AddString("Unable to use non-constant direction expression in Athena");
+                                    diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                    bad = true;
+                                    break;
+                                }
+                            }
+                        }
+                        ++idx;
+                    }
+                    if (bad)
+                        continue;
 
+                    int64_t directionVal = direction.getSExtValue();
+                    if (directionVal < 0 || directionVal > 2)
+                    {
+                        if (directionExpr)
+                        {
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(directionExpr->getLocStart(), AthenaError);
+                            diag.AddString("Direction parameter must be 'Begin', 'Current', or 'End'");
+                            diag.AddSourceRange(clang::CharSourceRange(directionExpr->getSourceRange(), true));
+                        }
+                        else
+                        {
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                            diag.AddString("Direction parameter must be 'Begin', 'Current', or 'End'");
+                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                        }
+                        continue;
+                    }
+
+                    if (directionVal == 0)
+                        outputNodes.emplace_back(NodeType::DoSeek, fieldName, "<Op>("s + offsetExprStr + ", athena::Begin, s)", false);
+                    else if (directionVal == 1)
+                        outputNodes.emplace_back(NodeType::DoSeek, fieldName, "<Op>("s + offsetExprStr + ", athena::Current, s)", false);
+                    else if (directionVal == 2)
+                        outputNodes.emplace_back(NodeType::DoSeek, fieldName, "<Op>("s + offsetExprStr + ", athena::End, s)", false);
+                }
+                else if (!tsDecl->getName().compare("Align"))
+                {
+                    llvm::APSInt align(64, 0);
+                    bool bad = false;
+                    for (const clang::TemplateArgument& arg : *tsType)
+                    {
+                        if (arg.getKind() == clang::TemplateArgument::Expression)
+                        {
+                            const clang::Expr* expr = arg.getAsExpr();
+                            if (!expr->isIntegerConstantExpr(align, context))
+                            {
+                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
+                                diag.AddString("Unable to use non-constant align expression in Athena");
+                                diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                bad = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (bad)
+                        continue;
+
+                    int64_t alignVal = align.getSExtValue();
+                    if (alignVal)
+                    {
+                        outputNodes.emplace_back(NodeType::DoAlign, fieldName, "<Op>("s + align.toString(10, true) + ", s)", false);
+                    }
+                }
             }
 
+            else if (regType->getTypeClass() == clang::Type::Record)
+            {
+                const clang::CXXRecordDecl* cxxRDecl = regType->getAsCXXRecordDecl();
+                std::string baseDNA;
+                if (cxxRDecl && isDNARecord(cxxRDecl, baseDNA))
+                    outputNodes.emplace_back(NodeType::Do, fieldName, GetOpString(fieldName, propIdExpr), false);
+            }
+        }
+
+        for (const OutputNode& node : outputNodes)
+        {
+            switch (node.m_type)
+            {
+            case NodeType::Do:
+                if (node.m_squelched)
+                    fileOut << "    DoSize" << node.m_ioOp << ";\n";
+                else
+                    fileOut << "    Do" << node.m_ioOp << ";\n";
+                break;
+            case NodeType::DoSeek:
+                fileOut << "    DoSeek" << node.m_ioOp << ";\n";
+                break;
+            case NodeType::DoAlign:
+                fileOut << "    DoAlign" << node.m_ioOp << ";\n";
+                break;
+            }
         }
 
         fileOut << "}\n\n";
@@ -1294,8 +978,13 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
 
     void emitLookupFunc(clang::CXXRecordDecl* decl, const std::string& baseDNA)
     {
+        std::string templateStmt;
+        std::string qualTypeStr;
+        GetNestedTypeName(decl, templateStmt, qualTypeStr);
+
+        fileOut << templateStmt;
         fileOut << "template <class Op>\nbool " <<
-                decl->getQualifiedNameAsString() << "::Lookup(uint64_t hash, typename Op::StreamT& s)\n{\n";
+            qualTypeStr << "::Lookup(uint64_t hash, typename Op::StreamT& s)\n{\n";
 
         if (baseDNA.size())
             fileOut << "    if (" << baseDNA << "::Lookup<Op>(hash, s))\n"
@@ -1310,306 +999,350 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
             const clang::Type* regType = qualType.getTypePtrOrNull();
             if (!regType || regType->getTypeClass() == clang::Type::TemplateTypeParm)
                 continue;
-            clang::TypeInfo regTypeInfo = context.getTypeInfo(qualType);
             while (regType->getTypeClass() == clang::Type::Elaborated ||
                    regType->getTypeClass() == clang::Type::Typedef)
                 regType = regType->getUnqualifiedDesugaredType();
 
             /* Resolve constant array */
-            size_t arraySize = 1;
-            bool isArray = false;
             if (regType->getTypeClass() == clang::Type::ConstantArray)
             {
-                isArray = true;
                 const clang::ConstantArrayType* caType = (clang::ConstantArrayType*)regType;
-                arraySize = caType->getSize().getZExtValue();
                 qualType = caType->getElementType();
-                regTypeInfo = context.getTypeInfo(qualType);
                 regType = qualType.getTypePtrOrNull();
                 if (regType->getTypeClass() == clang::Type::Elaborated)
                     regType = regType->getUnqualifiedDesugaredType();
             }
 
-            for (int e=0 ; e<arraySize ; ++e)
+            std::string fieldName = field->getName();
+            std::string propIdExpr = GetPropIdExpr(field, fieldName);
+
+            if (regType->getTypeClass() == clang::Type::TemplateSpecialization)
             {
-                std::string fieldName;
-                if (isArray)
+                const clang::TemplateSpecializationType* tsType = (const clang::TemplateSpecializationType*)regType;
+                const clang::TemplateDecl* tsDecl = tsType->getTemplateName().getAsTemplateDecl();
+                const clang::TemplateParameterList* classParms = tsDecl->getTemplateParameters();
+
+                if (!tsDecl->getName().compare("Value"))
                 {
-                    char subscript[16];
-                    snprintf(subscript, 16, "[%d]", e);
-                    fieldName = field->getName().str() + subscript;
-                }
-                else
-                    fieldName = field->getName();
-
-                std::string propIdExpr = GetPropIdExpr(field, fieldName);
-
-                if (regType->getTypeClass() == clang::Type::TemplateSpecialization)
-                {
-                    const clang::TemplateSpecializationType* tsType = (const clang::TemplateSpecializationType*)regType;
-                    const clang::TemplateDecl* tsDecl = tsType->getTemplateName().getAsTemplateDecl();
-                    const clang::TemplateParameterList* classParms = tsDecl->getTemplateParameters();
-
-                    if (!tsDecl->getName().compare("Value"))
+                    llvm::APSInt endian(64, -1);
+                    const clang::Expr* endianExpr = nullptr;
+                    bool defaultEndian = true;
+                    if (classParms->size() >= 2)
                     {
-                        llvm::APSInt endian(64, -1);
-                        const clang::Expr* endianExpr = nullptr;
-                        if (classParms->size() >= 2)
+                        const clang::NamedDecl* endianParm = classParms->getParam(1);
+                        if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
                         {
-                            const clang::NamedDecl* endianParm = classParms->getParam(1);
-                            if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
+                            const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
+                            const clang::Expr* defArg = nttParm->getDefaultArgument();
+                            endianExpr = defArg;
+                            if (!defArg->isIntegerConstantExpr(endian, context))
                             {
-                                const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
-                                const clang::Expr* defArg = nttParm->getDefaultArgument();
-                                endianExpr = defArg;
-                                if (!defArg->isIntegerConstantExpr(endian, context))
-                                {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
-                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                    diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
-                                    continue;
-                                }
-                            }
-                        }
-
-                        for (const clang::TemplateArgument& arg : *tsType)
-                        {
-                            if (arg.getKind() == clang::TemplateArgument::Expression)
-                            {
-                                const clang::Expr* expr = arg.getAsExpr();
-                                endianExpr = expr;
-                                if (!expr->isIntegerConstantExpr(endian, context))
-                                {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                    diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
-                                    continue;
-                                }
-                            }
-                        }
-
-                        int64_t endianVal = endian.getSExtValue();
-                        if (endianVal != 0 && endianVal != 1)
-                        {
-                            if (endianExpr)
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
+                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
                                 diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
+                                diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
+                                continue;
                             }
+                        }
+                    }
+
+                    for (const clang::TemplateArgument& arg : *tsType)
+                    {
+                        if (arg.getKind() == clang::TemplateArgument::Expression)
+                        {
+                            const clang::Expr* expr = arg.getAsExpr();
+                            endianExpr = expr;
+                            defaultEndian = false;
+                            if (!expr->isIntegerConstantExpr(endian, context))
+                            {
+                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
+                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                continue;
+                            }
+                        }
+                    }
+
+                    int64_t endianVal = endian.getSExtValue();
+                    if (endianVal != 0 && endianVal != 1)
+                    {
+                        if (endianExpr)
+                        {
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
+                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                            diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
+                        }
+                        else
+                        {
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                        }
+                        continue;
+                    }
+
+                    std::string ioOp;
+                    bool isDNAType = false;
+                    for (const clang::TemplateArgument& arg : *tsType)
+                    {
+                        if (arg.getKind() == clang::TemplateArgument::Type)
+                        {
+                            if (defaultEndian)
+                                ioOp = GetOpString(fieldName, propIdExpr);
                             else
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                            }
-                            continue;
-                        }
-
-                        clang::QualType templateType;
-                        std::string ioOp;
-                        bool isDNAType = false;
-                        const clang::TemplateArgument* typeArg = nullptr;
-                        for (const clang::TemplateArgument& arg : *tsType)
-                        {
-                            if (arg.getKind() == clang::TemplateArgument::Type)
-                            {
-                                typeArg = &arg;
-                                templateType = arg.getAsType().getCanonicalType();
                                 ioOp = GetOpString(fieldName, propIdExpr, endianVal);
-                            }
                         }
-
-                        if (ioOp.empty())
-                        {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                            diag.AddString("Unable to use type '" + tsDecl->getName().str() + "' with Athena");
-                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                            continue;
-                        }
-
-                        fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
-                                << "        " << ioOp << ";\n"
-                                << "        return true;\n";
-
                     }
-                    else if (!tsDecl->getName().compare("Vector"))
+
+                    if (ioOp.empty())
                     {
-                        llvm::APSInt endian(64, -1);
-                        const clang::Expr* endianExpr = nullptr;
-                        if (classParms->size() >= 3)
-                        {
-                            const clang::NamedDecl* endianParm = classParms->getParam(2);
-                            if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
-                            {
-                                const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
-                                const clang::Expr* defArg = nttParm->getDefaultArgument();
-                                endianExpr = defArg;
-                                if (!defArg->isIntegerConstantExpr(endian, context))
-                                {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
-                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                    diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
-                                    continue;
-                                }
-                            }
-                        }
-
-                        std::string sizeExpr;
-                        const clang::TemplateArgument* sizeArg = nullptr;
-                        size_t idx = 0;
-                        bool bad = false;
-                        for (const clang::TemplateArgument& arg : *tsType)
-                        {
-                            if (arg.getKind() == clang::TemplateArgument::Expression)
-                            {
-                                const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
-                                if (idx == 1)
-                                {
-                                    sizeArg = &arg;
-                                    const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
-                                    if (uExpr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
-                                        uExpr->getKind() == clang::UETT_SizeOf)
-                                    {
-                                        const clang::Expr* argExpr = uExpr->getArgumentExpr();
-                                        while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
-                                            argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
-                                        llvm::raw_string_ostream strStream(sizeExpr);
-                                        argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
-                                    }
-                                }
-                                else if (idx == 2)
-                                {
-                                    endianExpr = expr;
-                                    if (!expr->isIntegerConstantExpr(endian, context))
-                                    {
-                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                        diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                        diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
-                                        bad = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            ++idx;
-                        }
-                        if (bad)
-                            continue;
-
-                        int64_t endianVal = endian.getSExtValue();
-                        if (endianVal != 0 && endianVal != 1)
-                        {
-                            if (endianExpr)
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
-                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
-                            }
-                            else
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                            }
-                            continue;
-                        }
-
-                        clang::QualType templateType;
-                        std::string ioOp;
-                        bool isDNAType = false;
-                        const clang::TemplateArgument* typeArg = nullptr;
-                        for (const clang::TemplateArgument& arg : *tsType)
-                        {
-                            if (arg.getKind() == clang::TemplateArgument::Type)
-                            {
-                                typeArg = &arg;
-                                templateType = arg.getAsType().getCanonicalType();
-                                ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExpr, endianVal);
-                            }
-                        }
-
-                        if (ioOp.empty())
-                        {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                            diag.AddString("Unable to use type '" + templateType.getAsString() + "' with Athena");
-                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                            continue;
-                        }
-
-                        if (sizeExpr.empty())
-                        {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                            diag.AddString("Unable to use count variable with Athena");
-                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                            continue;
-                        }
-
-                        fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
-                                << "        " << ioOp << ";\n"
-                                << "        return true;\n";
+                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                        diag.AddString("Unable to use type '" + tsDecl->getName().str() + "' with Athena");
+                        diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                        continue;
                     }
-                    else if (!tsDecl->getName().compare("Buffer"))
+
+                    fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
+                            << "        Do" << ioOp << ";\n"
+                            << "        return true;\n";
+
+                }
+                else if (!tsDecl->getName().compare("Vector"))
+                {
+                    llvm::APSInt endian(64, -1);
+                    const clang::Expr* endianExpr = nullptr;
+                    bool defaultEndian = true;
+                    if (classParms->size() >= 3)
                     {
-                        const clang::Expr* sizeExpr = nullptr;
-                        std::string sizeExprStr;
-                        for (const clang::TemplateArgument& arg : *tsType)
+                        const clang::NamedDecl* endianParm = classParms->getParam(2);
+                        if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
                         {
-                            if (arg.getKind() == clang::TemplateArgument::Expression)
+                            const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
+                            const clang::Expr* defArg = nttParm->getDefaultArgument();
+                            endianExpr = defArg;
+                            if (!defArg->isIntegerConstantExpr(endian, context))
                             {
-                                const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)arg.getAsExpr()->IgnoreImpCasts();
+                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
+                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
+                                continue;
+                            }
+                        }
+                    }
+
+                    std::string sizeExpr;
+                    size_t idx = 0;
+                    bool bad = false;
+                    for (const clang::TemplateArgument& arg : *tsType)
+                    {
+                        if (arg.getKind() == clang::TemplateArgument::Expression)
+                        {
+                            const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
+                            if (idx == 1)
+                            {
+                                const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
                                 if (uExpr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
                                     uExpr->getKind() == clang::UETT_SizeOf)
                                 {
                                     const clang::Expr* argExpr = uExpr->getArgumentExpr();
                                     while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
                                         argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
-                                    sizeExpr = argExpr;
-                                    llvm::raw_string_ostream strStream(sizeExprStr);
+                                    llvm::raw_string_ostream strStream(sizeExpr);
                                     argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
                                 }
                             }
-                        }
-                        if (sizeExprStr.empty())
-                        {
-                            if (sizeExpr)
+                            else if (idx == 2)
                             {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(sizeExpr->getLocStart(), AthenaError);
-                                diag.AddString("Unable to use size variable with Athena");
-                                diag.AddSourceRange(clang::CharSourceRange(sizeExpr->getSourceRange(), true));
+                                endianExpr = expr;
+                                defaultEndian = false;
+                                if (!expr->isIntegerConstantExpr(endian, context))
+                                {
+                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
+                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                    diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                    bad = true;
+                                    break;
+                                }
                             }
-                            else
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                                diag.AddString("Unable to use size variable with Athena");
-                                diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                            }
-                            continue;
                         }
-
-                        std::string ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr);
-
-                        fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
-                                << "        " << ioOp << ";\n"
-                                << "        return true;\n";
+                        ++idx;
                     }
-                    else if (!tsDecl->getName().compare("String"))
+                    if (bad)
+                        continue;
+
+                    int64_t endianVal = endian.getSExtValue();
+                    if (endianVal != 0 && endianVal != 1)
                     {
-                        const clang::Expr* sizeExpr = nullptr;
-                        std::string sizeExprStr;
-                        for (const clang::TemplateArgument& arg : *tsType)
+                        if (endianExpr)
                         {
-                            if (arg.getKind() == clang::TemplateArgument::Expression)
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
+                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                            diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
+                        }
+                        else
+                        {
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                        }
+                        continue;
+                    }
+
+                    clang::QualType templateType;
+                    std::string ioOp;
+                    bool isDNAType = false;
+                    for (const clang::TemplateArgument& arg : *tsType)
+                    {
+                        if (arg.getKind() == clang::TemplateArgument::Type)
+                        {
+                            templateType = arg.getAsType().getCanonicalType();
+                            if (defaultEndian)
+                                ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExpr);
+                            else
+                                ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExpr, endianVal);
+                        }
+                    }
+
+                    if (ioOp.empty())
+                    {
+                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                        diag.AddString("Unable to use type '" + templateType.getAsString() + "' with Athena");
+                        diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                        continue;
+                    }
+
+                    if (sizeExpr.empty())
+                    {
+                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                        diag.AddString("Unable to use count variable with Athena");
+                        diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                        continue;
+                    }
+
+                    fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
+                            << "        Do" << ioOp << ";\n"
+                            << "        return true;\n";
+                }
+                else if (!tsDecl->getName().compare("Buffer"))
+                {
+                    const clang::Expr* sizeExpr = nullptr;
+                    std::string sizeExprStr;
+                    for (const clang::TemplateArgument& arg : *tsType)
+                    {
+                        if (arg.getKind() == clang::TemplateArgument::Expression)
+                        {
+                            const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)arg.getAsExpr()->IgnoreImpCasts();
+                            if (uExpr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
+                                uExpr->getKind() == clang::UETT_SizeOf)
                             {
-                                const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
-                                const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
+                                const clang::Expr* argExpr = uExpr->getArgumentExpr();
+                                while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
+                                    argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                                sizeExpr = argExpr;
+                                llvm::raw_string_ostream strStream(sizeExprStr);
+                                argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
+                            }
+                        }
+                    }
+                    if (sizeExprStr.empty())
+                    {
+                        if (sizeExpr)
+                        {
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(sizeExpr->getLocStart(), AthenaError);
+                            diag.AddString("Unable to use size variable with Athena");
+                            diag.AddSourceRange(clang::CharSourceRange(sizeExpr->getSourceRange(), true));
+                        }
+                        else
+                        {
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                            diag.AddString("Unable to use size variable with Athena");
+                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                        }
+                        continue;
+                    }
+
+                    std::string ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr);
+
+                    fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
+                            << "        Do" << ioOp << ";\n"
+                            << "        return true;\n";
+                }
+                else if (!tsDecl->getName().compare("String"))
+                {
+                    std::string sizeExprStr;
+                    for (const clang::TemplateArgument& arg : *tsType)
+                    {
+                        if (arg.getKind() == clang::TemplateArgument::Expression)
+                        {
+                            const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
+                            const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
+                            llvm::APSInt sizeLiteral;
+                            if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
+                                uExpr->getKind() == clang::UETT_SizeOf)
+                            {
+                                const clang::Expr* argExpr = uExpr->getArgumentExpr();
+                                while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
+                                    argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                                llvm::raw_string_ostream strStream(sizeExprStr);
+                                argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
+                            }
+                            else if (expr->isIntegerConstantExpr(sizeLiteral, context))
+                            {
+                                sizeExprStr = sizeLiteral.toString(10);
+                            }
+                        }
+                    }
+
+                    std::string ioOp;
+                    if (!sizeExprStr.empty())
+                        ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr);
+                    else
+                        ioOp = GetOpString(fieldName, propIdExpr);
+
+                    fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
+                            << "        Do" << ioOp << ";\n"
+                            << "        return true;\n";
+                }
+                else if (!tsDecl->getName().compare("WString"))
+                {
+                    llvm::APSInt endian(64, -1);
+                    const clang::Expr* endianExpr = nullptr;
+                    bool defaultEndian = true;
+                    if (classParms->size() >= 2)
+                    {
+                        const clang::NamedDecl* endianParm = classParms->getParam(1);
+                        if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
+                        {
+                            const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
+                            const clang::Expr* defArg = nttParm->getDefaultArgument();
+                            endianExpr = defArg;
+                            if (!defArg->isIntegerConstantExpr(endian, context))
+                            {
+                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
+                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
+                                continue;
+                            }
+                        }
+                    }
+
+                    std::string sizeExprStr;
+                    size_t idx = 0;
+                    bool bad = false;
+                    for (const clang::TemplateArgument& arg : *tsType)
+                    {
+                        if (arg.getKind() == clang::TemplateArgument::Expression)
+                        {
+                            const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
+                            if (idx == 0)
+                            {
                                 llvm::APSInt sizeLiteral;
+                                const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
                                 if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
                                     uExpr->getKind() == clang::UETT_SizeOf)
                                 {
                                     const clang::Expr* argExpr = uExpr->getArgumentExpr();
                                     while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
                                         argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
-                                    sizeExpr = argExpr;
                                     llvm::raw_string_ostream strStream(sizeExprStr);
                                     argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
                                 }
@@ -1618,130 +1351,76 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                     sizeExprStr = sizeLiteral.toString(10);
                                 }
                             }
+                            else if (idx == 1)
+                            {
+                                endianExpr = expr;
+                                defaultEndian = false;
+                                if (!expr->isIntegerConstantExpr(endian, context))
+                                {
+                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
+                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                                    diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
+                                    bad = true;
+                                    break;
+                                }
+                            }
                         }
+                        ++idx;
+                    }
+                    if (bad)
+                        continue;
 
-                        std::string ioOp;
-                        if (!sizeExprStr.empty())
+                    int64_t endianVal = endian.getSExtValue();
+                    if (endianVal != 0 && endianVal != 1)
+                    {
+                        if (endianExpr)
+                        {
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
+                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                            diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
+                        }
+                        else
+                        {
+                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
+                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
+                        }
+                        continue;
+                    }
+
+                    std::string ioOp;
+                    if (!sizeExprStr.empty())
+                    {
+                        if (defaultEndian)
                             ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr);
                         else
-                            ioOp = GetOpString(fieldName, propIdExpr);
-
-                        fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
-                                << "        " << ioOp << ";\n"
-                                << "        return true;\n";
-                    }
-                    else if (!tsDecl->getName().compare("WString"))
-                    {
-                        llvm::APSInt endian(64, -1);
-                        const clang::Expr* endianExpr = nullptr;
-                        if (classParms->size() >= 2)
-                        {
-                            const clang::NamedDecl* endianParm = classParms->getParam(1);
-                            if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
-                            {
-                                const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
-                                const clang::Expr* defArg = nttParm->getDefaultArgument();
-                                endianExpr = defArg;
-                                if (!defArg->isIntegerConstantExpr(endian, context))
-                                {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
-                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                    diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
-                                    continue;
-                                }
-                            }
-                        }
-
-                        const clang::Expr* sizeExpr = nullptr;
-                        std::string sizeExprStr;
-                        size_t idx = 0;
-                        bool bad = false;
-                        for (const clang::TemplateArgument& arg : *tsType)
-                        {
-                            if (arg.getKind() == clang::TemplateArgument::Expression)
-                            {
-                                const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
-                                if (idx == 0)
-                                {
-                                    llvm::APSInt sizeLiteral;
-                                    const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
-                                    if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
-                                        uExpr->getKind() == clang::UETT_SizeOf)
-                                    {
-                                        const clang::Expr* argExpr = uExpr->getArgumentExpr();
-                                        while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
-                                            argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
-                                        sizeExpr = argExpr;
-                                        llvm::raw_string_ostream strStream(sizeExprStr);
-                                        argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
-                                    }
-                                    else if (expr->isIntegerConstantExpr(sizeLiteral, context))
-                                    {
-                                        sizeExprStr = sizeLiteral.toString(10);
-                                    }
-                                }
-                                else if (idx == 1)
-                                {
-                                    endianExpr = expr;
-                                    if (!expr->isIntegerConstantExpr(endian, context))
-                                    {
-                                        clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                        diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                        diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
-                                        bad = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            ++idx;
-                        }
-                        if (bad)
-                            continue;
-
-                        int64_t endianVal = endian.getSExtValue();
-                        if (endianVal != 0 && endianVal != 1)
-                        {
-                            if (endianExpr)
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
-                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
-                            }
-                            else
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                            }
-                            continue;
-                        }
-
-                        std::string ioOp;
-                        if (!sizeExprStr.empty())
                             ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr, endianVal);
+                    }
+                    else
+                    {
+                        if (defaultEndian)
+                            ioOp = GetOpString(fieldName, propIdExpr);
                         else
                             ioOp = GetOpString(fieldName, propIdExpr, endianVal);
-
-                        fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
-                                << "        " << ioOp << ";\n"
-                                << "        return true;\n";
                     }
-                }
 
-                else if (regType->getTypeClass() == clang::Type::Record)
-                {
-                    const clang::CXXRecordDecl* cxxRDecl = regType->getAsCXXRecordDecl();
-                    std::string baseDNA;
-                    if (cxxRDecl && isDNARecord(cxxRDecl, baseDNA))
-                    {
-                        fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
-                                << "        " << GetOpString(fieldName, propIdExpr) << ";\n"
-                                << "        return true;\n";
-                    }
+                    fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
+                            << "        Do" << ioOp << ";\n"
+                            << "        return true;\n";
                 }
-
             }
 
+            else if (regType->getTypeClass() == clang::Type::Record)
+            {
+                const clang::CXXRecordDecl* cxxRDecl = regType->getAsCXXRecordDecl();
+                std::string baseDNA;
+                if (cxxRDecl && isDNARecord(cxxRDecl, baseDNA))
+                {
+                    fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
+                            << "        Do" << GetOpString(fieldName, propIdExpr) << ";\n"
+                            << "        return true;\n";
+                }
+            }
         }
 
         fileOut << "    default:\n        return false;\n    }\n}\n\n";
@@ -1767,6 +1446,28 @@ public:
         if (!isDNARecord(decl, baseDNA))
             return true;
 
+        /* Determine if is is a YAML DNA */
+        bool isYamlDNA = false;
+        for (const clang::CXXMethodDecl* method : decl->methods())
+            if (method->getDeclName().isIdentifier() &&
+                (!method->getName().compare(llvm::StringLiteral("read")) ||
+                 !method->getName().compare(llvm::StringLiteral("write"))) && method->getNumParams() == 1 &&
+                method->getParamDecl(0)->getType().getAsString() == "athena::io::YAMLDocReader &")
+            {
+                isYamlDNA = true;
+                break;
+            }
+
+        /* Determine if this is a regular DNA or PropDNA */
+        bool isPropDNA = false;
+        for (const clang::Decl* d : decl->decls())
+            if (const clang::FunctionTemplateDecl* m = clang::dyn_cast_or_null<clang::FunctionTemplateDecl>(d))
+                if (!m->getName().compare(llvm::StringLiteral("Lookup")))
+                {
+                    isPropDNA = true;
+                    break;
+                }
+
         /* Make sure there isn't Delete meta type */
         for (const clang::FieldDecl* field : decl->fields())
         {
@@ -1791,9 +1492,35 @@ public:
             }
         }
 
+        std::vector<std::pair<std::string, int>> specializations = GetNestedTypeSpecializations(decl);
+
         emitEnumerateFunc(decl, baseDNA);
-        emitLookupFunc(decl, baseDNA);
-        fileOut << "AT_SPECIALIZE_DNA(" << decl->getQualifiedNameAsString() << ")\n\n";
+        if (isPropDNA)
+        {
+            emitLookupFunc(decl, baseDNA);
+            for (const auto& specialization : specializations)
+                fileOut << "AT_SPECIALIZE_PROPDNA(" << specialization.first << ")\n";
+        }
+        else if (isYamlDNA)
+        {
+            for (const auto& specialization : specializations)
+                fileOut << "AT_SPECIALIZE_DNA_YAML(" << specialization.first << ")\n";
+        }
+        else
+        {
+            for (const auto& specialization : specializations)
+                fileOut << "AT_SPECIALIZE_DNA(" << specialization.first << ")\n";
+        }
+        fileOut << "\n\n";
+
+        for (const auto& specialization : specializations)
+        {
+            for (int i = 0; i < specialization.second; ++i)
+                fileOut << "template <>\n";
+            fileOut << "const char* " << specialization.first <<
+                       "::DNAType()\n{\n    return \"" << specialization.first << "\";\n}\n";
+        }
+        fileOut << "\n\n";
 
         return true;
     }

@@ -137,6 +137,27 @@ enum Endian
     Little,
     Big
 };
+
+namespace io
+{
+template <Endian DNAE>
+struct DNA;
+template <Endian DNAE>
+struct DNAV;
+
+template <class T>
+static inline constexpr bool __IsDNARecord()
+{
+    return std::is_base_of_v<DNA<Endian::Big>, T> ||
+           std::is_base_of_v<DNA<Endian::Little>, T>;
+}
+template <class T>
+static inline constexpr bool __IsDNAVRecord()
+{
+    return std::is_base_of_v<DNAV<Endian::Big>, T> ||
+           std::is_base_of_v<DNAV<Endian::Little>, T>;
+}
+}
 } // Athena
 
 typedef void (*atEXCEPTION_HANDLER)(athena::error::Level level, const char* file, const char* function, int line,

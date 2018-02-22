@@ -39,7 +39,8 @@ public:
     RecordRAII enterSubRecord(const char* name);
 
     template <class T>
-    void enumerate(const char* name, T& record)
+    void enumerate(const char* name, T& record,
+                   typename std::enable_if_t<__IsDNARecord<T>()>* = 0)
     {
         if (auto rec = enterSubRecord(name))
             record.write(*this);
@@ -61,13 +62,13 @@ public:
 
     template <class T>
     void enumerate(const char* name, const std::vector<T>& vector,
-                   typename std::enable_if<!std::is_arithmetic<T>::value &&
-                                           !std::is_same<T, atVec2f>::value &&
-                                           !std::is_same<T, atVec3f>::value &&
-                                           !std::is_same<T, atVec4f>::value &&
-                                           !std::is_same<T, atVec2d>::value &&
-                                           !std::is_same<T, atVec3d>::value &&
-                                           !std::is_same<T, atVec4d>::value>::type* = 0)
+                   typename std::enable_if_t<!std::is_arithmetic<T>::value &&
+                                             !std::is_same<T, atVec2f>::value &&
+                                             !std::is_same<T, atVec3f>::value &&
+                                             !std::is_same<T, atVec4f>::value &&
+                                             !std::is_same<T, atVec2d>::value &&
+                                             !std::is_same<T, atVec3d>::value &&
+                                             !std::is_same<T, atVec4d>::value>* = 0)
     {
         if (auto v = enterSubVector(name))
             for (const T& item : vector)
@@ -77,13 +78,13 @@ public:
 
     template <class T>
     void enumerate(const char* name, const std::vector<T>& vector,
-                   typename std::enable_if<std::is_arithmetic<T>::value ||
-                                           std::is_same<T, atVec2f>::value ||
-                                           std::is_same<T, atVec3f>::value ||
-                                           std::is_same<T, atVec4f>::value ||
-                                           std::is_same<T, atVec2d>::value ||
-                                           std::is_same<T, atVec3d>::value ||
-                                           std::is_same<T, atVec4d>::value>::type* = 0)
+                   typename std::enable_if_t<std::is_arithmetic<T>::value ||
+                                             std::is_same<T, atVec2f>::value ||
+                                             std::is_same<T, atVec3f>::value ||
+                                             std::is_same<T, atVec4f>::value ||
+                                             std::is_same<T, atVec2d>::value ||
+                                             std::is_same<T, atVec3d>::value ||
+                                             std::is_same<T, atVec4d>::value>* = 0)
     {
         if (auto v = enterSubVector(name))
             for (T item : vector)
