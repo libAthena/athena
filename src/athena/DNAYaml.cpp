@@ -584,7 +584,7 @@ YAMLDocWriter::RecordRAII YAMLDocWriter::enterSubRecord(const char* name)
         return {};
     YAMLNode* newNode = new YAMLNode(YAML_MAPPING_NODE);
     if (curSub->m_type == YAML_MAPPING_NODE)
-        curSub->assignMapChild(name?std::string(name):std::string(), std::unique_ptr<YAMLNode>(newNode));
+        curSub->assignMapChild(name?name:std::string_view{}, std::unique_ptr<YAMLNode>(newNode));
     else if (curSub->m_type == YAML_SEQUENCE_NODE)
         curSub->m_seqChildren.emplace_back(newNode);
     m_subStack.push_back(newNode);
@@ -629,7 +629,7 @@ YAMLDocWriter::VectorRAII YAMLDocWriter::enterSubVector(const char* name)
         return {};
     YAMLNode* newNode = new YAMLNode(YAML_SEQUENCE_NODE);
     if (curSub->m_type == YAML_MAPPING_NODE)
-        curSub->assignMapChild(name?std::string(name):std::string(), std::unique_ptr<YAMLNode>(newNode));
+        curSub->assignMapChild(name?name:std::string_view{}, std::unique_ptr<YAMLNode>(newNode));
     else if (curSub->m_type == YAML_SEQUENCE_NODE)
         curSub->m_seqChildren.emplace_back(newNode);
     m_subStack.push_back(newNode);
@@ -647,7 +647,7 @@ void YAMLDocWriter::writeVal(const char* name, const INTYPE& val)
 {
     YAMLNode* curSub = m_subStack.back();
     if (curSub->m_type == YAML_MAPPING_NODE)
-        curSub->assignMapChild(name?name:std::string(), std::move(ValToNode(val)));
+        curSub->assignMapChild(name?name:std::string_view{}, std::move(ValToNode(val)));
     else if (curSub->m_type == YAML_SEQUENCE_NODE)
         curSub->m_seqChildren.emplace_back(std::move(ValToNode(val)));
 }
@@ -669,7 +669,7 @@ void YAMLDocWriter::writeVal(const char* name, const INTYPE& val, size_t byteCou
 {
     YAMLNode* curSub = m_subStack.back();
     if (curSub->m_type == YAML_MAPPING_NODE)
-        curSub->assignMapChild(name?name:std::string(), std::move(ValToNode(val, byteCount)));
+        curSub->assignMapChild(name?name:std::string_view{}, std::move(ValToNode(val, byteCount)));
     else if (curSub->m_type == YAML_SEQUENCE_NODE)
         curSub->m_seqChildren.emplace_back(std::move(ValToNode(val, byteCount)));
 }

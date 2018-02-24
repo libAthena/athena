@@ -28,8 +28,7 @@ struct YAMLNode
     yaml_node_type_t m_type;
     std::string m_scalarString;
     std::vector<std::unique_ptr<YAMLNode>> m_seqChildren;
-    std::vector<std::pair<std::string, std::unique_ptr < YAMLNode>>>
-    m_mapChildren;
+    std::vector<std::pair<std::string, std::unique_ptr<YAMLNode>>> m_mapChildren;
     YAMLNodeStyle m_style = YAMLNodeStyle::Any;
 
     YAMLNode(yaml_node_type_t type) : m_type(type) {}
