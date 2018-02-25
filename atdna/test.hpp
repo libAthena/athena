@@ -70,18 +70,18 @@ TESTFile : public BigDNA
     TESTTemplateSubFile<atInt64, 96> nestedTemplate2;
 
     Value<atUint32, Little> arrCount[2];
-    Vector<atUint32, DNA_COUNT(arrCount[0])> array;
+    Vector<atUint32, AT_DNA_COUNT(arrCount[0])> array;
 
     Value<atUint32> arrAltCount;
-    Vector<atUint32, DNA_COUNT(arrAltCount)> arrayAlt;
+    Vector<atUint32, AT_DNA_COUNT(arrAltCount)> arrayAlt;
 
     Seek<21, Current> seek;
 
     Value<atUint32> arrCount2;
-    Vector<TESTSubFile<ETest::ZERO>, DNA_COUNT(arrCount[1] + arrCount2)> array2;
+    Vector<TESTSubFile<ETest::ZERO>, AT_DNA_COUNT(arrCount[1] + arrCount2)> array2;
 
     Value<atUint32> bufSz;
-    Buffer<DNA_COUNT(bufSz)> buf;
+    Buffer<AT_DNA_COUNT(bufSz)> buf;
 
     String<32> str;
     WString<64> wstr;
