@@ -9,6 +9,7 @@
 #include <yaml.h>
 #include <utf8proc.h>
 #include <vector>
+#include <memory>
 #include "Global.hpp"
 
 namespace athena::io

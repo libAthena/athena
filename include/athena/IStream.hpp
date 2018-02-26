@@ -28,7 +28,7 @@ protected:
 #if __BYTE_ORDER == __BIG_ENDIAN
     Endian m_endian = Big;
 #else
-    Endian m_endian = LittleEndian;
+    Endian m_endian = Little;
 #endif
 };
 }

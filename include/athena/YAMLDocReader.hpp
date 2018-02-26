@@ -2,6 +2,7 @@
 #define YAMLDOCREADER
 
 #include "YAMLCommon.hpp"
+#include <functional>
 
 namespace athena::io
 {
