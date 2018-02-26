@@ -201,9 +201,12 @@ struct BinarySize
     {
         s += str.size() + 1;
     }
-    static void Do(const PropId& id, std::string& str, size_t count, StreamT& s)
+    static void Do(const PropId& id, std::string& str, atInt32 count, StreamT& s)
     {
-        s += count;
+        if (count < 0)
+            s += str.size() + 1;
+        else
+            s += count;
     }
     template <class T, Endian DNAE>
     static typename std::enable_if_t<std::is_same_v<T, std::wstring>>
@@ -212,9 +215,12 @@ struct BinarySize
         s += str.size() * 2 + 2;
     }
     template <Endian DNAE>
-    static void Do(const PropId& id, std::wstring& str, size_t count, StreamT& s)
+    static void Do(const PropId& id, std::wstring& str, atInt32 count, StreamT& s)
     {
-        s += count * 2;
+        if (count < 0)
+            s += str.size() * 2 + 2;
+        else
+            s += count * 2;
     }
     static void DoSeek(atInt64 amount, SeekOrigin whence, StreamT& s)
     {
@@ -306,7 +312,7 @@ struct PropCount
         /* Only reports one level of properties */
         s += 1;
     }
-    static void Do(const PropId& id, std::string& str, size_t count, StreamT& s)
+    static void Do(const PropId& id, std::string& str, atInt32 count, StreamT& s)
     {
         /* Only reports one level of properties */
         s += 1;
@@ -319,7 +325,7 @@ struct PropCount
         s += 1;
     }
     template <Endian DNAE>
-    static void Do(const PropId& id, std::wstring& str, size_t count, StreamT& s)
+    static void Do(const PropId& id, std::wstring& str, atInt32 count, StreamT& s)
     {
         /* Only reports one level of properties */
         s += 1;
@@ -419,7 +425,7 @@ struct Read
     {
         str = r.readString();
     }
-    static void Do(const PropId& id, std::string& str, size_t count, StreamT& r)
+    static void Do(const PropId& id, std::string& str, atInt32 count, StreamT& r)
     {
         str = r.readString(count);
     }
@@ -430,7 +436,7 @@ struct Read
         Read<PropType::None>::Do<DNAE>(id, str, r);
     }
     template <Endian DNAE>
-    static void Do(const PropId& id, std::wstring& str, size_t count, StreamT& r)
+    static void Do(const PropId& id, std::wstring& str, atInt32 count, StreamT& r)
     {
         Read<PropType::None>::Do<DNAE>(id, str, count, r);
     }
@@ -448,7 +454,7 @@ struct Read
 #define __READ_WSTR_S(endian) template <> template <> inline void Read<PropType::None>::Do<std::wstring, endian> \
     (const PropId& id, std::wstring& str, Read::StreamT& r)
 #define __READ_WSTRC_S(endian) template <> template <> inline void Read<PropType::None>::Do<endian> \
-    (const PropId& id, std::wstring& str, size_t count, Read::StreamT& r)
+    (const PropId& id, std::wstring& str, atInt32 count, Read::StreamT& r)
 __READ_S(bool, Endian::Big) { var = r.readBool(); }
 __READ_S(atInt8, Endian::Big) { var = r.readByte(); }
 __READ_S(atUint8, Endian::Big) { var = r.readUByte(); }
@@ -591,7 +597,7 @@ struct Write
     {
         w.writeString(str);
     }
-    static void Do(const PropId& id, std::string& str, size_t count, StreamT& w)
+    static void Do(const PropId& id, std::string& str, atInt32 count, StreamT& w)
     {
         w.writeString(str, count);
     }
@@ -602,7 +608,7 @@ struct Write
         Write<PropType::None>::Do<DNAE>(id, str, w);
     }
     template <Endian DNAE>
-    static void Do(const PropId& id, std::wstring& str, size_t count, StreamT& w)
+    static void Do(const PropId& id, std::wstring& str, atInt32 count, StreamT& w)
     {
         Write<PropType::None>::Do<DNAE>(id, str, count, w);
     }
@@ -620,7 +626,7 @@ struct Write
 #define __WRITE_WSTR_S(endian) template <> template <> inline void Write<PropType::None>::Do<std::wstring, endian> \
     (const PropId& id, std::wstring& str, Write::StreamT& w)
 #define __WRITE_WSTRC_S(endian) template <> template <> inline void Write<PropType::None>::Do<endian> \
-    (const PropId& id, std::wstring& str, size_t count, Write::StreamT& w)
+    (const PropId& id, std::wstring& str, atInt32 count, Write::StreamT& w)
 __WRITE_S(bool, Endian::Big) { w.writeBool(var); }
 __WRITE_S(atInt8, Endian::Big) { w.writeByte(var); }
 __WRITE_S(atUint8, Endian::Big) { w.writeUByte(var); }
@@ -744,7 +750,7 @@ struct ReadYaml
     {
         str = r.readString(id.name);
     }
-    static void Do(const PropId& id, std::string& str, size_t count, StreamT& r)
+    static void Do(const PropId& id, std::string& str, atInt32 count, StreamT& r)
     {
         str = r.readString(id.name);
     }
@@ -755,7 +761,7 @@ struct ReadYaml
         str = r.readWString(id.name);
     }
     template <Endian DNAE>
-    static void Do(const PropId& id, std::wstring& str, size_t count, StreamT& r)
+    static void Do(const PropId& id, std::wstring& str, atInt32 count, StreamT& r)
     {
         str = r.readWString(id.name);
     }
@@ -865,7 +871,7 @@ struct WriteYaml
     {
         w.writeString(id.name, str);
     }
-    static void Do(const PropId& id, std::string& str, size_t count, StreamT& w)
+    static void Do(const PropId& id, std::string& str, atInt32 count, StreamT& w)
     {
         w.writeString(id.name, str);
     }
@@ -876,7 +882,7 @@ struct WriteYaml
         w.writeWString(id.name, str);
     }
     template <Endian DNAE>
-    static void Do(const PropId& id, std::wstring& str, size_t count, StreamT& w)
+    static void Do(const PropId& id, std::wstring& str, atInt32 count, StreamT& w)
     {
         w.writeWString(id.name, str);
     }
@@ -945,13 +951,13 @@ static inline void __Do(const PropId& id, std::unique_ptr<atUint8[]>& buf, size_
 }
 
 template <class Op>
-static inline void __Do(const PropId& id, std::string& str, size_t count, typename Op::StreamT& s)
+static inline void __Do(const PropId& id, std::string& str, atInt32 count, typename Op::StreamT& s)
 {
     Op::Do(id, str, count, s);
 }
 
 template <class Op, Endian DNAE>
-static inline void __Do(const PropId& id, std::wstring& str, size_t count, typename Op::StreamT& s)
+static inline void __Do(const PropId& id, std::wstring& str, atInt32 count, typename Op::StreamT& s)
 {
     Op::template Do<DNAE>(id, str, count, s);
 }
@@ -1070,10 +1076,10 @@ template <class Op> \
 void Do(const athena::io::PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, typename Op::StreamT& s) \
     { athena::io::__Do<Op>(id, buf, count, s); } \
 template <class Op> \
-void Do(const athena::io::PropId& id, std::string& str, size_t count, typename Op::StreamT& s) \
+void Do(const athena::io::PropId& id, std::string& str, atInt32 count, typename Op::StreamT& s) \
     { athena::io::__Do<Op>(id, str, count, s); } \
 template <class Op, athena::Endian DNAE = DNAEndian> \
-void Do(const athena::io::PropId& id, std::wstring& str, size_t count, typename Op::StreamT& s) \
+void Do(const athena::io::PropId& id, std::wstring& str, atInt32 count, typename Op::StreamT& s) \
     { athena::io::__Do<Op, DNAE>(id, str, count, s); } \
 template <class Op> \
 void DoSeek(atInt64 delta, athena::SeekOrigin whence, typename Op::StreamT& s) \
@@ -1132,10 +1138,10 @@ template <class Op> \
 void Do(const athena::io::PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, typename Op::StreamT& s) \
     { athena::io::__Do<Op>(id, buf, count, s); } \
 template <class Op> \
-void Do(const athena::io::PropId& id, std::string& str, size_t count, typename Op::StreamT& s) \
+void Do(const athena::io::PropId& id, std::string& str, atInt32 count, typename Op::StreamT& s) \
     { athena::io::__Do<Op>(id, str, count, s); } \
 template <class Op, athena::Endian DNAE = DNAEndian> \
-void Do(const athena::io::PropId& id, std::wstring& str, size_t count, typename Op::StreamT& s) \
+void Do(const athena::io::PropId& id, std::wstring& str, atInt32 count, typename Op::StreamT& s) \
     { athena::io::__Do<Op, DNAE>(id, str, count, s); } \
 template <class Op> \
 void DoSeek(atInt64 delta, athena::SeekOrigin whence, typename Op::StreamT& s) \
