@@ -12,14 +12,14 @@ namespace athena::io
 
 template <class T>
 static inline const char* __GetDNAName(const T& dna,
-    typename std::enable_if_t<athena::io::__IsDNAVRecord<T>()>* = 0)
+    typename std::enable_if_t<athena::io::__IsDNAVRecord_v<T>>* = 0)
 {
     return dna.DNATypeV();
 }
 
 template <class T>
 static inline const char* __GetDNAName(const T& dna,
-    typename std::enable_if_t<!athena::io::__IsDNAVRecord<T>()>* = 0)
+    typename std::enable_if_t<!athena::io::__IsDNAVRecord_v<T>>* = 0)
 {
     return dna.DNAType();
 }

@@ -146,17 +146,16 @@ template <Endian DNAE>
 struct DNAV;
 
 template <class T>
-static inline constexpr bool __IsDNARecord()
-{
-    return std::is_base_of_v<DNA<Endian::Big>, T> ||
-           std::is_base_of_v<DNA<Endian::Little>, T>;
-}
+using __IsDNARecord = typename std::disjunction<std::is_base_of<DNA<Endian::Big>, T>,
+                                                std::is_base_of<DNA<Endian::Little>, T>>;
 template <class T>
-static inline constexpr bool __IsDNAVRecord()
-{
-    return std::is_base_of_v<DNAV<Endian::Big>, T> ||
-           std::is_base_of_v<DNAV<Endian::Little>, T>;
-}
+inline constexpr bool __IsDNARecord_v = __IsDNARecord<T>::value;
+
+template <class T>
+using __IsDNAVRecord = typename std::disjunction<std::is_base_of<DNAV<Endian::Big>, T>,
+                                                 std::is_base_of<DNAV<Endian::Little>, T>>;
+template <class T>
+inline constexpr bool __IsDNAVRecord_v = __IsDNAVRecord<T>::value;
 }
 } // Athena
 

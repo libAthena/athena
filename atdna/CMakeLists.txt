@@ -234,9 +234,4 @@ macro(atdna out)
   endif()
 endmacro()
 
-# Test target
-atdna(atdna_test.cpp test.hpp)
-add_executable(atdna-test test.cpp atdna_test.cpp test.hpp)
-target_link_libraries(atdna-test athena-core athena-libyaml)
-
 endif()

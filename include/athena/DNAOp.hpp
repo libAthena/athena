@@ -6,6 +6,7 @@
 #include "YAMLDocReader.hpp"
 #include "YAMLDocWriter.hpp"
 #include "ChecksumsLiterals.hpp"
+#include <type_traits>
 
 namespace athena::io
 {
@@ -65,16 +66,15 @@ enum class PropType
 };
 
 template <class T>
-static inline constexpr bool __IsPODType()
-{
-    return std::is_arithmetic_v<T> ||
-           std::is_convertible_v<T&, atVec2f&> ||
-           std::is_convertible_v<T&, atVec3f&> ||
-           std::is_convertible_v<T&, atVec4f&> ||
-           std::is_convertible_v<T&, atVec2d&> ||
-           std::is_convertible_v<T&, atVec3d&> ||
-           std::is_convertible_v<T&, atVec4d&>;
-}
+using __IsPODType = typename std::disjunction<std::is_arithmetic<T>,
+                                              std::is_convertible<T&, atVec2f&>,
+                                              std::is_convertible<T&, atVec3f&>,
+                                              std::is_convertible<T&, atVec4f&>,
+                                              std::is_convertible<T&, atVec2d&>,
+                                              std::is_convertible<T&, atVec3d&>,
+                                              std::is_convertible<T&, atVec4d&>>;
+template <class T>
+inline constexpr bool __IsPODType_v = __IsPODType<T>::value;
 
 template <class T>
 using __CastPODType = typename std::conditional_t<std::is_convertible_v<T&, atVec2f&>, atVec2f,
@@ -139,7 +139,7 @@ struct BinarySize
         BinarySize<PropType::None>::Do<PODType, DNAE>(id, *reinterpret_cast<PODType*>(&var), s);
     }
     template <class T, Endian DNAE>
-    static typename std::enable_if_t<__IsPODType<T>()>
+    static typename std::enable_if_t<__IsPODType_v<T>>
     Do(const PropId& id, T& var, StreamT& s)
     {
         if (PropOp != PropType::None)
@@ -151,7 +151,7 @@ struct BinarySize
         BinarySize<PropType::None>::Do<CastT, DNAE>(id, static_cast<CastT&>(var), s);
     }
     template <class T, Endian DNAE>
-    static typename std::enable_if_t<__IsDNARecord<T>() && PropOp != PropType::None>
+    static typename std::enable_if_t<__IsDNARecord_v<T> && PropOp != PropType::None>
     Do(const PropId& id, T& var, StreamT& s)
     {
         /* Accessed via Enumerate, header */
@@ -159,7 +159,7 @@ struct BinarySize
         var.template Enumerate<BinarySize<PropOp>>(s);
     }
     template <class T, Endian DNAE>
-    static typename std::enable_if_t<__IsDNARecord<T>() && PropOp == PropType::None>
+    static typename std::enable_if_t<__IsDNARecord_v<T> && PropOp == PropType::None>
     Do(const PropId& id, T& var, StreamT& s)
     {
         var.template Enumerate<BinarySize<PropType::None>>(s);
@@ -347,7 +347,7 @@ struct Read
         Read<PropType::None>::Do<PODType, DNAE>(id, *reinterpret_cast<PODType*>(&var), r);
     }
     template <class T, Endian DNAE>
-    static typename std::enable_if_t<__IsPODType<T>()>
+    static typename std::enable_if_t<__IsPODType_v<T>>
     Do(const PropId& id, T& var, StreamT& r)
     {
         using CastT = __CastPODType<T>;
@@ -398,7 +398,7 @@ struct Read
     {
         vector.clear();
         vector.reserve(count);
-        for (size_t i = 0; i < count; ++i)
+        for (size_t i = 0; i < static_cast<size_t>(count); ++i)
         {
             vector.emplace_back();
             Read<PropOp>::Do<T, DNAE>(id, vector.back(), r);
@@ -518,7 +518,7 @@ struct Write
         Write<PropType::None>::Do<PODType, DNAE>(id, *reinterpret_cast<PODType*>(&var), w);
     }
     template <class T, Endian DNAE>
-    static typename std::enable_if_t<__IsPODType<T>()>
+    static typename std::enable_if_t<__IsPODType_v<T>>
     Do(const PropId& id, T& var, StreamT& w)
     {
         using CastT = __CastPODType<T>;
@@ -679,14 +679,14 @@ struct ReadYaml
         ReadYaml<PropType::None>::Do<PODType, DNAE>(id, *reinterpret_cast<PODType*>(&var), r);
     }
     template <class T, Endian DNAE>
-    static typename std::enable_if_t<__IsPODType<T>()>
+    static typename std::enable_if_t<__IsPODType_v<T>>
     Do(const PropId& id, T& var, StreamT& r)
     {
         using CastT = __CastPODType<T>;
         ReadYaml<PropType::None>::Do<CastT, DNAE>(id, static_cast<CastT&>(var), r);
     }
     template <class T, Endian DNAE>
-    static typename std::enable_if_t<__IsDNARecord<T>()>
+    static typename std::enable_if_t<__IsDNARecord_v<T>>
     Do(const PropId& id, T& var, StreamT& r)
     {
         if (auto rec = r.enterSubRecord(id.name))
@@ -818,14 +818,14 @@ struct WriteYaml
         WriteYaml<PropType::None>::Do<PODType, DNAE>(id, *reinterpret_cast<PODType*>(&var), w);
     }
     template <class T, Endian DNAE>
-    static typename std::enable_if_t<__IsPODType<T>()>
+    static typename std::enable_if_t<__IsPODType_v<T>>
     Do(const PropId& id, T& var, StreamT& w)
     {
         using CastT = __CastPODType<T>;
         WriteYaml<PropType::None>::Do<CastT, DNAE>(id, static_cast<CastT&>(var), w);
     }
     template <class T, Endian DNAE>
-    static typename std::enable_if_t<__IsDNARecord<T>()>
+    static typename std::enable_if_t<__IsDNARecord_v<T>>
     Do(const PropId& id, T& var, StreamT& w)
     {
         if (auto rec = w.enterSubRecord(id.name))

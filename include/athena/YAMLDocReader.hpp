@@ -49,7 +49,7 @@ public:
 
     template <class T>
     void enumerate(const char* name, T& record,
-                   typename std::enable_if_t<__IsDNARecord<T>()>* = 0)
+                   typename std::enable_if_t<__IsDNARecord_v<T>>* = 0)
     {
         if (auto rec = enterSubRecord(name))
             record.read(*this);

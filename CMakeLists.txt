@@ -237,6 +237,10 @@ install(EXPORT AthenaTargets DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT athena)
 
 if(NOT GEKKO)
 add_subdirectory(atdna)
+# Test target
+atdna(atdna_test.cpp atdna/test.hpp)
+add_executable(atdna-test atdna/test.cpp atdna_test.cpp atdna/test.hpp)
+target_link_libraries(atdna-test athena-core athena-libyaml)
 endif()
 
 #########
