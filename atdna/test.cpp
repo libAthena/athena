@@ -1,7 +1,7 @@
 #include "test.hpp"
 #include "athena/MemoryWriter.hpp"
 
-#define EXPECTED_BYTES 265
+#define EXPECTED_BYTES 281
 
 int main(int argc, const char** argv)
 {

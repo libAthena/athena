@@ -66,8 +66,8 @@ TESTFile : public BigDNA
         Value<NestedTp> explSub1 = NestedVal;
         Value<Var32Tp> explSub2 = Var32Val;
     };
-    TESTTemplateSubFile<atInt32, 36> nestedTemplate1;
-    TESTTemplateSubFile<atInt64, 96> nestedTemplate2;
+    Value<TESTTemplateSubFile<atInt32, 36>> nestedTemplate1;
+    Value<TESTTemplateSubFile<atInt64, 96>> nestedTemplate2;
 
     Value<atUint32, Little> arrCount[2];
     Vector<atUint32, AT_DNA_COUNT(arrCount[0])> array;

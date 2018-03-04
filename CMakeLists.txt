@@ -65,6 +65,7 @@ add_library(athena-core
     include/athena/MemoryReader.hpp
     include/athena/MemoryWriter.hpp
     include/athena/Checksums.hpp
+    include/athena/ChecksumsLiterals.hpp
     include/athena/Compression.hpp
     include/athena/Socket.hpp
     include/LZ77/LZBase.hpp
@@ -75,6 +76,10 @@ add_library(athena-core
     include/athena/Dir.hpp
     include/athena/DNA.hpp
     include/athena/DNAYaml.hpp
+    include/athena/DNAOp.hpp
+    include/athena/YAMLCommon.hpp
+    include/athena/YAMLDocReader.hpp
+    include/athena/YAMLDocWriter.hpp
     include/yaml.h
     include/utf8proc.h
     include/optional.hpp
