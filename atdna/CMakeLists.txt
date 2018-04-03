@@ -15,35 +15,58 @@ include(FindLLVM.cmake)
 if(NOT LLVM_FOUND)
     message(STATUS "Unable to locate LLVM installation; skipping atdna")
 else()
-find_library(LLVMDEMANGLE_LIB LLVMDemangle HINTS "${LLVM_ROOT_DIR}/lib")
-find_library(LLVMBINARYFORMAT_LIB LLVMBinaryFormat HINTS "${LLVM_ROOT_DIR}/lib")
-if (NOT LLVMDEMANGLE_LIB)
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+  option(ATDNA_DYNAMIC_LLVM "Use dynamic library targets when linking LLVM" ON)
+else()
+  option(ATDNA_DYNAMIC_LLVM "Use dynamic library targets when linking LLVM" OFF)
+endif()
+
+if(ATDNA_DYNAMIC_LLVM)
+  list(APPEND LLVM_LIBS
+       clangFrontend
+       clangTooling
+       clangDriver
+       clangSerialization
+       clangParse
+       clangSema
+       clangAnalysis
+       clangEdit
+       clangAST
+       clangLex
+       clangBasic
+       LLVM)
+else()
+  find_library(LLVMDEMANGLE_LIB LLVMDemangle HINTS "${LLVM_ROOT_DIR}/lib")
+  find_library(LLVMBINARYFORMAT_LIB LLVMBinaryFormat HINTS "${LLVM_ROOT_DIR}/lib")
+  if (NOT LLVMDEMANGLE_LIB)
     set(LLVMDEMANGLE_LIB "")
-endif()
-if (NOT LLVMBINARYFORMAT_LIB)
+  endif()
+  if (NOT LLVMBINARYFORMAT_LIB)
     set(LLVMBINARYFORMAT_LIB "")
+  endif()
+  list(APPEND LLVM_LIBS
+       clangFrontend
+       clangTooling
+       clangDriver
+       clangSerialization
+       clangParse
+       clangSema
+       clangAnalysis
+       clangEdit
+       clangAST
+       clangLex
+       clangBasic
+       LLVMCore
+       LLVMOption
+       LLVMMCParser
+       LLVMBitReader
+       ${LLVMBINARYFORMAT_LIB}
+       LLVMMC
+       LLVMProfileData
+       LLVMSupport
+       ${LLVMDEMANGLE_LIB})
 endif()
-list(APPEND LLVM_LIBS
-     clangFrontend
-     clangTooling
-     clangDriver
-     clangSerialization
-     clangParse
-     clangSema
-     clangAnalysis
-     clangEdit
-     clangAST
-     clangLex
-     clangBasic
-     LLVMCore
-     LLVMOption
-     LLVMMCParser
-     LLVMBitReader
-     ${LLVMBINARYFORMAT_LIB}
-     LLVMMC
-     LLVMProfileData
-     LLVMSupport
-     ${LLVMDEMANGLE_LIB})
 
 string(FIND ${LLVM_VERSION_STRING} "svn" SVN_FILTER_IDX)
 if(NOT SVN_FILTER_IDX EQUAL -1)
