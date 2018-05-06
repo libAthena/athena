@@ -14,6 +14,7 @@ set(ATHENA_MINOR_VERSION 3)
 set(ATHENA_PATCH_VERSION 0)
 set(ATHENA_VERSION
   ${ATHENA_MAJOR_VERSION}.${ATHENA_MINOR_VERSION}.${ATHENA_PATCH_VERSION})
+set(ATHENA_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 ################
 # Athena Build #
@@ -21,7 +22,7 @@ set(ATHENA_VERSION
 
 add_subdirectory(extern)
 
-include_directories(include ${LZO_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
+include_directories(${ATHENA_INCLUDE_DIR} ${LZO_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
 
 if(WIN32)
 list(APPEND CORE_EXTRA src/win32_largefilewrapper.c include/win32_largefilewrapper.h
