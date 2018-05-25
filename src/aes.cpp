@@ -7,6 +7,10 @@
 #include <cpuid.h>
 #endif
 
+#if __AES__ || (!defined(__clang__) && _MSC_VER >= 1800)
+#define _AES_NI 1
+#endif
+
 namespace athena
 {
 
@@ -467,7 +471,7 @@ void SoftwareAES::encrypt(const uint8_t* iv, const uint8_t* inbuf, uint8_t* outb
     }
 }
 
-#if __AES__ || _MSC_VER >= 1800
+#if _AES_NI
 
 #include <wmmintrin.h>
 
@@ -582,12 +586,13 @@ public:
     }
 };
 
+static int HAS_AES_NI = -1;
+
 #endif
 
-static int HAS_AES_NI = -1;
 std::unique_ptr<IAES> NewAES()
 {
-#if __AES__ || _MSC_VER >= 1800
+#if _AES_NI
     if (HAS_AES_NI == -1)
     {
 #if _MSC_VER

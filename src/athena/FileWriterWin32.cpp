@@ -5,7 +5,6 @@ namespace athena::io
 {
 FileWriter::FileWriter(std::string_view filename, bool overwrite, bool globalErr)
     : m_fileHandle(0),
-      m_bytePosition(0),
       m_globalErr(globalErr)
 {
     m_filename = utility::utf8ToWide(filename);
@@ -14,7 +13,6 @@ FileWriter::FileWriter(std::string_view filename, bool overwrite, bool globalErr
 
 FileWriter::FileWriter(std::wstring_view filename, bool overwrite, bool globalErr)
     : m_fileHandle(0),
-      m_bytePosition(0),
       m_globalErr(globalErr)
 {
     m_filename = filename;
