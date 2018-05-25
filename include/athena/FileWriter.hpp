@@ -60,8 +60,6 @@ private:
     std::string  m_filename;
 #endif
     HandleType   m_fileHandle;
-    atUint8      m_currentByte;
-    atUint64     m_bytePosition;
     bool         m_globalErr;
 };
 
