@@ -11,7 +11,6 @@ namespace athena::io
 {
 FileWriter::FileWriter(std::string_view filename, bool overwrite, bool globalErr)
     : m_fileHandle(NULL),
-      m_bytePosition(0),
       m_globalErr(globalErr)
 {
 #if _WIN32
@@ -24,7 +23,6 @@ FileWriter::FileWriter(std::string_view filename, bool overwrite, bool globalErr
 
 FileWriter::FileWriter(std::wstring_view filename, bool overwrite, bool globalErr)
     : m_fileHandle(NULL),
-      m_bytePosition(0),
       m_globalErr(globalErr)
 {
 #if _WIN32
