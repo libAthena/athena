@@ -95,12 +95,16 @@ void WiiSaveWriter::writeBanner(WiiBanner* banner)
     writeInt16(banner->animationSpeed());
     seek(22);
 
-    writeStringAsWString(banner->title());
+    for (char16_t c : banner->title())
+        writeUint16(c);
+    writeUint16(0);
 
     if (position() != 0x0080)
         seek(0x0080, SeekOrigin::Begin);
 
-    writeStringAsWString(banner->subtitle());
+    for (char16_t c : banner->subtitle())
+        writeUint16(c);
+    writeUint16(0);
 
     if (position() != 0x00C0)
         seek(0x00C0, SeekOrigin::Begin);
