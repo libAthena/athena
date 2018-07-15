@@ -879,7 +879,7 @@ public:
      *  @param fixedLen If non-negative, this is a fixed-length string read
      *  @return The read string
      */
-    inline std::string readString(atInt32 fixedLen = -1)
+    inline std::string readString(atInt32 fixedLen = -1, bool doSeek=true)
     {
         if (fixedLen == 0)
             return std::string();
@@ -891,13 +891,13 @@ public:
         {
             ret += chr;
 
-            if (fixedLen >= 0 && i >= fixedLen)
+            if (fixedLen > 0 && i >= fixedLen)
                 break;
 
             chr = readByte();
         }
 
-        if (fixedLen >= 0 && i < fixedLen)
+        if (doSeek && fixedLen > 0 && i < fixedLen)
             seek(fixedLen - i);
 
         return ret;
@@ -911,7 +911,7 @@ public:
      *  @param fixedLen If non-negative, this is a fixed-length string read
      *  @return The read wstring
      */
-    inline std::wstring readWString(atInt32 fixedLen = -1)
+    inline std::wstring readWString(atInt32 fixedLen = -1, bool doSeek=true)
     {
         if (fixedLen == 0)
             return std::wstring();
@@ -924,13 +924,13 @@ public:
         {
             ret += chr;
 
-            if (fixedLen >= 0 && i >= fixedLen)
+            if (fixedLen > 0 && i >= fixedLen)
                 break;
 
             chr = readUint16();
         }
 
-        if (fixedLen >= 0 && i < fixedLen)
+        if (doSeek && fixedLen > 0 && i < fixedLen)
             seek(fixedLen - i);
 
         return ret;
@@ -945,7 +945,7 @@ public:
      *  @param fixedLen If non-negative, this is a fixed-length string read
      *  @return The read wstring
      */
-    inline std::wstring readWStringLittle(atInt32 fixedLen = -1)
+    inline std::wstring readWStringLittle(atInt32 fixedLen = -1, bool doSeek=true)
     {
         if (fixedLen == 0)
             return std::wstring();
@@ -958,13 +958,13 @@ public:
         {
             ret += chr;
 
-            if (fixedLen >= 0 && i >= fixedLen)
+            if (fixedLen > 0 && i >= fixedLen)
                 break;
 
             chr = readUint16Little();
         }
 
-        if (fixedLen >= 0 && i < fixedLen)
+        if (doSeek && fixedLen > 0 && i < fixedLen)
             seek(fixedLen - i);
 
         return ret;
@@ -979,7 +979,7 @@ public:
      *  @param fixedLen If non-negative, this is a fixed-length string read
      *  @return The read wstring
      */
-    inline std::wstring readWStringBig(atInt32 fixedLen = -1)
+    inline std::wstring readWStringBig(atInt32 fixedLen = -1, bool doSeek = true)
     {
         if (fixedLen == 0)
             return std::wstring();
@@ -991,13 +991,13 @@ public:
         {
             ret += chr;
 
-            if (fixedLen >= 0 && i >= fixedLen)
+            if (fixedLen > 0 && i >= fixedLen)
                 break;
 
             chr = readUint16Big();
         }
 
-        if (fixedLen >= 0 && i < fixedLen)
+        if (doSeek && fixedLen > 0 && i < fixedLen)
             seek(fixedLen - i);
 
         return ret;
@@ -1012,7 +1012,7 @@ public:
      *  @param fixedLen If non-negative, this is a fixed-length string read
      *  @return The read wstring
      */
-    inline std::u16string readU16StringBig(atInt32 fixedLen = -1)
+    inline std::u16string readU16StringBig(atInt32 fixedLen = -1, bool doSeek = true)
     {
         if (fixedLen == 0)
             return std::u16string();
@@ -1024,13 +1024,13 @@ public:
         {
             ret += chr;
 
-            if (fixedLen >= 0 && i >= fixedLen)
+            if (fixedLen > 0 && i >= fixedLen)
                 break;
 
             chr = readUint16Big();
         }
 
-        if (fixedLen >= 0 && i < fixedLen)
+        if (doSeek && fixedLen > 0 && i < fixedLen)
             seek(fixedLen - i);
 
         return ret;
@@ -1045,7 +1045,7 @@ public:
      *  @param fixedLen If non-negative, this is a fixed-length string read
      *  @return The read wstring
      */
-    inline std::u32string readU32StringBig(atInt32 fixedLen = -1)
+    inline std::u32string readU32StringBig(atInt32 fixedLen = -1, bool doSeek = true)
     {
         if (fixedLen == 0)
             return std::u32string();
@@ -1057,13 +1057,13 @@ public:
         {
             ret += chr;
 
-            if (fixedLen >= 0 && i >= fixedLen)
+            if (fixedLen > 0 && i >= fixedLen)
                 break;
 
             chr = readUint32Big();
         }
 
-        if (fixedLen >= 0 && i < fixedLen)
+        if (doSeek && fixedLen > 0 && i < fixedLen)
             seek(fixedLen - i);
 
         return ret;
