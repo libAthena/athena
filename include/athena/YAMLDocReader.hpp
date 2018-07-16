@@ -41,6 +41,7 @@ public:
         RecordRAII() = default;
     public:
         operator bool() const { return m_r != nullptr; }
+        void leave() { if (m_r) {m_r->_leaveSubRecord(); m_r = nullptr;} }
         ~RecordRAII() { if (m_r) m_r->_leaveSubRecord(); }
     };
     friend class RecordRAII;

@@ -207,7 +207,7 @@ std::string& rtrim(std::string& s);
 // trim from both ends
 std::string& trim(std::string& s);
 atUint64 fileSize(std::string_view filename);
-#ifdef _MSC_VER
+#ifdef _WIN32
 atUint64 fileSize(std::wstring_view filename);
 #endif
 

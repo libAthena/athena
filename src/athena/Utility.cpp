@@ -169,7 +169,7 @@ atUint64 fileSize(std::string_view filename)
     return st.st_size;
 }
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 atUint64 fileSize(std::wstring_view filename)
 {
     atStat64_t st;

@@ -226,10 +226,10 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
         return propIdExpr;
     }
 
-    static std::string GetOpString(const std::string& fieldName, const std::string& propIdExpr, int64_t endianVal)
+    static std::string GetOpString(const std::string& fieldName, const std::string& propIdExpr, const std::string& endianExpr)
     {
 
-        return "<Op, "s + (endianVal ? "Endian::Big" : "Endian::Little") + ">({" + propIdExpr + "}, " + fieldName + ", s)";
+        return "<Op, "s + endianExpr + ">({" + propIdExpr + "}, " + fieldName + ", s)";
     }
 
     static std::string GetOpString(const std::string& fieldName, const std::string& propIdExpr)
@@ -238,9 +238,9 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
         return "<Op>({" + propIdExpr + "}, " + fieldName + ", s)";
     }
 
-    static std::string GetVectorOpString(const std::string& fieldName, const std::string& propIdExpr, const std::string& sizeExpr, int64_t endianVal)
+    static std::string GetVectorOpString(const std::string& fieldName, const std::string& propIdExpr, const std::string& sizeExpr, const std::string& endianExpr)
     {
-        return "<Op, "s + (endianVal ? "Endian::Big" : "Endian::Little") + ">({" + propIdExpr + "}, " + fieldName + ", " + sizeExpr + ", s)";
+        return "<Op, "s + endianExpr + ">({" + propIdExpr + "}, " + fieldName + ", " + sizeExpr + ", s)";
     }
 
     static std::string GetVectorOpString(const std::string& fieldName, const std::string& propIdExpr, const std::string& sizeExpr)
@@ -456,7 +456,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 if (!tsDecl->getName().compare("Value"))
                 {
                     llvm::APSInt endian(64, -1);
-                    const clang::Expr* endianExpr = nullptr;
+                    std::string endianExprStr;
                     bool defaultEndian = true;
                     if (classParms->size() >= 2)
                     {
@@ -464,15 +464,8 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
                         {
                             const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
-                            const clang::Expr* defArg = nttParm->getDefaultArgument();
-                            endianExpr = defArg;
-                            if (!defArg->isIntegerConstantExpr(endian, context))
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
-                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
-                                continue;
-                            }
+                            llvm::raw_string_ostream strStream(endianExprStr);
+                            nttParm->print(strStream, context.getPrintingPolicy());
                         }
                     }
 
@@ -481,34 +474,10 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         if (arg.getKind() == clang::TemplateArgument::Expression)
                         {
                             const clang::Expr* expr = arg.getAsExpr();
-                            endianExpr = expr;
+                            llvm::raw_string_ostream strStream(endianExprStr);
+                            expr->printPretty(strStream, nullptr, context.getPrintingPolicy());
                             defaultEndian = false;
-                            if (!expr->isIntegerConstantExpr(endian, context))
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
-                                continue;
-                            }
                         }
-                    }
-
-                    int64_t endianVal = endian.getSExtValue();
-                    if (endianVal != 0 && endianVal != 1)
-                    {
-                        if (endianExpr)
-                        {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
-                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                            diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
-                        }
-                        else
-                        {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                        }
-                        continue;
                     }
 
                     std::string ioOp;
@@ -520,7 +489,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                             if (defaultEndian)
                                 ioOp = GetOpString(fieldName, propIdExpr);
                             else
-                                ioOp = GetOpString(fieldName, propIdExpr, endianVal);
+                                ioOp = GetOpString(fieldName, propIdExpr, endianExprStr);
                         }
                     }
 
@@ -537,7 +506,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 else if (!tsDecl->getName().compare("Vector"))
                 {
                     llvm::APSInt endian(64, -1);
-                    const clang::Expr* endianExpr = nullptr;
+                    std::string endianExprStr;
                     bool defaultEndian = true;
                     if (classParms->size() >= 3)
                     {
@@ -545,21 +514,13 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
                         {
                             const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
-                            const clang::Expr* defArg = nttParm->getDefaultArgument();
-                            endianExpr = defArg;
-                            if (!defArg->isIntegerConstantExpr(endian, context))
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
-                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
-                                continue;
-                            }
+                            llvm::raw_string_ostream strStream(endianExprStr);
+                            nttParm->print(strStream, context.getPrintingPolicy());
                         }
                     }
 
                     std::string sizeExpr;
                     size_t idx = 0;
-                    bool bad = false;
                     for (const clang::TemplateArgument& arg : *tsType)
                     {
                         if (arg.getKind() == clang::TemplateArgument::Expression)
@@ -588,45 +549,18 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                             }
                                         }
                                     }
-                                    llvm::raw_string_ostream strStream(sizeExpr);
-                                    argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
+                                    llvm::raw_string_ostream strStream2(sizeExpr);
+                                    argExpr->printPretty(strStream2, nullptr, context.getPrintingPolicy());
                                 }
                             }
                             else if (idx == 2)
                             {
                                 defaultEndian = false;
-                                endianExpr = expr;
-                                if (!expr->isIntegerConstantExpr(endian, context))
-                                {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                    diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
-                                    bad = true;
-                                    break;
-                                }
+                                llvm::raw_string_ostream strStream(endianExprStr);
+                                expr->printPretty(strStream, nullptr, context.getPrintingPolicy());
                             }
                         }
                         ++idx;
-                    }
-                    if (bad)
-                        continue;
-
-                    int64_t endianVal = endian.getSExtValue();
-                    if (endianVal != 0 && endianVal != 1)
-                    {
-                        if (endianExpr)
-                        {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
-                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                            diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
-                        }
-                        else
-                        {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                        }
-                        continue;
                     }
 
                     clang::QualType templateType;
@@ -640,7 +574,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                             if (defaultEndian)
                                 ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExpr);
                             else
-                                ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExpr, endianVal);
+                                ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExpr, endianExprStr);
                         }
                     }
 
@@ -741,7 +675,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 else if (!tsDecl->getName().compare("WString"))
                 {
                     llvm::APSInt endian(64, -1);
-                    const clang::Expr* endianExpr = nullptr;
+                    std::string endianExprStr;
                     bool defaultEndian = true;
                     if (classParms->size() >= 2)
                     {
@@ -749,21 +683,13 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
                         {
                             const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
-                            const clang::Expr* defArg = nttParm->getDefaultArgument();
-                            endianExpr = defArg;
-                            if (!defArg->isIntegerConstantExpr(endian, context))
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
-                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
-                                continue;
-                            }
+                            llvm::raw_string_ostream strStream(endianExprStr);
+                            nttParm->print(strStream, context.getPrintingPolicy());
                         }
                     }
 
                     std::string sizeExprStr;
                     size_t idx = 0;
-                    bool bad = false;
                     for (const clang::TemplateArgument& arg : *tsType)
                     {
                         if (arg.getKind() == clang::TemplateArgument::Expression)
@@ -779,8 +705,8 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                     const clang::Expr* argExpr = uExpr->getArgumentExpr();
                                     while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
                                         argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
-                                    llvm::raw_string_ostream strStream(sizeExprStr);
-                                    argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
+                                    llvm::raw_string_ostream strStream2(sizeExprStr);
+                                    argExpr->printPretty(strStream2, nullptr, context.getPrintingPolicy());
                                 }
                                 else if (expr->isIntegerConstantExpr(sizeLiteral, context))
                                 {
@@ -790,38 +716,11 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                             else if (idx == 1)
                             {
                                 defaultEndian = false;
-                                endianExpr = expr;
-                                if (!expr->isIntegerConstantExpr(endian, context))
-                                {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                    diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
-                                    bad = true;
-                                    break;
-                                }
+                                llvm::raw_string_ostream strStream(endianExprStr);
+                                expr->printPretty(strStream, nullptr, context.getPrintingPolicy());
                             }
                         }
                         ++idx;
-                    }
-                    if (bad)
-                        continue;
-
-                    int64_t endianVal = endian.getSExtValue();
-                    if (endianVal != 0 && endianVal != 1)
-                    {
-                        if (endianExpr)
-                        {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
-                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                            diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
-                        }
-                        else
-                        {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                        }
-                        continue;
                     }
 
                     std::string ioOp;
@@ -830,14 +729,14 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         if (defaultEndian)
                             ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr);
                         else
-                            ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr, endianVal);
+                            ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr, endianExprStr);
                     }
                     else
                     {
                         if (defaultEndian)
                             ioOp = GetOpString(fieldName, propIdExpr);
                         else
-                            ioOp = GetOpString(fieldName, propIdExpr, endianVal);
+                            ioOp = GetOpString(fieldName, propIdExpr, endianExprStr);
                     }
 
                     outputNodes.emplace_back(NodeType::Do, fieldName, ioOp, false);
@@ -943,6 +842,16 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         outputNodes.emplace_back(NodeType::DoAlign, fieldName, "<Op>("s + align.toString(10, true) + ", s)", false);
                     }
                 }
+                else
+                {
+                    const clang::NamedDecl* nd = tsDecl->getTemplatedDecl();
+                    if (const clang::CXXRecordDecl* rd = clang::dyn_cast_or_null<clang::CXXRecordDecl>(nd))
+                    {
+                        std::string baseDNA;
+                        if (isDNARecord(rd, baseDNA))
+                            outputNodes.emplace_back(NodeType::Do, fieldName, GetOpString(fieldName, propIdExpr), false);
+                    }
+                }
             }
 
             else if (regType->getTypeClass() == clang::Type::Record)
@@ -1025,7 +934,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 if (!tsDecl->getName().compare("Value"))
                 {
                     llvm::APSInt endian(64, -1);
-                    const clang::Expr* endianExpr = nullptr;
+                    std::string endianExprStr;
                     bool defaultEndian = true;
                     if (classParms->size() >= 2)
                     {
@@ -1033,15 +942,8 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
                         {
                             const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
-                            const clang::Expr* defArg = nttParm->getDefaultArgument();
-                            endianExpr = defArg;
-                            if (!defArg->isIntegerConstantExpr(endian, context))
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
-                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
-                                continue;
-                            }
+                            llvm::raw_string_ostream strStream(endianExprStr);
+                            nttParm->print(strStream, context.getPrintingPolicy());
                         }
                     }
 
@@ -1050,34 +952,10 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         if (arg.getKind() == clang::TemplateArgument::Expression)
                         {
                             const clang::Expr* expr = arg.getAsExpr();
-                            endianExpr = expr;
+                            llvm::raw_string_ostream strStream(endianExprStr);
+                            expr->printPretty(strStream, nullptr, context.getPrintingPolicy());
                             defaultEndian = false;
-                            if (!expr->isIntegerConstantExpr(endian, context))
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
-                                continue;
-                            }
                         }
-                    }
-
-                    int64_t endianVal = endian.getSExtValue();
-                    if (endianVal != 0 && endianVal != 1)
-                    {
-                        if (endianExpr)
-                        {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
-                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                            diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
-                        }
-                        else
-                        {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                        }
-                        continue;
                     }
 
                     std::string ioOp;
@@ -1089,7 +967,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                             if (defaultEndian)
                                 ioOp = GetOpString(fieldName, propIdExpr);
                             else
-                                ioOp = GetOpString(fieldName, propIdExpr, endianVal);
+                                ioOp = GetOpString(fieldName, propIdExpr, endianExprStr);
                         }
                     }
 
@@ -1109,7 +987,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 else if (!tsDecl->getName().compare("Vector"))
                 {
                     llvm::APSInt endian(64, -1);
-                    const clang::Expr* endianExpr = nullptr;
+                    std::string endianExprStr;
                     bool defaultEndian = true;
                     if (classParms->size() >= 3)
                     {
@@ -1117,21 +995,13 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
                         {
                             const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
-                            const clang::Expr* defArg = nttParm->getDefaultArgument();
-                            endianExpr = defArg;
-                            if (!defArg->isIntegerConstantExpr(endian, context))
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
-                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
-                                continue;
-                            }
+                            llvm::raw_string_ostream strStream(endianExprStr);
+                            nttParm->print(strStream, context.getPrintingPolicy());
                         }
                     }
 
                     std::string sizeExpr;
                     size_t idx = 0;
-                    bool bad = false;
                     for (const clang::TemplateArgument& arg : *tsType)
                     {
                         if (arg.getKind() == clang::TemplateArgument::Expression)
@@ -1146,45 +1016,18 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                     const clang::Expr* argExpr = uExpr->getArgumentExpr();
                                     while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
                                         argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
-                                    llvm::raw_string_ostream strStream(sizeExpr);
-                                    argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
+                                    llvm::raw_string_ostream strStream2(sizeExpr);
+                                    argExpr->printPretty(strStream2, nullptr, context.getPrintingPolicy());
                                 }
                             }
                             else if (idx == 2)
                             {
-                                endianExpr = expr;
+                                llvm::raw_string_ostream strStream(endianExprStr);
+                                expr->printPretty(strStream, nullptr, context.getPrintingPolicy());
                                 defaultEndian = false;
-                                if (!expr->isIntegerConstantExpr(endian, context))
-                                {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                    diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
-                                    bad = true;
-                                    break;
-                                }
                             }
                         }
                         ++idx;
-                    }
-                    if (bad)
-                        continue;
-
-                    int64_t endianVal = endian.getSExtValue();
-                    if (endianVal != 0 && endianVal != 1)
-                    {
-                        if (endianExpr)
-                        {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
-                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                            diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
-                        }
-                        else
-                        {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                        }
-                        continue;
                     }
 
                     clang::QualType templateType;
@@ -1198,7 +1041,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                             if (defaultEndian)
                                 ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExpr);
                             else
-                                ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExpr, endianVal);
+                                ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExpr, endianExprStr);
                         }
                     }
 
@@ -1305,7 +1148,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 else if (!tsDecl->getName().compare("WString"))
                 {
                     llvm::APSInt endian(64, -1);
-                    const clang::Expr* endianExpr = nullptr;
+                    std::string endianExprStr;
                     bool defaultEndian = true;
                     if (classParms->size() >= 2)
                     {
@@ -1313,21 +1156,13 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm)
                         {
                             const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
-                            const clang::Expr* defArg = nttParm->getDefaultArgument();
-                            endianExpr = defArg;
-                            if (!defArg->isIntegerConstantExpr(endian, context))
-                            {
-                                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(defArg->getLocStart(), AthenaError);
-                                diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                diag.AddSourceRange(clang::CharSourceRange(defArg->getSourceRange(), true));
-                                continue;
-                            }
+                            llvm::raw_string_ostream strStream(endianExprStr);
+                            nttParm->print(strStream, context.getPrintingPolicy());
                         }
                     }
 
                     std::string sizeExprStr;
                     size_t idx = 0;
-                    bool bad = false;
                     for (const clang::TemplateArgument& arg : *tsType)
                     {
                         if (arg.getKind() == clang::TemplateArgument::Expression)
@@ -1343,8 +1178,8 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                                     const clang::Expr* argExpr = uExpr->getArgumentExpr();
                                     while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
                                         argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
-                                    llvm::raw_string_ostream strStream(sizeExprStr);
-                                    argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
+                                    llvm::raw_string_ostream strStream2(sizeExprStr);
+                                    argExpr->printPretty(strStream2, nullptr, context.getPrintingPolicy());
                                 }
                                 else if (expr->isIntegerConstantExpr(sizeLiteral, context))
                                 {
@@ -1353,39 +1188,12 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                             }
                             else if (idx == 1)
                             {
-                                endianExpr = expr;
+                                llvm::raw_string_ostream strStream(endianExprStr);
+                                expr->printPretty(strStream, nullptr, context.getPrintingPolicy());
                                 defaultEndian = false;
-                                if (!expr->isIntegerConstantExpr(endian, context))
-                                {
-                                    clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
-                                    diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                                    diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
-                                    bad = true;
-                                    break;
-                                }
                             }
                         }
                         ++idx;
-                    }
-                    if (bad)
-                        continue;
-
-                    int64_t endianVal = endian.getSExtValue();
-                    if (endianVal != 0 && endianVal != 1)
-                    {
-                        if (endianExpr)
-                        {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(endianExpr->getLocStart(), AthenaError);
-                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                            diag.AddSourceRange(clang::CharSourceRange(endianExpr->getSourceRange(), true));
-                        }
-                        else
-                        {
-                            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
-                            diag.AddString("Endian value must be 'BigEndian' or 'LittleEndian'");
-                            diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
-                        }
-                        continue;
                     }
 
                     std::string ioOp;
@@ -1394,19 +1202,33 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                         if (defaultEndian)
                             ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr);
                         else
-                            ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr, endianVal);
+                            ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr, endianExprStr);
                     }
                     else
                     {
                         if (defaultEndian)
                             ioOp = GetOpString(fieldName, propIdExpr);
                         else
-                            ioOp = GetOpString(fieldName, propIdExpr, endianVal);
+                            ioOp = GetOpString(fieldName, propIdExpr, endianExprStr);
                     }
 
                     fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
                             << "        Do" << ioOp << ";\n"
                             << "        return true;\n";
+                }
+                else
+                {
+                    const clang::NamedDecl* nd = tsDecl->getTemplatedDecl();
+                    if (const clang::CXXRecordDecl* rd = clang::dyn_cast_or_null<clang::CXXRecordDecl>(nd))
+                    {
+                        std::string baseDNA;
+                        if (isDNARecord(rd, baseDNA))
+                        {
+                            fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
+                                    << "        Do" << GetOpString(fieldName, propIdExpr) << ";\n"
+                                    << "        return true;\n";
+                        }
+                    }
                 }
             }
 
@@ -1462,7 +1284,7 @@ public:
         bool isPropDNA = false;
         for (const clang::Decl* d : decl->decls())
             if (const clang::FunctionTemplateDecl* m = clang::dyn_cast_or_null<clang::FunctionTemplateDecl>(d))
-                if (!m->getName().compare(llvm::StringLiteral("Lookup")))
+                if (m->getDeclName().isIdentifier() && !m->getName().compare(llvm::StringLiteral("Lookup")))
                 {
                     isPropDNA = true;
                     break;
