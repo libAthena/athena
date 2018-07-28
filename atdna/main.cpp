@@ -435,7 +435,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 regType = regType->getUnqualifiedDesugaredType();
 
             /* Resolve constant array */
-            if (regType->getTypeClass() == clang::Type::ConstantArray)
+            while (regType->getTypeClass() == clang::Type::ConstantArray)
             {
                 const clang::ConstantArrayType* caType = (clang::ConstantArrayType*)regType;
                 qualType = caType->getElementType();
@@ -913,7 +913,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor>
                 regType = regType->getUnqualifiedDesugaredType();
 
             /* Resolve constant array */
-            if (regType->getTypeClass() == clang::Type::ConstantArray)
+            while (regType->getTypeClass() == clang::Type::ConstantArray)
             {
                 const clang::ConstantArrayType* caType = (clang::ConstantArrayType*)regType;
                 qualType = caType->getElementType();

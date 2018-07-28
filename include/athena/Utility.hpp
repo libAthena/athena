@@ -12,7 +12,7 @@
 namespace athena::utility
 {
 inline bool isEmpty(atInt8* buf, atUint32 size) {return !memcmp(buf, buf + 1, size - 1);}
-inline bool isSystemBigEndian() {return (*(atUint16*)"\xFE\xFF" == 0xFEFF);}
+constexpr bool isSystemBigEndian() {return __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__;}
 
 inline atInt16  swap16(atInt16 val)
 {
