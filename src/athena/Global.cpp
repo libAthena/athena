@@ -1,4 +1,5 @@
 #include "athena/Global.hpp"
+#include "athena/Utility.hpp"
 #include <cstdio>
 #include <cstdarg>
 #include <cstdlib>

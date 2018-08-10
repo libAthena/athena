@@ -3,7 +3,9 @@
 
 #include "utf8proc.h"
 #include "IStream.hpp"
+#include "Utility.hpp"
 #include <memory>
+#include <vector>
 
 namespace athena::io
 {

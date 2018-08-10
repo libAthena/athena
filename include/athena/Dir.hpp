@@ -3,6 +3,7 @@
 
 #include "athena/FileInfo.hpp"
 #include <cstdio>
+#include <vector>
 
 #if _WIN32
 typedef int mode_t;

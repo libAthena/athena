@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include "athena/Types.hpp"
-#include "athena/Utility.hpp"
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4996)

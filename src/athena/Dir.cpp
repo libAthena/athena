@@ -4,6 +4,7 @@
 #include <limits.h>
 #define __STDC_FORMAT_MACROS
 #include <cinttypes>
+#include "athena/Utility.hpp"
 
 #ifndef _WIN32
 #include <dirent.h>
