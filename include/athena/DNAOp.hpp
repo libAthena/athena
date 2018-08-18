@@ -66,24 +66,24 @@ enum class PropType
 };
 
 template <class T>
-using __IsPODType = typename std::disjunction<std::is_arithmetic<T>,
-                                              std::is_convertible<T&, atVec2f&>,
-                                              std::is_convertible<T&, atVec3f&>,
-                                              std::is_convertible<T&, atVec4f&>,
-                                              std::is_convertible<T&, atVec2d&>,
-                                              std::is_convertible<T&, atVec3d&>,
-                                              std::is_convertible<T&, atVec4d&>>;
+using __IsPODType = typename std::disjunction<std::is_arithmetic<std::remove_cv_t<T>>,
+                                              std::is_convertible<std::remove_cv_t<T>&, atVec2f&>,
+                                              std::is_convertible<std::remove_cv_t<T>&, atVec3f&>,
+                                              std::is_convertible<std::remove_cv_t<T>&, atVec4f&>,
+                                              std::is_convertible<std::remove_cv_t<T>&, atVec2d&>,
+                                              std::is_convertible<std::remove_cv_t<T>&, atVec3d&>,
+                                              std::is_convertible<std::remove_cv_t<T>&, atVec4d&>>;
 template <class T>
 inline constexpr bool __IsPODType_v = __IsPODType<T>::value;
 
 template <class T>
-using __CastPODType = typename std::conditional_t<std::is_convertible_v<T&, atVec2f&>, atVec2f,
-                               std::conditional_t<std::is_convertible_v<T&, atVec3f&>, atVec3f,
-                               std::conditional_t<std::is_convertible_v<T&, atVec4f&>, atVec4f,
-                               std::conditional_t<std::is_convertible_v<T&, atVec2d&>, atVec2d,
-                               std::conditional_t<std::is_convertible_v<T&, atVec3d&>, atVec3d,
-                               std::conditional_t<std::is_convertible_v<T&, atVec4d&>, atVec4d,
-                                   T>>>>>>;
+using __CastPODType = typename std::conditional_t<std::is_convertible_v<std::remove_cv_t<T>&, atVec2f&>, atVec2f,
+                               std::conditional_t<std::is_convertible_v<std::remove_cv_t<T>&, atVec3f&>, atVec3f,
+                               std::conditional_t<std::is_convertible_v<std::remove_cv_t<T>&, atVec4f&>, atVec4f,
+                               std::conditional_t<std::is_convertible_v<std::remove_cv_t<T>&, atVec2d&>, atVec2d,
+                               std::conditional_t<std::is_convertible_v<std::remove_cv_t<T>&, atVec3d&>, atVec3d,
+                               std::conditional_t<std::is_convertible_v<std::remove_cv_t<T>&, atVec4d&>, atVec4d,
+                                   std::remove_cv_t<T>>>>>>>;
 
 template <Endian DNAE>
 static inline uint16_t __Read16(IStreamReader& r)
@@ -148,7 +148,7 @@ struct BinarySize
             s += 6;
         }
         using CastT = __CastPODType<T>;
-        BinarySize<PropType::None>::Do<CastT, DNAE>(id, static_cast<CastT&>(var), s);
+        BinarySize<PropType::None>::Do<CastT, DNAE>(id, static_cast<CastT&>(const_cast<std::remove_cv_t<T>&>(var)), s);
     }
     template <class T, Endian DNAE>
     static typename std::enable_if_t<__IsDNARecord_v<T> && PropOp != PropType::None>
@@ -530,10 +530,10 @@ struct Write
             else
                 __Write32<DNAE>(w, id.rcrc32);
             size_t binarySize = 0;
-            BinarySize<PropType::None>::Do<CastT, DNAE>(id, static_cast<CastT&>(var), binarySize);
+            BinarySize<PropType::None>::Do<CastT, DNAE>(id, static_cast<CastT&>(const_cast<std::remove_cv_t<T>&>(var)), binarySize);
             __Write16<DNAE>(w, atUint16(binarySize));
         }
-        Write<PropType::None>::Do<CastT, DNAE>(id, static_cast<CastT&>(var), w);
+        Write<PropType::None>::Do<CastT, DNAE>(id, static_cast<CastT&>(const_cast<std::remove_cv_t<T>&>(var)), w);
     }
     template <class T, Endian DNAE>
     static typename std::enable_if_t<__IsDNARecord<T>() && PropOp != PropType::None>
@@ -822,7 +822,7 @@ struct WriteYaml
     Do(const PropId& id, T& var, StreamT& w)
     {
         using CastT = __CastPODType<T>;
-        WriteYaml<PropType::None>::Do<CastT, DNAE>(id, static_cast<CastT&>(var), w);
+        WriteYaml<PropType::None>::Do<CastT, DNAE>(id, static_cast<CastT&>(const_cast<std::remove_cv_t<T>&>(var)), w);
     }
     template <class T, Endian DNAE>
     static typename std::enable_if_t<__IsDNARecord_v<T>>
