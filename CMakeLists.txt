@@ -41,6 +41,7 @@ add_library(athena-core
     src/athena/Utility.cpp
     src/athena/MemoryReader.cpp
     src/athena/MemoryWriter.cpp
+    src/athena/VectorWriter.cpp
     src/athena/FileWriterGeneric.cpp
     src/athena/Global.cpp
     src/athena/Checksums.cpp
@@ -65,6 +66,7 @@ add_library(athena-core
     include/athena/FileWriter.hpp
     include/athena/MemoryReader.hpp
     include/athena/MemoryWriter.hpp
+    include/athena/VectorWriter.hpp
     include/athena/Checksums.hpp
     include/athena/ChecksumsLiterals.hpp
     include/athena/Compression.hpp
