@@ -4,6 +4,7 @@
 #include <cstring>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 namespace athena::io
 {
