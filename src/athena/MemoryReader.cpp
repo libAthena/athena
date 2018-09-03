@@ -30,14 +30,6 @@ MemoryReader::MemoryReader(const void* data, atUint64 length, bool takeOwnership
         setError();
         return;
     }
-
-    if (length == 0)
-    {
-        if (m_globalErr)
-            atError("length cannot be 0");
-        setError();
-        return;
-    }
 }
 
 MemoryReader::~MemoryReader()
@@ -53,14 +45,6 @@ MemoryCopyReader::MemoryCopyReader(const void* data, atUint64 length)
     {
         if (m_globalErr)
             atError("data cannot be NULL");
-        setError();
-        return;
-    }
-
-    if (length == 0)
-    {
-        if (m_globalErr)
-            atError("length cannot be 0");
         setError();
         return;
     }

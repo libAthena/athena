@@ -22,11 +22,7 @@ void VectorWriter::seek(atInt64 position, SeekOrigin origin)
         }
 
         if ((atUint64)position > m_data.size())
-        {
-            atError("data exceeds vector size");
-            setError();
-            return;
-        }
+            m_data.resize(position);
 
         m_position = position;
         break;
@@ -40,11 +36,7 @@ void VectorWriter::seek(atInt64 position, SeekOrigin origin)
         }
 
         if (m_position + position > m_data.size())
-        {
-            atError("data exceeds vector size");
-            setError();
-            return;
-        }
+            m_data.resize(m_position + position);
 
         m_position += position;
         break;
