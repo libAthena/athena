@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <string>
+#include <vector>
 #include "athena/Global.hpp"
 
 namespace athena

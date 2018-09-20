@@ -2,7 +2,7 @@
 
 #if __APPLE__  || __FreeBSD__
 #include "osx_largefilewrapper.h"
-#elif GEKKO
+#elif GEKKO  || __SWITCH__
 #include "gekko_support.h"
 #include "osx_largefilewrapper.h"
 #endif

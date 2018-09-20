@@ -1,4 +1,5 @@
 #include "athena/WiiFile.hpp"
+#include "athena/Utility.hpp"
 #include <algorithm>
 
 namespace athena

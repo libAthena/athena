@@ -3,7 +3,7 @@
 #include <cstring>
 #if _WIN32
 #include <intrin.h>
-#elif !GEKKO
+#elif !defined(GEKKO) && !defined(__SWITCH__)
 #include <cpuid.h>
 #endif
 

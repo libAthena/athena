@@ -29,9 +29,9 @@ list(APPEND CORE_EXTRA src/win32_largefilewrapper.c include/win32_largefilewrapp
      src/athena/FileWriterWin32.cpp src/athena/FileReaderWin32.cpp)
 else()
 list(APPEND CORE_EXTRA src/athena/FileWriterNix.cpp src/athena/FileReader.cpp)
-if(APPLE OR GEKKO OR ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
+if(APPLE OR GEKKO OR NX OR ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 list(APPEND CORE_EXTRA src/osx_largefilewrapper.c include/osx_largefilewrapper.h)
-if(GEKKO)
+if(GEKKO OR NX)
 list(APPEND CORE_EXTRA src/gekko_support.c include/gekko_support.h)
 endif()
 endif()
@@ -130,7 +130,7 @@ add_library(athena-wiisave EXCLUDE_FROM_ALL
     include/md5.h
     include/sha1.h
 )
-if(NOT MSVC AND NOT GEKKO)
+if(NOT MSVC AND NOT GEKKO AND NOT NX)
 set_source_files_properties(src/aes.cpp PROPERTIES COMPILE_FLAGS -maes)
 endif()
 
@@ -243,7 +243,7 @@ install(EXPORT AthenaTargets DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT athena)
 # atdna import #
 ################
 
-if(NOT GEKKO)
+if(NOT GEKKO AND NOT NX)
 add_subdirectory(atdna)
 # Test target
 atdna(atdna_test.cpp atdna/test.hpp)

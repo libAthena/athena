@@ -1,4 +1,4 @@
-#if defined(GEKKO)
+#if defined(GEKKO) || defined(__SWITCH__)
 #include "gekko_support.h"
 #define SYMLOOP_MAX 8
 #include <sys/stat.h>
