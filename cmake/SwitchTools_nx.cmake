@@ -123,11 +123,11 @@ function(add_nro_target target)
         endif ()
         if (NOT APP_ICON)
             if (EXISTS ${target}.png)
-                set(APP_ICON ${target}.png)
-            elseif (EXISTS icon.png)
-                set(APP_ICON icon.png)
+                set(APP_ICON ${target}.jpg)
+            elseif (EXISTS icon.jpg)
+                set(APP_ICON icon.jpg)
             elseif (NX)
-                set(APP_ICON ${DEVKITPRO}/libnx/default_icon.png)
+                set(APP_ICON ${DEVKITPRO}/libnx/default_icon.jpg)
             else ()
                 message(FATAL_ERROR "No icon found ! Please use NO_SMDH or provide some icon.")
             endif ()
@@ -137,13 +137,14 @@ function(add_nro_target target)
         endif ()
         if (CMAKE_RUNTIME_OUTPUT_DIRECTORY)
             add_custom_command(OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target_we}.nro
-                    COMMAND ${ELF2NRO} $<TARGET_FILE:${target}> --icon=${APP_ICON} --nacp=${CMAKE_CURRENT_BINARY_DIR}/${target_we}.nacp ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target_we}.nro
+                    COMMAND ${ELF2NRO} $<TARGET_FILE:${target}> ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target_we}.nro --icon=${APP_ICON} --nacp=${CMAKE_CURRENT_BINARY_DIR}/${target_we}.nacp
                     DEPENDS ${target} ${CMAKE_CURRENT_BINARY_DIR}/${target_we}.nacp
                     VERBATIM
                     )
         else ()
+            message("${CMAKE_CURRENT_BINARY_DIR}/${target_we}.nacp")
             add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${target_we}.nro
-                    COMMAND ${ELF2NRO} $<TARGET_FILE:${target}> --icon=${APP_ICON} --nacp=${CMAKE_CURRENT_BINARY_DIR}/${target_we}.nacp ${CMAKE_CURRENT_BINARY_DIR}/${target_we}.nro
+                    COMMAND ${ELF2NRO} $<TARGET_FILE:${target}> ${CMAKE_CURRENT_BINARY_DIR}/${target_we}.nro --icon=${APP_ICON} --nacp=${CMAKE_CURRENT_BINARY_DIR}/${target_we}.nacp
                     DEPENDS ${target} ${CMAKE_CURRENT_BINARY_DIR}/${target_we}.nacp
                     VERBATIM
                     )
