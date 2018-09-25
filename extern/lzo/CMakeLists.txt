@@ -1,7 +1,7 @@
-if(NOT WIN32 AND NOT APPLE)
+if(NOT WIN32 AND NOT APPLE AND NOT NX)
 find_library(LZO_LIB lzo2)
 endif()
-if(WIN32 OR APPLE OR LZO_LIB STREQUAL LZO_LIB-NOTFOUND)
+if(WIN32 OR APPLE OR NX OR LZO_LIB STREQUAL LZO_LIB-NOTFOUND)
 include_directories(include)
 message(STATUS "Using Athena's built-in lzo")
 add_library(lzo2
@@ -77,7 +77,7 @@ add_library(lzo2
     include/lzo/lzoconf.h
     include/lzo/lzodefs.h
     include/lzo/lzoutil.h)
-if(WIN32 AND NOT UNIX)
+if(WIN32 AND NOT UNIX AND NOT NX)
 install(DIRECTORY include/lzo DESTINATION include COMPONENT lzo2)
 install(TARGETS lzo2 DESTINATION lib COMPONENT lzo2)
 endif()

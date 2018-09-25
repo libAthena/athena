@@ -243,12 +243,15 @@ install(EXPORT AthenaTargets DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT athena)
 # atdna import #
 ################
 
-if(NOT GEKKO AND NOT NX)
 add_subdirectory(atdna)
 # Test target
 atdna(atdna_test.cpp atdna/test.hpp)
 add_executable(atdna-test atdna/test.cpp atdna_test.cpp atdna/test.hpp)
-target_link_libraries(atdna-test athena-core athena-libyaml)
+if (CMAKE_SYSTEM_NAME STREQUAL "Switch")
+    set_target_properties(atdna-test PROPERTIES SUFFIX ".elf")
+    target_link_libraries(atdna-test athena-core athena-libyaml nx)
+else()
+    target_link_libraries(atdna-test athena-core athena-libyaml)
 endif()
 
 #########
