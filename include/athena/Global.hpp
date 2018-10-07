@@ -52,7 +52,7 @@
 #endif
 // clang-format on
 
-#ifdef GEKKO
+#if defined(GEKKO) || defined(__SWITCH__)
 #include "gekko_support.h"
 typedef struct stat atStat64_t;
 #define atStat64 stat

@@ -2,10 +2,12 @@
 
 #if __APPLE__  || __FreeBSD__
 #include "osx_largefilewrapper.h"
-#elif GEKKO
+#elif GEKKO  || __SWITCH__
 #include "gekko_support.h"
 #include "osx_largefilewrapper.h"
 #endif
+
+#include <unistd.h>
 
 namespace athena::io
 {
@@ -82,6 +84,10 @@ void FileWriter::close()
     m_fileHandle = NULL;
 
     std::string tmpFilename = m_filename + '~';
+#ifdef __SWITCH__
+    /* Due to Horizon not being a fully POSIX compatible OS, we need to make sure the file *does not* exist before attempting to rename */
+    unlink(m_filename.c_str());
+#endif
     rename(tmpFilename.c_str(), m_filename.c_str());
 }
 

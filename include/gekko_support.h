@@ -1,7 +1,7 @@
 #ifndef GEKKO_SUPPORT_H
 #define GEKKO_SUPPORT_H
 
-#ifdef GEKKO
+#if defined(GEKKO) || defined(__SWITCH__)
 #include <stdarg.h>
 #include <stddef.h>
 #include <sys/cdefs.h>
@@ -11,6 +11,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#ifdef __SWITCH__
+#define ftello64 ftello
+#define fseeko64 fseeko
+#endif
+
 char *
 realpath(const char *path, char *resolved);
 int

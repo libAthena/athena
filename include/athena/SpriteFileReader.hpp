@@ -8,6 +8,8 @@ namespace athena::Sakura
 class SpriteFile;
 } // Sakura
 
+namespace athena
+{
 namespace io
 {
 
@@ -19,6 +21,7 @@ public:
 
     Sakura::SpriteFile* readFile();
 };
+}
 } // zelda
 
 

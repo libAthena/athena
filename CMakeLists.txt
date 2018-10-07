@@ -29,9 +29,9 @@ list(APPEND CORE_EXTRA src/win32_largefilewrapper.c include/win32_largefilewrapp
      src/athena/FileWriterWin32.cpp src/athena/FileReaderWin32.cpp)
 else()
 list(APPEND CORE_EXTRA src/athena/FileWriterNix.cpp src/athena/FileReader.cpp)
-if(APPLE OR GEKKO OR ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
+if(APPLE OR GEKKO OR NX OR ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 list(APPEND CORE_EXTRA src/osx_largefilewrapper.c include/osx_largefilewrapper.h)
-if(GEKKO)
+if(GEKKO OR NX)
 list(APPEND CORE_EXTRA src/gekko_support.c include/gekko_support.h)
 endif()
 endif()
@@ -243,12 +243,15 @@ install(EXPORT AthenaTargets DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT athena)
 # atdna import #
 ################
 
-if(NOT GEKKO AND NOT NX)
 add_subdirectory(atdna)
 # Test target
 atdna(atdna_test.cpp atdna/test.hpp)
 add_executable(atdna-test atdna/test.cpp atdna_test.cpp atdna/test.hpp)
-target_link_libraries(atdna-test athena-core athena-libyaml)
+if (CMAKE_SYSTEM_NAME STREQUAL "Switch")
+    set_target_properties(atdna-test PROPERTIES SUFFIX ".elf")
+    target_link_libraries(atdna-test athena-core athena-libyaml nx)
+else()
+    target_link_libraries(atdna-test athena-core athena-libyaml)
 endif()
 
 #########
