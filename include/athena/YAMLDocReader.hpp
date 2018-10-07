@@ -1,5 +1,4 @@
-#ifndef YAMLDOCREADER
-#define YAMLDOCREADER
+#pragma once
 
 #include "YAMLCommon.hpp"
 
@@ -168,4 +167,3 @@ public:
 
 }
 
-#endif // YAMLDOCREADER

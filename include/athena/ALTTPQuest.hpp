@@ -1,5 +1,4 @@
-#ifndef ALTTP_QUEST_HPP
-#define ALTTP_QUEST_HPP
+#pragma once
 
 #include "athena/Global.hpp"
 #include <string>
@@ -669,4 +668,3 @@ private:
 
 } // zelda
 
-#endif // ALTTP_QUEST_HPP

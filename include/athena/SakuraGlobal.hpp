@@ -1,5 +1,4 @@
-#ifndef SAKURAGLOBAL_HPP
-#define SAKURAGLOBAL_HPP
+#pragma once
 
 #include "athena/Global.hpp"
 
@@ -29,4 +28,3 @@ typedef Vector2D<int> Vector2Di;
 typedef Vector2D<float> Vector2Df;
 } // Sakura
 
-#endif // SAKURAGLOBAL_HPP

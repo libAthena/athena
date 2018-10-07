@@ -1,5 +1,4 @@
-#ifndef DIR_HPP
-#define DIR_HPP
+#pragma once
 
 #include "athena/FileInfo.hpp"
 #include <cstdio>
@@ -36,4 +35,3 @@ private:
 };
 }
 
-#endif // DIR_HPP

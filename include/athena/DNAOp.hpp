@@ -1,5 +1,4 @@
-#ifndef AT_DNAOP_HPP
-#define AT_DNAOP_HPP
+#pragma once
 
 #include "IStreamReader.hpp"
 #include "IStreamWriter.hpp"
@@ -1273,4 +1272,3 @@ void __VA_ARGS__::Enumerate<athena::io::DNA<athena::Big>::WriteYaml>(typename Wr
 } \
 AT_SUBSPECIALIZE_DNA(__VA_ARGS__)
 
-#endif // AT_DNAOP_HPP

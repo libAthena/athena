@@ -1,5 +1,4 @@
-#ifndef ALTTP_STRUCTS_HPP
-#define ALTTP_STRUCTS_HPP
+#pragma once
 
 #include <string>
 #include "athena/Types.hpp"
@@ -197,4 +196,3 @@ struct ALTTPProgressFlags2
 
 }
 
-#endif // ALTTP_STRUCTS_HPP

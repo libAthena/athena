@@ -1,5 +1,4 @@
-#ifndef LZLOOKUPTABLE_HPP
-#define LZLOOKUPTABLE_HPP
+#pragma once
 
 #include <map>
 #include <deque>
@@ -36,4 +35,3 @@ private:
 
 };
 
-#endif // LZLOOKUPTABLE_HPP

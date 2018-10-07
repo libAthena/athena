@@ -1,5 +1,4 @@
-#ifndef WIISAVE_HPP
-#define WIISAVE_HPP
+#pragma once
 
 #include <unordered_map>
 #include <string>
@@ -82,4 +81,3 @@ private:
 };
 
 } // zelda
-#endif // WIISAVE_HPP

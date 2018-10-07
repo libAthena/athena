@@ -1,5 +1,4 @@
-#ifndef WIISAVEWRITER_HPP
-#define WIISAVEWRITER_HPP
+#pragma once
 
 #include "athena/MemoryWriter.hpp"
 
@@ -51,4 +50,3 @@ private:
 
 } // io
 } // zelda
-#endif // WIISAVEWRITER_HPP

@@ -1,5 +1,4 @@
-#ifndef SSPRITEFILEWRITER_HPP
-#define SSPRITEFILEWRITER_HPP
+#pragma once
 
 #include "athena/MemoryWriter.hpp"
 
@@ -25,4 +24,3 @@ public:
 
 } // io
 } // zelda
-#endif // SSPRITEFILEWRITER_HPP

@@ -1,5 +1,4 @@
-#ifndef DNA_HPP
-#define DNA_HPP
+#pragma once
 
 /* BIG FAT WARNING!!!
  *
@@ -150,5 +149,4 @@ struct DNAVYaml : DNAV<DNAE>
 
 }
 
-#endif // DNA_HPP
 

@@ -1,5 +1,4 @@
-#ifndef ISTREAMWRITER_HPP
-#define ISTREAMWRITER_HPP
+#pragma once
 
 #include "utf8proc.h"
 #include "IStream.hpp"
@@ -1176,5 +1175,4 @@ IStreamWriter& operator<<(IStreamWriter& lhs, const T& rhs)
     return lhs;
 }
 }
-#endif // STREAMWRITER_HPP
 

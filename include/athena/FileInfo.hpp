@@ -1,5 +1,4 @@
-#ifndef FILEINFO_HPP
-#define FILEINFO_HPP
+#pragma once
 
 #include <string>
 
@@ -56,4 +55,3 @@ private:
 };
 }
 
-#endif // FILEINFO_HPP

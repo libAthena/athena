@@ -1,5 +1,4 @@
-#ifndef WIISAVEREADER_HPP
-#define WIISAVEREADER_HPP
+#pragma once
 
 #include "athena/Global.hpp"
 #include "athena/MemoryReader.hpp"
@@ -52,4 +51,3 @@ private:
 
 } // io
 } // zelda
-#endif // WIISAVEREADER_HPP

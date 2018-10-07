@@ -2,8 +2,7 @@
 // Created by Jack Andersen on 2/16/18.
 //
 
-#ifndef URDE_YAMLCOMMON_HPP
-#define URDE_YAMLCOMMON_HPP
+#pragma once
 
 #include <cstring>
 #include <yaml.h>
@@ -198,4 +197,3 @@ int YAMLAthenaWriter(athena::io::IStreamWriter* writer,
 
 }
 
-#endif //URDE_YAMLCOMMON_HPP

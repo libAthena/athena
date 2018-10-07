@@ -1,5 +1,4 @@
-#ifndef WIIFILE_H
-#define WIIFILE_H
+#pragma once
 
 #include <string>
 #include <map>
@@ -220,4 +219,3 @@ private:
 };
 
 } // zelda
-#endif // WIIFILE_H

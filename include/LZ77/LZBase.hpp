@@ -1,5 +1,4 @@
-#ifndef LZBASE_HPP
-#define LZBASE_HPP
+#pragma once
 
 #include <string>
 #include "LZ77/LZLookupTable.hpp"
@@ -41,4 +40,3 @@ protected:
 
 };
 
-#endif // LZBASE_HPP

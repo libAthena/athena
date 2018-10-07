@@ -1,5 +1,4 @@
-#ifndef SSPRITE_HPP
-#define SSPRITE_HPP
+#pragma once
 
 #include <vector>
 #include <string>
@@ -69,4 +68,3 @@ private:
 
 } // zelda
 
-#endif // SSPRITE_HPP

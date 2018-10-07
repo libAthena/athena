@@ -1,5 +1,4 @@
-#ifndef EC_H
-#define EC_H
+#pragma once
 #include "athena/Types.hpp"
 
 namespace ecc
@@ -9,5 +8,4 @@ void makeECCert(atUint8* cert, atUint8* sig, const char* signer, const char* nam
 void createECDSA(atUint8* R, atUint8* S, atUint8* k, atUint8* hash);
 }
 
-#endif // EC_H
 

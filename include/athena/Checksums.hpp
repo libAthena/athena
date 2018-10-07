@@ -1,5 +1,4 @@
-#ifndef CHECKSUMS_HPP
-#define CHECKSUMS_HPP
+#pragma once
 
 #include "athena/Global.hpp"
 
@@ -10,4 +9,3 @@ atUint32 crc32(const atUint8* data, atUint64 length, atUint32 seed = 0xFFFFFFFF,
 atUint16 crc16CCITT(const atUint8* data, atUint64 length, atUint16 seed = 0xFFFF, atUint16 final = 0);
 atUint16 crc16(const atUint8* data, atUint64 length, atUint16 seed = 0, atUint16 final = 0);
 }
-#endif // CHECKSUMS_HPP

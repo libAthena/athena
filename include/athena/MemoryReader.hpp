@@ -1,5 +1,4 @@
-#ifndef MEMORYREADER_HPP
-#define MEMORYREADER_HPP
+#pragma once
 
 #include <string>
 #include <memory>
@@ -119,4 +118,3 @@ protected:
 } // Athena
 
 
-#endif // MEMORYREADER_HPP

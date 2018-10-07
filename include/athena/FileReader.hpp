@@ -1,5 +1,4 @@
-#ifndef FILESTREAM_HPP
-#define FILESTREAM_HPP
+#pragma once
 
 #if _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
@@ -82,4 +81,3 @@ private: \
 
 #endif // FILEREADER_BASE
 
-#endif // FILESTREAM_HPP

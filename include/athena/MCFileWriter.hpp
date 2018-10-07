@@ -1,5 +1,4 @@
-#ifndef MCFILEWRITER_HPP
-#define MCFILEWRITER_HPP
+#pragma once
 
 #include "athena/Types.hpp"
 #include "athena/MemoryWriter.hpp"
@@ -52,4 +51,3 @@ private:
 } // io
 } // zelda
 
-#endif // MCFILEWRITER_HPP

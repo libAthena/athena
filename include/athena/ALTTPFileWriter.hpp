@@ -1,5 +1,4 @@
-#ifndef ALTTP_FILE_WRITER_HPP
-#define ALTTP_FILE_WRITER_HPP
+#pragma once
 
 #include <string>
 #include "athena/MemoryWriter.hpp"
@@ -50,4 +49,3 @@ private:
 } // io
 } // zelda
 
-#endif // ALTTP_FILE_WRITER_HPP

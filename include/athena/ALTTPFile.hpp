@@ -1,5 +1,4 @@
-#ifndef ALTTP_FILE_HPP
-#define ALTTP_FILE_HPP
+#pragma once
 
 #include "athena/Global.hpp"
 #include <vector>
@@ -73,4 +72,3 @@ private:
 };
 
 } // zelda
-#endif // ALTTP_FILE_HPP

@@ -1,5 +1,4 @@
-#ifndef VECTORWRITER_HPP
-#define VECTORWRITER_HPP
+#pragma once
 
 #include <string>
 #include <memory>
@@ -60,4 +59,3 @@ protected:
 
 }
 
-#endif // VECTORWRITER_HPP

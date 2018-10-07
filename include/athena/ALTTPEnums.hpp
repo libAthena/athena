@@ -1,5 +1,4 @@
-#ifndef ALTTP_ENUMS_HPP
-#define ALTTP_ENUMS_HPP
+#pragma once
 
 #include "Types.hpp"
 
@@ -92,4 +91,3 @@ enum ALTTPTagAlong
 };
 
 } // zelda
-#endif // ALTTP_ENUMS_HPP

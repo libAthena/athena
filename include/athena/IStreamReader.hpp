@@ -1,5 +1,4 @@
-#ifndef ISTREAMREADER_HPP
-#define ISTREAMREADER_HPP
+#pragma once
 
 #include <memory>
 #include <functional>
@@ -1180,5 +1179,4 @@ IStreamReader& operator>>(IStreamReader& lhs, T& rhs)
     return lhs;
 }
 }
-#endif // ISTREAMREADER
 

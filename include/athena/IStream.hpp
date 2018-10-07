@@ -1,5 +1,4 @@
-#ifndef STREAM_HPP
-#define STREAM_HPP
+#pragma once
 
 #include "Global.hpp"
 
@@ -32,4 +31,3 @@ protected:
 #endif
 };
 }
-#endif // STREAM_HPP

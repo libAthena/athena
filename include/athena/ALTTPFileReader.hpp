@@ -1,5 +1,4 @@
-#ifndef ALTTP_FILE_READER_HPP
-#define ALTTP_FILE_READER_HPP
+#pragma once
 
 #include <string>
 #include "athena/Types.hpp"
@@ -48,4 +47,3 @@ private:
 
 } // io
 } // zelda
-#endif // ALTTP_FILE_READER_HPP

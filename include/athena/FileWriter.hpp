@@ -1,5 +1,4 @@
-#ifndef FILEWRITER_HPP
-#define FILEWRITER_HPP
+#pragma once
 
 #if _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
@@ -120,4 +119,3 @@ private: \
     typedef athena::io::FileWriter base;
 
 #endif // FILEWRITER_BASE
-#endif // FILEWRITER_HPP

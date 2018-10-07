@@ -1,5 +1,4 @@
-#ifndef WIIBANNER_H
-#define WIIBANNER_H
+#pragma once
 
 #include <vector>
 #include <string>
@@ -174,4 +173,3 @@ private:
 };
 } // zelda
 
-#endif // WIIBANNER_H

@@ -1,5 +1,4 @@
-#ifndef TYPES_HPP
-#define TYPES_HPP
+#pragma once
 #include <cstdint>
 #include <cinttypes>
 
@@ -127,4 +126,3 @@ typedef union alignas(32)
 #define DEPRECATED(func) func
 #endif
 
-#endif // TYPES_HPP

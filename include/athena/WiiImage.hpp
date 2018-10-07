@@ -1,5 +1,4 @@
-#ifndef WIIIMAGE_HPP
-#define WIIIMAGE_HPP
+#pragma once
 
 #include <memory>
 #include "athena/Types.hpp"
@@ -75,4 +74,3 @@ private:
 
 } // zelda
 
-#endif // WIIIMAGE_HPP

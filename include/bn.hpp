@@ -1,5 +1,4 @@
-#ifndef BN_H
-#define BN_H
+#pragma once
 
 #include "athena/Types.hpp"
 namespace bignum
@@ -12,4 +11,3 @@ void exp(atUint8* d, const atUint8* a, const atUint8* N, atUint32 n, atUint8* e,
 void inv(atUint8* d, atUint8* a, const atUint8* N, atUint32 n);
 }
 
-#endif // BN_H

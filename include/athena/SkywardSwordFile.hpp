@@ -1,5 +1,4 @@
-#ifndef SSFILE_HPP
-#define SSFILE_HPP
+#pragma once
 
 #include "athena/Global.hpp"
 
@@ -46,4 +45,3 @@ private:
 };
 
 }
-#endif // SSFILE_HPP

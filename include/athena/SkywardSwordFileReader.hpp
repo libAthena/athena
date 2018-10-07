@@ -1,5 +1,4 @@
-#ifndef SSFILEREADER_HPP
-#define SSFILEREADER_HPP
+#pragma once
 
 #include "athena/MemoryReader.hpp"
 
@@ -19,4 +18,3 @@ public:
 } // io
 } // zelda
 
-#endif // SSFILEREADER_HPP

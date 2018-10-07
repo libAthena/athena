@@ -1,5 +1,4 @@
-#ifndef LZ77TYPE10_HPP
-#define LZ77TYPE10_HPP
+#pragma once
 
 #include "LZBase.hpp"
 
@@ -11,4 +10,3 @@ public:
     atUint32 decompress(const atUint8* src, atUint8** dst, atUint32 srcLen);
 };
 
-#endif // LZ77TYPE10_HPP

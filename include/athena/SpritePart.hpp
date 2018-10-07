@@ -1,5 +1,4 @@
-#ifndef SSPRITEPART_HPP
-#define SSPRITEPART_HPP
+#pragma once
 
 #include "athena/SakuraGlobal.hpp"
 #include <vector>
@@ -113,4 +112,3 @@ private:
 };
 }
 
-#endif // SSPRITEPART_HPP

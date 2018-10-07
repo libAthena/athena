@@ -1,5 +1,4 @@
-#ifndef MCFILEREADER_HPP
-#define MCFILEREADER_HPP
+#pragma once
 
 #include "athena/MemoryReader.hpp"
 
@@ -47,4 +46,3 @@ public:
 } // io
 } // zelda
 
-#endif // MCFILEREADER_HPP

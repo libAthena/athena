@@ -1,5 +1,4 @@
-#ifndef MCFILE_HPP
-#define MCFILE_HPP
+#pragma once
 
 #include "athena/Global.hpp"
 
@@ -33,4 +32,3 @@ private:
 };
 
 } // zelda
-#endif // MCFILE_HPP

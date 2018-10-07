@@ -1,5 +1,4 @@
-#ifndef SSFILEWRITER_HPP
-#define SSFILEWRITER_HPP
+#pragma once
 
 #include "athena/MemoryWriter.hpp"
 
@@ -20,4 +19,3 @@ public:
 };
 }
 }
-#endif // SSFILEWRITER_HPP

@@ -1,5 +1,4 @@
-#ifndef ATHENA_SOCKET_HPP
-#define ATHENA_SOCKET_HPP
+#pragma once
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -101,4 +100,3 @@ public:
 
 }
 
-#endif // ATHENA_SOCKET_HPP

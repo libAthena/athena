@@ -1,5 +1,4 @@
-#ifndef AT_CHECKSUMSLITERALS_HPP
-#define AT_CHECKSUMSLITERALS_HPP
+#pragma once
 
 #include <cstdint>
 
@@ -196,4 +195,3 @@ static_assert("0"_crc64 == Crc64<'0'>::value,
 }
 
 
-#endif // AT_CHECKSUMSLITERALS_HPP

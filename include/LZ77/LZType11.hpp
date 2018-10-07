@@ -1,5 +1,4 @@
-#ifndef LZTYPE11_HPP
-#define LZTYPE11_HPP
+#pragma once
 
 
 #include "LZBase.hpp"
@@ -13,4 +12,3 @@ public:
 
 };
 
-#endif // LZTYPE11_HPP

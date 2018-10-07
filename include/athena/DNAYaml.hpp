@@ -1,5 +1,4 @@
-#ifndef DNAYAML_HPP
-#define DNAYAML_HPP
+#pragma once
 
 #include "YAMLDocReader.hpp"
 #include "YAMLDocWriter.hpp"
@@ -136,4 +135,3 @@ static inline bool ValidateFromYAMLStream(athena::io::IStreamReader& fin)
 
 }
 
-#endif // DNAYAML_HPP

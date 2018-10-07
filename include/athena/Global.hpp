@@ -1,5 +1,4 @@
-#ifndef GLOBAL_HPP
-#define GLOBAL_HPP
+#pragma once
 
 #include <iostream>
 #include "athena/Types.hpp"
@@ -262,4 +261,3 @@ std::ostream& operator<<(std::ostream& os, const athena::Endian& endian);
     } while (0)
 #endif // defined(__GNUC__)
 
-#endif // GLOBAL_HPP

@@ -1,5 +1,4 @@
-#ifndef SSPRITEFRAME_HPP
-#define SSPRITEFRAME_HPP
+#pragma once
 
 
 #include "athena/SakuraGlobal.hpp"
@@ -48,4 +47,3 @@ private:
 
 } // zelda
 
-#endif // SSPRITEFRAME_HPP

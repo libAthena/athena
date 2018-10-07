@@ -1,5 +1,4 @@
-#ifndef MEMORYWRITER_HPP
-#define MEMORYWRITER_HPP
+#pragma once
 
 #include <string>
 #include <memory>
@@ -158,4 +157,3 @@ private:
 
 }
 
-#endif // MEMORYWRITER_HPP

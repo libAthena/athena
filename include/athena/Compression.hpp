@@ -1,5 +1,4 @@
-#ifndef COMPRESSION_HPP
-#define COMPRESSION_HPP
+#pragma once
 
 #include "athena/Global.hpp"
 
@@ -19,4 +18,3 @@ atUint32 yaz0Encode(const atUint8* src, atUint32 srcSize, atUint8* data);
 atUint32 decompressLZ77(const atUint8* src, atUint32 srcLen, atUint8** dst);
 atUint32 compressLZ77(const atUint8* src, atUint32 srcLen, atUint8** dst, bool extended = false);
 }
-#endif // COMPRESSION_HPP

@@ -1,5 +1,4 @@
-#ifndef YAMLDOCWRITER
-#define YAMLDOCWRITER
+#pragma once
 
 #include "YAMLCommon.hpp"
 
@@ -133,4 +132,3 @@ public:
 
 }
 
-#endif // YAMLDOCWRITER

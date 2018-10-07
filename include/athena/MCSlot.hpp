@@ -1,5 +1,4 @@
-#ifndef MCSLOT_HPP
-#define MCSLOT_HPP
+#pragma once
 
 #include "athena/Global.hpp"
 #include "athena/ZQuestFile.hpp"
@@ -14,4 +13,3 @@ public:
 
 } // Athena
 
-#endif // MCSLOT_HPP
