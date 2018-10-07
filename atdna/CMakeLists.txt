@@ -181,7 +181,7 @@ endif()
 #######################
 
 # Super handy macro for adding atdna target
-macro(atdna out)
+function(atdna out)
   # Ninja wants invocations in root binary dir for DEPFILE application
   file(RELATIVE_PATH out_rel ${CMAKE_BINARY_DIR} "${CMAKE_CURRENT_BINARY_DIR}/${out}")
 
@@ -255,6 +255,6 @@ macro(atdna out)
                        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                        COMMENT "Generating DNA ${out_rel}")
   endif()
-endmacro()
+endfunction()
 
 endif()

@@ -130,7 +130,7 @@ add_library(athena-wiisave EXCLUDE_FROM_ALL
     include/md5.h
     include/sha1.h
 )
-if(NOT MSVC AND NOT GEKKO)
+if(NOT MSVC AND NOT GEKKO AND NOT NX)
 set_source_files_properties(src/aes.cpp PROPERTIES COMPILE_FLAGS -maes)
 endif()
 
@@ -243,7 +243,7 @@ install(EXPORT AthenaTargets DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT athena)
 # atdna import #
 ################
 
-if(NOT GEKKO)
+if(NOT GEKKO AND NOT NX)
 add_subdirectory(atdna)
 # Test target
 atdna(atdna_test.cpp atdna/test.hpp)
