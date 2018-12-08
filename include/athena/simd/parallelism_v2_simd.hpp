@@ -664,7 +664,6 @@ namespace athena::_simd {
 enum class _StorageKind {
   _Scalar,
   _Array,
-  _VecExt,
 };
 
 template <_StorageKind __kind, int _Np>
@@ -681,122 +680,25 @@ class __simd_storage<_Tp, __simd_abi<_StorageKind::_Scalar, 1>> {
   _Tp __storage_;
 
   template <class, class>
-  friend struct simd;
+  friend class simd;
 
   template <class, class>
-  friend struct simd_mask;
+  friend class simd_mask;
 
 public:
   _Tp __get(size_t __index) const noexcept { return (&__storage_)[__index]; };
   void __set(size_t __index, _Tp __val) noexcept { (&__storage_)[__index] = __val; }
 };
 
-#ifndef _LIBCPP_HAS_NO_VECTOR_EXTENSION
-
-constexpr size_t __floor_pow_of_2(size_t __val) {
-  return ((__val - 1) & __val) == 0 ? __val : __floor_pow_of_2((__val - 1) & __val);
-}
-
-constexpr size_t __ceil_pow_of_2(size_t __val) { return __val == 1 ? 1 : __floor_pow_of_2(__val - 1) << 1; }
-
-template <class _Tp, size_t __bytes>
-struct __vec_ext_traits {
-#if !defined(_LIBCPP_COMPILER_CLANG)
-  typedef _Tp type __attribute__((vector_size(__ceil_pow_of_2(__bytes))));
-#endif
-};
-
-#if defined(_LIBCPP_COMPILER_CLANG)
-#define _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, _NUM_ELEMENT)                                                                \
-  template <>                                                                                                          \
-  struct __vec_ext_traits<_TYPE, sizeof(_TYPE) * _NUM_ELEMENT> {                                                       \
-    using type = _TYPE __attribute__((vector_size(sizeof(_TYPE) * _NUM_ELEMENT)));                                     \
-  }
-
-#define _LIBCPP_SPECIALIZE_VEC_EXT_32(_TYPE)                                                                           \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 1);                                                                                \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 2);                                                                                \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 3);                                                                                \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 4);                                                                                \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 5);                                                                                \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 6);                                                                                \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 7);                                                                                \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 8);                                                                                \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 9);                                                                                \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 10);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 11);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 12);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 13);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 14);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 15);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 16);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 17);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 18);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 19);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 20);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 21);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 22);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 23);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 24);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 25);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 26);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 27);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 28);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 29);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 30);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 31);                                                                               \
-  _LIBCPP_SPECIALIZE_VEC_EXT(_TYPE, 32);
-
-_LIBCPP_SPECIALIZE_VEC_EXT_32(char);
-_LIBCPP_SPECIALIZE_VEC_EXT_32(char16_t);
-_LIBCPP_SPECIALIZE_VEC_EXT_32(char32_t);
-_LIBCPP_SPECIALIZE_VEC_EXT_32(wchar_t);
-_LIBCPP_SPECIALIZE_VEC_EXT_32(signed char);
-_LIBCPP_SPECIALIZE_VEC_EXT_32(signed short);
-_LIBCPP_SPECIALIZE_VEC_EXT_32(signed int);
-_LIBCPP_SPECIALIZE_VEC_EXT_32(signed long);
-_LIBCPP_SPECIALIZE_VEC_EXT_32(signed long long);
-_LIBCPP_SPECIALIZE_VEC_EXT_32(unsigned char);
-_LIBCPP_SPECIALIZE_VEC_EXT_32(unsigned short);
-_LIBCPP_SPECIALIZE_VEC_EXT_32(unsigned int);
-_LIBCPP_SPECIALIZE_VEC_EXT_32(unsigned long);
-_LIBCPP_SPECIALIZE_VEC_EXT_32(unsigned long long);
-_LIBCPP_SPECIALIZE_VEC_EXT_32(float);
-_LIBCPP_SPECIALIZE_VEC_EXT_32(double);
-_LIBCPP_SPECIALIZE_VEC_EXT_32(long double);
-
-#undef _LIBCPP_SPECIALIZE_VEC_EXT_32
-#undef _LIBCPP_SPECIALIZE_VEC_EXT
-#endif
-
-template <class _Tp, int __num_element>
-class __simd_storage<_Tp, __simd_abi<_StorageKind::_VecExt, __num_element>> {
-  using _StorageType = typename __vec_ext_traits<_Tp, sizeof(_Tp) * __num_element>::type;
-
-  _StorageType __storage_;
-
-  template <class, class>
-  friend struct simd;
-
-  template <class, class>
-  friend struct simd_mask;
-
-public:
-  _Tp __get(size_t __index) const noexcept { return __storage_[__index]; };
-  void __set(size_t __index, _Tp __val) noexcept { __storage_[__index] = __val; }
-};
-
-#endif // _LIBCPP_HAS_NO_VECTOR_EXTENSION
-
 template <class _Vp, class _Tp, class _Abi>
 class __simd_reference {
   static_assert(std::is_same<_Vp, _Tp>::value, "");
 
   template <class, class>
-  friend struct simd;
+  friend class simd;
 
   template <class, class>
-  friend struct simd_mask;
+  friend class simd_mask;
 
   __simd_storage<_Tp, _Abi>* __ptr_;
   size_t __index_;
@@ -868,10 +770,10 @@ public:
 template <class _Tp, class _Abi>
 class __simd_mask_reference {
   template <class, class>
-  friend struct simd;
+  friend class simd;
 
   template <class, class>
-  friend struct simd_mask;
+  friend class simd_mask;
 
   __simd_mask_storage<_Tp, _Abi>* __ptr_;
   size_t __index_;
@@ -948,14 +850,6 @@ inline constexpr size_t max_fixed_size = 32;
 
 template <class _Tp>
 using compatible = fixed_size<16 / sizeof(_Tp)>;
-
-#ifndef _LIBCPP_HAS_NO_VECTOR_EXTENSION
-template <class _Tp>
-using native = __simd_abi<_StorageKind::_VecExt, 16 / sizeof(_Tp)>;
-#else
-template <class _Tp>
-using native = fixed_size<_Tp, 16 / sizeof(_Tp)>;
-#endif // _LIBCPP_HAS_NO_VECTOR_EXTENSION
 
 } // namespace athena::_simd::simd_abi
 namespace athena::_simd {
@@ -1040,14 +934,8 @@ template <class _Tp, class _Up = typename _Tp::value_type>
 inline constexpr size_t memory_alignment_v = memory_alignment<_Tp, _Up>::value;
 
 // class template simd [simd.class]
-template <class _Tp>
-using native_simd = simd<_Tp, simd_abi::native<_Tp>>;
 template <class _Tp, int _Np>
 using fixed_size_simd = simd<_Tp, simd_abi::fixed_size<_Np>>;
-
-// class template simd_mask [simd.mask.class]
-template <class _Tp>
-using native_simd_mask = simd_mask<_Tp, simd_abi::native<_Tp>>;
 
 template <class _Tp, int _Np>
 using fixed_size_simd_mask = simd_mask<_Tp, simd_abi::fixed_size<_Np>>;
@@ -1097,12 +985,6 @@ fixed_size_simd<_Tp, simd_size<_Tp, _Abi>::value> to_fixed_size(const simd<_Tp, 
 
 template <class _Tp, class _Abi>
 fixed_size_simd_mask<_Tp, simd_size<_Tp, _Abi>::value> to_fixed_size(const simd_mask<_Tp, _Abi>&) noexcept;
-
-template <class _Tp, size_t _Np>
-native_simd<_Tp> to_native(const fixed_size_simd<_Tp, _Np>&) noexcept;
-
-template <class _Tp, size_t _Np>
-native_simd_mask<_Tp> to_native(const fixed_size_simd_mask<_Tp, _Np>&) noexcept;
 
 template <class _Tp, size_t _Np>
 simd<_Tp> to_compatible(const fixed_size_simd<_Tp, _Np>&) noexcept;
@@ -1221,6 +1103,7 @@ template <class _MaskType, class _SimdType>
 typename _SimdType::value_type hmax(const const_where_expression<_MaskType, _SimdType>&);
 
 // algorithms [simd.alg]
+#if 0
 template <class _Tp, class _Abi>
 simd<_Tp, _Abi> min(const simd<_Tp, _Abi>&, const simd<_Tp, _Abi>&) noexcept;
 
@@ -1232,6 +1115,7 @@ std::pair<simd<_Tp, _Abi>, simd<_Tp, _Abi>> minmax(const simd<_Tp, _Abi>&, const
 
 template <class _Tp, class _Abi>
 simd<_Tp, _Abi> clamp(const simd<_Tp, _Abi>&, const simd<_Tp, _Abi>&, const simd<_Tp, _Abi>&);
+#endif
 
 // [simd.whereexpr]
 // TODO implement where expressions.
@@ -1520,7 +1404,7 @@ public:
 
   // implicit type conversion constructor
   template <class _Up>
-  simd_mask(const simd_mask<_Up, simd_abi::fixed_size<size()>>&) noexcept;
+  simd_mask(const simd_mask<_Up, simd_abi::fixed_size<simd_size<_Tp, _Abi>::value>>&) noexcept;
 
   // load constructor
   template <class _Flags>
@@ -1582,10 +1466,10 @@ private:
   storage_type __storage_;
 
   template <class, class>
-  friend struct simd;
+  friend class simd;
 
   template <class, class>
-  friend struct simd_mask;
+  friend class simd_mask;
 
 public:
   _Tp __get(size_t __index) const noexcept { return __storage_[__index]; };

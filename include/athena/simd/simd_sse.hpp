@@ -3,17 +3,18 @@
 #error simd_sse.hpp must not be included directly. Include simd.hpp instead.
 #endif
 #include <xmmintrin.h>
+#include <emmintrin.h>
 #if __SSE4_1__
 #include <smmintrin.h>
 #endif
 namespace athena::_simd {
 // __m128 ABI
-using m128_abi = __simd_abi<_StorageKind(int(_StorageKind::_VecExt) + 1), 4>;
+using m128_abi = __simd_abi<_StorageKind(int(_StorageKind::_Array) + 1), 4>;
 // __m128d ABI
-using m128d_abi = __simd_abi<_StorageKind(int(_StorageKind::_VecExt) + 2), 4>;
+using m128d_abi = __simd_abi<_StorageKind(int(_StorageKind::_Array) + 2), 4>;
 #ifdef __AVX__
 // __m256d ABI
-using m256d_abi = __simd_abi<_StorageKind(int(_StorageKind::_VecExt) + 3), 4>;
+using m256d_abi = __simd_abi<_StorageKind(int(_StorageKind::_Array) + 3), 4>;
 #endif
 
 template <>
