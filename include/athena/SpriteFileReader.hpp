@@ -2,25 +2,19 @@
 
 #include "athena/MemoryReader.hpp"
 
-namespace athena::Sakura
-{
+namespace athena::Sakura {
 class SpriteFile;
-} // Sakura
+} // namespace athena::Sakura
 
-namespace athena
-{
-namespace io
-{
+namespace athena {
+namespace io {
 
-class SpriteFileReader : public MemoryCopyReader
-{
+class SpriteFileReader : public MemoryCopyReader {
 public:
-    SpriteFileReader(atUint8* data, atUint64 length);
-    SpriteFileReader(const std::string& filepath);
+  SpriteFileReader(atUint8* data, atUint64 length);
+  SpriteFileReader(const std::string& filepath);
 
-    Sakura::SpriteFile* readFile();
+  Sakura::SpriteFile* readFile();
 };
-}
-} // zelda
-
-
+} // namespace io
+} // namespace athena

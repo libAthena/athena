@@ -2,19 +2,15 @@
 
 #include "athena/MemoryReader.hpp"
 
-namespace athena
-{
+namespace athena {
 class SkywardSwordFile;
-namespace io
-{
-class SkywardSwordFileReader : public MemoryCopyReader
-{
+namespace io {
+class SkywardSwordFileReader : public MemoryCopyReader {
 public:
-    SkywardSwordFileReader(atUint8* data, atUint64 length);
-    SkywardSwordFileReader(const std::string& filename);
+  SkywardSwordFileReader(atUint8* data, atUint64 length);
+  SkywardSwordFileReader(const std::string& filename);
 
-    SkywardSwordFile* read();
+  SkywardSwordFile* read();
 };
-} // io
-} // zelda
-
+} // namespace io
+} // namespace athena

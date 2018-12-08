@@ -2,25 +2,21 @@
 
 #include "athena/MemoryWriter.hpp"
 
-namespace athena
-{
-namespace Sakura
-{
+namespace athena {
+namespace Sakura {
 class SpriteFile;
-} // Sakura
+} // namespace Sakura
 
-namespace io
-{
+namespace io {
 
-class SpriteFileWriter : public MemoryCopyWriter
-{
+class SpriteFileWriter : public MemoryCopyWriter {
 public:
-    SpriteFileWriter(atUint8* data, atUint64 length);
+  SpriteFileWriter(atUint8* data, atUint64 length);
 
-    SpriteFileWriter(std::string_view filepath);
+  SpriteFileWriter(std::string_view filepath);
 
-    void writeFile(Sakura::SpriteFile* file);
+  void writeFile(Sakura::SpriteFile* file);
 };
 
-} // io
-} // zelda
+} // namespace io
+} // namespace athena

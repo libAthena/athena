@@ -5,43 +5,31 @@
 // standard lib
 #include <vector>
 
-namespace athena
-{
+namespace athena {
 class SkywardSwordQuest;
 
-enum class Region
-{
-    NTSC,
-    NTSCJ,
-    PAL
-};
+enum class Region { NTSC, NTSCJ, PAL };
 
-class SkywardSwordFile
-{
+class SkywardSwordFile {
 public:
-    enum MagicNumbers
-    {
-        USMagic = 0x534F5545,
-        JAMagic = 0x534F554A,
-        EUMagic = 0x534F5550
-    };
+  enum MagicNumbers { USMagic = 0x534F5545, JAMagic = 0x534F554A, EUMagic = 0x534F5550 };
 
-    SkywardSwordFile();
-    SkywardSwordFile(std::vector<SkywardSwordQuest*> quests);
-    ~SkywardSwordFile();
+  SkywardSwordFile();
+  SkywardSwordFile(std::vector<SkywardSwordQuest*> quests);
+  ~SkywardSwordFile();
 
-    void addQuest(SkywardSwordQuest* q);
-    SkywardSwordQuest* quest(atUint32 id);
-    std::vector<SkywardSwordQuest*> questList() const;
+  void addQuest(SkywardSwordQuest* q);
+  SkywardSwordQuest* quest(atUint32 id);
+  std::vector<SkywardSwordQuest*> questList() const;
 
-    void setRegion(Region region);
-    Region region() const;
+  void setRegion(Region region);
+  Region region() const;
 
 private:
-    Region m_region;
-    // A vector is a bit overkill
-    std::vector<SkywardSwordQuest*> m_quests;
-    atUint32 m_numQuests;
+  Region m_region;
+  // A vector is a bit overkill
+  std::vector<SkywardSwordQuest*> m_quests;
+  atUint32 m_numQuests;
 };
 
-}
+} // namespace athena

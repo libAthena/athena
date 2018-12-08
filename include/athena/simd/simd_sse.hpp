@@ -40,12 +40,8 @@ public:
     sse_data[__index] = __val;
     __storage_ = _mm_load_ps(sse_data.data());
   }
-  void __set4(float a, float b, float c, float d) noexcept {
-    __storage_ = _mm_set_ps(d, c, b, a);
-  }
-  void __broadcast(float __val) noexcept {
-    __storage_ = _mm_set1_ps(__val);
-  }
+  void __set4(float a, float b, float c, float d) noexcept { __storage_ = _mm_set_ps(d, c, b, a); }
+  void __broadcast(float __val) noexcept { __storage_ = _mm_set1_ps(__val); }
   float __dot2(const __simd_storage<float, m128_abi>& other) const noexcept {
 #if __SSE4_1__
     float ret;
@@ -79,7 +75,7 @@ public:
     return sse_data[0] + sse_data[1] + sse_data[2] + sse_data[3];
 #endif
   }
-  template<int x, int y, int z, int w>
+  template <int x, int y, int z, int w>
   __simd_storage __shuffle() const noexcept {
     __simd_storage s;
     s.__storage_ = _mm_shuffle_ps(__storage_, __storage_, _MM_SHUFFLE(w, z, y, x));
@@ -105,8 +101,7 @@ public:
 };
 // __m128 mask storage for SSE2+
 template <>
-class __simd_mask_storage<float, m128_abi> : public __simd_storage<float, m128_abi>
-{
+class __simd_mask_storage<float, m128_abi> : public __simd_storage<float, m128_abi> {
 public:
   bool __get(size_t __index) const noexcept {
     alignas(16) uint32_t sse_data[4];
@@ -126,95 +121,81 @@ inline simd<float, m128_abi> simd<float, m128_abi>::operator-() const {
   return _mm_xor_ps(__s_.__storage_, _mm_set1_ps(-0.f));
 }
 
-inline simd<float, m128_abi>
-operator+(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
+inline simd<float, m128_abi> operator+(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
   simd<float, m128_abi> ret;
   ret.__s_.__storage_ = _mm_add_ps(a.__s_.__storage_, b.__s_.__storage_);
   return ret;
 }
 
-inline simd<float, m128_abi>
-operator-(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
+inline simd<float, m128_abi> operator-(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
   simd<float, m128_abi> ret;
   ret.__s_.__storage_ = _mm_sub_ps(a.__s_.__storage_, b.__s_.__storage_);
   return ret;
 }
 
-inline simd<float, m128_abi>
-operator*(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
+inline simd<float, m128_abi> operator*(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
   simd<float, m128_abi> ret;
   ret.__s_.__storage_ = _mm_mul_ps(a.__s_.__storage_, b.__s_.__storage_);
   return ret;
 }
 
-inline simd<float, m128_abi>
-operator/(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
+inline simd<float, m128_abi> operator/(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
   simd<float, m128_abi> ret;
   ret.__s_.__storage_ = _mm_div_ps(a.__s_.__storage_, b.__s_.__storage_);
   return ret;
 }
 
-inline simd<float, m128_abi>&
-operator+=(simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
+inline simd<float, m128_abi>& operator+=(simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
   a.__s_.__storage_ = _mm_add_ps(a.__s_.__storage_, b.__s_.__storage_);
   return a;
 }
 
-inline simd<float, m128_abi>&
-operator-=(simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
+inline simd<float, m128_abi>& operator-=(simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
   a.__s_.__storage_ = _mm_sub_ps(a.__s_.__storage_, b.__s_.__storage_);
   return a;
 }
 
-inline simd<float, m128_abi>&
-operator*=(simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
+inline simd<float, m128_abi>& operator*=(simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
   a.__s_.__storage_ = _mm_mul_ps(a.__s_.__storage_, b.__s_.__storage_);
   return a;
 }
 
-inline simd<float, m128_abi>&
-operator/=(simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
+inline simd<float, m128_abi>& operator/=(simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
   a.__s_.__storage_ = _mm_div_ps(a.__s_.__storage_, b.__s_.__storage_);
   return a;
 }
 
-inline simd<float, m128_abi>::mask_type
-operator==(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
+inline simd<float, m128_abi>::mask_type operator==(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
   simd<float, m128_abi>::mask_type ret;
   ret.__s_.__storage_ = _mm_cmpeq_ps(a.__s_.__storage_, b.__s_.__storage_);
   return ret;
 }
 
-inline simd<float, m128_abi>::mask_type
-operator!=(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
+inline simd<float, m128_abi>::mask_type operator!=(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
   simd<float, m128_abi>::mask_type ret;
   ret.__s_.__storage_ = _mm_cmpneq_ps(a.__s_.__storage_, b.__s_.__storage_);
   return ret;
 }
 
-inline simd<float, m128_abi>::mask_type
-operator>=(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
+inline simd<float, m128_abi>::mask_type operator>=(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
   simd<float, m128_abi>::mask_type ret;
   ret.__s_.__storage_ = _mm_cmpge_ps(a.__s_.__storage_, b.__s_.__storage_);
   return ret;
 }
 
-inline simd<float, m128_abi>::mask_type
-operator<=(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
+inline simd<float, m128_abi>::mask_type operator<=(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
   simd<float, m128_abi>::mask_type ret;
   ret.__s_.__storage_ = _mm_cmple_ps(a.__s_.__storage_, b.__s_.__storage_);
   return ret;
 }
 
-inline simd<float, m128_abi>::mask_type
-operator>(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
+inline simd<float, m128_abi>::mask_type operator>(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
   simd<float, m128_abi>::mask_type ret;
   ret.__s_.__storage_ = _mm_cmpgt_ps(a.__s_.__storage_, b.__s_.__storage_);
   return ret;
 }
 
-inline simd<float, m128_abi>::mask_type
-operator<(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
+inline simd<float, m128_abi>::mask_type operator<(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
   simd<float, m128_abi>::mask_type ret;
   ret.__s_.__storage_ = _mm_cmplt_ps(a.__s_.__storage_, b.__s_.__storage_);
   return ret;
@@ -308,8 +289,7 @@ public:
 };
 // __m128d mask storage for SSE2+
 template <>
-class __simd_mask_storage<double, m128d_abi> : public __simd_storage<double, m128d_abi>
-{
+class __simd_mask_storage<double, m128d_abi> : public __simd_storage<double, m128d_abi> {
 public:
   bool __get(size_t __index) const noexcept {
     alignas(16) uint64_t sse_data[2];
@@ -332,108 +312,100 @@ inline simd<double, m128d_abi> simd<double, m128d_abi>::operator-() const {
   return ret;
 }
 
-inline simd<double, m128d_abi>
-operator+(const simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
+inline simd<double, m128d_abi> operator+(const simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
   simd<double, m128d_abi> ret;
   for (int i = 0; i < 2; ++i)
     ret.__s_.__storage_[i] = _mm_add_pd(a.__s_.__storage_[i], b.__s_.__storage_[i]);
   return ret;
 }
 
-inline simd<double, m128d_abi>
-operator-(const simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
+inline simd<double, m128d_abi> operator-(const simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
   simd<double, m128d_abi> ret;
   for (int i = 0; i < 2; ++i)
     ret.__s_.__storage_[i] = _mm_sub_pd(a.__s_.__storage_[i], b.__s_.__storage_[i]);
   return ret;
 }
 
-inline simd<double, m128d_abi>
-operator*(const simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
+inline simd<double, m128d_abi> operator*(const simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
   simd<double, m128d_abi> ret;
   for (int i = 0; i < 2; ++i)
     ret.__s_.__storage_[i] = _mm_mul_pd(a.__s_.__storage_[i], b.__s_.__storage_[i]);
   return ret;
 }
 
-inline simd<double, m128d_abi>
-operator/(const simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
+inline simd<double, m128d_abi> operator/(const simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
   simd<double, m128d_abi> ret;
   for (int i = 0; i < 2; ++i)
     ret.__s_.__storage_[i] = _mm_div_pd(a.__s_.__storage_[i], b.__s_.__storage_[i]);
   return ret;
 }
 
-inline simd<double, m128d_abi>&
-operator+=(simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
+inline simd<double, m128d_abi>& operator+=(simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
   for (int i = 0; i < 2; ++i)
     a.__s_.__storage_[i] = _mm_add_pd(a.__s_.__storage_[i], b.__s_.__storage_[i]);
   return a;
 }
 
-inline simd<double, m128d_abi>&
-operator-=(simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
+inline simd<double, m128d_abi>& operator-=(simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
   for (int i = 0; i < 2; ++i)
     a.__s_.__storage_[i] = _mm_sub_pd(a.__s_.__storage_[i], b.__s_.__storage_[i]);
   return a;
 }
 
-inline simd<double, m128d_abi>&
-operator*=(simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
+inline simd<double, m128d_abi>& operator*=(simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
   for (int i = 0; i < 2; ++i)
     a.__s_.__storage_[i] = _mm_mul_pd(a.__s_.__storage_[i], b.__s_.__storage_[i]);
   return a;
 }
 
-inline simd<double, m128d_abi>&
-operator/=(simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
+inline simd<double, m128d_abi>& operator/=(simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
   for (int i = 0; i < 2; ++i)
     a.__s_.__storage_[i] = _mm_div_pd(a.__s_.__storage_[i], b.__s_.__storage_[i]);
   return a;
 }
 
-inline simd<double, m128d_abi>::mask_type
-operator==(const simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
+inline simd<double, m128d_abi>::mask_type operator==(const simd<double, m128d_abi>& a,
+                                                     const simd<double, m128d_abi>& b) {
   simd<double, m128d_abi>::mask_type ret;
   for (int i = 0; i < 2; ++i)
     ret.__s_.__storage_[i] = _mm_cmpeq_pd(a.__s_.__storage_[i], b.__s_.__storage_[i]);
   return ret;
 }
 
-inline simd<double, m128d_abi>::mask_type
-operator!=(const simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
+inline simd<double, m128d_abi>::mask_type operator!=(const simd<double, m128d_abi>& a,
+                                                     const simd<double, m128d_abi>& b) {
   simd<double, m128d_abi>::mask_type ret;
   for (int i = 0; i < 2; ++i)
     ret.__s_.__storage_[i] = _mm_cmpneq_pd(a.__s_.__storage_[i], b.__s_.__storage_[i]);
   return ret;
 }
 
-inline simd<double, m128d_abi>::mask_type
-operator>=(const simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
+inline simd<double, m128d_abi>::mask_type operator>=(const simd<double, m128d_abi>& a,
+                                                     const simd<double, m128d_abi>& b) {
   simd<double, m128d_abi>::mask_type ret;
   for (int i = 0; i < 2; ++i)
     ret.__s_.__storage_[i] = _mm_cmpge_pd(a.__s_.__storage_[i], b.__s_.__storage_[i]);
   return ret;
 }
 
-inline simd<double, m128d_abi>::mask_type
-operator<=(const simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
+inline simd<double, m128d_abi>::mask_type operator<=(const simd<double, m128d_abi>& a,
+                                                     const simd<double, m128d_abi>& b) {
   simd<double, m128d_abi>::mask_type ret;
   for (int i = 0; i < 2; ++i)
     ret.__s_.__storage_[i] = _mm_cmple_pd(a.__s_.__storage_[i], b.__s_.__storage_[i]);
   return ret;
 }
 
-inline simd<double, m128d_abi>::mask_type
-operator>(const simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
+inline simd<double, m128d_abi>::mask_type operator>(const simd<double, m128d_abi>& a,
+                                                    const simd<double, m128d_abi>& b) {
   simd<double, m128d_abi>::mask_type ret;
   for (int i = 0; i < 2; ++i)
     ret.__s_.__storage_[i] = _mm_cmpgt_pd(a.__s_.__storage_[i], b.__s_.__storage_[i]);
   return ret;
 }
 
-inline simd<double, m128d_abi>::mask_type
-operator<(const simd<double, m128d_abi>& a, const simd<double, m128d_abi>& b) {
+inline simd<double, m128d_abi>::mask_type operator<(const simd<double, m128d_abi>& a,
+                                                    const simd<double, m128d_abi>& b) {
   simd<double, m128d_abi>::mask_type ret;
   for (int i = 0; i < 2; ++i)
     ret.__s_.__storage_[i] = _mm_cmplt_pd(a.__s_.__storage_[i], b.__s_.__storage_[i]);
@@ -445,10 +417,17 @@ inline __simd_storage<float, m128_abi>::__simd_storage(const __simd_storage<doub
 }
 
 namespace simd_abi {
-template<typename T> struct athena_native {};
-template<> struct athena_native<float> { using type = m128_abi; };
+template <typename T>
+struct athena_native {};
+template <>
+struct athena_native<float> {
+  using type = m128_abi;
+};
 #ifndef __AVX__
-template<> struct athena_native<double> { using type = m128d_abi; };
+template <>
+struct athena_native<double> {
+  using type = m128d_abi;
+};
 #endif
 } // namespace simd_abi
 

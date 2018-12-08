@@ -4,80 +4,69 @@
 #include <cstdarg>
 #include <cstdlib>
 
-std::ostream& operator<<(std::ostream& os, const athena::SeekOrigin& origin)
-{
-    switch (origin)
-    {
-        case athena::SeekOrigin::Begin:
-            os << "Begin";
-            break;
+std::ostream& operator<<(std::ostream& os, const athena::SeekOrigin& origin) {
+  switch (origin) {
+  case athena::SeekOrigin::Begin:
+    os << "Begin";
+    break;
 
-        case athena::SeekOrigin::Current:
-            os << "Current";
-            break;
+  case athena::SeekOrigin::Current:
+    os << "Current";
+    break;
 
-        case athena::SeekOrigin::End:
-            os << "End";
-            break;
-    }
+  case athena::SeekOrigin::End:
+    os << "End";
+    break;
+  }
 
-    return os;
+  return os;
 }
 
+std::ostream& operator<<(std::ostream& os, const athena::Endian& endian) {
+  switch (endian) {
+  case athena::Endian::Little:
+    os << "LittleEndian";
+    break;
 
-std::ostream& operator<<(std::ostream& os, const athena::Endian& endian)
-{
-    switch (endian)
-    {
-        case athena::Endian::Little:
-            os << "LittleEndian";
-            break;
+  case athena::Endian::Big:
+    os << "BigEndian";
+    break;
+  }
 
-        case athena::Endian::Big:
-            os << "BigEndian";
-            break;
-    }
-
-    return os;
+  return os;
 }
 
+static void __defaultExceptionHandler(athena::error::Level level, const char* file, const char* function, int line,
+                                      const char* fmt, ...) {
+  std::string levelStr;
+  switch (level) {
+  case athena::error::Level::Warning:
+    levelStr = "[WARNING] ";
+    break;
+  case athena::error::Level::Error:
+    levelStr = "[ERROR  ] ";
+    break;
+  case athena::error::Level::Fatal:
+    levelStr = "[FATAL  ] ";
+    break;
+  default:
+    break;
+  }
 
-static void __defaultExceptionHandler(athena::error::Level level, const char* file, const char* function, int line, const char* fmt, ...)
-{
-    std::string levelStr;
-    switch (level)
-    {
-        case athena::error::Level::Warning:
-            levelStr = "[WARNING] ";
-            break;
-        case athena::error::Level::Error:
-            levelStr = "[ERROR  ] ";
-            break;
-        case athena::error::Level::Fatal:
-            levelStr = "[FATAL  ] ";
-            break;
-        default: break;
-    }
-
-    va_list vl;
-    va_start(vl, fmt);
-    std::string msg = athena::utility::vsprintf(fmt, vl);
-    va_end(vl);
-    std::cerr << levelStr << " " << file << " " << function << "(" << line << "): " << msg << std::endl;
+  va_list vl;
+  va_start(vl, fmt);
+  std::string msg = athena::utility::vsprintf(fmt, vl);
+  va_end(vl);
+  std::cerr << levelStr << " " << file << " " << function << "(" << line << "): " << msg << std::endl;
 }
 
 static atEXCEPTION_HANDLER g_atExceptionHandler = __defaultExceptionHandler;
 
-atEXCEPTION_HANDLER atGetExceptionHandler()
-{
-    return g_atExceptionHandler;
-}
+atEXCEPTION_HANDLER atGetExceptionHandler() { return g_atExceptionHandler; }
 
-
-void atSetExceptionHandler(atEXCEPTION_HANDLER func)
-{
-    if (func)
-        g_atExceptionHandler = func;
-    else
-        g_atExceptionHandler = __defaultExceptionHandler;
+void atSetExceptionHandler(atEXCEPTION_HANDLER func) {
+  if (func)
+    g_atExceptionHandler = func;
+  else
+    g_atExceptionHandler = __defaultExceptionHandler;
 }

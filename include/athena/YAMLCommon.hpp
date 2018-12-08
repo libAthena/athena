@@ -12,157 +12,147 @@
 #include <functional>
 #include "Global.hpp"
 
-namespace athena::io
-{
+namespace athena::io {
 class IStreamReader;
 class IStreamWriter;
 
-enum class YAMLNodeStyle
-{
-    Any,
-    Flow,
-    Block
+enum class YAMLNodeStyle { Any, Flow, Block };
+
+struct YAMLNode {
+  yaml_node_type_t m_type;
+  std::string m_scalarString;
+  std::vector<std::unique_ptr<YAMLNode>> m_seqChildren;
+  std::vector<std::pair<std::string, std::unique_ptr<YAMLNode>>> m_mapChildren;
+  YAMLNodeStyle m_style = YAMLNodeStyle::Any;
+
+  YAMLNode(yaml_node_type_t type) : m_type(type) {}
+
+  inline const YAMLNode* findMapChild(std::string_view key) const {
+    for (const auto& item : m_mapChildren)
+      if (!item.first.compare(key))
+        return item.second.get();
+    return nullptr;
+  }
+
+  inline void assignMapChild(std::string_view key, std::unique_ptr<YAMLNode>&& node) {
+    for (auto& item : m_mapChildren)
+      if (!item.first.compare(key)) {
+        item.second = std::move(node);
+        return;
+      }
+    m_mapChildren.emplace_back(key, std::move(node));
+  }
 };
 
-struct YAMLNode
-{
-    yaml_node_type_t m_type;
-    std::string m_scalarString;
-    std::vector<std::unique_ptr<YAMLNode>> m_seqChildren;
-    std::vector<std::pair<std::string, std::unique_ptr<YAMLNode>>> m_mapChildren;
-    YAMLNodeStyle m_style = YAMLNodeStyle::Any;
-
-    YAMLNode(yaml_node_type_t type) : m_type(type) {}
-
-    inline const YAMLNode* findMapChild(std::string_view key) const
-    {
-        for (const auto& item : m_mapChildren)
-            if (!item.first.compare(key))
-                return item.second.get();
-        return nullptr;
-    }
-
-    inline void assignMapChild(std::string_view key, std::unique_ptr <YAMLNode>&& node)
-    {
-        for (auto& item : m_mapChildren)
-            if (!item.first.compare(key))
-            {
-                item.second = std::move(node);
-                return;
-            }
-        m_mapChildren.emplace_back(key, std::move(node));
-    }
-};
-
-template<typename RETURNTYPE>
+template <typename RETURNTYPE>
 RETURNTYPE NodeToVal(const YAMLNode* node);
 
-template<>
+template <>
 bool NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(bool val);
+std::unique_ptr<YAMLNode> ValToNode(bool val);
 
-template<>
+template <>
 atInt8 NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(atInt8 val);
+std::unique_ptr<YAMLNode> ValToNode(atInt8 val);
 
-template<>
+template <>
 atUint8 NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(atUint8 val);
+std::unique_ptr<YAMLNode> ValToNode(atUint8 val);
 
-template<>
+template <>
 atInt16 NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(atInt16 val);
+std::unique_ptr<YAMLNode> ValToNode(atInt16 val);
 
-template<>
+template <>
 atUint16 NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(atUint16 val);
+std::unique_ptr<YAMLNode> ValToNode(atUint16 val);
 
-template<>
+template <>
 atInt32 NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(atInt32 val);
+std::unique_ptr<YAMLNode> ValToNode(atInt32 val);
 
-template<>
+template <>
 atUint32 NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(atUint32 val);
+std::unique_ptr<YAMLNode> ValToNode(atUint32 val);
 
-template<>
+template <>
 atInt64 NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(atInt64 val);
+std::unique_ptr<YAMLNode> ValToNode(atInt64 val);
 
-template<>
+template <>
 atUint64 NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(atUint64 val);
+std::unique_ptr<YAMLNode> ValToNode(atUint64 val);
 
-template<>
+template <>
 float NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(float val);
+std::unique_ptr<YAMLNode> ValToNode(float val);
 
-template<>
+template <>
 double NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(double val);
+std::unique_ptr<YAMLNode> ValToNode(double val);
 
-template<typename RETURNTYPE>
+template <typename RETURNTYPE>
 RETURNTYPE NodeToVec(const YAMLNode* node);
 
-template<>
+template <>
 atVec2f NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(const atVec2f& val);
+std::unique_ptr<YAMLNode> ValToNode(const atVec2f& val);
 
-template<>
+template <>
 atVec3f NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(const atVec3f& val);
+std::unique_ptr<YAMLNode> ValToNode(const atVec3f& val);
 
-template<>
+template <>
 atVec4f NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(const atVec4f& val);
+std::unique_ptr<YAMLNode> ValToNode(const atVec4f& val);
 
-template<>
+template <>
 atVec2d NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(const atVec2d& val);
+std::unique_ptr<YAMLNode> ValToNode(const atVec2d& val);
 
-template<>
+template <>
 atVec3d NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(const atVec3d& val);
+std::unique_ptr<YAMLNode> ValToNode(const atVec3d& val);
 
-template<>
+template <>
 atVec4d NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(const atVec4d& val);
+std::unique_ptr<YAMLNode> ValToNode(const atVec4d& val);
 
-template<>
+template <>
 std::unique_ptr<atUint8[]> NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(const std::unique_ptr<atUint8[]>& val, size_t byteCount);
+std::unique_ptr<YAMLNode> ValToNode(const std::unique_ptr<atUint8[]>& val, size_t byteCount);
 
-template<>
+template <>
 std::string NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(std::string_view val);
+std::unique_ptr<YAMLNode> ValToNode(std::string_view val);
 
-template<>
+template <>
 std::wstring NodeToVal(const YAMLNode* node);
 
-std::unique_ptr <YAMLNode> ValToNode(std::wstring_view val);
+std::unique_ptr<YAMLNode> ValToNode(std::wstring_view val);
 
-std::unique_ptr <YAMLNode> ValToNode(std::u16string_view val);
+std::unique_ptr<YAMLNode> ValToNode(std::u16string_view val);
 
-std::unique_ptr <YAMLNode> ValToNode(std::u32string_view val);
+std::unique_ptr<YAMLNode> ValToNode(std::u32string_view val);
 
 std::string base64_encode(const atUint8* bytes_to_encode, size_t in_len);
 
@@ -172,28 +162,22 @@ void HandleYAMLParserError(yaml_parser_t* parser);
 
 void HandleYAMLEmitterError(yaml_emitter_t* emitter);
 
-struct YAMLStdStringViewReaderState
-{
-    std::string_view::const_iterator begin;
-    std::string_view::const_iterator end;
+struct YAMLStdStringViewReaderState {
+  std::string_view::const_iterator begin;
+  std::string_view::const_iterator end;
 
-    YAMLStdStringViewReaderState(std::string_view str)
-    {
-        begin = str.begin();
-        end = str.end();
-    }
+  YAMLStdStringViewReaderState(std::string_view str) {
+    begin = str.begin();
+    end = str.end();
+  }
 };
 
-int YAMLStdStringReader(YAMLStdStringViewReaderState* str,
-                        unsigned char* buffer, size_t size, size_t* size_read);
+int YAMLStdStringReader(YAMLStdStringViewReaderState* str, unsigned char* buffer, size_t size, size_t* size_read);
 
 int YAMLStdStringWriter(std::string* str, unsigned char* buffer, size_t size);
 
-int YAMLAthenaReader(athena::io::IStreamReader* reader,
-                     unsigned char* buffer, size_t size, size_t* size_read);
+int YAMLAthenaReader(athena::io::IStreamReader* reader, unsigned char* buffer, size_t size, size_t* size_read);
 
-int YAMLAthenaWriter(athena::io::IStreamWriter* writer,
-                     unsigned char* buffer, size_t size);
+int YAMLAthenaWriter(athena::io::IStreamWriter* writer, unsigned char* buffer, size_t size);
 
-}
-
+} // namespace athena::io

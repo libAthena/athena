@@ -6,7 +6,7 @@
 #include <immintrin.h>
 namespace athena::_simd {
 // __m256d storage for AVX
-template<>
+template <>
 class __simd_storage<double, m256d_abi> {
 public:
   using storage_type = __m256d;
@@ -22,12 +22,8 @@ public:
     sse_data[__index] = __val;
     __storage_ = _mm256_load_pd(sse_data.data());
   }
-  void __set4(double a, double b, double c, double d) noexcept {
-    __storage_ = _mm256_set_pd(d, c, b, a);
-  }
-  void __broadcast(double __val) noexcept {
-    __storage_ = _mm256_set1_pd(__val);
-  }
+  void __set4(double a, double b, double c, double d) noexcept { __storage_ = _mm256_set_pd(d, c, b, a); }
+  void __broadcast(double __val) noexcept { __storage_ = _mm256_set1_pd(__val); }
   double __dot2(const __simd_storage<double, m256d_abi>& other) const noexcept {
     alignas(32) std::array<double, 4> sse_data;
     _mm256_store_pd(sse_data.data(), _mm256_mul_pd(__storage_, other.__storage_));
@@ -61,7 +57,7 @@ public:
   const storage_type& __native() const { return __storage_; }
 };
 // __m256d mask storage for AVX
-template<>
+template <>
 class __simd_mask_storage<double, m256d_abi> : public __simd_storage<double, m256d_abi> {
 public:
   bool __get(size_t __index) const noexcept {
@@ -83,95 +79,87 @@ inline simd<double, m256d_abi> simd<double, m256d_abi>::operator-() const {
   return _mm256_xor_pd(__s_.__storage_, _mm256_set1_pd(-0.0));
 }
 
-inline simd<double, m256d_abi>
-operator+(const simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
+inline simd<double, m256d_abi> operator+(const simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
   simd<double, m256d_abi> ret;
   ret.__s_.__storage_ = _mm256_add_pd(a.__s_.__storage_, b.__s_.__storage_);
   return ret;
 }
 
-inline simd<double, m256d_abi>
-operator-(const simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
+inline simd<double, m256d_abi> operator-(const simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
   simd<double, m256d_abi> ret;
   ret.__s_.__storage_ = _mm256_sub_pd(a.__s_.__storage_, b.__s_.__storage_);
   return ret;
 }
 
-inline simd<double, m256d_abi>
-operator*(const simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
+inline simd<double, m256d_abi> operator*(const simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
   simd<double, m256d_abi> ret;
   ret.__s_.__storage_ = _mm256_mul_pd(a.__s_.__storage_, b.__s_.__storage_);
   return ret;
 }
 
-inline simd<double, m256d_abi>
-operator/(const simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
+inline simd<double, m256d_abi> operator/(const simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
   simd<double, m256d_abi> ret;
   ret.__s_.__storage_ = _mm256_div_pd(a.__s_.__storage_, b.__s_.__storage_);
   return ret;
 }
 
-inline simd<double, m256d_abi>&
-operator+=(simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
+inline simd<double, m256d_abi>& operator+=(simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
   a.__s_.__storage_ = _mm256_add_pd(a.__s_.__storage_, b.__s_.__storage_);
   return a;
 }
 
-inline simd<double, m256d_abi>&
-operator-=(simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
+inline simd<double, m256d_abi>& operator-=(simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
   a.__s_.__storage_ = _mm256_sub_pd(a.__s_.__storage_, b.__s_.__storage_);
   return a;
 }
 
-inline simd<double, m256d_abi>&
-operator*=(simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
+inline simd<double, m256d_abi>& operator*=(simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
   a.__s_.__storage_ = _mm256_mul_pd(a.__s_.__storage_, b.__s_.__storage_);
   return a;
 }
 
-inline simd<double, m256d_abi>&
-operator/=(simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
+inline simd<double, m256d_abi>& operator/=(simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
   a.__s_.__storage_ = _mm256_div_pd(a.__s_.__storage_, b.__s_.__storage_);
   return a;
 }
 
-inline simd<double, m256d_abi>::mask_type
-operator==(const simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
+inline simd<double, m256d_abi>::mask_type operator==(const simd<double, m256d_abi>& a,
+                                                     const simd<double, m256d_abi>& b) {
   simd<double, m256d_abi>::mask_type ret;
   ret.__s_.__storage_ = _mm256_cmp_pd(a.__s_.__storage_, b.__s_.__storage_, _CMP_EQ_OQ);
   return ret;
 }
 
-inline simd<double, m256d_abi>::mask_type
-operator!=(const simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
+inline simd<double, m256d_abi>::mask_type operator!=(const simd<double, m256d_abi>& a,
+                                                     const simd<double, m256d_abi>& b) {
   simd<double, m256d_abi>::mask_type ret;
   ret.__s_.__storage_ = _mm256_cmp_pd(a.__s_.__storage_, b.__s_.__storage_, _CMP_NEQ_OQ);
   return ret;
 }
 
-inline simd<double, m256d_abi>::mask_type
-operator>=(const simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
+inline simd<double, m256d_abi>::mask_type operator>=(const simd<double, m256d_abi>& a,
+                                                     const simd<double, m256d_abi>& b) {
   simd<double, m256d_abi>::mask_type ret;
   ret.__s_.__storage_ = _mm256_cmp_pd(a.__s_.__storage_, b.__s_.__storage_, _CMP_GE_OQ);
   return ret;
 }
 
-inline simd<double, m256d_abi>::mask_type
-operator<=(const simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
+inline simd<double, m256d_abi>::mask_type operator<=(const simd<double, m256d_abi>& a,
+                                                     const simd<double, m256d_abi>& b) {
   simd<double, m256d_abi>::mask_type ret;
   ret.__s_.__storage_ = _mm256_cmp_pd(a.__s_.__storage_, b.__s_.__storage_, _CMP_LE_OQ);
   return ret;
 }
 
-inline simd<double, m256d_abi>::mask_type
-operator>(const simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
+inline simd<double, m256d_abi>::mask_type operator>(const simd<double, m256d_abi>& a,
+                                                    const simd<double, m256d_abi>& b) {
   simd<double, m256d_abi>::mask_type ret;
   ret.__s_.__storage_ = _mm256_cmp_pd(a.__s_.__storage_, b.__s_.__storage_, _CMP_GT_OQ);
   return ret;
 }
 
-inline simd<double, m256d_abi>::mask_type
-operator<(const simd<double, m256d_abi>& a, const simd<double, m256d_abi>& b) {
+inline simd<double, m256d_abi>::mask_type operator<(const simd<double, m256d_abi>& a,
+                                                    const simd<double, m256d_abi>& b) {
   simd<double, m256d_abi>::mask_type ret;
   ret.__s_.__storage_ = _mm256_cmp_pd(a.__s_.__storage_, b.__s_.__storage_, _CMP_LT_OQ);
   return ret;
@@ -182,7 +170,10 @@ inline __simd_storage<float, m128_abi>::__simd_storage(const __simd_storage<doub
 }
 
 namespace simd_abi {
-template<> struct athena_native<double> { using type = m256d_abi; };
+template <>
+struct athena_native<double> {
+  using type = m256d_abi;
+};
 } // namespace simd_abi
 
 } // namespace athena::_simd

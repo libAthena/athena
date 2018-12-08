@@ -4,138 +4,71 @@
 #include "athena/Utility.hpp"
 #include <cstring>
 
-namespace athena
-{
+namespace athena {
 
-WiiBanner::WiiBanner() :
-    m_gameId(0),
-    m_banner(NULL),
-    m_flags(0),
-    m_bannerSize(0)
-{
+WiiBanner::WiiBanner() : m_gameId(0), m_banner(NULL), m_flags(0), m_bannerSize(0) {}
+
+WiiBanner::WiiBanner(atUint32 gameId, const std::u16string& title, const std::u16string& subtitle, WiiImage* banner,
+                     std::vector<WiiImage*> icons)
+: m_gameId(gameId)
+, m_banner(banner)
+, m_flags(0)
+, m_bannerSize(0)
+, m_icons(icons)
+, m_title(title)
+, m_subtitle(subtitle) {}
+
+WiiBanner::~WiiBanner() {
+  delete m_banner;
+  m_icons.clear();
 }
 
-WiiBanner::WiiBanner(atUint32 gameId, const std::u16string& title,
-                     const std::u16string& subtitle, WiiImage* banner, std::vector<WiiImage*> icons) :
-    m_gameId(gameId),
-    m_banner(banner),
-    m_flags(0),
-    m_bannerSize(0),
-    m_icons(icons),
-    m_title(title),
-    m_subtitle(subtitle)
-{
+void WiiBanner::setGameID(atUint64 id) { m_gameId = id; }
+
+atUint64 WiiBanner::gameID() const { return m_gameId; }
+void WiiBanner::setTitle(const std::u16string& title) { m_title = title; }
+
+const std::u16string& WiiBanner::title() const { return m_title; }
+
+void WiiBanner::setSubtitle(const std::u16string& subtitle) { m_subtitle = subtitle; }
+
+const std::u16string& WiiBanner::subtitle() const { return m_subtitle; }
+
+void WiiBanner::addIcon(WiiImage* icon) { m_icons.push_back(icon); }
+
+void WiiBanner::setIcon(atUint32 id, WiiImage* icon) {
+  if (m_icons[id] != NULL) {
+    delete m_icons[id];
+    m_icons[id] = icon;
+  }
 }
 
-WiiBanner::~WiiBanner()
-{
-    delete m_banner;
-    m_icons.clear();
-}
+WiiImage* WiiBanner::getIcon(atUint32 id) const {
+  if (!m_icons[id])
+    return NULL;
 
-void WiiBanner::setGameID(atUint64 id)
-{
-    m_gameId = id;
+  return m_icons[id];
 }
+std::vector<WiiImage*> WiiBanner::icons() const { return m_icons; }
 
-atUint64 WiiBanner::gameID() const
-{
-    return m_gameId;
-}
-void WiiBanner::setTitle(const std::u16string& title)
-{
-    m_title = title;
-}
+void WiiBanner::setBannerImage(WiiImage* banner) { m_banner = banner; }
 
-const std::u16string& WiiBanner::title() const
-{
-    return m_title;
-}
+WiiImage* WiiBanner::bannerImage() const { return m_banner; }
 
-void WiiBanner::setSubtitle(const std::u16string& subtitle)
-{
-    m_subtitle = subtitle;
-}
+void WiiBanner::setAnimationSpeed(atUint16 animSpeed) { m_animSpeed = animSpeed; }
 
-const std::u16string& WiiBanner::subtitle() const
-{
-    return m_subtitle;
-}
+atUint16 WiiBanner::animationSpeed() const { return m_animSpeed; }
 
-void WiiBanner::addIcon(WiiImage* icon)
-{
-    m_icons.push_back(icon);
-}
+void WiiBanner::setPermissions(atUint8 permissions) { m_permissions = permissions; }
 
-void WiiBanner::setIcon(atUint32 id, WiiImage* icon)
-{
-    if (m_icons[id] != NULL)
-    {
-        delete m_icons[id];
-        m_icons[id] = icon;
-    }
-}
+atUint8 WiiBanner::permissions() const { return m_permissions; }
 
-WiiImage* WiiBanner::getIcon(atUint32 id) const
-{
-    if (!m_icons[id])
-        return NULL;
+void WiiBanner::setBannerSize(atUint32 size) { m_bannerSize = size; }
 
-    return m_icons[id];
-}
-std::vector<WiiImage*> WiiBanner::icons() const
-{
-    return m_icons;
-}
+atUint32 WiiBanner::bannerSize() const { return m_bannerSize; }
 
-void WiiBanner::setBannerImage(WiiImage* banner)
-{
-    m_banner = banner;
-}
+void WiiBanner::setFlags(atUint32 flags) { m_flags = flags; }
 
-WiiImage* WiiBanner::bannerImage() const
-{
-    return m_banner;
-}
+atUint32 WiiBanner::flags() const { return m_flags; }
 
-void WiiBanner::setAnimationSpeed(atUint16 animSpeed)
-{
-    m_animSpeed = animSpeed;
-}
-
-atUint16 WiiBanner::animationSpeed() const
-{
-    return m_animSpeed;
-}
-
-void WiiBanner::setPermissions(atUint8 permissions)
-{
-    m_permissions = permissions;
-}
-
-atUint8 WiiBanner::permissions() const
-{
-    return m_permissions;
-}
-
-void WiiBanner::setBannerSize(atUint32 size)
-{
-    m_bannerSize = size;
-}
-
-atUint32 WiiBanner::bannerSize() const
-{
-    return m_bannerSize;
-}
-
-void WiiBanner::setFlags(atUint32 flags)
-{
-    m_flags = flags;
-}
-
-atUint32 WiiBanner::flags() const
-{
-    return m_flags;
-}
-
-} // zelda
+} // namespace athena

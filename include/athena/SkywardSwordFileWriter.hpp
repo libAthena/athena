@@ -2,20 +2,17 @@
 
 #include "athena/MemoryWriter.hpp"
 
-namespace athena
-{
+namespace athena {
 class SkywardSwordFile;
 
-namespace io
-{
+namespace io {
 
-class SkywardSwordFileWriter : public MemoryCopyWriter
-{
+class SkywardSwordFileWriter : public MemoryCopyWriter {
 public:
-    SkywardSwordFileWriter(atUint8* data, atUint64 len);
-    SkywardSwordFileWriter(const std::string& filename);
+  SkywardSwordFileWriter(atUint8* data, atUint64 len);
+  SkywardSwordFileWriter(const std::string& filename);
 
-    void write(SkywardSwordFile* file);
+  void write(SkywardSwordFile* file);
 };
-}
-}
+} // namespace io
+} // namespace athena
