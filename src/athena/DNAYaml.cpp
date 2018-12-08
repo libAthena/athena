@@ -184,8 +184,12 @@ std::unique_ptr<YAMLNode> ValToNode(double val)
 template <typename RETURNTYPE>
 RETURNTYPE NodeToVec(const YAMLNode* node)
 {
+    constexpr bool isDouble = std::is_same<RETURNTYPE, atVec2d>::value ||
+                              std::is_same<RETURNTYPE, atVec3d>::value ||
+                              std::is_same<RETURNTYPE, atVec4d>::value;
     RETURNTYPE retval = {};
     auto it = node->m_seqChildren.begin();
+    simd_values<std::conditional_t<isDouble, double, float>> f;
     for (size_t i=0;
          i<4 && it != node->m_seqChildren.end();
          ++i, ++it)
@@ -193,16 +197,15 @@ RETURNTYPE NodeToVec(const YAMLNode* node)
         YAMLNode* snode = it->get();
         if (snode->m_type == YAML_SCALAR_NODE)
         {
-            if (std::is_same<RETURNTYPE, atVec2d>::value ||
-                std::is_same<RETURNTYPE, atVec3d>::value ||
-                std::is_same<RETURNTYPE, atVec4d>::value)
-                retval.vec[i] = NodeToVal<double>(snode);
+            if (isDouble)
+                f[i] = NodeToVal<double>(snode);
             else
-                retval.vec[i] = NodeToVal<float>(snode);
+                f[i] = NodeToVal<float>(snode);
         }
         else
-            retval.vec[i] = 0.0;
+            f[i] = 0.0;
     }
+    retval.simd.copy_from(f);
     return retval;
 }
 
@@ -216,10 +219,11 @@ std::unique_ptr<YAMLNode> ValToNode(const atVec2f& val)
 {
     YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
     ret->m_seqChildren.reserve(2);
+    simd_floats f(val.simd);
     for (size_t i=0 ; i<2 ; ++i)
     {
         char str[64];
-        snprintf(str, 64, "%f", val.vec[i]);
+        snprintf(str, 64, "%f", f[i]);
         YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
         comp->m_scalarString = str;
         ret->m_seqChildren.emplace_back(comp);
@@ -237,10 +241,11 @@ std::unique_ptr<YAMLNode> ValToNode(const atVec3f& val)
 {
     YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
     ret->m_seqChildren.reserve(3);
+    simd_floats f(val.simd);
     for (size_t i=0 ; i<3 ; ++i)
     {
         char str[64];
-        snprintf(str, 64, "%f", val.vec[i]);
+        snprintf(str, 64, "%f", f[i]);
         YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
         comp->m_scalarString = str;
         ret->m_seqChildren.emplace_back(comp);
@@ -258,10 +263,11 @@ std::unique_ptr<YAMLNode> ValToNode(const atVec4f& val)
 {
     YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
     ret->m_seqChildren.reserve(4);
+    simd_floats f(val.simd);
     for (size_t i=0 ; i<4 ; ++i)
     {
         char str[64];
-        snprintf(str, 64, "%f", val.vec[i]);
+        snprintf(str, 64, "%f", f[i]);
         YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
         comp->m_scalarString = str;
         ret->m_seqChildren.emplace_back(comp);
@@ -279,10 +285,11 @@ std::unique_ptr<YAMLNode> ValToNode(const atVec2d& val)
 {
     YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
     ret->m_seqChildren.reserve(2);
+    simd_doubles f(val.simd);
     for (size_t i=0 ; i<2 ; ++i)
     {
         char str[64];
-        snprintf(str, 64, "%f", val.vec[i]);
+        snprintf(str, 64, "%f", f[i]);
         YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
         comp->m_scalarString = str;
         ret->m_seqChildren.emplace_back(comp);
@@ -300,10 +307,11 @@ std::unique_ptr<YAMLNode> ValToNode(const atVec3d& val)
 {
     YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
     ret->m_seqChildren.reserve(3);
+    simd_doubles f(val.simd);
     for (size_t i=0 ; i<3 ; ++i)
     {
         char str[64];
-        snprintf(str, 64, "%f", val.vec[i]);
+        snprintf(str, 64, "%f", f[i]);
         YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
         comp->m_scalarString = str;
         ret->m_seqChildren.emplace_back(comp);
@@ -321,10 +329,11 @@ std::unique_ptr<YAMLNode> ValToNode(const atVec4d& val)
 {
     YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
     ret->m_seqChildren.reserve(4);
+    simd_doubles f(val.simd);
     for (size_t i=0 ; i<4 ; ++i)
     {
         char str[64];
-        snprintf(str, 64, "%f", val.vec[i]);
+        snprintf(str, 64, "%f", f[i]);
         YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
         comp->m_scalarString = str;
         ret->m_seqChildren.emplace_back(comp);

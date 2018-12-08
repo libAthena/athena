@@ -163,28 +163,28 @@ inline atUint64 BigUint64(atUint64& val)
     return val;
 }
 
-inline float LittleFloat(float& val)
+inline float LittleFloat(float val)
 {
     if (athena::utility::isSystemBigEndian())
         val = athena::utility::swapFloat(val);
 
     return val;
 }
-inline float BigFloat(float& val)
+inline float BigFloat(float val)
 {
     if (!athena::utility::isSystemBigEndian())
         val = athena::utility::swapFloat(val);
 
     return val;
 }
-inline double LittleDouble(double& val)
+inline double LittleDouble(double val)
 {
     if (athena::utility::isSystemBigEndian())
         val = athena::utility::swapDouble(val);
 
     return val;
 }
-inline double BigDouble(double& val)
+inline double BigDouble(double val)
 {
     if (!athena::utility::isSystemBigEndian())
         val = athena::utility::swapDouble(val);

@@ -9,13 +9,12 @@ std::ostream& operator<<(std::ostream& os, Endian& endian);
 class IStream
 {
 public:
-    IStream() {}
-    virtual ~IStream() {}
+    virtual ~IStream() = default;
 
-    inline void setEndian(Endian endian) { m_endian = endian; }
-    inline Endian endian() const { return m_endian; }
-    inline bool isBigEndian() const { return (m_endian == Endian::Big); }
-    inline bool isLittleEndian() const { return (m_endian == Endian::Little); }
+    void setEndian(Endian endian) { m_endian = endian; }
+    Endian endian() const { return m_endian; }
+    bool isBigEndian() const { return (m_endian == Endian::Big); }
+    bool isLittleEndian() const { return (m_endian == Endian::Little); }
     virtual void seek(atInt64, SeekOrigin) = 0;
     virtual bool atEnd() const = 0;
     virtual atUint64 position() const = 0;

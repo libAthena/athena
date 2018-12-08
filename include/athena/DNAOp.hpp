@@ -1013,7 +1013,7 @@ template <class T>
 static inline void __ReadProp(T& obj, athena::io::IStreamReader& r)
 {
     /* Read root 0xffffffff hash (hashed empty string) */
-    atUint32 hash = T::DNAEndian == Endian::Big ? r.readUint32Big() : r.readUint32Little();
+    T::DNAEndian == Endian::Big ? r.readUint32Big() : r.readUint32Little();
     atInt64 size = T::DNAEndian == Endian::Big ? r.readUint16Big() : r.readUint16Little();
     atInt64 start = r.position();
     __Do<Read<PropType::CRC32>, T, T::DNAEndian>({}, obj, r);
@@ -1038,7 +1038,7 @@ template <class T>
 static inline void __ReadProp64(T& obj, athena::io::IStreamReader& r)
 {
     /* Read root 0x0 hash (hashed empty string) */
-    atUint64 hash = T::DNAEndian == Endian::Big ? r.readUint64Big() : r.readUint64Little();
+    T::DNAEndian == Endian::Big ? r.readUint64Big() : r.readUint64Little();
     atInt64 size = T::DNAEndian == Endian::Big ? r.readUint16Big() : r.readUint16Little();
     atInt64 start = r.position();
     __Do<Read<PropType::CRC64>, T, T::DNAEndian>({}, obj, r);
