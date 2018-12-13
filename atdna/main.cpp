@@ -322,10 +322,10 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
     GetNestedTypeName(decl, templateStmt, qualTypeStr);
 
     fileOut << templateStmt;
-    fileOut << "template <class Op>\nvoid " << qualTypeStr << "::Enumerate(typename Op::StreamT& s)\n{\n";
+    fileOut << "template <class Op>\nvoid " << qualTypeStr << "::Enumerate(typename Op::StreamT& s) {\n";
 
     if (baseDNA.size())
-      fileOut << "    " << baseDNA << "::Enumerate<Op>(s);\n";
+      fileOut << "  " << baseDNA << "::Enumerate<Op>(s);\n";
 
     enum class NodeType { Do, DoSeek, DoAlign };
     struct OutputNode {
@@ -701,15 +701,15 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
       switch (node.m_type) {
       case NodeType::Do:
         if (node.m_squelched)
-          fileOut << "    DoSize" << node.m_ioOp << ";\n";
+          fileOut << "  DoSize" << node.m_ioOp << ";\n";
         else
-          fileOut << "    Do" << node.m_ioOp << ";\n";
+          fileOut << "  Do" << node.m_ioOp << ";\n";
         break;
       case NodeType::DoSeek:
-        fileOut << "    DoSeek" << node.m_ioOp << ";\n";
+        fileOut << "  DoSeek" << node.m_ioOp << ";\n";
         break;
       case NodeType::DoAlign:
-        fileOut << "    DoAlign" << node.m_ioOp << ";\n";
+        fileOut << "  DoAlign" << node.m_ioOp << ";\n";
         break;
       }
     }
@@ -723,14 +723,13 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
     GetNestedTypeName(decl, templateStmt, qualTypeStr);
 
     fileOut << templateStmt;
-    fileOut << "template <class Op>\nbool " << qualTypeStr << "::Lookup(uint64_t hash, typename Op::StreamT& s)\n{\n";
+    fileOut << "template <class Op>\nbool " << qualTypeStr << "::Lookup(uint64_t hash, typename Op::StreamT& s) {\n";
 
     if (baseDNA.size())
-      fileOut << "    if (" << baseDNA << "::Lookup<Op>(hash, s))\n"
-              << "        return true;\n";
+      fileOut << "  if (" << baseDNA << "::Lookup<Op>(hash, s))\n"
+              << "    return true;\n";
 
-    fileOut << "    switch (hash)\n"
-            << "    {\n";
+    fileOut << "  switch (hash) {\n";
 
     for (const clang::FieldDecl* field : decl->fields()) {
       clang::QualType qualType = field->getType();
@@ -797,9 +796,9 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
             continue;
           }
 
-          fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
-                  << "        Do" << ioOp << ";\n"
-                  << "        return true;\n";
+          fileOut << "  AT_PROP_CASE(" << propIdExpr << "):\n"
+                  << "    Do" << ioOp << ";\n"
+                  << "    return true;\n";
 
         } else if (!tsDecl->getName().compare("Vector")) {
           llvm::APSInt endian(64, -1);
@@ -865,9 +864,9 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
             continue;
           }
 
-          fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
-                  << "        Do" << ioOp << ";\n"
-                  << "        return true;\n";
+          fileOut << "  AT_PROP_CASE(" << propIdExpr << "):\n"
+                  << "    Do" << ioOp << ";\n"
+                  << "    return true;\n";
         } else if (!tsDecl->getName().compare("Buffer")) {
           const clang::Expr* sizeExpr = nullptr;
           std::string sizeExprStr;
@@ -901,9 +900,9 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
 
           std::string ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr);
 
-          fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
-                  << "        Do" << ioOp << ";\n"
-                  << "        return true;\n";
+          fileOut << "  AT_PROP_CASE(" << propIdExpr << "):\n"
+                  << "    Do" << ioOp << ";\n"
+                  << "    return true;\n";
         } else if (!tsDecl->getName().compare("String")) {
           std::string sizeExprStr;
           for (const clang::TemplateArgument& arg : *tsType) {
@@ -930,9 +929,9 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           else
             ioOp = GetOpString(fieldName, propIdExpr);
 
-          fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
-                  << "        Do" << ioOp << ";\n"
-                  << "        return true;\n";
+          fileOut << "  AT_PROP_CASE(" << propIdExpr << "):\n"
+                  << "    Do" << ioOp << ";\n"
+                  << "    return true;\n";
         } else if (!tsDecl->getName().compare("WString")) {
           llvm::APSInt endian(64, -1);
           std::string endianExprStr;
@@ -986,17 +985,17 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
               ioOp = GetOpString(fieldName, propIdExpr, endianExprStr);
           }
 
-          fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
-                  << "        Do" << ioOp << ";\n"
-                  << "        return true;\n";
+          fileOut << "  AT_PROP_CASE(" << propIdExpr << "):\n"
+                  << "    Do" << ioOp << ";\n"
+                  << "    return true;\n";
         } else {
           const clang::NamedDecl* nd = tsDecl->getTemplatedDecl();
           if (const clang::CXXRecordDecl* rd = clang::dyn_cast_or_null<clang::CXXRecordDecl>(nd)) {
             std::string baseDNA;
             if (isDNARecord(rd, baseDNA)) {
-              fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
-                      << "        Do" << GetOpString(fieldName, propIdExpr) << ";\n"
-                      << "        return true;\n";
+              fileOut << "  AT_PROP_CASE(" << propIdExpr << "):\n"
+                      << "    Do" << GetOpString(fieldName, propIdExpr) << ";\n"
+                      << "    return true;\n";
             }
           }
         }
@@ -1006,14 +1005,14 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
         const clang::CXXRecordDecl* cxxRDecl = regType->getAsCXXRecordDecl();
         std::string baseDNA;
         if (cxxRDecl && isDNARecord(cxxRDecl, baseDNA)) {
-          fileOut << "    AT_PROP_CASE(" << propIdExpr << "):\n"
-                  << "        Do" << GetOpString(fieldName, propIdExpr) << ";\n"
-                  << "        return true;\n";
+          fileOut << "  AT_PROP_CASE(" << propIdExpr << "):\n"
+                  << "    Do" << GetOpString(fieldName, propIdExpr) << ";\n"
+                  << "    return true;\n";
         }
       }
     }
 
-    fileOut << "    default:\n        return false;\n    }\n}\n\n";
+    fileOut << "  default:\n    return false;\n  }\n}\n\n";
   }
 
 public:
@@ -1093,7 +1092,7 @@ public:
     for (const auto& specialization : specializations) {
       for (int i = 0; i < specialization.second; ++i)
         fileOut << "template <>\n";
-      fileOut << "const char* " << specialization.first << "::DNAType()\n{\n    return \"" << specialization.first
+      fileOut << "const char* " << specialization.first << "::DNAType() {\n  return \"" << specialization.first
               << "\";\n}\n";
     }
     fileOut << "\n\n";
