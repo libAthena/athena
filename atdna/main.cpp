@@ -152,11 +152,14 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
   }
 
   static std::string GetFieldString(const std::string& fieldName) {
+#if 0
     size_t underscorePos = fieldName.find('_');
     std::string idString = fieldName;
     if (underscorePos != std::string::npos && underscorePos != fieldName.size() - 1)
       idString.assign(fieldName.begin() + underscorePos + 1, fieldName.end());
     return idString;
+#endif
+    return fieldName;
   }
 
   static std::string GetPropIdExpr(const clang::FieldDecl* field, const std::string& fieldName) {
