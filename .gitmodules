@@ -1,0 +1,3 @@
+[submodule "extern/lzokay"]
+	path = extern/lzokay
+	url = https://github.com/jackoalan/lzokay

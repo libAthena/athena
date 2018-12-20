@@ -22,7 +22,7 @@ set(ATHENA_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include CACHE INTERNAL "Athen
 
 add_subdirectory(extern)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${LZO_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${LZOKAY_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
 
 if(WIN32)
 list(APPEND CORE_EXTRA src/win32_largefilewrapper.c include/win32_largefilewrapper.h
