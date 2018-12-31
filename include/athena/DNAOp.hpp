@@ -78,32 +78,32 @@ using __CastPODType = typename std::conditional_t<
                                                       std::remove_cv_t<T>>>>>>>;
 
 template <Endian DNAE>
-static inline uint16_t __Read16(IStreamReader& r) {
+inline uint16_t __Read16(IStreamReader& r) {
   return DNAE == Endian::Big ? r.readUint16Big() : r.readUint16Little();
 }
 
 template <Endian DNAE>
-static inline void __Write16(IStreamWriter& w, uint16_t v) {
+inline void __Write16(IStreamWriter& w, uint16_t v) {
   DNAE == Endian::Big ? w.writeUint16Big(v) : w.writeUint16Little(v);
 }
 
 template <Endian DNAE>
-static inline uint32_t __Read32(IStreamReader& r) {
+inline uint32_t __Read32(IStreamReader& r) {
   return DNAE == Endian::Big ? r.readUint32Big() : r.readUint32Little();
 }
 
 template <Endian DNAE>
-static inline void __Write32(IStreamWriter& w, uint32_t v) {
+inline void __Write32(IStreamWriter& w, uint32_t v) {
   DNAE == Endian::Big ? w.writeUint32Big(v) : w.writeUint32Little(v);
 }
 
 template <Endian DNAE>
-static inline uint64_t __Read64(IStreamReader& r) {
+inline uint64_t __Read64(IStreamReader& r) {
   return DNAE == Endian::Big ? r.readUint64Big() : r.readUint64Little();
 }
 
 template <Endian DNAE>
-static inline void __Write64(IStreamWriter& w, uint64_t v) {
+inline void __Write64(IStreamWriter& w, uint64_t v) {
   DNAE == Endian::Big ? w.writeUint64Big(v) : w.writeUint64Little(v);
 }
 
@@ -795,77 +795,77 @@ __WRITE_YAML_S(atVec4f, Endian::Little) { w.writeVec4f(id.name, var); }
 __WRITE_YAML_S(atVec4d, Endian::Little) { w.writeVec4d(id.name, var); }
 
 template <class Op, class T, Endian DNAE>
-static inline void __Do(const PropId& id, T& var, typename Op::StreamT& s) {
+inline void __Do(const PropId& id, T& var, typename Op::StreamT& s) {
   Op::template Do<T, DNAE>(id, var, s);
 }
 
 template <class Op, class T, Endian DNAE>
-static inline void __DoSize(const PropId& id, T& var, typename Op::StreamT& s) {
+inline void __DoSize(const PropId& id, T& var, typename Op::StreamT& s) {
   Op::template DoSize<T, DNAE>(id, var, s);
 }
 
 template <class Op, class T, class S, Endian DNAE>
-static inline void __Do(const PropId& id, std::vector<T>& vector, const S& count, typename Op::StreamT& s) {
+inline void __Do(const PropId& id, std::vector<T>& vector, const S& count, typename Op::StreamT& s) {
   Op::template Do<T, S, DNAE>(id, vector, count, s);
 }
 
 template <class Op>
-static inline void __Do(const PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, typename Op::StreamT& s) {
+inline void __Do(const PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, typename Op::StreamT& s) {
   Op::Do(id, buf, count, s);
 }
 
 template <class Op>
-static inline void __Do(const PropId& id, std::string& str, atInt32 count, typename Op::StreamT& s) {
+inline void __Do(const PropId& id, std::string& str, atInt32 count, typename Op::StreamT& s) {
   Op::Do(id, str, count, s);
 }
 
 template <class Op, Endian DNAE>
-static inline void __Do(const PropId& id, std::wstring& str, atInt32 count, typename Op::StreamT& s) {
+inline void __Do(const PropId& id, std::wstring& str, atInt32 count, typename Op::StreamT& s) {
   Op::template Do<DNAE>(id, str, count, s);
 }
 
 template <class Op>
-static inline void __DoSeek(atInt64 delta, athena::SeekOrigin whence, typename Op::StreamT& s) {
+inline void __DoSeek(atInt64 delta, athena::SeekOrigin whence, typename Op::StreamT& s) {
   Op::DoSeek(delta, whence, s);
 }
 
 template <class Op>
-static inline void __DoAlign(atInt64 amount, typename Op::StreamT& s) {
+inline void __DoAlign(atInt64 amount, typename Op::StreamT& s) {
   Op::DoAlign(amount, s);
 }
 
 template <class T>
-static inline void __Read(T& obj, athena::io::IStreamReader& r) {
+inline void __Read(T& obj, athena::io::IStreamReader& r) {
   __Do<Read<PropType::None>, T, T::DNAEndian>({}, obj, r);
 }
 
 template <class T>
-static inline void __Write(const T& obj, athena::io::IStreamWriter& w) {
+inline void __Write(const T& obj, athena::io::IStreamWriter& w) {
   __Do<Write<PropType::None>, T, T::DNAEndian>({}, const_cast<T&>(obj), w);
 }
 
 template <class T>
-static inline void __BinarySize(const T& obj, size_t& s) {
+inline void __BinarySize(const T& obj, size_t& s) {
   __Do<BinarySize<PropType::None>, T, T::DNAEndian>({}, const_cast<T&>(obj), s);
 }
 
 template <class T>
-static inline void __PropCount(const T& obj, size_t& s) {
+inline void __PropCount(const T& obj, size_t& s) {
   const_cast<T&>(obj).template Enumerate<PropCount<PropType::None>>(s);
 }
 
 template <class T>
-static inline void __ReadYaml(T& obj, athena::io::YAMLDocReader& r) {
+inline void __ReadYaml(T& obj, athena::io::YAMLDocReader& r) {
   obj.template Enumerate<ReadYaml<PropType::None>>(r);
 }
 
 template <class T>
-static inline void __WriteYaml(const T& obj, athena::io::YAMLDocWriter& w) {
+inline void __WriteYaml(const T& obj, athena::io::YAMLDocWriter& w) {
   const_cast<T&>(obj).template Enumerate<WriteYaml<PropType::None>>(w);
 }
 
 template <class T>
-static inline void __ReadProp(T& obj, athena::io::IStreamReader& r) {
+inline void __ReadProp(T& obj, athena::io::IStreamReader& r) {
   /* Read root 0xffffffff hash (hashed empty string) */
   T::DNAEndian == Endian::Big ? r.readUint32Big() : r.readUint32Little();
   atInt64 size = T::DNAEndian == Endian::Big ? r.readUint16Big() : r.readUint16Little();
@@ -877,17 +877,17 @@ static inline void __ReadProp(T& obj, athena::io::IStreamReader& r) {
 }
 
 template <class T>
-static inline void __WriteProp(const T& obj, athena::io::IStreamWriter& w) {
+inline void __WriteProp(const T& obj, athena::io::IStreamWriter& w) {
   __Do<Write<PropType::CRC32>, T, T::DNAEndian>({}, const_cast<T&>(obj), w);
 }
 
 template <class T>
-static inline void __BinarySizeProp(const T& obj, size_t& s) {
+inline void __BinarySizeProp(const T& obj, size_t& s) {
   __Do<BinarySize<PropType::CRC32>, T, T::DNAEndian>({}, const_cast<T&>(obj), s);
 }
 
 template <class T>
-static inline void __ReadProp64(T& obj, athena::io::IStreamReader& r) {
+inline void __ReadProp64(T& obj, athena::io::IStreamReader& r) {
   /* Read root 0x0 hash (hashed empty string) */
   T::DNAEndian == Endian::Big ? r.readUint64Big() : r.readUint64Little();
   atInt64 size = T::DNAEndian == Endian::Big ? r.readUint16Big() : r.readUint16Little();
@@ -899,12 +899,12 @@ static inline void __ReadProp64(T& obj, athena::io::IStreamReader& r) {
 }
 
 template <class T>
-static inline void __WriteProp64(const T& obj, athena::io::IStreamWriter& w) {
+inline void __WriteProp64(const T& obj, athena::io::IStreamWriter& w) {
   __Do<Write<PropType::CRC64>, T, T::DNAEndian>({}, const_cast<T&>(obj), w);
 }
 
 template <class T>
-static inline void __BinarySizeProp64(const T& obj, size_t& s) {
+inline void __BinarySizeProp64(const T& obj, size_t& s) {
   __Do<BinarySize<PropType::CRC64>, T, T::DNAEndian>({}, const_cast<T&>(obj), s);
 }
 
