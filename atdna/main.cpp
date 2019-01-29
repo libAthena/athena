@@ -110,18 +110,18 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
 
   int64_t GetSizeValue(const clang::Type* theType, unsigned width) {
     if (theType->isEnumeralType()) {
-      clang::EnumType* eType = (clang::EnumType*)theType;
+      const auto* eType = static_cast<const clang::EnumType*>(theType);
       clang::EnumDecl* eDecl = eType->getDecl();
       theType = eDecl->getIntegerType().getCanonicalType().getTypePtr();
 
-      const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
+      const auto* bType = static_cast<const clang::BuiltinType*>(theType);
       if (bType->isBooleanType()) {
         return 1;
       } else if (bType->isUnsignedInteger() || bType->isSignedInteger()) {
         return width / 8;
       }
     } else if (theType->isBuiltinType()) {
-      const clang::BuiltinType* bType = (clang::BuiltinType*)theType;
+      const auto* bType = static_cast<const clang::BuiltinType*>(theType);
       if (bType->isBooleanType()) {
         return 1;
       } else if (bType->isUnsignedInteger() || bType->isSignedInteger() || bType->isFloatingPoint()) {
@@ -131,9 +131,9 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
       const clang::CXXRecordDecl* rDecl = theType->getAsCXXRecordDecl();
       for (const clang::FieldDecl* field : rDecl->fields()) {
         if (!field->getName().compare("clangVec")) {
-          const clang::VectorType* vType = (clang::VectorType*)field->getType().getTypePtr();
+          const auto* vType = static_cast<const clang::VectorType*>(field->getType().getTypePtr());
           if (vType->isVectorType()) {
-            const clang::BuiltinType* eType = (clang::BuiltinType*)vType->getElementType().getTypePtr();
+            const auto* eType = static_cast<const clang::BuiltinType*>(vType->getElementType().getTypePtr());
             const uint64_t width = context.getTypeInfo(eType).Width;
             if (!eType->isBuiltinType() || !eType->isFloatingPoint() || (width != 32 && width != 64))
               continue;
@@ -284,7 +284,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
                   bool needsComma = false;
                   for (auto it = specParms.begin() + i * numParms;
                        it != specParms.end() && it != specParms.begin() + (i + 1) * numParms; ++it) {
-                    StringRef trimmed = it->trim();
+                    llvm::StringRef trimmed = it->trim();
                     if (needsComma)
                       specializations.back().first += ", ";
                     specializations.back().first += trimmed;
@@ -351,7 +351,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
 
       /* Resolve constant array */
       while (regType->getTypeClass() == clang::Type::ConstantArray) {
-        const clang::ConstantArrayType* caType = (clang::ConstantArrayType*)regType;
+        const auto* caType = static_cast<const clang::ConstantArrayType*>(regType);
         qualType = caType->getElementType();
         regType = qualType.getTypePtrOrNull();
         if (regType->getTypeClass() == clang::Type::Elaborated)
@@ -362,7 +362,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
       std::string propIdExpr = GetPropIdExpr(field, fieldName);
 
       if (regType->getTypeClass() == clang::Type::TemplateSpecialization) {
-        const clang::TemplateSpecializationType* tsType = (const clang::TemplateSpecializationType*)regType;
+        const auto* tsType = static_cast<const clang::TemplateSpecializationType*>(regType);
         const clang::TemplateDecl* tsDecl = tsType->getTemplateName().getAsTemplateDecl();
         const clang::TemplateParameterList* classParms = tsDecl->getTemplateParameters();
 
@@ -373,7 +373,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           if (classParms->size() >= 2) {
             const clang::NamedDecl* endianParm = classParms->getParam(1);
             if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm) {
-              const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
+              const auto* nttParm = static_cast<const clang::NonTypeTemplateParmDecl*>(endianParm);
               llvm::raw_string_ostream strStream(endianExprStr);
               nttParm->print(strStream, context.getPrintingPolicy());
             }
@@ -400,7 +400,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           }
 
           if (ioOp.empty()) {
-            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocation(), AthenaError);
             diag.AddString("Unable to use type '" + tsDecl->getName().str() + "' with Athena");
             diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
             continue;
@@ -414,7 +414,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           if (classParms->size() >= 3) {
             const clang::NamedDecl* endianParm = classParms->getParam(2);
             if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm) {
-              const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
+              const auto* nttParm = static_cast<const clang::NonTypeTemplateParmDecl*>(endianParm);
               llvm::raw_string_ostream strStream(endianExprStr);
               nttParm->print(strStream, context.getPrintingPolicy());
             }
@@ -426,15 +426,15 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
             if (arg.getKind() == clang::TemplateArgument::Expression) {
               const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
               if (idx == 1) {
-                const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
+                const auto* uExpr = static_cast<const clang::UnaryExprOrTypeTraitExpr*>(expr);
                 if (uExpr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
                     uExpr->getKind() == clang::UETT_SizeOf) {
                   const clang::Expr* argExpr = uExpr->getArgumentExpr();
                   while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
-                    argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                    argExpr = static_cast<const clang::ParenExpr*>(argExpr)->getSubExpr();
 
                   if (argExpr->getStmtClass() == clang::Stmt::DeclRefExprClass) {
-                    clang::DeclRefExpr* drExpr = (clang::DeclRefExpr*)argExpr;
+                    const auto* drExpr = static_cast<const clang::DeclRefExpr*>(argExpr);
                     std::string testName = drExpr->getFoundDecl()->getNameAsString();
                     for (auto i = outputNodes.rbegin(); i != outputNodes.rend(); ++i) {
                       if (i->m_fieldName == testName) {
@@ -469,14 +469,14 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           }
 
           if (ioOp.empty()) {
-            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocation(), AthenaError);
             diag.AddString("Unable to use type '" + templateType.getAsString() + "' with Athena");
             diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
             continue;
           }
 
           if (sizeExpr.empty()) {
-            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocation(), AthenaError);
             diag.AddString("Unable to use count variable with Athena");
             diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
             continue;
@@ -488,13 +488,12 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           std::string sizeExprStr;
           for (const clang::TemplateArgument& arg : *tsType) {
             if (arg.getKind() == clang::TemplateArgument::Expression) {
-              const clang::UnaryExprOrTypeTraitExpr* uExpr =
-                  (clang::UnaryExprOrTypeTraitExpr*)arg.getAsExpr()->IgnoreImpCasts();
+              const auto* uExpr = static_cast<const clang::UnaryExprOrTypeTraitExpr*>(arg.getAsExpr()->IgnoreImpCasts());
               if (uExpr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
                   uExpr->getKind() == clang::UETT_SizeOf) {
                 const clang::Expr* argExpr = uExpr->getArgumentExpr();
                 while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
-                  argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                  argExpr = static_cast<const clang::ParenExpr*>(argExpr)->getSubExpr();
                 sizeExpr = argExpr;
                 llvm::raw_string_ostream strStream(sizeExprStr);
                 argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
@@ -503,11 +502,11 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           }
           if (sizeExprStr.empty()) {
             if (sizeExpr) {
-              clang::DiagnosticBuilder diag = context.getDiagnostics().Report(sizeExpr->getLocStart(), AthenaError);
+              clang::DiagnosticBuilder diag = context.getDiagnostics().Report(sizeExpr->getExprLoc(), AthenaError);
               diag.AddString("Unable to use size variable with Athena");
               diag.AddSourceRange(clang::CharSourceRange(sizeExpr->getSourceRange(), true));
             } else {
-              clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+              clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocation(), AthenaError);
               diag.AddString("Unable to use size variable with Athena");
               diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
             }
@@ -522,13 +521,13 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           for (const clang::TemplateArgument& arg : *tsType) {
             if (arg.getKind() == clang::TemplateArgument::Expression) {
               const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
-              const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
+              const auto* uExpr = static_cast<const clang::UnaryExprOrTypeTraitExpr*>(expr);
               llvm::APSInt sizeLiteral;
               if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
                   uExpr->getKind() == clang::UETT_SizeOf) {
                 const clang::Expr* argExpr = uExpr->getArgumentExpr();
                 while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
-                  argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                  argExpr = static_cast<const clang::ParenExpr*>(argExpr)->getSubExpr();
                 llvm::raw_string_ostream strStream(sizeExprStr);
                 argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
               } else if (expr->isIntegerConstantExpr(sizeLiteral, context)) {
@@ -551,7 +550,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           if (classParms->size() >= 2) {
             const clang::NamedDecl* endianParm = classParms->getParam(1);
             if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm) {
-              const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
+              const auto* nttParm = static_cast<const clang::NonTypeTemplateParmDecl*>(endianParm);
               llvm::raw_string_ostream strStream(endianExprStr);
               nttParm->print(strStream, context.getPrintingPolicy());
             }
@@ -564,12 +563,12 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
               const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
               if (idx == 0) {
                 llvm::APSInt sizeLiteral;
-                const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
+                const auto* uExpr = static_cast<const clang::UnaryExprOrTypeTraitExpr*>(expr);
                 if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
                     uExpr->getKind() == clang::UETT_SizeOf) {
                   const clang::Expr* argExpr = uExpr->getArgumentExpr();
                   while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
-                    argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                    argExpr = static_cast<const clang::ParenExpr*>(argExpr)->getSubExpr();
                   llvm::raw_string_ostream strStream2(sizeExprStr);
                   argExpr->printPretty(strStream2, nullptr, context.getPrintingPolicy());
                 } else if (expr->isIntegerConstantExpr(sizeLiteral, context)) {
@@ -608,13 +607,13 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
             if (arg.getKind() == clang::TemplateArgument::Expression) {
               const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
               if (!idx) {
-                const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
+                const auto* uExpr = static_cast<const clang::UnaryExprOrTypeTraitExpr*>(expr);
                 llvm::APSInt offsetLiteral;
                 if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
                     uExpr->getKind() == clang::UETT_SizeOf) {
                   const clang::Expr* argExpr = uExpr->getArgumentExpr();
                   while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
-                    argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                    argExpr = static_cast<const clang::ParenExpr*>(argExpr)->getSubExpr();
                   llvm::raw_string_ostream strStream(offsetExprStr);
                   argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
                 } else if (expr->isIntegerConstantExpr(offsetLiteral, context)) {
@@ -623,7 +622,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
               } else {
                 directionExpr = expr;
                 if (!expr->isIntegerConstantExpr(direction, context)) {
-                  clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
+                  clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getExprLoc(), AthenaError);
                   diag.AddString("Unable to use non-constant direction expression in Athena");
                   diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
                   bad = true;
@@ -640,11 +639,11 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           if (directionVal < 0 || directionVal > 2) {
             if (directionExpr) {
               clang::DiagnosticBuilder diag =
-                  context.getDiagnostics().Report(directionExpr->getLocStart(), AthenaError);
+                  context.getDiagnostics().Report(directionExpr->getExprLoc(), AthenaError);
               diag.AddString("Direction parameter must be 'Begin', 'Current', or 'End'");
               diag.AddSourceRange(clang::CharSourceRange(directionExpr->getSourceRange(), true));
             } else {
-              clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+              clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocation(), AthenaError);
               diag.AddString("Direction parameter must be 'Begin', 'Current', or 'End'");
               diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
             }
@@ -667,7 +666,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
             if (arg.getKind() == clang::TemplateArgument::Expression) {
               const clang::Expr* expr = arg.getAsExpr();
               if (!expr->isIntegerConstantExpr(align, context)) {
-                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getLocStart(), AthenaError);
+                clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getExprLoc(), AthenaError);
                 diag.AddString("Unable to use non-constant align expression in Athena");
                 diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
                 bad = true;
@@ -744,7 +743,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
 
       /* Resolve constant array */
       while (regType->getTypeClass() == clang::Type::ConstantArray) {
-        const clang::ConstantArrayType* caType = (clang::ConstantArrayType*)regType;
+        const auto* caType = static_cast<const clang::ConstantArrayType*>(regType);
         qualType = caType->getElementType();
         regType = qualType.getTypePtrOrNull();
         if (regType->getTypeClass() == clang::Type::Elaborated)
@@ -755,7 +754,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
       std::string propIdExpr = GetPropIdExpr(field, fieldName);
 
       if (regType->getTypeClass() == clang::Type::TemplateSpecialization) {
-        const clang::TemplateSpecializationType* tsType = (const clang::TemplateSpecializationType*)regType;
+        const auto* tsType = static_cast<const clang::TemplateSpecializationType*>(regType);
         const clang::TemplateDecl* tsDecl = tsType->getTemplateName().getAsTemplateDecl();
         const clang::TemplateParameterList* classParms = tsDecl->getTemplateParameters();
 
@@ -766,7 +765,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           if (classParms->size() >= 2) {
             const clang::NamedDecl* endianParm = classParms->getParam(1);
             if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm) {
-              const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
+              const auto* nttParm = static_cast<const clang::NonTypeTemplateParmDecl*>(endianParm);
               llvm::raw_string_ostream strStream(endianExprStr);
               nttParm->print(strStream, context.getPrintingPolicy());
             }
@@ -793,7 +792,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           }
 
           if (ioOp.empty()) {
-            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocation(), AthenaError);
             diag.AddString("Unable to use type '" + tsDecl->getName().str() + "' with Athena");
             diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
             continue;
@@ -810,7 +809,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           if (classParms->size() >= 3) {
             const clang::NamedDecl* endianParm = classParms->getParam(2);
             if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm) {
-              const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
+              const auto* nttParm = static_cast<const clang::NonTypeTemplateParmDecl*>(endianParm);
               llvm::raw_string_ostream strStream(endianExprStr);
               nttParm->print(strStream, context.getPrintingPolicy());
             }
@@ -822,12 +821,12 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
             if (arg.getKind() == clang::TemplateArgument::Expression) {
               const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
               if (idx == 1) {
-                const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
+                const auto* uExpr = static_cast<const clang::UnaryExprOrTypeTraitExpr*>(expr);
                 if (uExpr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
                     uExpr->getKind() == clang::UETT_SizeOf) {
                   const clang::Expr* argExpr = uExpr->getArgumentExpr();
                   while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
-                    argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                    argExpr = static_cast<const clang::ParenExpr*>(argExpr)->getSubExpr();
                   llvm::raw_string_ostream strStream2(sizeExpr);
                   argExpr->printPretty(strStream2, nullptr, context.getPrintingPolicy());
                 }
@@ -854,14 +853,14 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           }
 
           if (ioOp.empty()) {
-            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocation(), AthenaError);
             diag.AddString("Unable to use type '" + templateType.getAsString() + "' with Athena");
             diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
             continue;
           }
 
           if (sizeExpr.empty()) {
-            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+            clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocation(), AthenaError);
             diag.AddString("Unable to use count variable with Athena");
             diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
             continue;
@@ -875,13 +874,12 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           std::string sizeExprStr;
           for (const clang::TemplateArgument& arg : *tsType) {
             if (arg.getKind() == clang::TemplateArgument::Expression) {
-              const clang::UnaryExprOrTypeTraitExpr* uExpr =
-                  (clang::UnaryExprOrTypeTraitExpr*)arg.getAsExpr()->IgnoreImpCasts();
+              const auto* uExpr = static_cast<const clang::UnaryExprOrTypeTraitExpr*>(arg.getAsExpr()->IgnoreImpCasts());
               if (uExpr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
                   uExpr->getKind() == clang::UETT_SizeOf) {
                 const clang::Expr* argExpr = uExpr->getArgumentExpr();
                 while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
-                  argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                  argExpr = static_cast<const clang::ParenExpr*>(argExpr)->getSubExpr();
                 sizeExpr = argExpr;
                 llvm::raw_string_ostream strStream(sizeExprStr);
                 argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
@@ -890,11 +888,11 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           }
           if (sizeExprStr.empty()) {
             if (sizeExpr) {
-              clang::DiagnosticBuilder diag = context.getDiagnostics().Report(sizeExpr->getLocStart(), AthenaError);
+              clang::DiagnosticBuilder diag = context.getDiagnostics().Report(sizeExpr->getExprLoc(), AthenaError);
               diag.AddString("Unable to use size variable with Athena");
               diag.AddSourceRange(clang::CharSourceRange(sizeExpr->getSourceRange(), true));
             } else {
-              clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocStart(), AthenaError);
+              clang::DiagnosticBuilder diag = context.getDiagnostics().Report(field->getLocation(), AthenaError);
               diag.AddString("Unable to use size variable with Athena");
               diag.AddSourceRange(clang::CharSourceRange(field->getSourceRange(), true));
             }
@@ -911,13 +909,13 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           for (const clang::TemplateArgument& arg : *tsType) {
             if (arg.getKind() == clang::TemplateArgument::Expression) {
               const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
-              const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
+              const auto* uExpr = static_cast<const clang::UnaryExprOrTypeTraitExpr*>(expr);
               llvm::APSInt sizeLiteral;
               if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
                   uExpr->getKind() == clang::UETT_SizeOf) {
                 const clang::Expr* argExpr = uExpr->getArgumentExpr();
                 while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
-                  argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                  argExpr = static_cast<const clang::ParenExpr*>(argExpr)->getSubExpr();
                 llvm::raw_string_ostream strStream(sizeExprStr);
                 argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
               } else if (expr->isIntegerConstantExpr(sizeLiteral, context)) {
@@ -942,7 +940,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           if (classParms->size() >= 2) {
             const clang::NamedDecl* endianParm = classParms->getParam(1);
             if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm) {
-              const clang::NonTypeTemplateParmDecl* nttParm = (clang::NonTypeTemplateParmDecl*)endianParm;
+              const auto* nttParm = static_cast<const clang::NonTypeTemplateParmDecl*>(endianParm);
               llvm::raw_string_ostream strStream(endianExprStr);
               nttParm->print(strStream, context.getPrintingPolicy());
             }
@@ -955,12 +953,12 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
               const clang::Expr* expr = arg.getAsExpr()->IgnoreImpCasts();
               if (idx == 0) {
                 llvm::APSInt sizeLiteral;
-                const clang::UnaryExprOrTypeTraitExpr* uExpr = (clang::UnaryExprOrTypeTraitExpr*)expr;
+                const auto* uExpr = static_cast<const clang::UnaryExprOrTypeTraitExpr*>(expr);
                 if (expr->getStmtClass() == clang::Stmt::UnaryExprOrTypeTraitExprClass &&
                     uExpr->getKind() == clang::UETT_SizeOf) {
                   const clang::Expr* argExpr = uExpr->getArgumentExpr();
                   while (argExpr->getStmtClass() == clang::Stmt::ParenExprClass)
-                    argExpr = ((clang::ParenExpr*)argExpr)->getSubExpr();
+                    argExpr = static_cast<const clang::ParenExpr*>(argExpr)->getSubExpr();
                   llvm::raw_string_ostream strStream2(sizeExprStr);
                   argExpr->printPretty(strStream2, nullptr, context.getPrintingPolicy());
                 } else if (expr->isIntegerConstantExpr(sizeLiteral, context)) {
