@@ -1,5 +1,9 @@
 #pragma once
 #define _ATHENA_SIMD_INCLUDED
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wignored-attributes"
+#endif
 namespace athena::_simd {
 using namespace std;
 }
@@ -24,6 +28,9 @@ struct athena_native<double> {
   using type = fixed_size<4>;
 };
 } // namespace simd_abi
+#endif
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
 #endif
 namespace athena {
 template <typename T>

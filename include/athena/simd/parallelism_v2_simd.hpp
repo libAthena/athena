@@ -1280,9 +1280,10 @@ public:
 
   // generator constructor
   template <class _Generator,
-            int = typename std::enable_if<__can_generate<_Generator>(std::make_index_sequence<size()>()), int>::type()>
+            int = typename std::enable_if<__can_generate<_Generator>(
+              std::make_index_sequence<simd_size<_Tp, _Abi>::value>()), int>::type()>
   explicit simd(_Generator&& __g) {
-    __generator_init(std::forward<_Generator>(__g), std::make_index_sequence<size()>());
+    __generator_init(std::forward<_Generator>(__g), std::make_index_sequence<simd_size<_Tp, _Abi>::value>());
   }
 
   // load constructor
