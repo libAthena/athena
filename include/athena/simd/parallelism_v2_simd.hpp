@@ -1274,9 +1274,10 @@ public:
     __s_.__broadcast(v);
   }
 #endif
-  simd(_Tp __rv) { __s_.__broadcast(__rv); }
 
-  simd(_Tp a, _Tp b, _Tp c = {}, _Tp d = {}) { __s_.__set4(a, b, c, d); }
+  constexpr simd(_Tp __rv) : __s_(__rv) {}
+
+  constexpr simd(_Tp a, _Tp b, _Tp c = {}, _Tp d = {}) : __s_(a, b, c, d) {}
 
   // generator constructor
   template <class _Generator,

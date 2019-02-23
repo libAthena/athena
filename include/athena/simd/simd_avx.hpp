@@ -22,7 +22,9 @@ public:
     sse_data[__index] = __val;
     __storage_ = _mm256_load_pd(sse_data.data());
   }
+  constexpr __simd_storage(double a, double b, double c, double d) : __storage_{a, b, c, d} {}
   void __set4(double a, double b, double c, double d) noexcept { __storage_ = _mm256_set_pd(d, c, b, a); }
+  constexpr __simd_storage(double rv) : __storage_{rv, rv, rv, rv} {}
   void __broadcast(double __val) noexcept { __storage_ = _mm256_set1_pd(__val); }
   double __dot2(const __simd_storage<double, m256d_abi>& other) const noexcept {
     alignas(32) std::array<double, 4> sse_data;

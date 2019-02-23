@@ -41,7 +41,9 @@ public:
     sse_data[__index] = __val;
     __storage_ = _mm_load_ps(sse_data.data());
   }
+  constexpr __simd_storage(float a, float b, float c, float d) : __storage_{a, b, c, d} {}
   void __set4(float a, float b, float c, float d) noexcept { __storage_ = _mm_set_ps(d, c, b, a); }
+  constexpr __simd_storage(float rv) : __storage_{rv, rv, rv, rv} {}
   void __broadcast(float __val) noexcept { __storage_ = _mm_set1_ps(__val); }
   float __dot2(const __simd_storage<float, m128_abi>& other) const noexcept {
 #if __SSE4_1__
@@ -219,10 +221,12 @@ public:
     sse_data[__index % 2] = __val;
     __storage_[__index / 2] = _mm_load_pd(sse_data.data());
   }
+  constexpr __simd_storage(double a, double b, double c, double d) : __storage_{__m128d{a, b}, __m128d{c, d}} {}
   void __set4(double a, double b, double c, double d) noexcept {
     __storage_[0] = _mm_set_pd(b, a);
     __storage_[1] = _mm_set_pd(d, c);
   }
+  constexpr __simd_storage(double rv) : __storage_{__m128d{rv, rv}, __m128d{rv, rv}} {}
   void __broadcast(double __val) noexcept {
     for (int i = 0; i < 2; ++i)
       __storage_[i] = _mm_set1_pd(__val);
