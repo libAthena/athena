@@ -89,7 +89,8 @@ void FileReader::seek(atInt64 pos, SeekOrigin origin) {
       LARGE_INTEGER li;
       li.QuadPart = block * m_blockSize;
       SetFilePointerEx(m_fileHandle, li, nullptr, FILE_BEGIN);
-      ReadFile(m_fileHandle, m_cacheData.get(), m_blockSize, nullptr, nullptr);
+      DWORD readSz;
+      ReadFile(m_fileHandle, m_cacheData.get(), m_blockSize, &readSz, nullptr);
       m_curBlock = (atInt32)block;
     }
   } else {
@@ -163,7 +164,8 @@ atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len) {
         LARGE_INTEGER li;
         li.QuadPart = block * m_blockSize;
         SetFilePointerEx(m_fileHandle, li, nullptr, FILE_BEGIN);
-        ReadFile(m_fileHandle, m_cacheData.get(), m_blockSize, nullptr, nullptr);
+        DWORD readSz;
+        ReadFile(m_fileHandle, m_cacheData.get(), m_blockSize, &readSz, nullptr);
         m_curBlock = (atInt32)block;
       }
 
