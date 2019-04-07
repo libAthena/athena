@@ -63,7 +63,7 @@ public:
    * @return The value at the current position
    */
   atInt8 readByte() {
-    atInt8 val;
+    atInt8 val = 0;
     readUBytesToBuf(&val, 1);
     return val;
   }
@@ -104,6 +104,7 @@ public:
    */
   std::unique_ptr<atInt8[]> readBytes(atUint64 length) {
     atInt8* buf = new atInt8[length];
+    memset(buf, 0, length);
     readUBytesToBuf(buf, length);
     return std::unique_ptr<atInt8[]>(buf);
   }
@@ -114,6 +115,7 @@ public:
    */
   std::unique_ptr<atUint8[]> readUBytes(atUint64 length) {
     atUint8* buf = new atUint8[length];
+    memset(buf, 0, length);
     readUBytesToBuf(buf, length);
     return std::unique_ptr<atUint8[]>(buf);
   }
@@ -139,7 +141,7 @@ public:
    *  @return The value at the current address
    */
   atInt16 readInt16() {
-    atInt16 val;
+    atInt16 val = 0;
     readUBytesToBuf(&val, 2);
     return m_endian == Big ? utility::BigInt16(val) : utility::LittleInt16(val);
   }
@@ -154,7 +156,7 @@ public:
    *  @return The value at the current address
    */
   atInt16 readInt16Little() {
-    atInt16 val;
+    atInt16 val = 0;
     readUBytesToBuf(&val, 2);
     return utility::LittleInt16(val);
   }
@@ -169,7 +171,7 @@ public:
    *  @return The value at the current address
    */
   atInt16 readInt16Big() {
-    atInt16 val;
+    atInt16 val = 0;
     readUBytesToBuf(&val, 2);
     return utility::BigInt16(val);
   }
@@ -195,7 +197,7 @@ public:
    *  @return The value at the current address
    */
   atUint16 readUint16Little() {
-    atUint16 val;
+    atUint16 val = 0;
     readUBytesToBuf(&val, 2);
     return utility::LittleUint16(val);
   }
@@ -210,7 +212,7 @@ public:
    *  @return The value at the current address
    */
   atUint16 readUint16Big() {
-    atUint16 val;
+    atUint16 val = 0;
     readUBytesToBuf(&val, 2);
     return utility::BigUint16(val);
   }
@@ -225,7 +227,7 @@ public:
    *  @return The value at the current address
    */
   atInt32 readInt32() {
-    atInt32 val;
+    atInt32 val = 0;
     readUBytesToBuf(&val, 4);
     return m_endian == Big ? utility::BigInt32(val) : utility::LittleInt32(val);
   }
@@ -240,7 +242,7 @@ public:
    *  @return The value at the current address
    */
   atInt32 readInt32Little() {
-    atInt32 val;
+    atInt32 val = 0;
     readUBytesToBuf(&val, 4);
     return utility::LittleInt32(val);
   }
@@ -255,7 +257,7 @@ public:
    *  @return The value at the current address
    */
   atInt32 readInt32Big() {
-    atInt32 val;
+    atInt32 val = 0;
     readUBytesToBuf(&val, 4);
     return utility::BigInt32(val);
   }
@@ -281,7 +283,7 @@ public:
    *  @return The value at the current address
    */
   atUint32 readUint32Little() {
-    atUint32 val;
+    atUint32 val = 0;
     readUBytesToBuf(&val, 4);
     return utility::LittleUint32(val);
   }
@@ -296,7 +298,7 @@ public:
    *  @return The value at the current address
    */
   atUint32 readUint32Big() {
-    atUint32 val;
+    atUint32 val = 0;
     readUBytesToBuf(&val, 4);
     return utility::BigUint32(val);
   }
@@ -311,7 +313,7 @@ public:
    *  @return The value at the current address
    */
   atInt64 readInt64() {
-    atInt64 val;
+    atInt64 val = 0;
     readUBytesToBuf(&val, 8);
     return m_endian == Big ? utility::BigInt64(val) : utility::LittleInt64(val);
   }
@@ -326,7 +328,7 @@ public:
    *  @return The value at the current address
    */
   atInt64 readInt64Little() {
-    atInt64 val;
+    atInt64 val = 0;
     readUBytesToBuf(&val, 8);
     return utility::LittleInt64(val);
   }
@@ -341,7 +343,7 @@ public:
    *  @return The value at the current address
    */
   atInt64 readInt64Big() {
-    atInt64 val;
+    atInt64 val = 0;
     readUBytesToBuf(&val, 8);
     return utility::BigInt64(val);
   }
@@ -367,7 +369,7 @@ public:
    *  @return The value at the current address
    */
   atUint64 readUint64Little() {
-    atUint64 val;
+    atUint64 val = 0;
     readUBytesToBuf(&val, 8);
     return utility::LittleUint64(val);
   }
@@ -382,7 +384,7 @@ public:
    *  @return The value at the current address
    */
   atUint64 readUint64Big() {
-    atUint64 val;
+    atUint64 val = 0;
     readUBytesToBuf(&val, 8);
     return utility::BigUint64(val);
   }
@@ -397,7 +399,7 @@ public:
    *  @return The value at the current address
    */
   float readFloat() {
-    float val;
+    float val = 0.f;
     readUBytesToBuf(&val, 4);
     return m_endian == Big ? utility::BigFloat(val) : utility::LittleFloat(val);
   }
@@ -412,7 +414,7 @@ public:
    *  @return The value at the current address
    */
   float readFloatLittle() {
-    float val;
+    float val = 0.f;
     readUBytesToBuf(&val, 4);
     return utility::LittleFloat(val);
   }
@@ -427,7 +429,7 @@ public:
    *  @return The value at the current address
    */
   float readFloatBig() {
-    float val;
+    float val = 0.f;
     readUBytesToBuf(&val, 4);
     return utility::BigFloat(val);
   }
@@ -442,7 +444,7 @@ public:
    *  @return The value at the current address
    */
   double readDouble() {
-    double val;
+    double val = 0.0;
     readUBytesToBuf(&val, 8);
     return m_endian == Big ? utility::BigDouble(val) : utility::LittleDouble(val);
   }
@@ -457,7 +459,7 @@ public:
    *  @return The value at the current address
    */
   double readDoubleLittle() {
-    double val;
+    double val = 0.0;
     readUBytesToBuf(&val, 8);
     return utility::LittleDouble(val);
   }
@@ -472,7 +474,7 @@ public:
    *  @return The value at the current address
    */
   double readDoubleBig() {
-    double val;
+    double val = 0.0;
     readUBytesToBuf(&val, 8);
     return utility::BigDouble(val);
   }
@@ -486,7 +488,7 @@ public:
    *  @return The value at the current address
    */
   bool readBool() {
-    atUint8 val;
+    atUint8 val = false;
     readUBytesToBuf(&val, 1);
     return val != 0;
   }
@@ -509,7 +511,7 @@ public:
    *  @return The value at the current address
    */
   atVec2f readVec2f() {
-    simd_floats val;
+    simd_floats val = {};
     readUBytesToBuf(val.data(), 8);
     if (m_endian == Big) {
       val[0] = utility::BigFloat(val[0]);
@@ -535,7 +537,7 @@ public:
    *  @return The value at the current address
    */
   atVec2f readVec2fLittle() {
-    simd_floats val;
+    simd_floats val = {};
     readUBytesToBuf(val.data(), 8);
     val[0] = utility::LittleFloat(val[0]);
     val[1] = utility::LittleFloat(val[1]);
@@ -556,7 +558,7 @@ public:
    *  @return The value at the current address
    */
   atVec2f readVec2fBig() {
-    simd_floats val;
+    simd_floats val = {};
     readUBytesToBuf(val.data(), 8);
     val[0] = utility::BigFloat(val[0]);
     val[1] = utility::BigFloat(val[1]);
@@ -577,7 +579,7 @@ public:
    *  @return The value at the current address
    */
   atVec3f readVec3f() {
-    simd_floats val;
+    simd_floats val = {};
     readUBytesToBuf(val.data(), 12);
     if (m_endian == Big) {
       val[0] = utility::BigFloat(val[0]);
@@ -604,7 +606,7 @@ public:
    *  @return The value at the current address
    */
   atVec3f readVec3fLittle() {
-    simd_floats val;
+    simd_floats val = {};
     readUBytesToBuf(val.data(), 12);
     val[0] = utility::LittleFloat(val[0]);
     val[1] = utility::LittleFloat(val[1]);
@@ -625,7 +627,7 @@ public:
    *  @return The value at the current address
    */
   atVec3f readVec3fBig() {
-    simd_floats val;
+    simd_floats val = {};
     readUBytesToBuf(val.data(), 12);
     val[0] = utility::BigFloat(val[0]);
     val[1] = utility::BigFloat(val[1]);
@@ -646,7 +648,7 @@ public:
    *  @return The value at the current address
    */
   atVec4f readVec4f() {
-    simd_floats val;
+    simd_floats val = {};
     readUBytesToBuf(val.data(), 16);
     if (m_endian == Big) {
       val[0] = utility::BigFloat(val[0]);
@@ -674,7 +676,7 @@ public:
    *  @return The value at the current address
    */
   atVec4f readVec4fLittle() {
-    simd_floats val;
+    simd_floats val = {};
     readUBytesToBuf(val.data(), 16);
     val[0] = utility::LittleFloat(val[0]);
     val[1] = utility::LittleFloat(val[1]);
@@ -695,7 +697,7 @@ public:
    *  @return The value at the current address
    */
   atVec4f readVec4fBig() {
-    simd_floats val;
+    simd_floats val = {};
     readUBytesToBuf(val.data(), 16);
     val[0] = utility::BigFloat(val[0]);
     val[1] = utility::BigFloat(val[1]);
@@ -716,7 +718,7 @@ public:
    *  @return The value at the current address
    */
   atVec2d readVec2d() {
-    simd_doubles val;
+    simd_doubles val = {};
     readUBytesToBuf(val.data(), 16);
     if (m_endian == Big) {
       val[0] = utility::BigDouble(val[0]);
@@ -742,7 +744,7 @@ public:
    *  @return The value at the current address
    */
   atVec2d readVec2dLittle() {
-    simd_doubles val;
+    simd_doubles val = {};
     readUBytesToBuf(val.data(), 16);
     val[0] = utility::LittleDouble(val[0]);
     val[1] = utility::LittleDouble(val[1]);
@@ -763,7 +765,7 @@ public:
    *  @return The value at the current address
    */
   atVec2d readVec2dBig() {
-    simd_doubles val;
+    simd_doubles val = {};
     readUBytesToBuf(val.data(), 16);
     val[0] = utility::BigDouble(val[0]);
     val[1] = utility::BigDouble(val[1]);
@@ -784,7 +786,7 @@ public:
    *  @return The value at the current address
    */
   atVec3d readVec3d() {
-    simd_doubles val;
+    simd_doubles val = {};
     readUBytesToBuf(val.data(), 24);
     if (m_endian == Big) {
       val[0] = utility::BigDouble(val[0]);
@@ -811,7 +813,7 @@ public:
    *  @return The value at the current address
    */
   atVec3d readVec3dLittle() {
-    simd_doubles val;
+    simd_doubles val = {};
     readUBytesToBuf(val.data(), 24);
     val[0] = utility::LittleDouble(val[0]);
     val[1] = utility::LittleDouble(val[1]);
@@ -832,7 +834,7 @@ public:
    *  @return The value at the current address
    */
   atVec3d readVec3dBig() {
-    simd_doubles val;
+    simd_doubles val = {};
     readUBytesToBuf(val.data(), 24);
     val[0] = utility::BigDouble(val[0]);
     val[1] = utility::BigDouble(val[1]);
@@ -853,7 +855,7 @@ public:
    *  @return The value at the current address
    */
   atVec4d readVec4d() {
-    simd_doubles val;
+    simd_doubles val = {};
     readUBytesToBuf(val.data(), 32);
     if (m_endian == Big) {
       val[0] = utility::BigDouble(val[0]);
@@ -881,7 +883,7 @@ public:
    *  @return The value at the current address
    */
   atVec4d readVec4dLittle() {
-    simd_doubles val;
+    simd_doubles val = {};
     readUBytesToBuf(val.data(), 32);
     val[0] = utility::LittleDouble(val[0]);
     val[1] = utility::LittleDouble(val[1]);
@@ -902,7 +904,7 @@ public:
    *  @return The value at the current address
    */
   atVec4d readVec4dBig() {
-    simd_doubles val;
+    simd_doubles val = {};
     readUBytesToBuf(val.data(), 32);
     val[0] = utility::BigDouble(val[0]);
     val[1] = utility::BigDouble(val[1]);

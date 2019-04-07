@@ -912,28 +912,28 @@ inline void __BinarySizeProp64(const T& obj, size_t& s) {
 
 #define AT_DECL_DNA                                                                                                    \
   template <class Op, athena::Endian DNAE = DNAEndian, class T>                                                        \
-  void Do(const athena::io::PropId& id, T& var, typename Op::StreamT& s) {                                             \
-    athena::io::__Do<Op, T, DNAE>(id, var, s);                                                                         \
+  void Do(const athena::io::PropId& _id, T& var, typename Op::StreamT& s) {                                            \
+    athena::io::__Do<Op, T, DNAE>(_id, var, s);                                                                        \
   }                                                                                                                    \
   template <class Op, athena::Endian DNAE = DNAEndian, class T>                                                        \
-  void DoSize(const athena::io::PropId& id, T& var, typename Op::StreamT& s) {                                         \
-    athena::io::__DoSize<Op, T, DNAE>(id, var, s);                                                                     \
+  void DoSize(const athena::io::PropId& _id, T& var, typename Op::StreamT& s) {                                        \
+    athena::io::__DoSize<Op, T, DNAE>(_id, var, s);                                                                    \
   }                                                                                                                    \
   template <class Op, athena::Endian DNAE = DNAEndian, class T, class S>                                               \
-  void Do(const athena::io::PropId& id, std::vector<T>& var, const S& count, typename Op::StreamT& s) {                \
-    athena::io::__Do<Op, T, S, DNAE>(id, var, count, s);                                                               \
+  void Do(const athena::io::PropId& _id, std::vector<T>& var, const S& count, typename Op::StreamT& s) {               \
+    athena::io::__Do<Op, T, S, DNAE>(_id, var, count, s);                                                              \
   }                                                                                                                    \
   template <class Op>                                                                                                  \
-  void Do(const athena::io::PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, typename Op::StreamT& s) {      \
-    athena::io::__Do<Op>(id, buf, count, s);                                                                           \
+  void Do(const athena::io::PropId& _id, std::unique_ptr<atUint8[]>& buf, size_t count, typename Op::StreamT& s) {     \
+    athena::io::__Do<Op>(_id, buf, count, s);                                                                          \
   }                                                                                                                    \
   template <class Op>                                                                                                  \
-  void Do(const athena::io::PropId& id, std::string& str, atInt32 count, typename Op::StreamT& s) {                    \
-    athena::io::__Do<Op>(id, str, count, s);                                                                           \
+  void Do(const athena::io::PropId& _id, std::string& str, atInt32 count, typename Op::StreamT& s) {                   \
+    athena::io::__Do<Op>(_id, str, count, s);                                                                          \
   }                                                                                                                    \
   template <class Op, athena::Endian DNAE = DNAEndian>                                                                 \
-  void Do(const athena::io::PropId& id, std::wstring& str, atInt32 count, typename Op::StreamT& s) {                   \
-    athena::io::__Do<Op, DNAE>(id, str, count, s);                                                                     \
+  void Do(const athena::io::PropId& _id, std::wstring& str, atInt32 count, typename Op::StreamT& s) {                  \
+    athena::io::__Do<Op, DNAE>(_id, str, count, s);                                                                    \
   }                                                                                                                    \
   template <class Op>                                                                                                  \
   void DoSeek(atInt64 delta, athena::SeekOrigin whence, typename Op::StreamT& s) {                                     \
@@ -983,28 +983,28 @@ inline void __BinarySizeProp64(const T& obj, size_t& s) {
 
 #define AT_DECL_PROPDNA                                                                                                \
   template <class Op, athena::Endian DNAE = DNAEndian, class T>                                                        \
-  void Do(const athena::io::PropId& id, T& var, typename Op::StreamT& s) {                                             \
-    athena::io::__Do<Op, T, DNAE>(id, var, s);                                                                         \
+  void Do(const athena::io::PropId& _id, T& var, typename Op::StreamT& s) {                                            \
+    athena::io::__Do<Op, T, DNAE>(_id, var, s);                                                                        \
   }                                                                                                                    \
   template <class Op, athena::Endian DNAE = DNAEndian, class T>                                                        \
-  void DoSize(const athena::io::PropId& id, T& var, typename Op::StreamT& s) {                                         \
-    athena::io::__DoSize<Op, T, DNAE>(id, var, s);                                                                     \
+  void DoSize(const athena::io::PropId& _id, T& var, typename Op::StreamT& s) {                                        \
+    athena::io::__DoSize<Op, T, DNAE>(_id, var, s);                                                                    \
   }                                                                                                                    \
   template <class Op, athena::Endian DNAE = DNAEndian, class T, class S>                                               \
-  void Do(const athena::io::PropId& id, std::vector<T>& var, const S& count, typename Op::StreamT& s) {                \
-    athena::io::__Do<Op, T, S, DNAE>(id, var, count, s);                                                               \
+  void Do(const athena::io::PropId& _id, std::vector<T>& var, const S& count, typename Op::StreamT& s) {               \
+    athena::io::__Do<Op, T, S, DNAE>(_id, var, count, s);                                                              \
   }                                                                                                                    \
   template <class Op>                                                                                                  \
-  void Do(const athena::io::PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, typename Op::StreamT& s) {      \
-    athena::io::__Do<Op>(id, buf, count, s);                                                                           \
+  void Do(const athena::io::PropId& _id, std::unique_ptr<atUint8[]>& buf, size_t count, typename Op::StreamT& s) {     \
+    athena::io::__Do<Op>(_id, buf, count, s);                                                                          \
   }                                                                                                                    \
   template <class Op>                                                                                                  \
-  void Do(const athena::io::PropId& id, std::string& str, atInt32 count, typename Op::StreamT& s) {                    \
-    athena::io::__Do<Op>(id, str, count, s);                                                                           \
+  void Do(const athena::io::PropId& _id, std::string& str, atInt32 count, typename Op::StreamT& s) {                   \
+    athena::io::__Do<Op>(_id, str, count, s);                                                                          \
   }                                                                                                                    \
   template <class Op, athena::Endian DNAE = DNAEndian>                                                                 \
-  void Do(const athena::io::PropId& id, std::wstring& str, atInt32 count, typename Op::StreamT& s) {                   \
-    athena::io::__Do<Op, DNAE>(id, str, count, s);                                                                     \
+  void Do(const athena::io::PropId& _id, std::wstring& str, atInt32 count, typename Op::StreamT& s) {                  \
+    athena::io::__Do<Op, DNAE>(_id, str, count, s);                                                                    \
   }                                                                                                                    \
   template <class Op>                                                                                                  \
   void DoSeek(atInt64 delta, athena::SeekOrigin whence, typename Op::StreamT& s) {                                     \
