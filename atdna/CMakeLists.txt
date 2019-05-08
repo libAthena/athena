@@ -12,6 +12,7 @@ if(MSVC)
   set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "-debug -incremental:no")
 endif()
 string(REPLACE "-stdlib=libc++ -fsanitize=memory -fsanitize-memory-track-origins" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+string(REPLACE "-stdlib=libc++ -fsanitize=address" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 
 # Find dependencies
 include(FindLLVM.cmake)
