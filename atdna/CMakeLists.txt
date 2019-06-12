@@ -11,8 +11,6 @@ if(MSVC)
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MD /O2 /Ob2 /DNDEBUG")
   set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "-debug -incremental:no")
 endif()
-string(REPLACE "-stdlib=libc++ -fsanitize=memory -fsanitize-memory-track-origins" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-string(REPLACE "-stdlib=libc++ -fsanitize=address" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 
 # Find dependencies
 include(FindLLVM.cmake)
@@ -119,12 +117,12 @@ if(WIN32)
 endif()
 
 # ATDNA target
-include_directories(${LLVM_INCLUDE_DIRS})
-link_directories(${LLVM_LIBRARY_DIRS})
 add_executable(atdna main.cpp test.hpp ${PLAT_SRCS})
 target_link_libraries(atdna ${LLVM_LIBS} ${PLAT_LIBS})
 set_source_files_properties(main.cpp PROPERTIES COMPILE_DEFINITIONS
                             "INSTALL_PREFIX=${ABS_INSTALL_BIN_DIR};__STDC_LIMIT_MACROS=1;__STDC_CONSTANT_MACROS=1")
+target_include_directories(atdna PRIVATE ${LLVM_INCLUDE_DIRS})
+target_link_directories(atdna PRIVATE ${LLVM_LIBRARY_DIRS})
 if(MSVC)
 set_target_properties(atdna PROPERTIES
                       COMPILE_FLAGS "/GR-")
@@ -183,34 +181,17 @@ endif()
 #######################
 
 # Super handy macro for adding atdna target
-function(atdna out)
+function(atdna out incdirs cdefs)
   # Ninja wants invocations in root binary dir for DEPFILE application
   file(RELATIVE_PATH out_rel ${CMAKE_BINARY_DIR} "${CMAKE_CURRENT_BINARY_DIR}/${out}")
 
   # Make input files source-relative
-  set(ins "")
-  set(ins_impdeps "")
+  unset(ins)
+  unset(ins_impdeps)
   foreach(arg ${ARGN})
     list(APPEND ins ${CMAKE_CURRENT_SOURCE_DIR}/${arg})
     list(APPEND ins_impdeps CXX)
     list(APPEND ins_impdeps ${CMAKE_CURRENT_SOURCE_DIR}/${arg})
-  endforeach()
-
-  # Get local include directories for atdna
-  get_property(incdirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
-  set(inccli "")
-  foreach(dir ${incdirs})
-    list(APPEND inccli "-I${dir}")
-  endforeach()
-
-  # Get local defines for atdna
-  get_property(cdefs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_DEFINITIONS)
-  set(cdefcli "")
-  foreach(def ${cdefs})
-    if(def MATCHES "^WINAPI_FAMILY.*")
-      continue() # C++/CX gives clang a stomach ache
-    endif()
-    list(APPEND cdefcli "-D${def}")
   endforeach()
 
   # MS extra
@@ -242,21 +223,33 @@ function(atdna out)
   if(${CMAKE_GENERATOR} STREQUAL "Ninja")
     # Use Ninja's DEPFILE parser in cooperation with atdna
     add_custom_command(OUTPUT ${out} COMMAND $<TARGET_FILE:atdna>
-                       ARGS ${extraargs} -o ${out_rel} -MD -MT ${out_rel} -MF ${out_rel}.d ${cdefcli} ${inccli}
-                       "-I${ATHENA_INCLUDE_DIR}" -isystem "${CLANG_INCLUDE_DIR}" ${ins}
+                       ARGS ${extraargs} -o ${out_rel} -MD -MT ${out_rel} -MF ${out_rel}.d
+                       "$<$<BOOL:${incdirs}>:-I$<JOIN:${incdirs},;-I>>"
+                       "$<$<BOOL:${cdefs}>:-D$<JOIN:${cdefs},;-D>>"
+                       "-I${athena_SOURCE_DIR}/include" -isystem "${CLANG_INCLUDE_DIR}" ${ins}
                        DEPENDS atdna ${ins} IMPLICIT_DEPENDS ${ins_impdeps}
                        DEPFILE "${CMAKE_CURRENT_BINARY_DIR}/${out}.d"
                        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                       COMMENT "Generating DNA ${out_rel}")
+                       COMMENT "Generating DNA ${out_rel}"
+                       COMMAND_EXPAND_LISTS)
   else()
     # Use CMake's built-in dependency scanner for makefile targets
     add_custom_command(OUTPUT ${out} COMMAND $<TARGET_FILE:atdna>
-                       ARGS ${extraargs} -o ${out_rel} ${cdefcli} ${inccli}
-                       "-I${ATHENA_INCLUDE_DIR}" -isystem "${CLANG_INCLUDE_DIR}" ${ins}
+                       ARGS ${extraargs} -o ${out_rel}
+                       "$<$<BOOL:${incdirs}>:-I$<JOIN:${incdirs},;-I>>"
+                       "$<$<BOOL:${cdefs}>:-D$<JOIN:${cdefs},;-D>>"
+                       "-I${athena_SOURCE_DIR}/include" -isystem "${CLANG_INCLUDE_DIR}" ${ins}
                        DEPENDS atdna ${ins} IMPLICIT_DEPENDS ${ins_impdeps}
                        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                       COMMENT "Generating DNA ${out_rel}")
+                       COMMENT "Generating DNA ${out_rel}"
+                       COMMAND_EXPAND_LISTS)
   endif()
+endfunction()
+
+function(target_atdna target out)
+  atdna(${out} "$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>"
+        "$<TARGET_PROPERTY:${target},COMPILE_DEFINITIONS>" ${ARGN})
+  target_sources(${target} PRIVATE ${out} ${ARGN})
 endfunction()
 
 endif()

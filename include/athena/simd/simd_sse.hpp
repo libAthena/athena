@@ -221,12 +221,15 @@ public:
     sse_data[__index % 2] = __val;
     __storage_[__index / 2] = _mm_load_pd(sse_data.data());
   }
-  constexpr __simd_storage(double a, double b, double c, double d) : __storage_{__m128d{a, b}, __m128d{c, d}} {}
+  static constexpr storage_type __make_array(__m128d a, __m128d b) { return {a, b}; }
+  constexpr __simd_storage(double a, double b, double c, double d)
+  : __storage_(__make_array(__m128d{a, b}, __m128d{c, d})) {}
   void __set4(double a, double b, double c, double d) noexcept {
     __storage_[0] = _mm_set_pd(b, a);
     __storage_[1] = _mm_set_pd(d, c);
   }
-  constexpr __simd_storage(double rv) : __storage_{__m128d{rv, rv}, __m128d{rv, rv}} {}
+  constexpr __simd_storage(double rv)
+  : __storage_(__make_array(__m128d{rv, rv}, __m128d{rv, rv})) {}
   void __broadcast(double __val) noexcept {
     for (int i = 0; i < 2; ++i)
       __storage_[i] = _mm_set1_pd(__val);

@@ -1,5 +1,7 @@
 #include "athena/Compression.hpp"
+#if AT_LZOKAY
 #include <lzokay.hpp>
+#endif
 #include <iostream>
 #include <zlib.h>
 #include "LZ77/LZType10.hpp"
@@ -77,6 +79,7 @@ atInt32 compressZlib(const atUint8* src, atUint32 srcLen, atUint8* dst, atUint32
   return ret;
 }
 
+#if AT_LZOKAY
 atInt32 decompressLZO(const atUint8* source, const atInt32 sourceSize, atUint8* dst, atInt32& dstSize) {
   size_t size = dstSize;
   auto result = lzokay::decompress(source, sourceSize, dst, size);
@@ -84,6 +87,7 @@ atInt32 decompressLZO(const atUint8* source, const atInt32 sourceSize, atUint8* 
 
   return (atInt32)result;
 }
+#endif
 
 // src points to the yaz0 source data (to the "real" source data, not at the header!)
 // dst points to a buffer uncompressedSize bytes large (you get uncompressedSize from

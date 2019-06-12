@@ -56,12 +56,14 @@ inline atInt64 swap64(atInt64 val) {
 }
 inline atUint64 swapU64(atUint64 val) { return (atUint64)swap64(val); }
 inline float swapFloat(float val) {
-  atInt32 ival = swap32(*((atInt32*)(&val)));
-  return *((float*)(&ival));
+  union { float f; atInt32 i; } uval1 = {val};
+  union { atInt32 i; float f; } uval2 = {swap32(uval1.i)};
+  return uval2.f;
 }
 inline double swapDouble(double val) {
-  atInt64 ival = swap64(*((atInt64*)(&val)));
-  return *((double*)(&ival));
+  union { double f; atInt64 i; } uval1 = {val};
+  union { atInt64 i; double f; } uval2 = {swap64(uval1.i)};
+  return uval2.f;
 }
 inline atInt16 LittleInt16(atInt16& val) {
   if (athena::utility::isSystemBigEndian())

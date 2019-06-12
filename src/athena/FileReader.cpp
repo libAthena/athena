@@ -61,7 +61,6 @@ void FileReader::seek(atInt64 pos, SeekOrigin origin) {
 
   // check block position
   if (m_blockSize > 0) {
-    atUint64 oldOff = m_offset;
     switch (origin) {
     case SeekOrigin::Begin:
       m_offset = pos;
@@ -74,7 +73,6 @@ void FileReader::seek(atInt64 pos, SeekOrigin origin) {
       break;
     }
     if (m_offset > length()) {
-      oldOff = m_offset;
       if (m_globalErr)
         atError("Unable to seek in file");
       setError();
@@ -82,10 +80,10 @@ void FileReader::seek(atInt64 pos, SeekOrigin origin) {
     }
 
     size_t block = m_offset / m_blockSize;
-    if (block != m_curBlock) {
+    if (atInt32(block) != m_curBlock) {
       fseeko64(m_fileHandle, block * m_blockSize, SEEK_SET);
       fread(m_cacheData.get(), 1, m_blockSize, m_fileHandle);
-      m_curBlock = (atInt32)block;
+      m_curBlock = atInt32(block);
     }
   } else if (fseeko64(m_fileHandle, pos, (int)origin) != 0) {
     if (m_globalErr)
@@ -141,14 +139,14 @@ atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len) {
     atUint8* dst = (atUint8*)buf;
 
     while (rem) {
-      if (block != m_curBlock) {
+      if (atInt32(block) != m_curBlock) {
         fseeko64(m_fileHandle, block * m_blockSize, SEEK_SET);
         fread(m_cacheData.get(), 1, m_blockSize, m_fileHandle);
-        m_curBlock = (atInt32)block;
+        m_curBlock = atInt32(block);
       }
 
       cacheSize = rem;
-      if (cacheSize + cacheOffset > m_blockSize)
+      if (atInt32(cacheSize + cacheOffset) > m_blockSize)
         cacheSize = m_blockSize - cacheOffset;
 
       memmove(dst, m_cacheData.get() + cacheOffset, cacheSize);
@@ -165,8 +163,9 @@ atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len) {
 void FileReader::setCacheSize(const atInt32 blockSize) {
   m_blockSize = blockSize;
 
-  if (m_blockSize > length())
-    m_blockSize = (atInt32)length();
+  atInt32 len = atInt32(length());
+  if (m_blockSize > len)
+    m_blockSize = len;
 
   m_curBlock = -1;
   if (m_blockSize > 0)

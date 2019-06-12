@@ -1,9 +1,7 @@
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR) # because of c++17
 project(athena)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
 
 ##################
 # Athena Version #
@@ -14,15 +12,12 @@ set(ATHENA_MINOR_VERSION 3)
 set(ATHENA_PATCH_VERSION 0)
 set(ATHENA_VERSION
   ${ATHENA_MAJOR_VERSION}.${ATHENA_MINOR_VERSION}.${ATHENA_PATCH_VERSION})
-set(ATHENA_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include CACHE INTERNAL "Athena Include Path")
 
 ################
 # Athena Build #
 ################
 
 add_subdirectory(extern)
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${LZOKAY_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
 
 if(WIN32)
 list(APPEND CORE_EXTRA src/win32_largefilewrapper.c include/win32_largefilewrapper.h
@@ -85,8 +80,9 @@ add_library(athena-core
     include/athena/YAMLDocWriter.hpp
     include/yaml.h
     include/utf8proc.h
-    include/optional.hpp
 )
+target_include_directories(athena-core PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+target_link_libraries(athena-core PUBLIC athena-libyaml)
 
 add_library(athena-sakura EXCLUDE_FROM_ALL
     src/athena/Sprite.cpp
@@ -210,7 +206,7 @@ endif()
 ##################
 
 # Add all targets to the build-tree export set
-export(TARGETS athena-core FILE "${CMAKE_CURRENT_BINARY_DIR}/AthenaTargets.cmake")
+export(TARGETS athena-core athena-libyaml FILE "${CMAKE_CURRENT_BINARY_DIR}/AthenaTargets.cmake")
 
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)
@@ -245,13 +241,13 @@ install(EXPORT AthenaTargets DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT athena)
 
 add_subdirectory(atdna)
 # Test target
-atdna(atdna_test.cpp atdna/test.hpp)
-add_executable(atdna-test atdna/test.cpp atdna_test.cpp atdna/test.hpp)
+add_executable(atdna-test atdna/test.cpp atdna/test.hpp)
+target_atdna(atdna-test atdna_test.cpp atdna/test.hpp)
 if (CMAKE_SYSTEM_NAME STREQUAL "Switch")
     set_target_properties(atdna-test PROPERTIES SUFFIX ".elf")
-    target_link_libraries(atdna-test athena-core athena-libyaml nx)
+    target_link_libraries(atdna-test athena-core nx)
 else()
-    target_link_libraries(atdna-test athena-core athena-libyaml)
+    target_link_libraries(atdna-test athena-core)
 endif()
 
 #########
