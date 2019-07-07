@@ -4,6 +4,10 @@
 
 if(NOT CMAKE_CROSSCOMPILING)
 
+get_directory_property(ATDNA_DEFINES COMPILE_DEFINITIONS)
+list(REMOVE_ITEM ATDNA_DEFINES _GLIBCXX_DEBUG=1)
+set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${ATDNA_DEFINES}")
+
 # Force this binary to Release flags (to make MSVC happy)
 if(MSVC)
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_RELEASE}")
