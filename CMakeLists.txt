@@ -84,7 +84,7 @@ add_library(athena-core
 target_include_directories(athena-core PUBLIC
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                            $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIR}>)
-target_link_libraries(athena-core PUBLIC athena-libyaml)
+target_link_libraries(athena-core PUBLIC athena-libyaml fmt)
 
 add_library(athena-sakura EXCLUDE_FROM_ALL
     src/athena/Sprite.cpp
@@ -191,7 +191,8 @@ foreach(p LIB INCLUDE CMAKE)
 endforeach()
 
 # Define installs
-install(DIRECTORY include/ DESTINATION ${INSTALL_INCLUDE_DIR}/athena COMPONENT athena)
+install(DIRECTORY include DESTINATION ${INSTALL_INCLUDE_DIR}/athena COMPONENT athena)
+install(DIRECTORY extern/fmt/include DESTINATION ${INSTALL_INCLUDE_DIR}/fmt COMPONENT athena)
 install(TARGETS athena-core
         DESTINATION ${INSTALL_LIB_DIR} EXPORT AthenaTargets COMPONENT athena)
 if(WIN32 AND NOT CYGWIN)
@@ -208,7 +209,7 @@ endif()
 ##################
 
 # Add all targets to the build-tree export set
-export(TARGETS athena-core athena-libyaml FILE "${CMAKE_CURRENT_BINARY_DIR}/AthenaTargets.cmake")
+export(TARGETS athena-core athena-libyaml fmt FILE "${CMAKE_CURRENT_BINARY_DIR}/AthenaTargets.cmake")
 
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)

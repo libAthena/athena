@@ -650,7 +650,7 @@ public:
         utf8proc_int32_t wc;
         utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
         if (len < 0) {
-          atWarning("invalid UTF-8 character while decoding");
+          atWarning(fmt("invalid UTF-8 character while decoding"));
           return;
         }
         buf += len;
@@ -664,7 +664,7 @@ public:
         if (*buf) {
           utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
           if (len < 0) {
-            atWarning("invalid UTF-8 character while decoding");
+            atWarning(fmt("invalid UTF-8 character while decoding"));
             return;
           }
           buf += len;
@@ -698,7 +698,7 @@ public:
         utf8proc_int32_t wc;
         utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
         if (len < 0) {
-          atWarning("invalid UTF-8 character while decoding");
+          atWarning(fmt("invalid UTF-8 character while decoding"));
           return;
         }
         buf += len;
@@ -712,7 +712,7 @@ public:
         if (*buf) {
           utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
           if (len < 0) {
-            atWarning("invalid UTF-8 character while decoding");
+            atWarning(fmt("invalid UTF-8 character while decoding"));
             return;
           }
           buf += len;
@@ -747,7 +747,7 @@ public:
         utf8proc_int32_t wc;
         utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
         if (len < 0) {
-          atWarning("invalid UTF-8 character while decoding");
+          atWarning(fmt("invalid UTF-8 character while decoding"));
           return;
         }
         buf += len;
@@ -761,7 +761,7 @@ public:
         if (*buf) {
           utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
           if (len < 0) {
-            atWarning("invalid UTF-8 character while decoding");
+            atWarning(fmt("invalid UTF-8 character while decoding"));
             return;
           }
           buf += len;

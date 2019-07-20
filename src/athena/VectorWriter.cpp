@@ -12,7 +12,7 @@ void VectorWriter::seek(atInt64 position, SeekOrigin origin) {
   switch (origin) {
   case SeekOrigin::Begin:
     if (position < 0) {
-      atError("Position outside stream bounds");
+      atError(fmt("Position outside stream bounds"));
       setError();
       return;
     }
@@ -25,7 +25,7 @@ void VectorWriter::seek(atInt64 position, SeekOrigin origin) {
 
   case SeekOrigin::Current:
     if ((((atInt64)m_position + position) < 0)) {
-      atError("Position outside stream bounds");
+      atError(fmt("Position outside stream bounds"));
       setError();
       return;
     }
@@ -38,13 +38,13 @@ void VectorWriter::seek(atInt64 position, SeekOrigin origin) {
 
   case SeekOrigin::End:
     if (((atInt64)m_data.size() - position) < 0) {
-      atError("Position outside stream bounds");
+      atError(fmt("Position outside stream bounds"));
       setError();
       return;
     }
 
     if ((atUint64)position > m_data.size()) {
-      atError("data exceeds vector size");
+      atError(fmt("data exceeds vector size"));
       setError();
       return;
     }
@@ -56,7 +56,7 @@ void VectorWriter::seek(atInt64 position, SeekOrigin origin) {
 
 void VectorWriter::writeUBytes(const atUint8* data, atUint64 length) {
   if (!data) {
-    atError("data cannnot be NULL");
+    atError(fmt("data cannnot be NULL"));
     setError();
     return;
   }

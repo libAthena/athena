@@ -63,32 +63,6 @@ void tolower(std::string& str) { std::transform(str.begin(), str.end(), str.begi
 
 void toupper(std::string& str) { std::transform(str.begin(), str.end(), str.begin(), ::toupper); }
 
-std::string vsprintf(const char* fmt, va_list list) {
-  int size = 512;
-  char* buffer = 0;
-  buffer = new char[size];
-  int nsize = ::vsprintf(buffer, fmt, list);
-
-  while (size <= nsize) {
-    // fail delete buffer and try again
-    delete[] buffer;
-    buffer = 0;
-    buffer = new char[nsize + 1]; //+1 for /0
-    nsize = ::vsprintf(buffer, fmt, list);
-  }
-
-  std::string ret(buffer);
-  delete[] buffer;
-  return ret;
-}
-std::string sprintf(const char* fmt, ...) {
-  va_list vl;
-  va_start(vl, fmt);
-  std::string ret = vsprintf(fmt, vl);
-  va_end(vl);
-  return ret;
-}
-
 bool parseBool(std::string_view boolean, bool* valid) {
   std::string val(boolean);
   // compare must be case insensitive
@@ -192,7 +166,7 @@ std::string wideToUtf8(std::wstring_view src) {
     utf8proc_uint8_t mb[4];
     utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(ch), mb);
     if (c < 0) {
-      atWarning("invalid UTF-8 character while encoding");
+      atWarning(fmt("invalid UTF-8 character while encoding"));
       return retval;
     }
     retval.append(reinterpret_cast<char*>(mb), c);
@@ -208,7 +182,7 @@ std::wstring utf8ToWide(std::string_view src) {
     utf8proc_int32_t wc;
     utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
     if (len < 0) {
-      atWarning("invalid UTF-8 character while decoding");
+      atWarning(fmt("invalid UTF-8 character while decoding"));
       return retval;
     }
     buf += len;

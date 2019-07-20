@@ -1,3 +1,6 @@
 add_subdirectory(lzokay)
 add_subdirectory(zlib)
 add_subdirectory(yaml)
+if(NOT TARGET fmt)
+  add_subdirectory(fmt)
+endif()

@@ -36,7 +36,7 @@ void FileReader::open() {
     m_fileHandle = 0;
     std::string _filename = filename();
     if (m_globalErr)
-      atError("File not found '%s'", _filename.c_str());
+      atError("File not found '{}'", _filename);
     setError();
     return;
   }

@@ -26,10 +26,8 @@ atInt8 NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(atInt8 val) {
-  char str[32];
-  snprintf(str, 32, "%d", int(val));
   YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-  ret->m_scalarString = str;
+  ret->m_scalarString = fmt::format(fmt("{}"), int(val));
   return std::unique_ptr<YAMLNode>(ret);
 }
 
@@ -39,10 +37,8 @@ atUint8 NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(atUint8 val) {
-  char str[32];
-  snprintf(str, 32, "0x%02X", val);
   YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-  ret->m_scalarString = str;
+  ret->m_scalarString = fmt::format(fmt("0x{:02X}"), val);
   return std::unique_ptr<YAMLNode>(ret);
 }
 
@@ -52,10 +48,8 @@ atInt16 NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(atInt16 val) {
-  char str[32];
-  snprintf(str, 32, "%d", int(val));
   YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-  ret->m_scalarString = str;
+  ret->m_scalarString = fmt::format(fmt("{}"), int(val));
   return std::unique_ptr<YAMLNode>(ret);
 }
 
@@ -65,10 +59,8 @@ atUint16 NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(atUint16 val) {
-  char str[32];
-  snprintf(str, 32, "0x%04X", val);
   YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-  ret->m_scalarString = str;
+  ret->m_scalarString = fmt::format(fmt("0x{:04X}"), val);
   return std::unique_ptr<YAMLNode>(ret);
 }
 
@@ -78,10 +70,8 @@ atInt32 NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(atInt32 val) {
-  char str[32];
-  snprintf(str, 32, "%d", int(val));
   YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-  ret->m_scalarString = str;
+  ret->m_scalarString = fmt::format(fmt("{}"), int(val));
   return std::unique_ptr<YAMLNode>(ret);
 }
 
@@ -91,10 +81,8 @@ atUint32 NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(atUint32 val) {
-  char str[32];
-  snprintf(str, 32, "0x%08X", val);
   YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-  ret->m_scalarString = str;
+  ret->m_scalarString = fmt::format(fmt("0x{:08X}"), val);
   return std::unique_ptr<YAMLNode>(ret);
 }
 
@@ -108,10 +96,8 @@ atInt64 NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(atInt64 val) {
-  char str[32];
-  snprintf(str, 32, "%" PRId64, val);
   YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-  ret->m_scalarString = str;
+  ret->m_scalarString = fmt::format(fmt("{}"), val);
   return std::unique_ptr<YAMLNode>(ret);
 }
 
@@ -125,10 +111,8 @@ atUint64 NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(atUint64 val) {
-  char str[32];
-  snprintf(str, 32, "0x%016" PRIX64, val);
   YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-  ret->m_scalarString = str;
+  ret->m_scalarString = fmt::format(fmt("0x{:016X}"), val);
   return std::unique_ptr<YAMLNode>(ret);
 }
 
@@ -138,10 +122,8 @@ float NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(float val) {
-  char str[64];
-  snprintf(str, 64, "%f", val);
   YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-  ret->m_scalarString = str;
+  ret->m_scalarString = fmt::format(fmt("{}"), val);
   return std::unique_ptr<YAMLNode>(ret);
 }
 
@@ -151,10 +133,8 @@ double NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(double val) {
-  char str[64];
-  snprintf(str, 64, "%f", val);
   YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
-  ret->m_scalarString = str;
+  ret->m_scalarString = fmt::format(fmt("{}"), val);
   return std::unique_ptr<YAMLNode>(ret);
 }
 
@@ -189,10 +169,8 @@ std::unique_ptr<YAMLNode> ValToNode(const atVec2f& val) {
   ret->m_seqChildren.reserve(2);
   simd_floats f(val.simd);
   for (size_t i = 0; i < 2; ++i) {
-    char str[64];
-    snprintf(str, 64, "%f", f[i]);
     YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
-    comp->m_scalarString = str;
+    comp->m_scalarString = fmt::format(fmt("{}"), f[i]);
     ret->m_seqChildren.emplace_back(comp);
   }
   return std::unique_ptr<YAMLNode>(ret);
@@ -208,10 +186,8 @@ std::unique_ptr<YAMLNode> ValToNode(const atVec3f& val) {
   ret->m_seqChildren.reserve(3);
   simd_floats f(val.simd);
   for (size_t i = 0; i < 3; ++i) {
-    char str[64];
-    snprintf(str, 64, "%f", f[i]);
     YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
-    comp->m_scalarString = str;
+    comp->m_scalarString = fmt::format(fmt("{}"), f[i]);
     ret->m_seqChildren.emplace_back(comp);
   }
   return std::unique_ptr<YAMLNode>(ret);
@@ -227,10 +203,8 @@ std::unique_ptr<YAMLNode> ValToNode(const atVec4f& val) {
   ret->m_seqChildren.reserve(4);
   simd_floats f(val.simd);
   for (size_t i = 0; i < 4; ++i) {
-    char str[64];
-    snprintf(str, 64, "%f", f[i]);
     YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
-    comp->m_scalarString = str;
+    comp->m_scalarString = fmt::format(fmt("{}"), f[i]);
     ret->m_seqChildren.emplace_back(comp);
   }
   return std::unique_ptr<YAMLNode>(ret);
@@ -246,10 +220,8 @@ std::unique_ptr<YAMLNode> ValToNode(const atVec2d& val) {
   ret->m_seqChildren.reserve(2);
   simd_doubles f(val.simd);
   for (size_t i = 0; i < 2; ++i) {
-    char str[64];
-    snprintf(str, 64, "%f", f[i]);
     YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
-    comp->m_scalarString = str;
+    comp->m_scalarString = fmt::format(fmt("{}"), f[i]);
     ret->m_seqChildren.emplace_back(comp);
   }
   return std::unique_ptr<YAMLNode>(ret);
@@ -265,10 +237,8 @@ std::unique_ptr<YAMLNode> ValToNode(const atVec3d& val) {
   ret->m_seqChildren.reserve(3);
   simd_doubles f(val.simd);
   for (size_t i = 0; i < 3; ++i) {
-    char str[64];
-    snprintf(str, 64, "%f", f[i]);
     YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
-    comp->m_scalarString = str;
+    comp->m_scalarString = fmt::format(fmt("{}"), f[i]);
     ret->m_seqChildren.emplace_back(comp);
   }
   return std::unique_ptr<YAMLNode>(ret);
@@ -284,10 +254,8 @@ std::unique_ptr<YAMLNode> ValToNode(const atVec4d& val) {
   ret->m_seqChildren.reserve(4);
   simd_doubles f(val.simd);
   for (size_t i = 0; i < 4; ++i) {
-    char str[64];
-    snprintf(str, 64, "%f", f[i]);
     YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
-    comp->m_scalarString = str;
+    comp->m_scalarString = fmt::format(fmt("{}"), f[i]);
     ret->m_seqChildren.emplace_back(comp);
   }
   return std::unique_ptr<YAMLNode>(ret);
@@ -325,7 +293,7 @@ std::wstring NodeToVal(const YAMLNode* node) {
     utf8proc_int32_t wc;
     utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
     if (len < 0) {
-      atWarning("invalid UTF-8 character while decoding");
+      atWarning(fmt("invalid UTF-8 character while decoding"));
       return retval;
     }
     buf += len;
@@ -341,7 +309,7 @@ std::unique_ptr<YAMLNode> ValToNode(std::wstring_view val) {
     utf8proc_uint8_t mb[4];
     utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(ch), mb);
     if (c < 0) {
-      atWarning("invalid UTF-8 character while encoding");
+      atWarning(fmt("invalid UTF-8 character while encoding"));
       return std::unique_ptr<YAMLNode>(ret);
     }
     ret->m_scalarString.append(reinterpret_cast<char*>(mb), c);
@@ -356,7 +324,7 @@ std::unique_ptr<YAMLNode> ValToNode(std::u16string_view val) {
     utf8proc_uint8_t mb[4];
     utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(ch), mb);
     if (c < 0) {
-      atWarning("invalid UTF-8 character while encoding");
+      atWarning(fmt("invalid UTF-8 character while encoding"));
       return std::unique_ptr<YAMLNode>(ret);
     }
     ret->m_scalarString.append(reinterpret_cast<char*>(mb), c);
@@ -371,7 +339,7 @@ std::unique_ptr<YAMLNode> ValToNode(std::u32string_view val) {
     utf8proc_uint8_t mb[4];
     utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(ch), mb);
     if (c < 0) {
-      atWarning("invalid UTF-8 character while encoding");
+      atWarning(fmt("invalid UTF-8 character while encoding"));
       return std::unique_ptr<YAMLNode>(ret);
     }
     ret->m_scalarString.append(reinterpret_cast<char*>(mb), c);
@@ -402,11 +370,11 @@ static const char* ErrorString(yaml_error_type_t errt) {
 }
 
 void HandleYAMLParserError(yaml_parser_t* parser) {
-  atError("YAML error: %s: %s", ErrorString(parser->error), parser->problem ? parser->problem : "");
+  atError(fmt("YAML error: {}: {}"), ErrorString(parser->error), parser->problem ? parser->problem : "");
 }
 
 void HandleYAMLEmitterError(yaml_emitter_t* emitter) {
-  atError("YAML error: %s: %s", ErrorString(emitter->error), emitter->problem ? emitter->problem : "");
+  atError(fmt("YAML error: {}: {}"), ErrorString(emitter->error), emitter->problem ? emitter->problem : "");
 }
 
 int YAMLStdStringReader(YAMLStdStringViewReaderState* reader, unsigned char* buffer, size_t size, size_t* size_read) {
@@ -629,8 +597,8 @@ void YAMLDocWriter::writeU32String(const char* name, std::u32string_view val) {
 
 void YAMLDocWriter::setStyle(YAMLNodeStyle s) { m_subStack.back()->m_style = s; }
 
-static inline void InsertNode(std::vector<YAMLNode*>& nodeStack, std::unique_ptr<YAMLNode>& mapKey,
-                              std::unique_ptr<YAMLNode>& retVal, std::unique_ptr<YAMLNode>&& newNode) {
+static void InsertNode(std::vector<YAMLNode*>& nodeStack, std::unique_ptr<YAMLNode>& mapKey,
+                       std::unique_ptr<YAMLNode>& retVal, std::unique_ptr<YAMLNode>&& newNode) {
   if (nodeStack.empty()) {
     retVal = std::move(newNode);
     return;
@@ -670,7 +638,7 @@ std::unique_ptr<YAMLNode> YAMLDocReader::ParseEvents(athena::io::IStreamReader* 
     switch (event.type) {
     case YAML_SCALAR_EVENT: {
       if (nodeStack.empty()) {
-        atWarning("YAML parser stack empty; skipping scalar node");
+        atWarning(fmt("YAML parser stack empty; skipping scalar node"));
         break;
       }
       std::unique_ptr<YAMLNode> newScalar(new YAMLNode(YAML_SCALAR_NODE));
@@ -805,7 +773,7 @@ YAMLDocReader::RecordRAII YAMLDocReader::enterSubRecord(const char* name) {
       m_seqTrackerStack.push_back(0);
     return RecordRAII{this};
   } else if (!name) {
-    atError("Expected YAML sequence");
+    atError(fmt("Expected YAML sequence"));
   }
   for (const auto& item : curSub->m_mapChildren) {
     if (!item.first.compare(name)) {
@@ -840,7 +808,7 @@ YAMLDocReader::VectorRAII YAMLDocReader::enterSubVector(const char* name, size_t
         if (nextSub->m_type == YAML_SEQUENCE_NODE) {
           countOut = nextSub->m_seqChildren.size();
         } else {
-          atError("'%s' is not a vector field", name);
+          atError(fmt("'{}' is not a vector field"), name);
           countOut = 0;
         }
         m_subStack.push_back(nextSub);
@@ -878,7 +846,7 @@ RETURNTYPE YAMLDocReader::readVal(const char* name) {
     }
   }
   if (name)
-    atWarning("Unable to find field '%s'; returning 0", name);
+    atWarning(fmt("Unable to find field '{}'; returning 0"), name);
   return RETURNTYPE();
 }
 
@@ -935,7 +903,7 @@ std::string YAMLDocReader::readString(const char* name) { return readVal<std::st
 
 std::wstring YAMLDocReader::readWString(const char* name) { return readVal<std::wstring>(name); }
 
-static inline bool EmitKeyScalar(yaml_emitter_t* doc, const char* val) {
+static bool EmitKeyScalar(yaml_emitter_t* doc, const char* val) {
   yaml_event_t event;
   if (!yaml_scalar_event_initialize(&event, nullptr, nullptr, (yaml_char_t*)val, strlen(val), true, true,
                                     YAML_PLAIN_SCALAR_STYLE))
@@ -943,14 +911,14 @@ static inline bool EmitKeyScalar(yaml_emitter_t* doc, const char* val) {
   return yaml_emitter_emit(doc, &event) != 0;
 }
 
-static inline yaml_scalar_style_t ScalarStyle(const YAMLNode& node) {
+static yaml_scalar_style_t ScalarStyle(const YAMLNode& node) {
   for (const auto& ch : node.m_scalarString)
     if (ch == '\n')
       return YAML_LITERAL_SCALAR_STYLE;
   return YAML_ANY_SCALAR_STYLE;
 }
 
-static inline yaml_sequence_style_t SequenceStyle(const YAMLNode& node) {
+static yaml_sequence_style_t SequenceStyle(const YAMLNode& node) {
   if (node.m_style == YAMLNodeStyle::Flow)
     return YAML_FLOW_SEQUENCE_STYLE;
   else if (node.m_style == YAMLNodeStyle::Block)
@@ -969,7 +937,7 @@ static inline yaml_sequence_style_t SequenceStyle(const YAMLNode& node) {
   return (count > 6) ? YAML_BLOCK_SEQUENCE_STYLE : YAML_FLOW_SEQUENCE_STYLE;
 }
 
-static inline yaml_mapping_style_t MappingStyle(const YAMLNode& node) {
+static yaml_mapping_style_t MappingStyle(const YAMLNode& node) {
   if (node.m_style == YAMLNodeStyle::Flow)
     return YAML_FLOW_MAPPING_STYLE;
   else if (node.m_style == YAMLNodeStyle::Block)
@@ -1030,7 +998,7 @@ static const std::string base64_chars =
     "abcdefghijklmnopqrstuvwxyz"
     "0123456789+/";
 
-static inline bool is_base64(unsigned char c) { return (isalnum(c) || (c == '+') || (c == '/')); }
+inline bool is_base64(unsigned char c) { return (isalnum(c) || (c == '+') || (c == '/')); }
 
 std::string base64_encode(const atUint8* bytes_to_encode, size_t in_len) {
   std::string ret;

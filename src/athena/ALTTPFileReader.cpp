@@ -211,7 +211,7 @@ ALTTPDungeonItemFlags ALTTPFileReader::readDungeonFlags() {
   flags.HyruleCastle = (flagsByte >> 6) & 1;
   flags.SewerPassage = (flagsByte >> 7) & 1;
 
-  atDebug("%x %x", flags.flags1, flags.flags2);
+  atDebug("{:x} {:x}", flags.flags1, flags.flags2);
   return flags;
 }
 

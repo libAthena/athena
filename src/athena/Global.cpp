@@ -1,8 +1,12 @@
 #include "athena/Global.hpp"
 #include "athena/Utility.hpp"
 #include <cstdio>
-#include <cstdarg>
 #include <cstdlib>
+
+#define FMT_STRING_ALIAS 1
+#define FMT_ENFORCE_COMPILE_STRING 1
+#define FMT_USE_GRISU 0
+#include <fmt/format.h>
 
 std::ostream& operator<<(std::ostream& os, const athena::SeekOrigin& origin) {
   switch (origin) {
@@ -37,7 +41,7 @@ std::ostream& operator<<(std::ostream& os, const athena::Endian& endian) {
 }
 
 static void __defaultExceptionHandler(athena::error::Level level, const char* file, const char* function, int line,
-                                      const char* fmt, ...) {
+                                      fmt::string_view fmt, fmt::format_args args) {
   std::string levelStr;
   switch (level) {
   case athena::error::Level::Warning:
@@ -53,10 +57,7 @@ static void __defaultExceptionHandler(athena::error::Level level, const char* fi
     break;
   }
 
-  va_list vl;
-  va_start(vl, fmt);
-  std::string msg = athena::utility::vsprintf(fmt, vl);
-  va_end(vl);
+  std::string msg = fmt::internal::vformat(fmt, args);
   std::cerr << levelStr << " " << file << " " << function << "(" << line << "): " << msg << std::endl;
 }
 

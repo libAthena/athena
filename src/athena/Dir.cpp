@@ -47,7 +47,7 @@ bool Dir::rm(std::string_view path) { return !(remove((m_path + "/" + path.data(
 bool Dir::touch() {
   srand(time(NULL));
   atUint64 tmp = utility::rand64();
-  std::string tmpFile = utility::sprintf("%" PRIX64 ".tmp", tmp);
+  std::string tmpFile = fmt::format(fmt("{:016X}.tmp"), tmp);
   bool ret = FileInfo(m_path + "/" + tmpFile).touch();
   if (ret)
     return rm(tmpFile);

@@ -10,16 +10,16 @@
 #include "athena/Types.hpp"
 
 namespace athena::utility {
-inline bool isEmpty(atInt8* buf, atUint32 size) { return !memcmp(buf, buf + 1, size - 1); }
+inline bool isEmpty(atInt8* buf, atUint32 size) { return !std::memcmp(buf, buf + 1, size - 1); }
 #if _WIN32
 constexpr bool isSystemBigEndian() { return false; }
 #else
 constexpr bool isSystemBigEndian() { return __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__; }
 #endif
-inline constexpr ::athena::Endian SystemEndian = isSystemBigEndian() ? Big : Little;
-inline constexpr ::athena::Endian NotSystemEndian = isSystemBigEndian() ? Little : Big;
+constexpr ::athena::Endian SystemEndian = isSystemBigEndian() ? Big : Little;
+constexpr ::athena::Endian NotSystemEndian = isSystemBigEndian() ? Little : Big;
 
-inline atInt16 swap16(atInt16 val) {
+constexpr atInt16 swap16(atInt16 val) {
 #if __GNUC__
   return __builtin_bswap16(val);
 #elif _WIN32
@@ -28,8 +28,8 @@ inline atInt16 swap16(atInt16 val) {
   return (val = (val << 8) | ((val >> 8) & 0xFF));
 #endif
 }
-inline atUint16 swapU16(atUint16 val) { return (atUint16)swap16(val); }
-inline atInt32 swap32(atInt32 val) {
+constexpr atUint16 swapU16(atUint16 val) { return (atUint16)swap16(val); }
+constexpr atInt32 swap32(atInt32 val) {
 #if __GNUC__
   return __builtin_bswap32(val);
 #elif _WIN32
@@ -40,8 +40,8 @@ inline atInt32 swap32(atInt32 val) {
   return val;
 #endif
 }
-inline atUint32 swapU32(atUint32 val) { return (atUint32)swap32(val); }
-inline atInt64 swap64(atInt64 val) {
+constexpr atUint32 swapU32(atUint32 val) { return (atUint32)swap32(val); }
+constexpr atInt64 swap64(atInt64 val) {
 #if __GNUC__
   return __builtin_bswap64(val);
 #elif _WIN32
@@ -54,89 +54,89 @@ inline atInt64 swap64(atInt64 val) {
               (((atInt64)(val)&0x000000000000FF00ULL) << 40) | (((atInt64)(val)&0x00000000000000FFULL) << 56))));
 #endif
 }
-inline atUint64 swapU64(atUint64 val) { return (atUint64)swap64(val); }
-inline float swapFloat(float val) {
+constexpr atUint64 swapU64(atUint64 val) { return (atUint64)swap64(val); }
+constexpr float swapFloat(float val) {
   union { float f; atInt32 i; } uval1 = {val};
   union { atInt32 i; float f; } uval2 = {swap32(uval1.i)};
   return uval2.f;
 }
-inline double swapDouble(double val) {
+constexpr double swapDouble(double val) {
   union { double f; atInt64 i; } uval1 = {val};
   union { atInt64 i; double f; } uval2 = {swap64(uval1.i)};
   return uval2.f;
 }
-inline atInt16 LittleInt16(atInt16& val) {
-  if (athena::utility::isSystemBigEndian())
+constexpr atInt16 LittleInt16(atInt16& val) {
+  if constexpr (athena::utility::isSystemBigEndian())
     val = athena::utility::swap16(val);
 
   return val;
 }
-inline atUint16 LittleUint16(atUint16& val) {
+constexpr atUint16 LittleUint16(atUint16& val) {
   atInt16 ret = val;
   LittleInt16(ret);
   val = ret;
 
   return val;
 }
-inline atInt16 BigInt16(atInt16& val) {
-  if (!athena::utility::isSystemBigEndian())
+constexpr atInt16 BigInt16(atInt16& val) {
+  if constexpr (!athena::utility::isSystemBigEndian())
     val = athena::utility::swap16(val);
 
   return val;
 }
-inline atUint16 BigUint16(atUint16& val) {
+constexpr atUint16 BigUint16(atUint16& val) {
   atInt16 ret = val;
   BigInt16(ret);
   val = ret;
 
   return val;
 }
-inline atInt32 LittleInt32(atInt32& val) {
-  if (athena::utility::isSystemBigEndian())
+constexpr atInt32 LittleInt32(atInt32& val) {
+  if constexpr (athena::utility::isSystemBigEndian())
     val = athena::utility::swap32(val);
 
   return val;
 }
-inline atUint32 LittleUint32(atUint32& val) {
+constexpr atUint32 LittleUint32(atUint32& val) {
   atInt32 ret = val;
   LittleInt32(ret);
   val = ret;
 
   return val;
 }
-inline atInt32 BigInt32(atInt32& val) {
-  if (!athena::utility::isSystemBigEndian())
+constexpr atInt32 BigInt32(atInt32& val) {
+  if constexpr (!athena::utility::isSystemBigEndian())
     val = athena::utility::swap32(val);
 
   return val;
 }
-inline atUint32 BigUint32(atUint32& val) {
+constexpr atUint32 BigUint32(atUint32& val) {
   atInt32 ret = val;
   BigInt32(ret);
   val = ret;
 
   return val;
 }
-inline atInt64 LittleInt64(atInt64& val) {
-  if (athena::utility::isSystemBigEndian())
+constexpr atInt64 LittleInt64(atInt64& val) {
+  if constexpr (athena::utility::isSystemBigEndian())
     val = athena::utility::swap64(val);
 
   return val;
 }
-inline atUint64 LittleUint64(atUint64& val) {
+constexpr atUint64 LittleUint64(atUint64& val) {
   atInt64 ret = val;
   LittleInt64(ret);
   val = ret;
 
   return val;
 }
-inline atInt64 BigInt64(atInt64& val) {
-  if (!athena::utility::isSystemBigEndian())
+constexpr atInt64 BigInt64(atInt64& val) {
+  if constexpr (!athena::utility::isSystemBigEndian())
     val = athena::utility::swap64(val);
 
   return val;
 }
-inline atUint64 BigUint64(atUint64& val) {
+constexpr atUint64 BigUint64(atUint64& val) {
   atInt64 ret = val;
   BigInt64(ret);
   val = ret;
@@ -144,27 +144,27 @@ inline atUint64 BigUint64(atUint64& val) {
   return val;
 }
 
-inline float LittleFloat(float val) {
-  if (athena::utility::isSystemBigEndian())
-    val = athena::utility::swapFloat(val);
+constexpr float LittleFloat(float val) {
+  if constexpr (athena::utility::isSystemBigEndian())
+    return athena::utility::swapFloat(val);
 
   return val;
 }
-inline float BigFloat(float val) {
-  if (!athena::utility::isSystemBigEndian())
-    val = athena::utility::swapFloat(val);
+constexpr float BigFloat(float val) {
+  if constexpr (!athena::utility::isSystemBigEndian())
+    return athena::utility::swapFloat(val);
 
   return val;
 }
-inline double LittleDouble(double val) {
-  if (athena::utility::isSystemBigEndian())
-    val = athena::utility::swapDouble(val);
+constexpr double LittleDouble(double val) {
+  if constexpr (athena::utility::isSystemBigEndian())
+    return athena::utility::swapDouble(val);
 
   return val;
 }
-inline double BigDouble(double val) {
-  if (!athena::utility::isSystemBigEndian())
-    val = athena::utility::swapDouble(val);
+constexpr double BigDouble(double val) {
+  if constexpr (!athena::utility::isSystemBigEndian())
+    return athena::utility::swapDouble(val);
 
   return val;
 }
@@ -175,8 +175,6 @@ atUint64 rand64();
 std::string join(const std::vector<std::string>& elems, std::string_view delims);
 void tolower(std::string& str);
 void toupper(std::string& str);
-std::string vsprintf(const char* fmt, va_list list);
-std::string sprintf(const char* fmt, ...);
 bool parseBool(std::string_view boolean, bool* valid = NULL);
 
 int countChar(std::string_view str, const char chr, int* lastOccur = NULL);

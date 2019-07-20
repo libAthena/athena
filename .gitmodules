@@ -1,3 +1,6 @@
 [submodule "extern/lzokay"]
 	path = extern/lzokay
 	url = https://github.com/jackoalan/lzokay.git
+[submodule "extern/fmt"]
+	path = extern/fmt
+	url = https://github.com/fmtlib/fmt
