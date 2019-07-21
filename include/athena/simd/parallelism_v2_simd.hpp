@@ -1175,15 +1175,16 @@ public:
   simd_data(Ts... args) : __data_{args...} {}
   value_type operator[](size_t idx) const noexcept { return __data_[idx]; }
   value_type& operator[](size_t idx) noexcept { return __data_[idx]; }
-  const value_type* data() const noexcept { return __data_; }
-  value_type* data() noexcept { return __data_; }
-  auto begin() { return std::begin(__data_); }
-  auto end() { return std::end(__data_); }
-  auto begin() const { return std::begin(__data_); }
-  auto end() const { return std::end(__data_); }
+  const value_type* data() const noexcept { return __data_.data(); }
+  value_type* data() noexcept { return __data_.data(); }
+  auto begin() { return __data_.begin(); }
+  auto end() { return __data_.end(); }
+  auto begin() const { return __data_.begin(); }
+  auto end() const { return __data_.end(); }
+  const std::array<value_type, _Simd::size()>& array() const { return __data_; }
 
 private:
-  value_type __data_[_Simd::size()];
+  std::array<value_type, _Simd::size()> __data_;
 };
 
 // [simd.class]
