@@ -172,7 +172,7 @@ struct YAMLStdStringViewReaderState {
   }
 };
 
-int YAMLStdStringReader(YAMLStdStringViewReaderState* str, unsigned char* buffer, size_t size, size_t* size_read);
+int YAMLStdStringReader(YAMLStdStringViewReaderState* reader, unsigned char* buffer, size_t size, size_t* size_read);
 
 int YAMLStdStringWriter(std::string* str, unsigned char* buffer, size_t size);
 

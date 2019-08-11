@@ -910,7 +910,7 @@ inline void __BinarySizeProp64(const T& obj, size_t& s) {
 
 } // namespace athena::io
 
-#define AT_DECL_DNA                                                                                                    \
+#define AT_DECL_DNA_DO                                                                                                 \
   template <class Op, athena::Endian DNAE = DNAEndian, class T>                                                        \
   void Do(const athena::io::PropId& _id, T& var, typename Op::StreamT& s) {                                            \
     athena::io::__Do<Op, T, DNAE>(_id, var, s);                                                                        \
@@ -945,7 +945,10 @@ inline void __BinarySizeProp64(const T& obj, size_t& s) {
   }                                                                                                                    \
   template <class Op>                                                                                                  \
   void Enumerate(typename Op::StreamT& s);                                                                             \
-  static const char* DNAType();                                                                                        \
+  static const char* DNAType();
+
+#define AT_DECL_DNA                                                                                                    \
+  AT_DECL_DNA_DO                                                                                                       \
   void read(athena::io::IStreamReader& r) { athena::io::__Read(*this, r); }                                            \
   void write(athena::io::IStreamWriter& w) const { athena::io::__Write(*this, w); }                                    \
   void binarySize(size_t& s) const { athena::io::__BinarySize(*this, s); }
@@ -959,12 +962,47 @@ inline void __BinarySizeProp64(const T& obj, size_t& s) {
   AT_DECL_DNA                                                                                                          \
   Delete __d;
 
+#define AT_DECL_EXPLICIT_DNAV                                                                                          \
+  AT_DECL_DNAV                                                                                                         \
+  Delete __d;
+
+#define AT_DECL_EXPLICIT_DNAV_NO_TYPE                                                                                  \
+  AT_DECL_DNAV_NO_TYPE                                                                                                 \
+  Delete __d;
+
 #define AT_DECL_EXPLICIT_DNA_YAML                                                                                      \
   AT_DECL_DNA_YAML                                                                                                     \
   Delete __d;
 
+#define AT_DECL_EXPLICIT_DNA_YAMLV                                                                                     \
+  AT_DECL_DNA_YAMLV                                                                                                    \
+  Delete __d;
+
+#define AT_DECL_EXPLICIT_DNA_YAMLV_NO_TYPE                                                                             \
+  AT_DECL_DNA_YAMLV_NO_TYPE                                                                                            \
+  Delete __d;
 #define AT_DECL_DNAV                                                                                                   \
-  const char* DNATypeV() const { return DNAType(); }
+  AT_DECL_DNA_DO                                                                                                       \
+  void read(athena::io::IStreamReader& r) override { athena::io::__Read(*this, r); }                                   \
+  void write(athena::io::IStreamWriter& w) const override { athena::io::__Write(*this, w); }                           \
+  void binarySize(size_t& s) const override { athena::io::__BinarySize(*this, s); }                                    \
+  const char* DNATypeV() const override { return DNAType(); }
+
+#define AT_DECL_DNAV_NO_TYPE                                                                                           \
+  AT_DECL_DNA_DO                                                                                                       \
+  void read(athena::io::IStreamReader& r) override { athena::io::__Read(*this, r); }                                   \
+  void write(athena::io::IStreamWriter& w) const override { athena::io::__Write(*this, w); }                           \
+  void binarySize(size_t& s) const override { athena::io::__BinarySize(*this, s); }
+
+#define AT_DECL_DNA_YAMLV                                                                                              \
+  AT_DECL_DNAV                                                                                                         \
+  void read(athena::io::YAMLDocReader& r) override { athena::io::__ReadYaml(*this, r); }                               \
+  void write(athena::io::YAMLDocWriter& w) const override { athena::io::__WriteYaml(*this, w); }
+
+#define AT_DECL_DNA_YAMLV_NO_TYPE                                                                                      \
+  AT_DECL_DNAV_NO_TYPE                                                                                                 \
+  void read(athena::io::YAMLDocReader& r) override { athena::io::__ReadYaml(*this, r); }                               \
+  void write(athena::io::YAMLDocWriter& w) const override { athena::io::__WriteYaml(*this, w); }
 
 #define AT_SPECIALIZE_DNA(...)                                                                                         \
   template void __VA_ARGS__::Enumerate<athena::io::Read<athena::io::PropType::None>>(                                  \
