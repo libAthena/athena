@@ -1008,7 +1008,7 @@ constexpr std::string_view base64_chars =
     "abcdefghijklmnopqrstuvwxyz"
     "0123456789+/";
 
-inline bool is_base64(unsigned char c) { return (isalnum(c) || (c == '+') || (c == '/')); }
+static bool is_base64(unsigned char c) { return isalnum(c) || c == '+' || c == '/'; }
 
 std::string base64_encode(const atUint8* bytes_to_encode, size_t in_len) {
   std::string ret;
