@@ -9,14 +9,14 @@
 namespace athena::io {
 class IStreamWriter : public IStream {
 public:
-  virtual ~IStreamWriter() = default;
+  ~IStreamWriter() override = default;
 
   /** @brief Sets the buffers position relative to the specified position.<br />
    *         It seeks relative to the current position by default.
    *  @param position where in the buffer to seek
    *  @param origin The location to seek relative to
    */
-  virtual void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) = 0;
+  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override = 0;
 
   /** @brief Sets the buffers position relative to the next 32-byte aligned position.<br />
    */
@@ -36,19 +36,19 @@ public:
    *
    *  @return True if at end; False otherwise.
    */
-  bool atEnd() const { return position() >= length(); }
+  bool atEnd() const override { return position() >= length(); }
 
   /** @brief Returns the current position in the stream.
    *
    *  @return The current position in the stream.
    */
-  virtual atUint64 position() const = 0;
+  atUint64 position() const override = 0;
 
   /** @brief Returns whether or not the stream is at the end.
    *
    *  @return True if at end; False otherwise.
    */
-  virtual atUint64 length() const = 0;
+  atUint64 length() const override = 0;
 
   /** @brief Writes a byte at the current position and advances the position by one byte.
    *  @param val The value to write
@@ -989,10 +989,9 @@ public:
    *  Endianness is set with setEndian
    */
   template <class T>
-  void
-  enumerate(const std::vector<T>& vector,
-            typename std::enable_if<std::is_arithmetic<T>::value || std::is_same<T, atVec2f>::value ||
-                                    std::is_same<T, atVec3f>::value || std::is_same<T, atVec4f>::value>::type* = 0) {
+  void enumerate(const std::vector<T>& vector,
+                 std::enable_if_t<std::is_arithmetic_v<T> || std::is_same_v<T, atVec2f> || std::is_same_v<T, atVec3f> ||
+                                  std::is_same_v<T, atVec4f>>* = nullptr) {
     for (const T& item : vector)
       writeVal(item);
   }
@@ -1003,10 +1002,9 @@ public:
    *  Endianness is little
    */
   template <class T>
-  void enumerateLittle(
-      const std::vector<T>& vector,
-      typename std::enable_if<std::is_arithmetic<T>::value || std::is_same<T, atVec2f>::value ||
-                              std::is_same<T, atVec3f>::value || std::is_same<T, atVec4f>::value>::type* = 0) {
+  void enumerateLittle(const std::vector<T>& vector,
+                       std::enable_if_t<std::is_arithmetic_v<T> || std::is_same_v<T, atVec2f> ||
+                                        std::is_same_v<T, atVec3f> || std::is_same_v<T, atVec4f>>* = nullptr) {
     for (const T& item : vector)
       writeValLittle(item);
   }
@@ -1017,10 +1015,9 @@ public:
    *  Endianness is big
    */
   template <class T>
-  void
-  enumerateBig(const std::vector<T>& vector,
-               typename std::enable_if<std::is_arithmetic<T>::value || std::is_same<T, atVec2f>::value ||
-                                       std::is_same<T, atVec3f>::value || std::is_same<T, atVec4f>::value>::type* = 0) {
+  void enumerateBig(const std::vector<T>& vector,
+                    std::enable_if_t<std::is_arithmetic_v<T> || std::is_same_v<T, atVec2f> ||
+                                     std::is_same_v<T, atVec3f> || std::is_same_v<T, atVec4f>>* = nullptr) {
     for (const T& item : vector)
       writeValBig(item);
   }
@@ -1029,10 +1026,9 @@ public:
    *  @param vector The std::vector read from when writing data
    */
   template <class T>
-  void
-  enumerate(const std::vector<T>& vector,
-            typename std::enable_if<!std::is_arithmetic<T>::value && !std::is_same<T, atVec2f>::value &&
-                                    !std::is_same<T, atVec3f>::value && !std::is_same<T, atVec4f>::value>::type* = 0) {
+  void enumerate(const std::vector<T>& vector,
+                 std::enable_if_t<!std::is_arithmetic_v<T> && !std::is_same_v<T, atVec2f> &&
+                                  !std::is_same_v<T, atVec3f> && !std::is_same_v<T, atVec4f>>* = nullptr) {
     for (const T& item : vector)
       item.write(*this);
   }
