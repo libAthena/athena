@@ -22,21 +22,21 @@ public:
    *  @param position where in the buffer to seek
    *  @param origin The Origin to seek @sa SeekOrigin
    */
-  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
+  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override;
 
   /*! @brief Returns the current position in the stream.
    *
    *  @return Int64 The current position in the stream.
    */
-  inline atUint64 position() const { return m_position; }
+  atUint64 position() const override { return m_position; }
 
   /*! @brief Returns the length of the stream.
    *
    *  @return Int64 The length of the stream.
    */
-  inline atUint64 length() const { return m_data.size(); }
+  atUint64 length() const override { return m_data.size(); }
 
-  inline bool isOpen() const { return true; }
+  bool isOpen() const { return true; }
 
   /*! @brief Obtains reference to underlying std::vector store */
   const std::vector<uint8_t>& data() const { return m_data; }
@@ -48,7 +48,7 @@ public:
    * @param data The buffer to write
    * @param length The amount to write
    */
-  void writeUBytes(const atUint8* data, atUint64 len);
+  void writeUBytes(const atUint8* data, atUint64 len) override;
 
 protected:
   std::vector<uint8_t> m_data;

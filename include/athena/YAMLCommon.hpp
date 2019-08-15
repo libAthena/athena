@@ -27,14 +27,14 @@ struct YAMLNode {
 
   YAMLNode(yaml_node_type_t type) : m_type(type) {}
 
-  inline const YAMLNode* findMapChild(std::string_view key) const {
+  const YAMLNode* findMapChild(std::string_view key) const {
     for (const auto& item : m_mapChildren)
       if (!item.first.compare(key))
         return item.second.get();
     return nullptr;
   }
 
-  inline void assignMapChild(std::string_view key, std::unique_ptr<YAMLNode>&& node) {
+  void assignMapChild(std::string_view key, std::unique_ptr<YAMLNode>&& node) {
     for (auto& item : m_mapChildren)
       if (!item.first.compare(key)) {
         item.second = std::move(node);

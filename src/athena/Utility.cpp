@@ -100,7 +100,7 @@ int countChar(std::string_view str, const char chr, int* lastOccur) {
 
   for (char c : str) {
     if (c == chr) {
-      if (lastOccur != NULL)
+      if (lastOccur != nullptr)
         *lastOccur = index;
 
       ret++;

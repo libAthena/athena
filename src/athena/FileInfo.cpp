@@ -104,7 +104,7 @@ bool FileInfo::touch() const {
     (void)athena::io::FileWriter(m_path);
     return true;
   }
-  if (utimes(m_path.c_str(), NULL) < 0) {
+  if (utimes(m_path.c_str(), nullptr) < 0) {
     return false;
   }
 #elif defined(_WIN32)
@@ -114,7 +114,7 @@ bool FileInfo::touch() const {
   wchar_t date[80], time[80];
 
 #if !WINDOWS_STORE
-  fh = CreateFileA(m_path.c_str(), GENERIC_READ | FILE_WRITE_ATTRIBUTES, 0, NULL, CREATE_NEW, 0, NULL);
+  fh = CreateFileA(m_path.c_str(), GENERIC_READ | FILE_WRITE_ATTRIBUTES, 0, nullptr, CREATE_NEW, 0, nullptr);
 
   if (fh == INVALID_HANDLE_VALUE)
     return false;
@@ -122,14 +122,14 @@ bool FileInfo::touch() const {
   /*
    * Use GetFileTime() to get the file modification time.
    */
-  if (GetFileTime(fh, NULL, NULL, &modtime) == 0) {
+  if (GetFileTime(fh, nullptr, nullptr, &modtime) == 0) {
     CloseHandle(fh);
     return false;
   }
 
   FileTimeToSystemTime(&modtime, &st);
-  if (GetDateFormatW(LOCALE_USER_DEFAULT, DATE_LONGDATE, &st, NULL, date, sizeof date / sizeof date[0]) == 0 ||
-      GetTimeFormatW(LOCALE_USER_DEFAULT, 0, &st, NULL, time, sizeof time / sizeof time[0]) == 0) {
+  if (GetDateFormatW(LOCALE_USER_DEFAULT, DATE_LONGDATE, &st, nullptr, date, sizeof date / sizeof date[0]) == 0 ||
+      GetTimeFormatW(LOCALE_USER_DEFAULT, 0, &st, nullptr, time, sizeof time / sizeof time[0]) == 0) {
     CloseHandle(fh);
     return false;
   }
@@ -139,13 +139,13 @@ bool FileInfo::touch() const {
    * to the current time.
    */
   GetSystemTime(&st);
-  if (GetDateFormatW(LOCALE_USER_DEFAULT, DATE_LONGDATE, &st, NULL, date, sizeof date / sizeof date[0]) == 0 ||
-      GetTimeFormatW(LOCALE_USER_DEFAULT, 0, &st, NULL, time, sizeof time / sizeof time[0]) == 0) {
+  if (GetDateFormatW(LOCALE_USER_DEFAULT, DATE_LONGDATE, &st, nullptr, date, sizeof date / sizeof date[0]) == 0 ||
+      GetTimeFormatW(LOCALE_USER_DEFAULT, 0, &st, nullptr, time, sizeof time / sizeof time[0]) == 0) {
     CloseHandle(fh);
     return false;
   }
   SystemTimeToFileTime(&st, &modtime);
-  if (SetFileTime(fh, NULL, NULL, &modtime) == 0) {
+  if (SetFileTime(fh, nullptr, nullptr, &modtime) == 0) {
     CloseHandle(fh);
     return false;
   }
