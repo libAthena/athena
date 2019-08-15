@@ -1003,7 +1003,7 @@ bool YAMLDocWriter::RecursiveFinish(yaml_emitter_t* doc, const YAMLNode& node) {
   return true;
 }
 
-static const std::string base64_chars =
+constexpr std::string_view base64_chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz"
     "0123456789+/";
