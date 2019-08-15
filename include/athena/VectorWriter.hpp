@@ -28,15 +28,15 @@ public:
    *
    *  @return Int64 The current position in the stream.
    */
-  inline atUint64 position() const { return m_position; }
+  atUint64 position() const { return m_position; }
 
   /*! @brief Returns the length of the stream.
    *
    *  @return Int64 The length of the stream.
    */
-  inline atUint64 length() const { return m_data.size(); }
+  atUint64 length() const { return m_data.size(); }
 
-  inline bool isOpen() const { return true; }
+  bool isOpen() const { return true; }
 
   /*! @brief Obtains reference to underlying std::vector store */
   const std::vector<uint8_t>& data() const { return m_data; }

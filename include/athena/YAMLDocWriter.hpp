@@ -20,7 +20,7 @@ public:
 
   bool finish(athena::io::IStreamWriter* fout);
 
-  inline YAMLNode* getCurNode() const { return m_subStack.empty() ? nullptr : m_subStack.back(); }
+  YAMLNode* getCurNode() const { return m_subStack.empty() ? nullptr : m_subStack.back(); }
 
   class RecordRAII {
     friend class YAMLDocWriter;

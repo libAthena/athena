@@ -19,15 +19,15 @@ public:
 
   void reset();
 
-  inline yaml_parser_t* getParser() { return &m_parser; }
+  yaml_parser_t* getParser() { return &m_parser; }
 
   bool parse(athena::io::IStreamReader* reader);
 
   bool ClassTypeOperation(std::function<bool(const char* dnaType)> func);
   bool ValidateClassType(const char* expectedType);
 
-  inline const YAMLNode* getRootNode() const { return m_rootNode.get(); }
-  inline const YAMLNode* getCurNode() const { return m_subStack.empty() ? nullptr : m_subStack.back(); }
+  const YAMLNode* getRootNode() const { return m_rootNode.get(); }
+  const YAMLNode* getCurNode() const { return m_subStack.empty() ? nullptr : m_subStack.back(); }
   std::unique_ptr<YAMLNode> releaseRootNode() { return std::move(m_rootNode); }
 
   class RecordRAII {

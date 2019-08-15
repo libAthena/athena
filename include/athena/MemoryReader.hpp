@@ -40,13 +40,13 @@ public:
    *
    *  \return Int64 The current position in the stream.
    */
-  inline atUint64 position() const { return m_position; }
+  atUint64 position() const { return m_position; }
 
   /*! \brief Returns whether or not the stream is at the end.
    *
    *  \return bool True if at end; False otherwise.
    */
-  inline atUint64 length() const { return m_length; }
+  atUint64 length() const { return m_length; }
 
   /*! \brief Sets the buffer to the given one, deleting the current one.<br />
    *         <b>BEWARE:</b> As this deletes the current buffer it WILL cause a loss of data

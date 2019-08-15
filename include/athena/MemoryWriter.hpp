@@ -37,15 +37,15 @@ public:
    *
    *  @return Int64 The current position in the stream.
    */
-  inline atUint64 position() const { return m_position; }
+  atUint64 position() const { return m_position; }
 
   /*! @brief Returns the length of the stream.
    *
    *  @return Int64 The length of the stream.
    */
-  inline atUint64 length() const { return m_length; }
+  atUint64 length() const { return m_length; }
 
-  inline bool isOpen() const { return true; }
+  bool isOpen() const { return true; }
 
   /** @brief Sets the buffer to the given one, deleting the current one if it owns it.<br />
    *  @param data The new buffer.
@@ -65,12 +65,12 @@ public:
    *
    *  @param filepath The path to write to.
    */
-  inline void setFilepath(const std::string& filepath) { m_filepath = filepath; }
+  void setFilepath(const std::string& filepath) { m_filepath = filepath; }
 
   /*! @brief
    * Returns the target file
    */
-  inline std::string filepath() const { return m_filepath; }
+  std::string filepath() const { return m_filepath; }
 
   /*! @brief Saves the file to the specified file.
    *
