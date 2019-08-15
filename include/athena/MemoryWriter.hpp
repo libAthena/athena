@@ -17,7 +17,7 @@ namespace athena::io {
  */
 class MemoryWriter : public IStreamWriter {
 public:
-  ~MemoryWriter() override;
+  virtual ~MemoryWriter();
 
   /*! @brief This constructor references an existing buffer to write to in-place.
    *
@@ -31,21 +31,21 @@ public:
    *  @param position where in the buffer to seek
    *  @param origin The Origin to seek @sa SeekOrigin
    */
-  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override;
+  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
 
   /*! @brief Returns the current position in the stream.
    *
    *  @return Int64 The current position in the stream.
    */
-  atUint64 position() const override { return m_position; }
+  inline atUint64 position() const { return m_position; }
 
   /*! @brief Returns the length of the stream.
    *
    *  @return Int64 The length of the stream.
    */
-  atUint64 length() const override { return m_length; }
+  inline atUint64 length() const { return m_length; }
 
-  bool isOpen() const { return true; }
+  inline bool isOpen() const { return true; }
 
   /** @brief Sets the buffer to the given one, deleting the current one if it owns it.<br />
    *  @param data The new buffer.
@@ -65,12 +65,12 @@ public:
    *
    *  @param filepath The path to write to.
    */
-  void setFilepath(const std::string& filepath) { m_filepath = filepath; }
+  inline void setFilepath(const std::string& filepath) { m_filepath = filepath; }
 
   /*! @brief
    * Returns the target file
    */
-  std::string filepath() const { return m_filepath; }
+  inline std::string filepath() const { return m_filepath; }
 
   /*! @brief Saves the file to the specified file.
    *
@@ -85,7 +85,7 @@ public:
    * @param data The buffer to write
    * @param length The amount to write
    */
-  void writeUBytes(const atUint8* data, atUint64 len) override;
+  void writeUBytes(const atUint8* data, atUint64 len);
 
 protected:
   MemoryWriter() {}
@@ -116,7 +116,7 @@ public:
    *  @param position where in the buffer to seek
    *  @param origin The Origin to seek @sa SeekOrigin
    */
-  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override;
+  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
 
   /*! @brief Sets the buffer to the given one, deleting the current one.<br />
    *         <b>BEWARE:</b> As this deletes the current buffer it WILL cause a loss of data
@@ -135,7 +135,7 @@ public:
    * @param data The buffer to write
    * @param length The amount to write
    */
-  void writeUBytes(const atUint8* data, atUint64 len) override;
+  void writeUBytes(const atUint8* data, atUint64 len);
 
 protected:
   std::unique_ptr<atUint8[]> m_dataCopy;

@@ -14,7 +14,7 @@ public:
   explicit Dir(std::string_view path);
 
   std::string absolutePath() const;
-  static std::string absolutePath(std::string_view path) { return Dir(path).absolutePath(); }
+  static inline std::string absolutePath(std::string_view path) { return Dir(path).absolutePath(); }
 
   bool isDir() const;
   static bool isDir(std::string_view dir) { return Dir(dir).isDir(); }

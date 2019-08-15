@@ -15,14 +15,14 @@ namespace athena::io {
  */
 class IStreamReader : public IStream {
 public:
-  ~IStreamReader() override = default;
+  virtual ~IStreamReader() = default;
 
   /** @brief Sets the buffers position relative to the specified position.<br />
    *         It seeks relative to the current position by default.
    *  @param position where in the buffer to seek
    *  @param origin The Origin to seek relative to
    */
-  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override = 0;
+  virtual void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) = 0;
 
   /** @brief Sets the buffer's position relative to the next 64-byte aligned position.<br />
    */
@@ -44,19 +44,19 @@ public:
    *
    *  @return True if at end; False otherwise.
    */
-  bool atEnd() const override { return position() >= length(); }
+  bool atEnd() const { return position() >= length(); }
 
   /** @brief Returns the current position in the stream.
    *
    *  @return The current position in the stream.
    */
-  atUint64 position() const override = 0;
+  virtual atUint64 position() const = 0;
 
   /** @brief Returns the length of the file.
    *
    *  @return True length of the file.
    */
-  atUint64 length() const override = 0;
+  virtual atUint64 length() const = 0;
 
   /** @brief Reads a byte at the current position and advances the current position
    *
@@ -68,15 +68,15 @@ public:
     return val;
   }
   template <class T>
-  atInt8 readVal(std::enable_if_t<std::is_same_v<T, atInt8>>* = nullptr) {
+  atInt8 readVal(typename std::enable_if<std::is_same<T, atInt8>::value>::type* = 0) {
     return readByte();
   }
   template <class T>
-  atInt8 readValLittle(std::enable_if_t<std::is_same_v<T, atInt8>>* = nullptr) {
+  atInt8 readValLittle(typename std::enable_if<std::is_same<T, atInt8>::value>::type* = 0) {
     return readByte();
   }
   template <class T>
-  atInt8 readValBig(std::enable_if_t<std::is_same_v<T, atInt8>>* = nullptr) {
+  atInt8 readValBig(typename std::enable_if<std::is_same<T, atInt8>::value>::type* = 0) {
     return readByte();
   }
 
@@ -86,15 +86,15 @@ public:
    */
   atUint8 readUByte() { return readByte(); }
   template <class T>
-  atUint8 readVal(std::enable_if_t<std::is_same_v<T, atUint8>>* = nullptr) {
+  atUint8 readVal(typename std::enable_if<std::is_same<T, atUint8>::value>::type* = 0) {
     return readUByte();
   }
   template <class T>
-  atUint8 readValLittle(std::enable_if_t<std::is_same_v<T, atUint8>>* = nullptr) {
+  atUint8 readValLittle(typename std::enable_if<std::is_same<T, atUint8>::value>::type* = 0) {
     return readUByte();
   }
   template <class T>
-  atUint8 readValBig(std::enable_if_t<std::is_same_v<T, atUint8>>* = nullptr) {
+  atUint8 readValBig(typename std::enable_if<std::is_same<T, atUint8>::value>::type* = 0) {
     return readUByte();
   }
 
@@ -144,7 +144,7 @@ public:
     return m_endian == Big ? utility::BigInt16(val) : utility::LittleInt16(val);
   }
   template <class T>
-  atInt16 readVal(std::enable_if_t<std::is_same_v<T, atInt16>>* = nullptr) {
+  atInt16 readVal(typename std::enable_if<std::is_same<T, atInt16>::value>::type* = 0) {
     return readInt16();
   }
 
@@ -159,7 +159,7 @@ public:
     return utility::LittleInt16(val);
   }
   template <class T>
-  atInt16 readValLittle(std::enable_if_t<std::is_same_v<T, atInt16>>* = nullptr) {
+  atInt16 readValLittle(typename std::enable_if<std::is_same<T, atInt16>::value>::type* = 0) {
     return readInt16Little();
   }
 
@@ -174,7 +174,7 @@ public:
     return utility::BigInt16(val);
   }
   template <class T>
-  atInt16 readValBig(std::enable_if_t<std::is_same_v<T, atInt16>>* = nullptr) {
+  atInt16 readValBig(typename std::enable_if<std::is_same<T, atInt16>::value>::type* = 0) {
     return readInt16Big();
   }
 
@@ -185,7 +185,7 @@ public:
    */
   atUint16 readUint16() { return readInt16(); }
   template <class T>
-  atUint16 readVal(std::enable_if_t<std::is_same_v<T, atUint16>>* = 0) {
+  atUint16 readVal(typename std::enable_if<std::is_same<T, atUint16>::value>::type* = 0) {
     return readUint16();
   }
 
@@ -200,7 +200,7 @@ public:
     return utility::LittleUint16(val);
   }
   template <class T>
-  atUint16 readValLittle(std::enable_if_t<std::is_same_v<T, atUint16>>* = nullptr) {
+  atUint16 readValLittle(typename std::enable_if<std::is_same<T, atUint16>::value>::type* = 0) {
     return readUint16Little();
   }
 
@@ -215,7 +215,7 @@ public:
     return utility::BigUint16(val);
   }
   template <class T>
-  atUint16 readValBig(std::enable_if_t<std::is_same_v<T, atUint16>>* = nullptr) {
+  atUint16 readValBig(typename std::enable_if<std::is_same<T, atUint16>::value>::type* = 0) {
     return readUint16Big();
   }
 
@@ -230,7 +230,7 @@ public:
     return m_endian == Big ? utility::BigInt32(val) : utility::LittleInt32(val);
   }
   template <class T>
-  atInt32 readVal(std::enable_if_t<std::is_same_v<T, atInt32>>* = nullptr) {
+  atInt32 readVal(typename std::enable_if<std::is_same<T, atInt32>::value>::type* = 0) {
     return readInt32();
   }
 
@@ -245,7 +245,7 @@ public:
     return utility::LittleInt32(val);
   }
   template <class T>
-  atInt32 readValLittle(std::enable_if_t<std::is_same_v<T, atInt32>>* = nullptr) {
+  atInt32 readValLittle(typename std::enable_if<std::is_same<T, atInt32>::value>::type* = 0) {
     return readInt32Little();
   }
 
@@ -260,7 +260,7 @@ public:
     return utility::BigInt32(val);
   }
   template <class T>
-  atInt32 readValBig(std::enable_if_t<std::is_same_v<T, atInt32>>* = nullptr) {
+  atInt32 readValBig(typename std::enable_if<std::is_same<T, atInt32>::value>::type* = 0) {
     return readInt32Big();
   }
 
@@ -271,7 +271,7 @@ public:
    */
   atUint32 readUint32() { return readInt32(); }
   template <class T>
-  atUint32 readVal(std::enable_if_t<std::is_same_v<T, atUint32>>* = nullptr) {
+  atUint32 readVal(typename std::enable_if<std::is_same<T, atUint32>::value>::type* = 0) {
     return readUint32();
   }
 
@@ -286,7 +286,7 @@ public:
     return utility::LittleUint32(val);
   }
   template <class T>
-  atInt32 readValLittle(std::enable_if_t<std::is_same_v<T, atUint32>>* = nullptr) {
+  atInt32 readValLittle(typename std::enable_if<std::is_same<T, atUint32>::value>::type* = 0) {
     return readUint32Little();
   }
 
@@ -301,7 +301,7 @@ public:
     return utility::BigUint32(val);
   }
   template <class T>
-  atUint32 readValBig(std::enable_if_t<std::is_same_v<T, atUint32>>* = nullptr) {
+  atUint32 readValBig(typename std::enable_if<std::is_same<T, atUint32>::value>::type* = 0) {
     return readUint32Big();
   }
 
@@ -316,7 +316,7 @@ public:
     return m_endian == Big ? utility::BigInt64(val) : utility::LittleInt64(val);
   }
   template <class T>
-  atInt64 readVal(std::enable_if_t<std::is_same_v<T, atInt64>>* = nullptr) {
+  atInt64 readVal(typename std::enable_if<std::is_same<T, atInt64>::value>::type* = 0) {
     return readInt64();
   }
 
@@ -331,7 +331,7 @@ public:
     return utility::LittleInt64(val);
   }
   template <class T>
-  atInt64 readValLittle(std::enable_if_t<std::is_same_v<T, atInt64>>* = nullptr) {
+  atInt64 readValLittle(typename std::enable_if<std::is_same<T, atInt64>::value>::type* = 0) {
     return readInt64Little();
   }
 
@@ -346,7 +346,7 @@ public:
     return utility::BigInt64(val);
   }
   template <class T>
-  atInt64 readValBig(std::enable_if_t<std::is_same_v<T, atInt64>>* = nullptr) {
+  atInt64 readValBig(typename std::enable_if<std::is_same<T, atInt64>::value>::type* = 0) {
     return readInt64Big();
   }
 
@@ -357,7 +357,7 @@ public:
    */
   atUint64 readUint64() { return readInt64(); }
   template <class T>
-  atUint64 readVal(std::enable_if_t<std::is_same_v<T, atUint64>>* = nullptr) {
+  atUint64 readVal(typename std::enable_if<std::is_same<T, atUint64>::value>::type* = 0) {
     return readUint64();
   }
 
@@ -372,7 +372,7 @@ public:
     return utility::LittleUint64(val);
   }
   template <class T>
-  atUint64 readValLittle(std::enable_if_t<std::is_same_v<T, atUint64>>* = nullptr) {
+  atUint64 readValLittle(typename std::enable_if<std::is_same<T, atUint64>::value>::type* = 0) {
     return readUint64Little();
   }
 
@@ -387,7 +387,7 @@ public:
     return utility::BigUint64(val);
   }
   template <class T>
-  atUint64 readValBig(std::enable_if_t<std::is_same_v<T, atUint64>>* = nullptr) {
+  atUint64 readValBig(typename std::enable_if<std::is_same<T, atUint64>::value>::type* = 0) {
     return readUint64Big();
   }
 
@@ -402,7 +402,7 @@ public:
     return m_endian == Big ? utility::BigFloat(val) : utility::LittleFloat(val);
   }
   template <class T>
-  float readVal(std::enable_if_t<std::is_same_v<T, float>>* = nullptr) {
+  float readVal(typename std::enable_if<std::is_same<T, float>::value>::type* = 0) {
     return readFloat();
   }
 
@@ -417,7 +417,7 @@ public:
     return utility::LittleFloat(val);
   }
   template <class T>
-  float readValLittle(std::enable_if_t<std::is_same_v<T, float>>* = nullptr) {
+  float readValLittle(typename std::enable_if<std::is_same<T, float>::value>::type* = 0) {
     return readFloatLittle();
   }
 
@@ -432,7 +432,7 @@ public:
     return utility::BigFloat(val);
   }
   template <class T>
-  float readValBig(std::enable_if_t<std::is_same_v<T, float>>* = nullptr) {
+  float readValBig(typename std::enable_if<std::is_same<T, float>::value>::type* = 0) {
     return readFloatBig();
   }
 
@@ -447,7 +447,7 @@ public:
     return m_endian == Big ? utility::BigDouble(val) : utility::LittleDouble(val);
   }
   template <class T>
-  double readVal(std::enable_if_t<std::is_same_v<T, double>>* = nullptr) {
+  double readVal(typename std::enable_if<std::is_same<T, double>::value>::type* = 0) {
     return readDouble();
   }
 
@@ -462,7 +462,7 @@ public:
     return utility::LittleDouble(val);
   }
   template <class T>
-  double readValLittle(std::enable_if_t<std::is_same_v<T, double>>* = nullptr) {
+  double readValLittle(typename std::enable_if<std::is_same<T, double>::value>::type* = 0) {
     return readDoubleLittle();
   }
 
@@ -477,7 +477,7 @@ public:
     return utility::BigDouble(val);
   }
   template <class T>
-  double readValBig(std::enable_if_t<std::is_same_v<T, double>>* = nullptr) {
+  double readValBig(typename std::enable_if<std::is_same<T, double>::value>::type* = 0) {
     return readDoubleBig();
   }
 
@@ -491,15 +491,15 @@ public:
     return val != 0;
   }
   template <class T>
-  bool readVal(std::enable_if_t<std::is_same_v<T, bool>>* = nullptr) {
+  bool readVal(typename std::enable_if<std::is_same<T, bool>::value>::type* = 0) {
     return readBool();
   }
   template <class T>
-  bool readValLittle(std::enable_if_t<std::is_same_v<T, bool>>* = nullptr) {
+  bool readValLittle(typename std::enable_if<std::is_same<T, bool>::value>::type* = 0) {
     return readBool();
   }
   template <class T>
-  bool readValBig(std::enable_if_t<std::is_same_v<T, bool>>* = nullptr) {
+  bool readValBig(typename std::enable_if<std::is_same<T, bool>::value>::type* = 0) {
     return readBool();
   }
 
@@ -525,7 +525,7 @@ public:
     return s;
   }
   template <class T>
-  atVec2f readVal(std::enable_if_t<std::is_same_v<T, atVec2f>>* = nullptr) {
+  atVec2f readVal(typename std::enable_if<std::is_same<T, atVec2f>::value>::type* = 0) {
     return readVec2f();
   }
 
@@ -546,7 +546,7 @@ public:
     return s;
   }
   template <class T>
-  atVec2f readValLittle(std::enable_if_t<std::is_same_v<T, atVec2f>>* = nullptr) {
+  atVec2f readValLittle(typename std::enable_if<std::is_same<T, atVec2f>::value>::type* = 0) {
     return readVec2fLittle();
   }
 
@@ -567,7 +567,7 @@ public:
     return s;
   }
   template <class T>
-  atVec2f readValBig(std::enable_if_t<std::is_same_v<T, atVec2f>>* = nullptr) {
+  atVec2f readValBig(typename std::enable_if<std::is_same<T, atVec2f>::value>::type* = 0) {
     return readVec2fBig();
   }
 
@@ -594,7 +594,7 @@ public:
     return s;
   }
   template <class T>
-  atVec3f readVal(std::enable_if_t<std::is_same_v<T, atVec3f>>* = nullptr) {
+  atVec3f readVal(typename std::enable_if<std::is_same<T, atVec3f>::value>::type* = 0) {
     return readVec3f();
   }
 
@@ -615,7 +615,7 @@ public:
     return s;
   }
   template <class T>
-  atVec3f readValLittle(std::enable_if_t<std::is_same_v<T, atVec3f>>* = nullptr) {
+  atVec3f readValLittle(typename std::enable_if<std::is_same<T, atVec3f>::value>::type* = 0) {
     return readVec3fLittle();
   }
 
@@ -636,7 +636,7 @@ public:
     return s;
   }
   template <class T>
-  atVec3f readValBig(std::enable_if_t<std::is_same_v<T, atVec3f>>* = nullptr) {
+  atVec3f readValBig(typename std::enable_if<std::is_same<T, atVec3f>::value>::type* = 0) {
     return readVec3fBig();
   }
 
@@ -664,7 +664,7 @@ public:
     return s;
   }
   template <class T>
-  atVec4f readVal(std::enable_if_t<std::is_same_v<T, atVec4f>>* = nullptr) {
+  atVec4f readVal(typename std::enable_if<std::is_same<T, atVec4f>::value>::type* = 0) {
     return readVec4f();
   }
 
@@ -685,7 +685,7 @@ public:
     return s;
   }
   template <class T>
-  atVec4f readValLittle(std::enable_if_t<std::is_same_v<T, atVec4f>>* = nullptr) {
+  atVec4f readValLittle(typename std::enable_if<std::is_same<T, atVec4f>::value>::type* = 0) {
     return readVec4fLittle();
   }
 
@@ -706,7 +706,7 @@ public:
     return s;
   }
   template <class T>
-  atVec4f readValBig(std::enable_if_t<std::is_same_v<T, atVec4f>>* = nullptr) {
+  atVec4f readValBig(typename std::enable_if<std::is_same<T, atVec4f>::value>::type* = 0) {
     return readVec4fBig();
   }
 
@@ -732,7 +732,7 @@ public:
     return s;
   }
   template <class T>
-  atVec2d readVal(std::enable_if_t<std::is_same_v<T, atVec2d>>* = nullptr) {
+  atVec2d readVal(typename std::enable_if<std::is_same<T, atVec2d>::value>::type* = 0) {
     return readVec2d();
   }
 
@@ -753,7 +753,7 @@ public:
     return s;
   }
   template <class T>
-  atVec2d readValLittle(std::enable_if_t<std::is_same_v<T, atVec2d>>* = nullptr) {
+  atVec2d readValLittle(typename std::enable_if<std::is_same<T, atVec2d>::value>::type* = 0) {
     return readVec2dLittle();
   }
 
@@ -774,7 +774,7 @@ public:
     return s;
   }
   template <class T>
-  atVec2d readValBig(std::enable_if_t<std::is_same_v<T, atVec2d>>* = nullptr) {
+  atVec2d readValBig(typename std::enable_if<std::is_same<T, atVec2d>::value>::type* = 0) {
     return readVec2dBig();
   }
 
@@ -801,7 +801,7 @@ public:
     return s;
   }
   template <class T>
-  atVec3d readVal(std::enable_if_t<std::is_same_v<T, atVec3d>>* = nullptr) {
+  atVec3d readVal(typename std::enable_if<std::is_same<T, atVec3d>::value>::type* = 0) {
     return readVec3d();
   }
 
@@ -822,7 +822,7 @@ public:
     return s;
   }
   template <class T>
-  atVec3d readValLittle(std::enable_if_t<std::is_same_v<T, atVec3d>>* = nullptr) {
+  atVec3d readValLittle(typename std::enable_if<std::is_same<T, atVec3d>::value>::type* = 0) {
     return readVec3dLittle();
   }
 
@@ -843,7 +843,7 @@ public:
     return s;
   }
   template <class T>
-  atVec3d readValBig(std::enable_if_t<std::is_same_v<T, atVec3d>>* = nullptr) {
+  atVec3d readValBig(typename std::enable_if<std::is_same<T, atVec3d>::value>::type* = 0) {
     return readVec3dBig();
   }
 
@@ -871,7 +871,7 @@ public:
     return s;
   }
   template <class T>
-  atVec4d readVal(std::enable_if_t<std::is_same_v<T, atVec4d>>* = nullptr) {
+  atVec4d readVal(typename std::enable_if<std::is_same<T, atVec4d>::value>::type* = 0) {
     return readVec4d();
   }
 
@@ -892,7 +892,7 @@ public:
     return s;
   }
   template <class T>
-  atVec4d readValLittle(std::enable_if_t<std::is_same_v<T, atVec4d>>* = nullptr) {
+  atVec4d readValLittle(typename std::enable_if<std::is_same<T, atVec4d>::value>::type* = 0) {
     return readVec4dLittle();
   }
 
@@ -913,7 +913,7 @@ public:
     return s;
   }
   template <class T>
-  atVec4d readValBig(std::enable_if_t<std::is_same_v<T, atVec4d>>* = nullptr) {
+  atVec4d readValBig(typename std::enable_if<std::is_same<T, atVec4d>::value>::type* = 0) {
     return readVec4dBig();
   }
 
@@ -944,7 +944,7 @@ public:
     return ret;
   }
   template <class T>
-  std::string readVal(std::enable_if_t<std::is_same_v<T, std::string>>* = nullptr) {
+  std::string readVal(typename std::enable_if<std::is_same<T, std::string>::value>::type* = 0) {
     return readString();
   }
 
@@ -976,7 +976,7 @@ public:
     return ret;
   }
   template <class T>
-  std::wstring readVal(std::enable_if_t<std::is_same_v<T, std::wstring>>* = nullptr) {
+  std::wstring readVal(typename std::enable_if<std::is_same<T, std::wstring>::value>::type* = 0) {
     return readWString();
   }
 
@@ -1009,7 +1009,7 @@ public:
     return ret;
   }
   template <class T>
-  std::wstring readValLittle(std::enable_if_t<std::is_same_v<T, std::wstring>>* = nullptr) {
+  std::wstring readValLittle(typename std::enable_if<std::is_same<T, std::wstring>::value>::type* = 0) {
     return readWStringLittle();
   }
 
@@ -1041,7 +1041,7 @@ public:
     return ret;
   }
   template <class T>
-  std::wstring readValBig(std::enable_if_t<std::is_same_v<T, std::wstring>>* = nullptr) {
+  std::wstring readValBig(typename std::enable_if<std::is_same<T, std::wstring>::value>::type* = 0) {
     return readWStringBig();
   }
 
@@ -1073,7 +1073,7 @@ public:
     return ret;
   }
   template <class T>
-  std::u16string readValBig(std::enable_if_t<std::is_same_v<T, std::u16string>>* = nullptr) {
+  std::u16string readValBig(typename std::enable_if<std::is_same<T, std::u16string>::value>::type* = 0) {
     return readU16StringBig();
   }
 
@@ -1105,7 +1105,7 @@ public:
     return ret;
   }
   template <class T>
-  std::u32string readValBig(std::enable_if_t<std::is_same_v<T, std::u32string>>* = nullptr) {
+  std::u32string readValBig(typename std::enable_if<std::is_same<T, std::u32string>::value>::type* = 0) {
     return readU32StringBig();
   }
 
@@ -1119,8 +1119,8 @@ public:
   template <class T>
   void
   enumerate(std::vector<T>& vector, size_t count,
-            std::enable_if<std::is_arithmetic_v<T> || std::is_same_v<T, atVec2f> ||
-                           std::is_same_v<T, atVec3f> || std::is_same_v<T, atVec4f>>* = nullptr) {
+            typename std::enable_if<std::is_arithmetic<T>::value || std::is_same<T, atVec2f>::value ||
+                                    std::is_same<T, atVec3f>::value || std::is_same<T, atVec4f>::value>::type* = 0) {
     vector.clear();
     vector.reserve(count);
     for (size_t i = 0; i < count; ++i)
@@ -1135,9 +1135,10 @@ public:
    *  Endianness is little
    */
   template <class T>
-  void enumerateLittle(std::vector<T>& vector, size_t count,
-                       std::enable_if_t<std::is_arithmetic_v<T> || std::is_same_v<T, atVec2f> ||
-                                        std::is_same_v<T, atVec3f> || std::is_same_v<T, atVec4f>>* = nullptr) {
+  void enumerateLittle(
+      std::vector<T>& vector, size_t count,
+      typename std::enable_if<std::is_arithmetic<T>::value || std::is_same<T, atVec2f>::value ||
+                              std::is_same<T, atVec3f>::value || std::is_same<T, atVec4f>::value>::type* = 0) {
     vector.clear();
     vector.reserve(count);
     for (size_t i = 0; i < count; ++i)
@@ -1152,9 +1153,10 @@ public:
    *  Endianness is big
    */
   template <class T>
-  void enumerateBig(std::vector<T>& vector, size_t count,
-                    std::enable_if_t<std::is_arithmetic_v<T> || std::is_same_v<T, atVec2f> ||
-                                     std::is_same_v<T, atVec3f> || std::is_same_v<T, atVec4f>>* = nullptr) {
+  void
+  enumerateBig(std::vector<T>& vector, size_t count,
+               typename std::enable_if<std::is_arithmetic<T>::value || std::is_same<T, atVec2f>::value ||
+                                       std::is_same<T, atVec3f>::value || std::is_same<T, atVec4f>::value>::type* = 0) {
     vector.clear();
     vector.reserve(count);
     for (size_t i = 0; i < count; ++i)
@@ -1167,9 +1169,10 @@ public:
    *  @param count The number of elements to read into vector
    */
   template <class T>
-  void enumerate(std::vector<T>& vector, size_t count,
-                 std::enable_if_t<!std::is_arithmetic_v<T> && !std::is_same_v<T, atVec2f> &&
-                                  !std::is_same_v<T, atVec3f> && !std::is_same_v<T, atVec4f>>* = nullptr) {
+  void
+  enumerate(std::vector<T>& vector, size_t count,
+            typename std::enable_if<!std::is_arithmetic<T>::value && !std::is_same<T, atVec2f>::value &&
+                                    !std::is_same<T, atVec3f>::value && !std::is_same<T, atVec4f>::value>::type* = 0) {
     vector.clear();
     vector.reserve(count);
     for (size_t i = 0; i < count; ++i) {
