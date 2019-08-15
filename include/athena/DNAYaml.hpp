@@ -9,12 +9,12 @@
 namespace athena::io {
 
 template <class T>
-const char* __GetDNAName(const T& dna, typename std::enable_if_t<athena::io::__IsDNAVRecord_v<T>>* = 0) {
+const char* __GetDNAName(const T& dna, std::enable_if_t<athena::io::__IsDNAVRecord_v<T>>* = nullptr) {
   return dna.DNATypeV();
 }
 
 template <class T>
-const char* __GetDNAName(const T& dna, typename std::enable_if_t<!athena::io::__IsDNAVRecord_v<T>>* = 0) {
+const char* __GetDNAName(const T& dna, std::enable_if_t<!athena::io::__IsDNAVRecord_v<T>>* = nullptr) {
   return dna.DNAType();
 }
 

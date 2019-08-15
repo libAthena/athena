@@ -989,10 +989,9 @@ public:
    *  Endianness is set with setEndian
    */
   template <class T>
-  void
-  enumerate(const std::vector<T>& vector,
-            typename std::enable_if<std::is_arithmetic<T>::value || std::is_same<T, atVec2f>::value ||
-                                    std::is_same<T, atVec3f>::value || std::is_same<T, atVec4f>::value>::type* = 0) {
+  void enumerate(const std::vector<T>& vector,
+                 std::enable_if_t<std::is_arithmetic_v<T> || std::is_same_v<T, atVec2f> || std::is_same_v<T, atVec3f> ||
+                                  std::is_same_v<T, atVec4f>>* = nullptr) {
     for (const T& item : vector)
       writeVal(item);
   }
@@ -1003,10 +1002,9 @@ public:
    *  Endianness is little
    */
   template <class T>
-  void enumerateLittle(
-      const std::vector<T>& vector,
-      typename std::enable_if<std::is_arithmetic<T>::value || std::is_same<T, atVec2f>::value ||
-                              std::is_same<T, atVec3f>::value || std::is_same<T, atVec4f>::value>::type* = 0) {
+  void enumerateLittle(const std::vector<T>& vector,
+                       std::enable_if_t<std::is_arithmetic_v<T> || std::is_same_v<T, atVec2f> ||
+                                        std::is_same_v<T, atVec3f> || std::is_same_v<T, atVec4f>>* = nullptr) {
     for (const T& item : vector)
       writeValLittle(item);
   }
@@ -1017,10 +1015,9 @@ public:
    *  Endianness is big
    */
   template <class T>
-  void
-  enumerateBig(const std::vector<T>& vector,
-               typename std::enable_if<std::is_arithmetic<T>::value || std::is_same<T, atVec2f>::value ||
-                                       std::is_same<T, atVec3f>::value || std::is_same<T, atVec4f>::value>::type* = 0) {
+  void enumerateBig(const std::vector<T>& vector,
+                    std::enable_if_t<std::is_arithmetic_v<T> || std::is_same_v<T, atVec2f> ||
+                                     std::is_same_v<T, atVec3f> || std::is_same_v<T, atVec4f>>* = nullptr) {
     for (const T& item : vector)
       writeValBig(item);
   }
@@ -1029,10 +1026,9 @@ public:
    *  @param vector The std::vector read from when writing data
    */
   template <class T>
-  void
-  enumerate(const std::vector<T>& vector,
-            typename std::enable_if<!std::is_arithmetic<T>::value && !std::is_same<T, atVec2f>::value &&
-                                    !std::is_same<T, atVec3f>::value && !std::is_same<T, atVec4f>::value>::type* = 0) {
+  void enumerate(const std::vector<T>& vector,
+                 std::enable_if_t<!std::is_arithmetic_v<T> && !std::is_same_v<T, atVec2f> &&
+                                  !std::is_same_v<T, atVec3f> && !std::is_same_v<T, atVec4f>>* = nullptr) {
     for (const T& item : vector)
       item.write(*this);
   }
