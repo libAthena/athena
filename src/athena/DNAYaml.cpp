@@ -15,127 +15,127 @@ bool NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(bool val) {
-  YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
   ret->m_scalarString = val ? "True" : "False";
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <>
 atInt8 NodeToVal(const YAMLNode* node) {
-  return strtol(node->m_scalarString.c_str(), NULL, 0);
+  return strtol(node->m_scalarString.c_str(), nullptr, 0);
 }
 
 std::unique_ptr<YAMLNode> ValToNode(atInt8 val) {
-  YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
   ret->m_scalarString = fmt::format(fmt("{}"), int(val));
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <>
 atUint8 NodeToVal(const YAMLNode* node) {
-  return strtoul(node->m_scalarString.c_str(), NULL, 0);
+  return strtoul(node->m_scalarString.c_str(), nullptr, 0);
 }
 
 std::unique_ptr<YAMLNode> ValToNode(atUint8 val) {
-  YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
   ret->m_scalarString = fmt::format(fmt("0x{:02X}"), val);
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <>
 atInt16 NodeToVal(const YAMLNode* node) {
-  return strtol(node->m_scalarString.c_str(), NULL, 0);
+  return strtol(node->m_scalarString.c_str(), nullptr, 0);
 }
 
 std::unique_ptr<YAMLNode> ValToNode(atInt16 val) {
-  YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
   ret->m_scalarString = fmt::format(fmt("{}"), int(val));
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <>
 atUint16 NodeToVal(const YAMLNode* node) {
-  return strtoul(node->m_scalarString.c_str(), NULL, 0);
+  return strtoul(node->m_scalarString.c_str(), nullptr, 0);
 }
 
 std::unique_ptr<YAMLNode> ValToNode(atUint16 val) {
-  YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
   ret->m_scalarString = fmt::format(fmt("0x{:04X}"), val);
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <>
 atInt32 NodeToVal(const YAMLNode* node) {
-  return strtol(node->m_scalarString.c_str(), NULL, 0);
+  return strtol(node->m_scalarString.c_str(), nullptr, 0);
 }
 
 std::unique_ptr<YAMLNode> ValToNode(atInt32 val) {
-  YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
   ret->m_scalarString = fmt::format(fmt("{}"), int(val));
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <>
 atUint32 NodeToVal(const YAMLNode* node) {
-  return strtoul(node->m_scalarString.c_str(), NULL, 0);
+  return strtoul(node->m_scalarString.c_str(), nullptr, 0);
 }
 
 std::unique_ptr<YAMLNode> ValToNode(atUint32 val) {
-  YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
   ret->m_scalarString = fmt::format(fmt("0x{:08X}"), val);
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <>
 atInt64 NodeToVal(const YAMLNode* node) {
 #if _WIN32
-  return _strtoi64(node->m_scalarString.c_str(), NULL, 0);
+  return _strtoi64(node->m_scalarString.c_str(), nullptr, 0);
 #else
-  return strtoq(node->m_scalarString.c_str(), NULL, 0);
+  return strtoq(node->m_scalarString.c_str(), nullptr, 0);
 #endif
 }
 
 std::unique_ptr<YAMLNode> ValToNode(atInt64 val) {
-  YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
   ret->m_scalarString = fmt::format(fmt("{}"), val);
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <>
 atUint64 NodeToVal(const YAMLNode* node) {
 #if _WIN32
-  return _strtoui64(node->m_scalarString.c_str(), NULL, 0);
+  return _strtoui64(node->m_scalarString.c_str(), nullptr, 0);
 #else
-  return strtouq(node->m_scalarString.c_str(), NULL, 0);
+  return strtouq(node->m_scalarString.c_str(), nullptr, 0);
 #endif
 }
 
 std::unique_ptr<YAMLNode> ValToNode(atUint64 val) {
-  YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
   ret->m_scalarString = fmt::format(fmt("0x{:016X}"), val);
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <>
 float NodeToVal(const YAMLNode* node) {
-  return strtof(node->m_scalarString.c_str(), NULL);
+  return strtof(node->m_scalarString.c_str(), nullptr);
 }
 
 std::unique_ptr<YAMLNode> ValToNode(float val) {
-  YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
   ret->m_scalarString = fmt::format(fmt("{}"), val);
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <>
 double NodeToVal(const YAMLNode* node) {
-  return strtod(node->m_scalarString.c_str(), NULL);
+  return strtod(node->m_scalarString.c_str(), nullptr);
 }
 
 std::unique_ptr<YAMLNode> ValToNode(double val) {
-  YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
   ret->m_scalarString = fmt::format(fmt("{}"), val);
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <typename RETURNTYPE>
@@ -165,15 +165,15 @@ atVec2f NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(const atVec2f& val) {
-  YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SEQUENCE_NODE);
   ret->m_seqChildren.reserve(2);
   simd_floats f(val.simd);
   for (size_t i = 0; i < 2; ++i) {
-    YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
+    auto comp = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
     comp->m_scalarString = fmt::format(fmt("{}"), f[i]);
-    ret->m_seqChildren.emplace_back(comp);
+    ret->m_seqChildren.emplace_back(std::move(comp));
   }
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <>
@@ -182,15 +182,15 @@ atVec3f NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(const atVec3f& val) {
-  YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SEQUENCE_NODE);
   ret->m_seqChildren.reserve(3);
   simd_floats f(val.simd);
   for (size_t i = 0; i < 3; ++i) {
-    YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
+    auto comp = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
     comp->m_scalarString = fmt::format(fmt("{}"), f[i]);
-    ret->m_seqChildren.emplace_back(comp);
+    ret->m_seqChildren.emplace_back(std::move(comp));
   }
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <>
@@ -199,15 +199,15 @@ atVec4f NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(const atVec4f& val) {
-  YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SEQUENCE_NODE);
   ret->m_seqChildren.reserve(4);
   simd_floats f(val.simd);
   for (size_t i = 0; i < 4; ++i) {
-    YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
+    auto comp = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
     comp->m_scalarString = fmt::format(fmt("{}"), f[i]);
-    ret->m_seqChildren.emplace_back(comp);
+    ret->m_seqChildren.emplace_back(std::move(comp));
   }
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <>
@@ -216,15 +216,15 @@ atVec2d NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(const atVec2d& val) {
-  YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SEQUENCE_NODE);
   ret->m_seqChildren.reserve(2);
   simd_doubles f(val.simd);
   for (size_t i = 0; i < 2; ++i) {
-    YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
+    auto comp = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
     comp->m_scalarString = fmt::format(fmt("{}"), f[i]);
-    ret->m_seqChildren.emplace_back(comp);
+    ret->m_seqChildren.emplace_back(std::move(comp));
   }
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <>
@@ -233,15 +233,15 @@ atVec3d NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(const atVec3d& val) {
-  YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SEQUENCE_NODE);
   ret->m_seqChildren.reserve(3);
   simd_doubles f(val.simd);
   for (size_t i = 0; i < 3; ++i) {
-    YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
+    auto comp = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
     comp->m_scalarString = fmt::format(fmt("{}"), f[i]);
-    ret->m_seqChildren.emplace_back(comp);
+    ret->m_seqChildren.emplace_back(std::move(comp));
   }
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <>
@@ -250,15 +250,15 @@ atVec4d NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(const atVec4d& val) {
-  YAMLNode* ret = new YAMLNode(YAML_SEQUENCE_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SEQUENCE_NODE);
   ret->m_seqChildren.reserve(4);
   simd_doubles f(val.simd);
   for (size_t i = 0; i < 4; ++i) {
-    YAMLNode* comp = new YAMLNode(YAML_SCALAR_NODE);
+    auto comp = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
     comp->m_scalarString = fmt::format(fmt("{}"), f[i]);
-    ret->m_seqChildren.emplace_back(comp);
+    ret->m_seqChildren.emplace_back(std::move(comp));
   }
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <>
@@ -267,10 +267,10 @@ std::unique_ptr<atUint8[]> NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(const std::unique_ptr<atUint8[]>& val, size_t byteCount) {
-  YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
   if (val)
     ret->m_scalarString = base64_encode(val.get(), byteCount);
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <>
@@ -279,9 +279,9 @@ std::string NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(std::string_view val) {
-  YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
   ret->m_scalarString = val;
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 template <>
@@ -303,48 +303,48 @@ std::wstring NodeToVal(const YAMLNode* node) {
 }
 
 std::unique_ptr<YAMLNode> ValToNode(std::wstring_view val) {
-  YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
   ret->m_scalarString.reserve(val.length());
   for (wchar_t ch : val) {
     utf8proc_uint8_t mb[4];
     utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(ch), mb);
     if (c < 0) {
       atWarning(fmt("invalid UTF-8 character while encoding"));
-      return std::unique_ptr<YAMLNode>(ret);
+      return ret;
     }
     ret->m_scalarString.append(reinterpret_cast<char*>(mb), c);
   }
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 std::unique_ptr<YAMLNode> ValToNode(std::u16string_view val) {
-  YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
   ret->m_scalarString.reserve(val.length());
   for (char16_t ch : val) {
     utf8proc_uint8_t mb[4];
     utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(ch), mb);
     if (c < 0) {
       atWarning(fmt("invalid UTF-8 character while encoding"));
-      return std::unique_ptr<YAMLNode>(ret);
+      return ret;
     }
     ret->m_scalarString.append(reinterpret_cast<char*>(mb), c);
   }
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 std::unique_ptr<YAMLNode> ValToNode(std::u32string_view val) {
-  YAMLNode* ret = new YAMLNode(YAML_SCALAR_NODE);
+  auto ret = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
   ret->m_scalarString.reserve(val.length());
   for (char32_t ch : val) {
     utf8proc_uint8_t mb[4];
     utf8proc_ssize_t c = utf8proc_encode_char(utf8proc_int32_t(ch), mb);
     if (c < 0) {
       atWarning(fmt("invalid UTF-8 character while encoding"));
-      return std::unique_ptr<YAMLNode>(ret);
+      return ret;
     }
     ret->m_scalarString.append(reinterpret_cast<char*>(mb), c);
   }
-  return std::unique_ptr<YAMLNode>(ret);
+  return ret;
 }
 
 static const char* ErrorString(yaml_error_type_t errt) {
@@ -426,9 +426,9 @@ YAMLDocWriter::YAMLDocWriter(const char* classType, athena::io::IStreamReader* r
 
   m_subStack.emplace_back(m_rootNode.get());
   if (classType) {
-    YAMLNode* classVal = new YAMLNode(YAML_SCALAR_NODE);
+    auto classVal = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
     classVal->m_scalarString.assign(classType);
-    m_rootNode->assignMapChild("DNAType", std::unique_ptr<YAMLNode>(classVal));
+    m_rootNode->assignMapChild("DNAType", std::move(classVal));
   }
 }
 
@@ -633,7 +633,7 @@ std::unique_ptr<YAMLNode> YAMLDocReader::ParseEvents(athena::io::IStreamReader* 
        result = yaml_parser_parse(&m_parser, &event)) {
     if (!result) {
       HandleYAMLParserError(&m_parser);
-      return std::unique_ptr<YAMLNode>();
+      return nullptr;
     }
     switch (event.type) {
     case YAML_SCALAR_EVENT: {
@@ -641,7 +641,7 @@ std::unique_ptr<YAMLNode> YAMLDocReader::ParseEvents(athena::io::IStreamReader* 
         atWarning(fmt("YAML parser stack empty; skipping scalar node"));
         break;
       }
-      std::unique_ptr<YAMLNode> newScalar(new YAMLNode(YAML_SCALAR_NODE));
+      auto newScalar = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
       newScalar->m_scalarString.assign((char*)event.data.scalar.value, event.data.scalar.length);
       if (nodeStack.empty())
         retVal = std::move(newScalar);
@@ -957,48 +957,58 @@ static yaml_mapping_style_t MappingStyle(const YAMLNode& node) {
 }
 
 bool YAMLDocWriter::RecursiveFinish(yaml_emitter_t* doc, const YAMLNode& node) {
+  const auto handleError = [doc] {
+    HandleYAMLEmitterError(doc);
+    return false;
+  };
+
   yaml_event_t event;
   if (node.m_type == YAML_SCALAR_NODE) {
     if (!yaml_scalar_event_initialize(&event, nullptr, nullptr, (yaml_char_t*)node.m_scalarString.c_str(),
                                       node.m_scalarString.length(), true, true, ScalarStyle(node)) ||
-        !yaml_emitter_emit(doc, &event))
-      goto err;
+        !yaml_emitter_emit(doc, &event)) {
+      return handleError();
+    }
   } else if (node.m_type == YAML_SEQUENCE_NODE) {
     if (!yaml_sequence_start_event_initialize(&event, nullptr, nullptr, 1, SequenceStyle(node)) ||
-        !yaml_emitter_emit(doc, &event))
-      goto err;
-    for (const auto& item : node.m_seqChildren) {
-      if (!RecursiveFinish(doc, *item))
-        goto err;
+        !yaml_emitter_emit(doc, &event)) {
+      return handleError();
     }
-    if (!yaml_sequence_end_event_initialize(&event) || !yaml_emitter_emit(doc, &event))
-      goto err;
+    for (const auto& item : node.m_seqChildren) {
+      if (!RecursiveFinish(doc, *item)) {
+        return handleError();
+      }
+    }
+    if (!yaml_sequence_end_event_initialize(&event) || !yaml_emitter_emit(doc, &event)) {
+      return handleError();
+    }
   } else if (node.m_type == YAML_MAPPING_NODE) {
     if (!yaml_mapping_start_event_initialize(&event, nullptr, nullptr, true, MappingStyle(node)) ||
-        !yaml_emitter_emit(doc, &event))
-      goto err;
+        !yaml_emitter_emit(doc, &event)) {
+      return handleError();
+    }
     for (const auto& item : node.m_mapChildren) {
-      if (!EmitKeyScalar(doc, item.first.c_str()))
-        goto err;
-      if (!RecursiveFinish(doc, *item.second))
-        goto err;
+      if (!EmitKeyScalar(doc, item.first.c_str())) {
+        return handleError();
+      }
+      if (!RecursiveFinish(doc, *item.second)) {
+        return handleError();
+      }
     }
     event.type = YAML_MAPPING_END_EVENT;
-    if (!yaml_mapping_end_event_initialize(&event) || !yaml_emitter_emit(doc, &event))
-      goto err;
+    if (!yaml_mapping_end_event_initialize(&event) || !yaml_emitter_emit(doc, &event)) {
+      return handleError();
+    }
   }
   return true;
-err:
-  HandleYAMLEmitterError(doc);
-  return false;
 }
 
-static const std::string base64_chars =
+constexpr std::string_view base64_chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz"
     "0123456789+/";
 
-inline bool is_base64(unsigned char c) { return (isalnum(c) || (c == '+') || (c == '/')); }
+static bool is_base64(unsigned char c) { return isalnum(c) || c == '+' || c == '/'; }
 
 std::string base64_encode(const atUint8* bytes_to_encode, size_t in_len) {
   std::string ret;
