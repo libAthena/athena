@@ -137,13 +137,13 @@ template <class T>
 using __IsDNARecord =
     typename std::disjunction<std::is_base_of<DNA<Endian::Big>, T>, std::is_base_of<DNA<Endian::Little>, T>>;
 template <class T>
-inline constexpr bool __IsDNARecord_v = __IsDNARecord<T>::value;
+constexpr bool __IsDNARecord_v = __IsDNARecord<T>::value;
 
 template <class T>
 using __IsDNAVRecord =
     typename std::disjunction<std::is_base_of<DNAV<Endian::Big>, T>, std::is_base_of<DNAV<Endian::Little>, T>>;
 template <class T>
-inline constexpr bool __IsDNAVRecord_v = __IsDNAVRecord<T>::value;
+constexpr bool __IsDNAVRecord_v = __IsDNAVRecord<T>::value;
 } // namespace io
 } // namespace athena
 
@@ -163,7 +163,7 @@ std::ostream& operator<<(std::ostream& os, const athena::Endian& endian);
 template <typename First, typename... Rest>
 constexpr auto __FIRST_ARG__(First first, Rest...) { return first; }
 template <typename S, typename... Args>
-inline auto __make_args_checked__(const S& format_str, Args&&... args) {
+auto __make_args_checked__(const S& format_str, Args&&... args) {
   return fmt::internal::make_args_checked<Args...>(format_str, std::forward<Args>(args)...);
 }
 
