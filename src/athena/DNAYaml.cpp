@@ -957,40 +957,50 @@ static yaml_mapping_style_t MappingStyle(const YAMLNode& node) {
 }
 
 bool YAMLDocWriter::RecursiveFinish(yaml_emitter_t* doc, const YAMLNode& node) {
+  const auto handleError = [doc] {
+    HandleYAMLEmitterError(doc);
+    return false;
+  };
+
   yaml_event_t event;
   if (node.m_type == YAML_SCALAR_NODE) {
     if (!yaml_scalar_event_initialize(&event, nullptr, nullptr, (yaml_char_t*)node.m_scalarString.c_str(),
                                       node.m_scalarString.length(), true, true, ScalarStyle(node)) ||
-        !yaml_emitter_emit(doc, &event))
-      goto err;
+        !yaml_emitter_emit(doc, &event)) {
+      return handleError();
+    }
   } else if (node.m_type == YAML_SEQUENCE_NODE) {
     if (!yaml_sequence_start_event_initialize(&event, nullptr, nullptr, 1, SequenceStyle(node)) ||
-        !yaml_emitter_emit(doc, &event))
-      goto err;
-    for (const auto& item : node.m_seqChildren) {
-      if (!RecursiveFinish(doc, *item))
-        goto err;
+        !yaml_emitter_emit(doc, &event)) {
+      return handleError();
     }
-    if (!yaml_sequence_end_event_initialize(&event) || !yaml_emitter_emit(doc, &event))
-      goto err;
+    for (const auto& item : node.m_seqChildren) {
+      if (!RecursiveFinish(doc, *item)) {
+        return handleError();
+      }
+    }
+    if (!yaml_sequence_end_event_initialize(&event) || !yaml_emitter_emit(doc, &event)) {
+      return handleError();
+    }
   } else if (node.m_type == YAML_MAPPING_NODE) {
     if (!yaml_mapping_start_event_initialize(&event, nullptr, nullptr, true, MappingStyle(node)) ||
-        !yaml_emitter_emit(doc, &event))
-      goto err;
+        !yaml_emitter_emit(doc, &event)) {
+      return handleError();
+    }
     for (const auto& item : node.m_mapChildren) {
-      if (!EmitKeyScalar(doc, item.first.c_str()))
-        goto err;
-      if (!RecursiveFinish(doc, *item.second))
-        goto err;
+      if (!EmitKeyScalar(doc, item.first.c_str())) {
+        return handleError();
+      }
+      if (!RecursiveFinish(doc, *item.second)) {
+        return handleError();
+      }
     }
     event.type = YAML_MAPPING_END_EVENT;
-    if (!yaml_mapping_end_event_initialize(&event) || !yaml_emitter_emit(doc, &event))
-      goto err;
+    if (!yaml_mapping_end_event_initialize(&event) || !yaml_emitter_emit(doc, &event)) {
+      return handleError();
+    }
   }
   return true;
-err:
-  HandleYAMLEmitterError(doc);
-  return false;
 }
 
 static const std::string base64_chars =
