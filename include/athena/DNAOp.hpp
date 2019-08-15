@@ -56,16 +56,16 @@ constexpr PropId operator"" _propid(const char* s, size_t len) { return {s}; }
 enum class PropType { None, CRC32, CRC64 };
 
 template <class T>
-using __IsPODType = std::disjunction<
+using __IsPODType = typename std::disjunction<
     std::is_arithmetic<std::remove_cv_t<T>>, std::is_convertible<std::remove_cv_t<T>&, atVec2f&>,
     std::is_convertible<std::remove_cv_t<T>&, atVec3f&>, std::is_convertible<std::remove_cv_t<T>&, atVec4f&>,
     std::is_convertible<std::remove_cv_t<T>&, atVec2d&>, std::is_convertible<std::remove_cv_t<T>&, atVec3d&>,
     std::is_convertible<std::remove_cv_t<T>&, atVec4d&>>;
 template <class T>
-constexpr bool __IsPODType_v = __IsPODType<T>::value;
+inline constexpr bool __IsPODType_v = __IsPODType<T>::value;
 
 template <class T>
-using __CastPODType = std::conditional_t<
+using __CastPODType = typename std::conditional_t<
     std::is_convertible_v<std::remove_cv_t<T>&, atVec2f&>, atVec2f,
     std::conditional_t<
         std::is_convertible_v<std::remove_cv_t<T>&, atVec3f&>, atVec3f,
@@ -78,32 +78,32 @@ using __CastPODType = std::conditional_t<
                                                       std::remove_cv_t<T>>>>>>>;
 
 template <Endian DNAE>
-uint16_t __Read16(IStreamReader& r) {
+inline uint16_t __Read16(IStreamReader& r) {
   return DNAE == Endian::Big ? r.readUint16Big() : r.readUint16Little();
 }
 
 template <Endian DNAE>
-void __Write16(IStreamWriter& w, uint16_t v) {
+inline void __Write16(IStreamWriter& w, uint16_t v) {
   DNAE == Endian::Big ? w.writeUint16Big(v) : w.writeUint16Little(v);
 }
 
 template <Endian DNAE>
-uint32_t __Read32(IStreamReader& r) {
+inline uint32_t __Read32(IStreamReader& r) {
   return DNAE == Endian::Big ? r.readUint32Big() : r.readUint32Little();
 }
 
 template <Endian DNAE>
-void __Write32(IStreamWriter& w, uint32_t v) {
+inline void __Write32(IStreamWriter& w, uint32_t v) {
   DNAE == Endian::Big ? w.writeUint32Big(v) : w.writeUint32Little(v);
 }
 
 template <Endian DNAE>
-uint64_t __Read64(IStreamReader& r) {
+inline uint64_t __Read64(IStreamReader& r) {
   return DNAE == Endian::Big ? r.readUint64Big() : r.readUint64Little();
 }
 
 template <Endian DNAE>
-void __Write64(IStreamWriter& w, uint64_t v) {
+inline void __Write64(IStreamWriter& w, uint64_t v) {
   DNAE == Endian::Big ? w.writeUint64Big(v) : w.writeUint64Little(v);
 }
 
@@ -112,7 +112,7 @@ struct BinarySize {
   using PropT = std::conditional_t<PropOp == PropType::CRC64, uint64_t, uint32_t>;
   using StreamT = size_t;
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_enum_v<T>> Do(const PropId& id, T& var, StreamT& s) {
+  static typename std::enable_if_t<std::is_enum_v<T>> Do(const PropId& id, T& var, StreamT& s) {
     if (PropOp != PropType::None) {
       /* Accessed via Enumerate, header */
       s += 6;
@@ -121,7 +121,7 @@ struct BinarySize {
     BinarySize<PropType::None>::Do<PODType, DNAE>(id, *reinterpret_cast<PODType*>(&var), s);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<__IsPODType_v<T>> Do(const PropId& id, T& var, StreamT& s) {
+  static typename std::enable_if_t<__IsPODType_v<T>> Do(const PropId& id, T& var, StreamT& s) {
     if (PropOp != PropType::None) {
       /* Accessed via Enumerate, header */
       s += 6;
@@ -130,17 +130,19 @@ struct BinarySize {
     BinarySize<PropType::None>::Do<CastT, DNAE>(id, static_cast<CastT&>(const_cast<std::remove_cv_t<T>&>(var)), s);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<__IsDNARecord_v<T> && PropOp != PropType::None> Do(const PropId& id, T& var, StreamT& s) {
+  static typename std::enable_if_t<__IsDNARecord_v<T> && PropOp != PropType::None> Do(const PropId& id, T& var,
+                                                                                      StreamT& s) {
     /* Accessed via Enumerate, header */
     s += 6;
     var.template Enumerate<BinarySize<PropOp>>(s);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<__IsDNARecord_v<T> && PropOp == PropType::None> Do(const PropId& id, T& var, StreamT& s) {
+  static typename std::enable_if_t<__IsDNARecord_v<T> && PropOp == PropType::None> Do(const PropId& id, T& var,
+                                                                                      StreamT& s) {
     var.template Enumerate<BinarySize<PropType::None>>(s);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_array_v<T>> Do(const PropId& id, T& var, StreamT& s) {
+  static typename std::enable_if_t<std::is_array_v<T>> Do(const PropId& id, T& var, StreamT& s) {
     for (auto& v : var)
       BinarySize<PropOp>::Do<std::remove_reference_t<decltype(v)>, DNAE>(id, v, s);
   }
@@ -149,14 +151,14 @@ struct BinarySize {
     BinarySize<PropOp>::Do<T, DNAE>(id, var, s);
   }
   template <class T, class S, Endian DNAE>
-  static std::enable_if_t<!std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
-                                                       StreamT& s) {
+  static typename std::enable_if_t<!std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector,
+                                                                const S& count, StreamT& s) {
     for (T& v : vector)
       BinarySize<PropOp>::Do<T, DNAE>(id, v, s);
   }
   template <class T, class S, Endian DNAE>
-  static std::enable_if_t<std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
-                                                      StreamT& s) {
+  static typename std::enable_if_t<std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
+                                                               StreamT& s) {
     /* libc++ specializes vector<bool> as a bitstream */
     s += vector.size();
   }
@@ -165,7 +167,7 @@ struct BinarySize {
       s += count;
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_same_v<T, std::string>> Do(const PropId& id, T& str, StreamT& s) {
+  static typename std::enable_if_t<std::is_same_v<T, std::string>> Do(const PropId& id, T& str, StreamT& s) {
     s += str.size() + 1;
   }
   static void Do(const PropId& id, std::string& str, atInt32 count, StreamT& s) {
@@ -175,7 +177,7 @@ struct BinarySize {
       s += count;
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_same_v<T, std::wstring>> Do(const PropId& id, T& str, StreamT& s) {
+  static typename std::enable_if_t<std::is_same_v<T, std::wstring>> Do(const PropId& id, T& str, StreamT& s) {
     s += str.size() * 2 + 2;
   }
   template <Endian DNAE>
@@ -261,7 +263,7 @@ struct PropCount {
     s += 1;
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_same_v<T, std::string>> Do(const PropId& id, T& str, StreamT& s) {
+  static typename std::enable_if_t<std::is_same_v<T, std::string>> Do(const PropId& id, T& str, StreamT& s) {
     /* Only reports one level of properties */
     s += 1;
   }
@@ -270,7 +272,7 @@ struct PropCount {
     s += 1;
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_same_v<T, std::wstring>> Do(const PropId& id, T& str, StreamT& s) {
+  static typename std::enable_if_t<std::is_same_v<T, std::wstring>> Do(const PropId& id, T& str, StreamT& s) {
     /* Only reports one level of properties */
     s += 1;
   }
@@ -288,21 +290,23 @@ struct Read {
   using PropT = std::conditional_t<PropOp == PropType::CRC64, uint64_t, uint32_t>;
   using StreamT = IStreamReader;
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_enum_v<T>> Do(const PropId& id, T& var, StreamT& r) {
+  static typename std::enable_if_t<std::is_enum_v<T>> Do(const PropId& id, T& var, StreamT& r) {
     using PODType = std::underlying_type_t<T>;
     Read<PropType::None>::Do<PODType, DNAE>(id, *reinterpret_cast<PODType*>(&var), r);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<__IsPODType_v<T>> Do(const PropId& id, T& var, StreamT& r) {
+  static typename std::enable_if_t<__IsPODType_v<T>> Do(const PropId& id, T& var, StreamT& r) {
     using CastT = __CastPODType<T>;
     Read<PropType::None>::Do<CastT, DNAE>(id, static_cast<CastT&>(var), r);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<__IsDNARecord<T>() && PropOp == PropType::None> Do(const PropId& id, T& var, StreamT& r) {
+  static typename std::enable_if_t<__IsDNARecord<T>() && PropOp == PropType::None> Do(const PropId& id, T& var,
+                                                                                      StreamT& r) {
     var.template Enumerate<Read<PropType::None>>(r);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<__IsDNARecord<T>() && PropOp != PropType::None> Do(const PropId& id, T& var, StreamT& r) {
+  static typename std::enable_if_t<__IsDNARecord<T>() && PropOp != PropType::None> Do(const PropId& id, T& var,
+                                                                                      StreamT& r) {
     /* Accessed via Lookup, no header */
     atUint16 propCount = __Read16<T::DNAEndian>(r);
     for (atUint32 i = 0; i < propCount; ++i) {
@@ -320,7 +324,7 @@ struct Read {
     }
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_array_v<T>> Do(const PropId& id, T& var, StreamT& s) {
+  static typename std::enable_if_t<std::is_array_v<T>> Do(const PropId& id, T& var, StreamT& s) {
     for (auto& v : var)
       Read<PropOp>::Do<std::remove_reference_t<decltype(v)>, DNAE>(id, v, s);
   }
@@ -329,8 +333,8 @@ struct Read {
     Read<PropOp>::Do<T, DNAE>(id, var, s);
   }
   template <class T, class S, Endian DNAE>
-  static std::enable_if_t<!std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
-                                                       StreamT& r) {
+  static typename std::enable_if_t<!std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector,
+                                                                const S& count, StreamT& r) {
     vector.clear();
     vector.reserve(count);
     for (size_t i = 0; i < static_cast<size_t>(count); ++i) {
@@ -339,8 +343,8 @@ struct Read {
     }
   }
   template <class T, class S, Endian DNAE>
-  static std::enable_if_t<std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
-                                                      StreamT& r) {
+  static typename std::enable_if_t<std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
+                                                               StreamT& r) {
     /* libc++ specializes vector<bool> as a bitstream */
     vector.clear();
     vector.reserve(count);
@@ -352,12 +356,12 @@ struct Read {
     r.readUBytesToBuf(buf.get(), count);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_same_v<T, std::string>> Do(const PropId& id, T& str, StreamT& r) {
+  static typename std::enable_if_t<std::is_same_v<T, std::string>> Do(const PropId& id, T& str, StreamT& r) {
     str = r.readString();
   }
   static void Do(const PropId& id, std::string& str, atInt32 count, StreamT& r) { str = r.readString(count); }
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_same_v<T, std::wstring>> Do(const PropId& id, T& str, StreamT& r) {
+  static typename std::enable_if_t<std::is_same_v<T, std::wstring>> Do(const PropId& id, T& str, StreamT& r) {
     Read<PropType::None>::Do<DNAE>(id, str, r);
   }
   template <Endian DNAE>
@@ -425,7 +429,7 @@ struct Write {
   using PropT = std::conditional_t<PropOp == PropType::CRC64, uint64_t, uint32_t>;
   using StreamT = IStreamWriter;
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_enum_v<T>> Do(const PropId& id, T& var, StreamT& w) {
+  static typename std::enable_if_t<std::is_enum_v<T>> Do(const PropId& id, T& var, StreamT& w) {
     if (PropOp != PropType::None) {
       /* Accessed via Enumerate, header */
       if (PropOp == PropType::CRC64)
@@ -440,7 +444,7 @@ struct Write {
     Write<PropType::None>::Do<PODType, DNAE>(id, *reinterpret_cast<PODType*>(&var), w);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<__IsPODType_v<T>> Do(const PropId& id, T& var, StreamT& w) {
+  static typename std::enable_if_t<__IsPODType_v<T>> Do(const PropId& id, T& var, StreamT& w) {
     using CastT = __CastPODType<T>;
     if (PropOp != PropType::None) {
       /* Accessed via Enumerate, header */
@@ -456,7 +460,8 @@ struct Write {
     Write<PropType::None>::Do<CastT, DNAE>(id, static_cast<CastT&>(const_cast<std::remove_cv_t<T>&>(var)), w);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<__IsDNARecord<T>() && PropOp != PropType::None> Do(const PropId& id, T& var, StreamT& w) {
+  static typename std::enable_if_t<__IsDNARecord<T>() && PropOp != PropType::None> Do(const PropId& id, T& var,
+                                                                                      StreamT& w) {
     /* Accessed via Enumerate, header */
     if (PropOp == PropType::CRC64)
       __Write64<T::DNAEndian>(w, id.crc64);
@@ -472,11 +477,12 @@ struct Write {
     var.template Enumerate<Write<PropOp>>(w);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<__IsDNARecord<T>() && PropOp == PropType::None> Do(const PropId& id, T& var, StreamT& w) {
+  static typename std::enable_if_t<__IsDNARecord<T>() && PropOp == PropType::None> Do(const PropId& id, T& var,
+                                                                                      StreamT& w) {
     var.template Enumerate<Write<PropType::None>>(w);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_array_v<T>> Do(const PropId& id, T& var, StreamT& s) {
+  static typename std::enable_if_t<std::is_array_v<T>> Do(const PropId& id, T& var, StreamT& s) {
     for (auto& v : var)
       Write<PropOp>::Do<std::remove_reference_t<decltype(v)>, DNAE>(id, v, s);
   }
@@ -485,14 +491,14 @@ struct Write {
     Write<PropOp>::Do<T, DNAE>(id, var, s);
   }
   template <class T, class S, Endian DNAE>
-  static std::enable_if_t<!std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
-                                                       StreamT& w) {
+  static typename std::enable_if_t<!std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector,
+                                                                const S& count, StreamT& w) {
     for (T& v : vector)
       Write<PropOp>::Do<T, DNAE>(id, v, w);
   }
   template <class T, class S, Endian DNAE>
-  static std::enable_if_t<std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
-                                                      StreamT& w) {
+  static typename std::enable_if_t<std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
+                                                               StreamT& w) {
     /* libc++ specializes vector<bool> as a bitstream */
     for (const T& v : vector)
       w.writeBool(v);
@@ -502,12 +508,13 @@ struct Write {
       w.writeUBytes(buf.get(), count);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_same_v<T, std::string>> Do(const PropId& id, std::string& str, StreamT& w) {
+  static typename std::enable_if_t<std::is_same_v<T, std::string>> Do(const PropId& id, std::string& str, StreamT& w) {
     w.writeString(str);
   }
   static void Do(const PropId& id, std::string& str, atInt32 count, StreamT& w) { w.writeString(str, count); }
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_same_v<T, std::wstring>> Do(const PropId& id, std::wstring& str, StreamT& w) {
+  static typename std::enable_if_t<std::is_same_v<T, std::wstring>> Do(const PropId& id, std::wstring& str,
+                                                                       StreamT& w) {
     Write<PropType::None>::Do<DNAE>(id, str, w);
   }
   template <Endian DNAE>
@@ -573,22 +580,22 @@ struct ReadYaml {
   using PropT = std::conditional_t<PropOp == PropType::CRC64, uint64_t, uint32_t>;
   using StreamT = YAMLDocReader;
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_enum_v<T>> Do(const PropId& id, T& var, StreamT& r) {
+  static typename std::enable_if_t<std::is_enum_v<T>> Do(const PropId& id, T& var, StreamT& r) {
     using PODType = std::underlying_type_t<T>;
     ReadYaml<PropType::None>::Do<PODType, DNAE>(id, *reinterpret_cast<PODType*>(&var), r);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<__IsPODType_v<T>> Do(const PropId& id, T& var, StreamT& r) {
+  static typename std::enable_if_t<__IsPODType_v<T>> Do(const PropId& id, T& var, StreamT& r) {
     using CastT = __CastPODType<T>;
     ReadYaml<PropType::None>::Do<CastT, DNAE>(id, static_cast<CastT&>(var), r);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<__IsDNARecord_v<T>> Do(const PropId& id, T& var, StreamT& r) {
+  static typename std::enable_if_t<__IsDNARecord_v<T>> Do(const PropId& id, T& var, StreamT& r) {
     if (auto rec = r.enterSubRecord(id.name))
       var.template Enumerate<ReadYaml<PropOp>>(r);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_array_v<T>> Do(const PropId& id, T& var, StreamT& r) {
+  static typename std::enable_if_t<std::is_array_v<T>> Do(const PropId& id, T& var, StreamT& r) {
     size_t _count;
     if (auto __v = r.enterSubVector(id.name, _count))
       for (size_t i = 0; i < _count && i < std::extent_v<T>; ++i)
@@ -599,8 +606,8 @@ struct ReadYaml {
     /* Squelch size field access */
   }
   template <class T, class S, Endian DNAE>
-  static std::enable_if_t<!std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
-                                                       StreamT& r) {
+  static typename std::enable_if_t<!std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector,
+                                                                const S& count, StreamT& r) {
     size_t _count;
     vector.clear();
     if (auto __v = r.enterSubVector(id.name, _count)) {
@@ -614,8 +621,8 @@ struct ReadYaml {
     const_cast<S&>(count) = vector.size();
   }
   template <class T, class S, Endian DNAE>
-  static std::enable_if_t<std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
-                                                      StreamT& r) {
+  static typename std::enable_if_t<std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
+                                                               StreamT& r) {
     /* libc++ specializes vector<bool> as a bitstream */
     size_t _count;
     vector.clear();
@@ -631,12 +638,12 @@ struct ReadYaml {
     buf = r.readUBytes(id.name);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_same_v<T, std::string>> Do(const PropId& id, T& str, StreamT& r) {
+  static typename std::enable_if_t<std::is_same_v<T, std::string>> Do(const PropId& id, T& str, StreamT& r) {
     str = r.readString(id.name);
   }
   static void Do(const PropId& id, std::string& str, atInt32 count, StreamT& r) { str = r.readString(id.name); }
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_same_v<T, std::wstring>> Do(const PropId& id, T& str, StreamT& r) {
+  static typename std::enable_if_t<std::is_same_v<T, std::wstring>> Do(const PropId& id, T& str, StreamT& r) {
     str = r.readWString(id.name);
   }
   template <Endian DNAE>
@@ -690,22 +697,22 @@ struct WriteYaml {
   using PropT = std::conditional_t<PropOp == PropType::CRC64, uint64_t, uint32_t>;
   using StreamT = YAMLDocWriter;
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_enum_v<T>> Do(const PropId& id, T& var, StreamT& w) {
+  static typename std::enable_if_t<std::is_enum_v<T>> Do(const PropId& id, T& var, StreamT& w) {
     using PODType = std::underlying_type_t<T>;
     WriteYaml<PropType::None>::Do<PODType, DNAE>(id, *reinterpret_cast<PODType*>(&var), w);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<__IsPODType_v<T>> Do(const PropId& id, T& var, StreamT& w) {
+  static typename std::enable_if_t<__IsPODType_v<T>> Do(const PropId& id, T& var, StreamT& w) {
     using CastT = __CastPODType<T>;
     WriteYaml<PropType::None>::Do<CastT, DNAE>(id, static_cast<CastT&>(const_cast<std::remove_cv_t<T>&>(var)), w);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<__IsDNARecord_v<T>> Do(const PropId& id, T& var, StreamT& w) {
+  static typename std::enable_if_t<__IsDNARecord_v<T>> Do(const PropId& id, T& var, StreamT& w) {
     if (auto rec = w.enterSubRecord(id.name))
       var.template Enumerate<WriteYaml<PropOp>>(w);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_array_v<T>> Do(const PropId& id, T& var, StreamT& w) {
+  static typename std::enable_if_t<std::is_array_v<T>> Do(const PropId& id, T& var, StreamT& w) {
     if (auto __v = w.enterSubVector(id.name))
       for (auto& v : var)
         WriteYaml<PropOp>::Do<std::remove_reference_t<decltype(v)>, DNAE>({}, v, w);
@@ -715,15 +722,15 @@ struct WriteYaml {
     /* Squelch size field access */
   }
   template <class T, class S, Endian DNAE>
-  static std::enable_if_t<!std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
-                                                       StreamT& w) {
+  static typename std::enable_if_t<!std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector,
+                                                                const S& count, StreamT& w) {
     if (auto __v = w.enterSubVector(id.name))
       for (T& v : vector)
         WriteYaml<PropOp>::Do<T, DNAE>(id, v, w);
   }
   template <class T, class S, Endian DNAE>
-  static std::enable_if_t<std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
-                                                      StreamT& w) {
+  static typename std::enable_if_t<std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
+                                                               StreamT& w) {
     /* libc++ specializes vector<bool> as a bitstream */
     if (auto __v = w.enterSubVector(id.name))
       for (const T& v : vector)
@@ -733,12 +740,12 @@ struct WriteYaml {
     w.writeUBytes(id.name, buf, count);
   }
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_same_v<T, std::string>> Do(const PropId& id, T& str, StreamT& w) {
+  static typename std::enable_if_t<std::is_same_v<T, std::string>> Do(const PropId& id, T& str, StreamT& w) {
     w.writeString(id.name, str);
   }
   static void Do(const PropId& id, std::string& str, atInt32 count, StreamT& w) { w.writeString(id.name, str); }
   template <class T, Endian DNAE>
-  static std::enable_if_t<std::is_same_v<T, std::wstring>> Do(const PropId& id, T& str, StreamT& w) {
+  static typename std::enable_if_t<std::is_same_v<T, std::wstring>> Do(const PropId& id, T& str, StreamT& w) {
     w.writeWString(id.name, str);
   }
   template <Endian DNAE>
@@ -788,77 +795,77 @@ __WRITE_YAML_S(atVec4f, Endian::Little) { w.writeVec4f(id.name, var); }
 __WRITE_YAML_S(atVec4d, Endian::Little) { w.writeVec4d(id.name, var); }
 
 template <class Op, class T, Endian DNAE>
-void __Do(const PropId& id, T& var, typename Op::StreamT& s) {
+inline void __Do(const PropId& id, T& var, typename Op::StreamT& s) {
   Op::template Do<T, DNAE>(id, var, s);
 }
 
 template <class Op, class T, Endian DNAE>
-void __DoSize(const PropId& id, T& var, typename Op::StreamT& s) {
+inline void __DoSize(const PropId& id, T& var, typename Op::StreamT& s) {
   Op::template DoSize<T, DNAE>(id, var, s);
 }
 
 template <class Op, class T, class S, Endian DNAE>
-void __Do(const PropId& id, std::vector<T>& vector, const S& count, typename Op::StreamT& s) {
+inline void __Do(const PropId& id, std::vector<T>& vector, const S& count, typename Op::StreamT& s) {
   Op::template Do<T, S, DNAE>(id, vector, count, s);
 }
 
 template <class Op>
-void __Do(const PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, typename Op::StreamT& s) {
+inline void __Do(const PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, typename Op::StreamT& s) {
   Op::Do(id, buf, count, s);
 }
 
 template <class Op>
-void __Do(const PropId& id, std::string& str, atInt32 count, typename Op::StreamT& s) {
+inline void __Do(const PropId& id, std::string& str, atInt32 count, typename Op::StreamT& s) {
   Op::Do(id, str, count, s);
 }
 
 template <class Op, Endian DNAE>
-void __Do(const PropId& id, std::wstring& str, atInt32 count, typename Op::StreamT& s) {
+inline void __Do(const PropId& id, std::wstring& str, atInt32 count, typename Op::StreamT& s) {
   Op::template Do<DNAE>(id, str, count, s);
 }
 
 template <class Op>
-void __DoSeek(atInt64 delta, athena::SeekOrigin whence, typename Op::StreamT& s) {
+inline void __DoSeek(atInt64 delta, athena::SeekOrigin whence, typename Op::StreamT& s) {
   Op::DoSeek(delta, whence, s);
 }
 
 template <class Op>
-void __DoAlign(atInt64 amount, typename Op::StreamT& s) {
+inline void __DoAlign(atInt64 amount, typename Op::StreamT& s) {
   Op::DoAlign(amount, s);
 }
 
 template <class T>
-void __Read(T& obj, athena::io::IStreamReader& r) {
+inline void __Read(T& obj, athena::io::IStreamReader& r) {
   __Do<Read<PropType::None>, T, T::DNAEndian>({}, obj, r);
 }
 
 template <class T>
-void __Write(const T& obj, athena::io::IStreamWriter& w) {
+inline void __Write(const T& obj, athena::io::IStreamWriter& w) {
   __Do<Write<PropType::None>, T, T::DNAEndian>({}, const_cast<T&>(obj), w);
 }
 
 template <class T>
-void __BinarySize(const T& obj, size_t& s) {
+inline void __BinarySize(const T& obj, size_t& s) {
   __Do<BinarySize<PropType::None>, T, T::DNAEndian>({}, const_cast<T&>(obj), s);
 }
 
 template <class T>
-void __PropCount(const T& obj, size_t& s) {
+inline void __PropCount(const T& obj, size_t& s) {
   const_cast<T&>(obj).template Enumerate<PropCount<PropType::None>>(s);
 }
 
 template <class T>
-void __ReadYaml(T& obj, athena::io::YAMLDocReader& r) {
+inline void __ReadYaml(T& obj, athena::io::YAMLDocReader& r) {
   obj.template Enumerate<ReadYaml<PropType::None>>(r);
 }
 
 template <class T>
-void __WriteYaml(const T& obj, athena::io::YAMLDocWriter& w) {
+inline void __WriteYaml(const T& obj, athena::io::YAMLDocWriter& w) {
   const_cast<T&>(obj).template Enumerate<WriteYaml<PropType::None>>(w);
 }
 
 template <class T>
-void __ReadProp(T& obj, athena::io::IStreamReader& r) {
+inline void __ReadProp(T& obj, athena::io::IStreamReader& r) {
   /* Read root 0xffffffff hash (hashed empty string) */
   T::DNAEndian == Endian::Big ? r.readUint32Big() : r.readUint32Little();
   atInt64 size = T::DNAEndian == Endian::Big ? r.readUint16Big() : r.readUint16Little();
@@ -870,17 +877,17 @@ void __ReadProp(T& obj, athena::io::IStreamReader& r) {
 }
 
 template <class T>
-void __WriteProp(const T& obj, athena::io::IStreamWriter& w) {
+inline void __WriteProp(const T& obj, athena::io::IStreamWriter& w) {
   __Do<Write<PropType::CRC32>, T, T::DNAEndian>({}, const_cast<T&>(obj), w);
 }
 
 template <class T>
-void __BinarySizeProp(const T& obj, size_t& s) {
+inline void __BinarySizeProp(const T& obj, size_t& s) {
   __Do<BinarySize<PropType::CRC32>, T, T::DNAEndian>({}, const_cast<T&>(obj), s);
 }
 
 template <class T>
-void __ReadProp64(T& obj, athena::io::IStreamReader& r) {
+inline void __ReadProp64(T& obj, athena::io::IStreamReader& r) {
   /* Read root 0x0 hash (hashed empty string) */
   T::DNAEndian == Endian::Big ? r.readUint64Big() : r.readUint64Little();
   atInt64 size = T::DNAEndian == Endian::Big ? r.readUint16Big() : r.readUint16Little();
@@ -892,12 +899,12 @@ void __ReadProp64(T& obj, athena::io::IStreamReader& r) {
 }
 
 template <class T>
-void __WriteProp64(const T& obj, athena::io::IStreamWriter& w) {
+inline void __WriteProp64(const T& obj, athena::io::IStreamWriter& w) {
   __Do<Write<PropType::CRC64>, T, T::DNAEndian>({}, const_cast<T&>(obj), w);
 }
 
 template <class T>
-void __BinarySizeProp64(const T& obj, size_t& s) {
+inline void __BinarySizeProp64(const T& obj, size_t& s) {
   __Do<BinarySize<PropType::CRC64>, T, T::DNAEndian>({}, const_cast<T&>(obj), s);
 }
 

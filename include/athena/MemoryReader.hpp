@@ -19,7 +19,7 @@ protected:
   MemoryReader() = default;
 
 public:
-  ~MemoryReader() override;
+  virtual ~MemoryReader();
 
   /*! \brief This constructor references an existing buffer to read from.
    *
@@ -34,19 +34,19 @@ public:
    *  \param position where in the buffer to seek
    *  \param origin The Origin to seek \sa SeekOrigin
    */
-  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override;
+  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
 
   /*! \brief Returns the current position in the stream.
    *
    *  \return Int64 The current position in the stream.
    */
-  atUint64 position() const override { return m_position; }
+  inline atUint64 position() const { return m_position; }
 
   /*! \brief Returns whether or not the stream is at the end.
    *
    *  \return bool True if at end; False otherwise.
    */
-  atUint64 length() const override { return m_length; }
+  inline atUint64 length() const { return m_length; }
 
   /*! \brief Sets the buffer to the given one, deleting the current one.<br />
    *         <b>BEWARE:</b> As this deletes the current buffer it WILL cause a loss of data
@@ -74,7 +74,7 @@ public:
    *  \param len Length to read
    *  \return Number of bytes read
    */
-  atUint64 readUBytesToBuf(void* buf, atUint64 len) override;
+  atUint64 readUBytesToBuf(void* buf, atUint64 len);
 
 protected:
   const void* m_data = nullptr;
