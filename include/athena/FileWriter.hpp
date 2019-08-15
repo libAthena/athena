@@ -15,7 +15,7 @@ class FileWriter : public IStreamWriter {
 public:
   FileWriter(std::string_view filename, bool overwrite = true, bool globalErr = true);
   FileWriter(std::wstring_view filename, bool overwrite = true, bool globalErr = true);
-  virtual ~FileWriter();
+  ~FileWriter() override;
 
   std::string filename() const {
 #if _WIN32
@@ -35,10 +35,10 @@ public:
   void open(bool overwrite = true);
   void close();
   bool isOpen() const { return m_fileHandle != 0; }
-  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
-  atUint64 position() const;
-  atUint64 length() const;
-  void writeUBytes(const atUint8* data, atUint64 len);
+  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override;
+  atUint64 position() const override;
+  atUint64 length() const override;
+  void writeUBytes(const atUint8* data, atUint64 len) override;
 
 #if _WIN32
   using HandleType = HANDLE;
@@ -99,12 +99,12 @@ public:
     m_position = 0;
   }
 
-  atUint64 position() const { return m_position; }
-  atUint64 length() const { return m_deferredBuffer.size(); }
-  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
-  void writeUBytes(const atUint8* data, atUint64 len);
+  atUint64 position() const override { return m_position; }
+  atUint64 length() const override { return m_deferredBuffer.size(); }
+  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override;
+  void writeUBytes(const atUint8* data, atUint64 len) override;
 
-  ~TransactionalFileWriter() { flush(); }
+  ~TransactionalFileWriter() override { flush(); }
 };
 } // namespace athena::io
 
