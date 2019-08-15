@@ -106,7 +106,7 @@ atUint32 LZType11::compress(const atUint8* src, atUint8** dst, atUint32 srcLengt
   }
 
   delete[] compressedBytes;
-  compressedBytes = NULL;
+  compressedBytes = nullptr;
 
   // Add zeros until the file is a multiple of 4
   while ((outbuff.position() % 4) != 0)
