@@ -134,14 +134,13 @@ template <Endian DNAE>
 struct DNAV;
 
 template <class T>
-using __IsDNARecord =
-    typename std::disjunction<std::is_base_of<DNA<Endian::Big>, T>, std::is_base_of<DNA<Endian::Little>, T>>;
+using __IsDNARecord = std::disjunction<std::is_base_of<DNA<Endian::Big>, T>, std::is_base_of<DNA<Endian::Little>, T>>;
 template <class T>
 constexpr bool __IsDNARecord_v = __IsDNARecord<T>::value;
 
 template <class T>
 using __IsDNAVRecord =
-    typename std::disjunction<std::is_base_of<DNAV<Endian::Big>, T>, std::is_base_of<DNAV<Endian::Little>, T>>;
+    std::disjunction<std::is_base_of<DNAV<Endian::Big>, T>, std::is_base_of<DNAV<Endian::Little>, T>>;
 template <class T>
 constexpr bool __IsDNAVRecord_v = __IsDNAVRecord<T>::value;
 } // namespace io
