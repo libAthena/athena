@@ -103,10 +103,9 @@ public:
    * @return The buffer at the current position from the given length.
    */
   std::unique_ptr<atInt8[]> readBytes(atUint64 length) {
-    atInt8* buf = new atInt8[length];
-    memset(buf, 0, length);
-    readUBytesToBuf(buf, length);
-    return std::unique_ptr<atInt8[]>(buf);
+    auto buf = std::make_unique<atInt8[]>(length);
+    readUBytesToBuf(buf.get(), length);
+    return buf;
   }
 
   /** @brief Reads a byte at the current position and advances the current position.
@@ -114,10 +113,9 @@ public:
    *  @return The buffer at the current position from the given length.
    */
   std::unique_ptr<atUint8[]> readUBytes(atUint64 length) {
-    atUint8* buf = new atUint8[length];
-    memset(buf, 0, length);
-    readUBytesToBuf(buf, length);
-    return std::unique_ptr<atUint8[]>(buf);
+    auto buf = std::make_unique<atUint8[]>(length);
+    readUBytesToBuf(buf.get(), length);
+    return buf;
   }
 
   /** @brief Attempts to read a fixed length of data into a pre-allocated buffer.

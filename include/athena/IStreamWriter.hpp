@@ -977,9 +977,8 @@ public:
     if (length == 0)
       return;
 
-    std::unique_ptr<atUint8[]> tmp(new atUint8[length]);
-    memset(tmp.get(), val, length);
-    writeUBytes(tmp.get(), length);
+    const std::vector<atUint8> tmp(length, val);
+    writeUBytes(tmp.data(), length);
   }
 
   void fill(atInt8 val, atUint64 length) { fill((atUint8)val, length); }
