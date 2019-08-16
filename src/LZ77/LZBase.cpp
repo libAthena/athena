@@ -67,6 +67,8 @@ LZBase::LZBase(atInt32 minimumOffset, atInt32 slidingWindow, atInt32 minimumMatc
 , m_blockSize(blockSize)
 , m_minOffset(minimumOffset) {}
 
+LZBase::~LZBase() = default;
+
 void LZBase::setSlidingWindow(atInt32 slidingWindow) { m_slidingWindow = slidingWindow; }
 
 atInt32 LZBase::slidingWindow() const { return m_slidingWindow; }
