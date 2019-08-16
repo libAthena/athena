@@ -1,9 +1,8 @@
 #pragma once
 
-#include <map>
-#include <deque>
-#include <vector>
 #include <cstdint>
+#include <map>
+#include <vector>
 #include <athena/Types.hpp>
 
 struct LZLengthOffset {
