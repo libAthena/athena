@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include "LZ77/LZLookupTable.hpp"
 
 class LZBase {
