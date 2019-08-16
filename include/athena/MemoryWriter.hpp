@@ -21,8 +21,10 @@ public:
 
   /*! @brief This constructor references an existing buffer to write to in-place.
    *
-   *   @param data The existing buffer
-   *   @param length The length of the existing buffer
+   *   @param data          The existing buffer.
+   *   @param length        The length of the existing buffer.
+   *   @param takeOwnership Whether or not this writer takes ownership of the supplied data buffer.
+   *                        If true, the buffer will be deleted by this when the destructor executes.
    */
   explicit MemoryWriter(atUint8* data, atUint64 length, bool takeOwnership = false);
 
@@ -31,7 +33,7 @@ public:
    *  @param position where in the buffer to seek
    *  @param origin The Origin to seek @sa SeekOrigin
    */
-  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override;
+  void seek(atInt64 position, SeekOrigin origin = SeekOrigin::Current) override;
 
   /*! @brief Returns the current position in the stream.
    *
@@ -85,7 +87,7 @@ public:
    * @param data The buffer to write
    * @param length The amount to write
    */
-  void writeUBytes(const atUint8* data, atUint64 len) override;
+  void writeUBytes(const atUint8* data, atUint64 length) override;
 
 protected:
   MemoryWriter() {}
@@ -116,7 +118,7 @@ public:
    *  @param position where in the buffer to seek
    *  @param origin The Origin to seek @sa SeekOrigin
    */
-  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override;
+  void seek(atInt64 position, SeekOrigin origin = SeekOrigin::Current) override;
 
   /*! @brief Sets the buffer to the given one, deleting the current one.<br />
    *         <b>BEWARE:</b> As this deletes the current buffer it WILL cause a loss of data
@@ -135,7 +137,7 @@ public:
    * @param data The buffer to write
    * @param length The amount to write
    */
-  void writeUBytes(const atUint8* data, atUint64 len) override;
+  void writeUBytes(const atUint8* data, atUint64 length) override;
 
 protected:
   std::unique_ptr<atUint8[]> m_dataCopy;

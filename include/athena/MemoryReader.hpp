@@ -23,9 +23,10 @@ public:
 
   /*! \brief This constructor references an existing buffer to read from.
    *
-   *   \param data The existing buffer
-   *   \param length The length of the existing buffer
-   *   \param takeOwnership Memory will be freed with the reader if set
+   *   \param data          The existing buffer.
+   *   \param length        The length of the existing buffer.
+   *   \param takeOwnership Memory will be freed with the reader if set.
+   *   \param globalErr     Whether or not global errors are enabled.
    */
   MemoryReader(const void* data, atUint64 length, bool takeOwnership = false, bool globalErr = true);
 
@@ -34,7 +35,7 @@ public:
    *  \param position where in the buffer to seek
    *  \param origin The Origin to seek \sa SeekOrigin
    */
-  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override;
+  void seek(atInt64 position, SeekOrigin origin = SeekOrigin::Current) override;
 
   /*! \brief Returns the current position in the stream.
    *
