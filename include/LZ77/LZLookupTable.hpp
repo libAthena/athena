@@ -22,7 +22,7 @@ public:
   void setLookAheadWindow(atInt32 lookAheadWindow);
 
 private:
-  typedef std::multimap<std::vector<uint8_t>, int32_t> LookupTable;
+  using LookupTable = std::multimap<std::vector<uint8_t>, int32_t>;
   LookupTable table;
   atInt32 m_minimumMatch = 3;
   atInt32 m_slidingWindow = 4096;
