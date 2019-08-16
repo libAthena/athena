@@ -2,6 +2,7 @@
 #include "athena/Utility.hpp"
 #include <cstdio>
 #include <cstdlib>
+#include <iostream>
 
 #define FMT_STRING_ALIAS 1
 #define FMT_ENFORCE_COMPILE_STRING 1
