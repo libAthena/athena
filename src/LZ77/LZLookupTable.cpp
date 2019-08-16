@@ -27,7 +27,7 @@ LZLookupTable::LZLookupTable(atInt32 minimumMatch, atInt32 slidingWindow, atInt3
   m_buffer.reserve(m_minimumMatch);
 }
 
-LZLookupTable::~LZLookupTable() {}
+LZLookupTable::~LZLookupTable() = default;
 
 void LZLookupTable::setLookAheadWindow(atInt32 lookAheadWindow) {
   if (lookAheadWindow > 0)
