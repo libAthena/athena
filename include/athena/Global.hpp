@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iostream>
+#include <ostream>
 #include "athena/Types.hpp"
 
 #define FMT_STRING_ALIAS 1
