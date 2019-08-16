@@ -36,7 +36,7 @@ void LZLookupTable::setLookAheadWindow(atInt32 lookAheadWindow) {
     m_lookAheadWindow = 18;
 }
 
-LZLengthOffset LZLookupTable::search(atUint8* curPos, const atUint8* dataBegin, const atUint8* dataEnd) {
+LZLengthOffset LZLookupTable::search(const atUint8* curPos, const atUint8* dataBegin, const atUint8* dataEnd) {
   LZLengthOffset loPair = {0, 0};
 
   // Returns negative 1 for search failures since the current position is passed the size to be compressed

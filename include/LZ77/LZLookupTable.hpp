@@ -9,7 +9,8 @@
 struct LZLengthOffset {
   atUint32 length; // The number of bytes compressed
   atUint16 offset; // How far back in sliding window where bytes that match the lookAheadBuffer is located
-  bool compare_equal(const LZLengthOffset& lo_pair) { return length == lo_pair.length && offset == lo_pair.offset; }
+  bool operator==(const LZLengthOffset& lo_pair) const { return length == lo_pair.length && offset == lo_pair.offset; }
+  bool operator!=(const LZLengthOffset& lo_pair) const { return !operator==(lo_pair); }
 };
 
 class LZLookupTable {
@@ -17,7 +18,7 @@ public:
   LZLookupTable();
   LZLookupTable(atInt32 minimumMatch, atInt32 slidingWindow = 4096, atInt32 lookAheadWindow = 18);
   ~LZLookupTable();
-  LZLengthOffset search(atUint8* curPos, const atUint8* dataBegin, const atUint8* dataEnd);
+  LZLengthOffset search(const atUint8* curPos, const atUint8* dataBegin, const atUint8* dataEnd);
   void setLookAheadWindow(atInt32 lookAheadWindow);
 
 private:
