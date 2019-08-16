@@ -1,12 +1,7 @@
 #include "LZ77/LZLookupTable.hpp"
 #include <algorithm>
 
-LZLookupTable::LZLookupTable() {
-  m_minimumMatch = 3;
-  m_slidingWindow = 4096;
-  m_lookAheadWindow = 18;
-  m_buffer.resize(m_minimumMatch);
-}
+LZLookupTable::LZLookupTable() : m_buffer(m_minimumMatch) {}
 
 LZLookupTable::LZLookupTable(atInt32 minimumMatch, atInt32 slidingWindow, atInt32 lookAheadWindow) {
   if (minimumMatch > 0)

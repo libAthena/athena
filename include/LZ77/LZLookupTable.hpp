@@ -24,8 +24,8 @@ public:
 private:
   typedef std::multimap<std::vector<uint8_t>, int32_t> LookupTable;
   LookupTable table;
-  atInt32 m_minimumMatch;
-  atInt32 m_slidingWindow;
-  atInt32 m_lookAheadWindow;
+  atInt32 m_minimumMatch = 3;
+  atInt32 m_slidingWindow = 4096;
+  atInt32 m_lookAheadWindow = 18;
   std::vector<uint8_t> m_buffer;
 };
