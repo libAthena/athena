@@ -14,10 +14,7 @@ LZLookupTable::LZLookupTable(atInt32 minimumMatch, atInt32 slidingWindow, atInt3
   else
     m_slidingWindow = 4096;
 
-  if (lookAheadWindow > 0)
-    m_lookAheadWindow = lookAheadWindow;
-  else
-    m_lookAheadWindow = 18;
+  setLookAheadWindow(lookAheadWindow);
 
   m_buffer.reserve(m_minimumMatch);
 }
