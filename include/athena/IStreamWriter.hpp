@@ -16,7 +16,7 @@ public:
    *  @param position where in the buffer to seek
    *  @param origin The location to seek relative to
    */
-  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override = 0;
+  void seek(atInt64 position, SeekOrigin origin = SeekOrigin::Current) override = 0;
 
   /** @brief Sets the buffers position relative to the next 32-byte aligned position.<br />
    */
@@ -72,7 +72,7 @@ public:
    *  @param data The buffer to write
    *  @param length The amount to write
    */
-  virtual void writeUBytes(const atUint8* data, atUint64 len) = 0;
+  virtual void writeUBytes(const atUint8* data, atUint64 length) = 0;
 
   /** @brief Writes the given buffer with the specified length, buffers can be bigger than the length
    *  however it's undefined behavior to try and write a buffer which is smaller than the given length.
@@ -80,7 +80,7 @@ public:
    *  @param data The buffer to write
    *  @param length The amount to write
    */
-  void writeBytes(const void* data, atUint64 len) { writeUBytes((atUint8*)data, len); }
+  void writeBytes(const void* data, atUint64 length) { writeUBytes((atUint8*)data, length); }
 
   /** @brief Writes an Int16 to the buffer and advances the buffer.
    *         It also swaps the bytes depending on the platform and Stream settings.

@@ -11,7 +11,7 @@ namespace athena::io {
  * virtual function that must be implemented in order to interact with the stream.
  *
  *  Most implementing classes will only need to implement IStreamReader::readUBytesToBuf(void*, atUint64) for basic
- * stream intearaction
+ * stream interaction
  */
 class IStreamReader : public IStream {
 public:
@@ -22,7 +22,7 @@ public:
    *  @param position where in the buffer to seek
    *  @param origin The Origin to seek relative to
    */
-  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override = 0;
+  void seek(atInt64 position, SeekOrigin origin = SeekOrigin::Current) override = 0;
 
   /** @brief Sets the buffer's position relative to the next 64-byte aligned position.<br />
    */
@@ -919,7 +919,10 @@ public:
 
   /** @brief Reads a string and advances the position in the file
    *
-   *  @param fixedLen If non-negative, this is a fixed-length string read
+   *  @param fixedLen If non-negative, this is a fixed-length string read.
+   *  @param doSeek   Whether or not to reset the advanced position of the file.
+   *                  This is ignored if fixedLen is less than or equal to zero.
+   *
    *  @return The read string
    */
   std::string readString(atInt32 fixedLen = -1, bool doSeek = true) {
@@ -950,7 +953,10 @@ public:
 
   /** @brief Reads a wstring and advances the position in the file
    *
-   *  @param fixedLen If non-negative, this is a fixed-length string read
+   *  @param fixedLen If non-negative, this is a fixed-length string read.
+   *  @param doSeek   Whether or not to reset the advanced position of the file.
+   *                  This is ignored if fixedLen is less than or equal to zero.
+   *
    *  @return The read wstring
    */
   std::wstring readWString(atInt32 fixedLen = -1, bool doSeek = true) {
@@ -983,7 +989,10 @@ public:
   /** @brief Reads a wstring assuming little-endian characters
    *         and advances the position in the file
    *
-   *  @param fixedLen If non-negative, this is a fixed-length string read
+   *  @param fixedLen If non-negative, this is a fixed-length string read.
+   *  @param doSeek   Whether or not to reset the advanced position of the file.
+   *                  This is ignored if fixedLen is less than or equal to zero.
+   *
    *  @return The read wstring
    */
   std::wstring readWStringLittle(atInt32 fixedLen = -1, bool doSeek = true) {
@@ -1017,6 +1026,9 @@ public:
    *         and advances the position in the file
    *
    *  @param fixedLen If non-negative, this is a fixed-length string read
+   *  @param doSeek   Whether or not to reset the advanced position of the file.
+   *                  This is ignored if fixedLen is less than or equal to zero.
+   *
    *  @return The read wstring
    */
   std::wstring readWStringBig(atInt32 fixedLen = -1, bool doSeek = true) {
@@ -1048,7 +1060,10 @@ public:
   /** @brief Reads a u16string assuming big-endian characters
    *         and advances the position in the file
    *
-   *  @param fixedLen If non-negative, this is a fixed-length string read
+   *  @param fixedLen If non-negative, this is a fixed-length string read.
+   *  @param doSeek   Whether or not to reset the advanced position of the file.
+   *                  This is ignored if fixedLen is less than or equal to zero.
+   *
    *  @return The read wstring
    */
   std::u16string readU16StringBig(atInt32 fixedLen = -1, bool doSeek = true) {
@@ -1080,7 +1095,10 @@ public:
   /** @brief Reads a u32string assuming big-endian characters
    *         and advances the position in the file
    *
-   *  @param fixedLen If non-negative, this is a fixed-length string read
+   *  @param fixedLen If non-negative, this is a fixed-length string read.
+   *  @param doSeek   Whether or not to reset the advanced position of the file.
+   *                  This is ignored if fixedLen is less than or equal to zero.
+   *
    *  @return The read wstring
    */
   std::u32string readU32StringBig(atInt32 fixedLen = -1, bool doSeek = true) {

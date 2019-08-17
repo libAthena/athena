@@ -22,7 +22,7 @@ public:
    *  @param position where in the buffer to seek
    *  @param origin The Origin to seek @sa SeekOrigin
    */
-  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override;
+  void seek(atInt64 position, SeekOrigin origin = SeekOrigin::Current) override;
 
   /*! @brief Returns the current position in the stream.
    *
@@ -48,7 +48,7 @@ public:
    * @param data The buffer to write
    * @param length The amount to write
    */
-  void writeUBytes(const atUint8* data, atUint64 len) override;
+  void writeUBytes(const atUint8* data, atUint64 length) override;
 
 protected:
   std::vector<uint8_t> m_data;
