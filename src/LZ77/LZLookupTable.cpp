@@ -1,12 +1,7 @@
 #include "LZ77/LZLookupTable.hpp"
 #include <algorithm>
 
-LZLookupTable::LZLookupTable() {
-  m_minimumMatch = 3;
-  m_slidingWindow = 4096;
-  m_lookAheadWindow = 18;
-  m_buffer.resize(m_minimumMatch);
-}
+LZLookupTable::LZLookupTable() : m_buffer(m_minimumMatch) {}
 
 LZLookupTable::LZLookupTable(atInt32 minimumMatch, atInt32 slidingWindow, atInt32 lookAheadWindow) {
   if (minimumMatch > 0)
@@ -19,15 +14,12 @@ LZLookupTable::LZLookupTable(atInt32 minimumMatch, atInt32 slidingWindow, atInt3
   else
     m_slidingWindow = 4096;
 
-  if (lookAheadWindow > 0)
-    m_lookAheadWindow = lookAheadWindow;
-  else
-    m_lookAheadWindow = 18;
+  setLookAheadWindow(lookAheadWindow);
 
   m_buffer.reserve(m_minimumMatch);
 }
 
-LZLookupTable::~LZLookupTable() {}
+LZLookupTable::~LZLookupTable() = default;
 
 void LZLookupTable::setLookAheadWindow(atInt32 lookAheadWindow) {
   if (lookAheadWindow > 0)
@@ -36,7 +28,7 @@ void LZLookupTable::setLookAheadWindow(atInt32 lookAheadWindow) {
     m_lookAheadWindow = 18;
 }
 
-LZLengthOffset LZLookupTable::search(atUint8* curPos, const atUint8* dataBegin, const atUint8* dataEnd) {
+LZLengthOffset LZLookupTable::search(const atUint8* curPos, const atUint8* dataBegin, const atUint8* dataEnd) {
   LZLengthOffset loPair = {0, 0};
 
   // Returns negative 1 for search failures since the current position is passed the size to be compressed
