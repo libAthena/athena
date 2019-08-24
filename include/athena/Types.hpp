@@ -13,24 +13,24 @@ using atUint64 = uint64_t;
 
 // Vector types
 #include "simd/simd.hpp"
-typedef struct {
+struct atVec2f {
   athena::simd<float> simd;
-} atVec2f;
-typedef struct {
+};
+struct atVec3f {
   athena::simd<float> simd;
-} atVec3f;
-typedef struct {
+};
+struct atVec4f {
   athena::simd<float> simd;
-} atVec4f;
-typedef struct {
+};
+struct atVec2d {
   athena::simd<double> simd;
-} atVec2d;
-typedef struct {
+};
+struct atVec3d {
   athena::simd<double> simd;
-} atVec3d;
-typedef struct {
+};
+struct atVec4d {
   athena::simd<double> simd;
-} atVec4d;
+};
 
 #ifndef UNUSED
 #define UNUSED(x) ((void)x)
