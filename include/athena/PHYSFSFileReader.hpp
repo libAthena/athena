@@ -48,8 +48,5 @@ private:
 };
 } // namespace athena::io
 
-#ifndef PHYSFSFILEREADER_BASE
-#define PHYSFSFILEREADER_BASE() typedef athena::io::PHYSFSFileReader base
-#endif
 #endif // PHYSFSSTREAM_HPP
 #endif // ATHENA_ENABLE_PHYSFS
