@@ -6,12 +6,16 @@
  * Any changes to the types or namespacing must be reflected in 'atdna/main.cpp'
  */
 
-#include "Global.hpp"
-#include "IStreamReader.hpp"
-#include "IStreamWriter.hpp"
-#include "DNAOp.hpp"
-#include <vector>
 #include <memory>
+#include <string>
+#include <vector>
+
+#include <sys/types.h>
+
+#include "athena/DNAOp.hpp"
+#include "athena/Global.hpp"
+#include "athena/IStreamReader.hpp"
+#include "athena/IStreamWriter.hpp"
 
 namespace athena::io {
 

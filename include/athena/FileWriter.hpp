@@ -8,7 +8,9 @@
 #else
 #include <cstdio>
 #endif
+
 #include "athena/IStreamWriter.hpp"
+#include "athena/Types.hpp"
 
 namespace athena::io {
 class FileWriter : public IStreamWriter {

@@ -1,10 +1,14 @@
 #include "athena/Dir.hpp"
-#include <sys/stat.h>
+
 #include <climits>
 #include <cstdlib>
 #include <ctime>
+#include <sys/stat.h>
+
 #define __STDC_FORMAT_MACROS
 #include <cinttypes>
+
+#include "athena/FileInfo.hpp"
 #include "athena/Utility.hpp"
 
 #ifndef _WIN32

@@ -1,10 +1,13 @@
 #pragma once
 
-#include "utf8proc.h"
-#include "IStream.hpp"
-#include "Utility.hpp"
-#include <memory>
+#include <string>
+#include <type_traits>
 #include <vector>
+
+#include "utf8proc.h"
+
+#include "athena/IStream.hpp"
+#include "athena/Utility.hpp"
 
 namespace athena::io {
 class IStreamWriter : public IStream {

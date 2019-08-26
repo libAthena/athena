@@ -1,11 +1,11 @@
 ﻿#ifndef __UTILITY_H__
 #define __UTILITY_H__
 
+#include <cstring>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <cstdarg>
-#include <cstring>
+
 #include "athena/Global.hpp"
 #include "athena/Types.hpp"
 

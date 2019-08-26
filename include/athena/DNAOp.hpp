@@ -1,11 +1,16 @@
 #pragma once
 
-#include "IStreamReader.hpp"
-#include "IStreamWriter.hpp"
-#include "YAMLDocReader.hpp"
-#include "YAMLDocWriter.hpp"
-#include "ChecksumsLiterals.hpp"
+#include <cstddef>
+#include <cstdint>
+#include <string>
 #include <type_traits>
+#include <vector>
+
+#include "athena/ChecksumsLiterals.hpp"
+#include "athena/IStreamReader.hpp"
+#include "athena/IStreamWriter.hpp"
+#include "athena/YAMLDocReader.hpp"
+#include "athena/YAMLDocWriter.hpp"
 
 namespace athena::io {
 

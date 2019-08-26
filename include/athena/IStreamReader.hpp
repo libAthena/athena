@@ -1,10 +1,12 @@
 #pragma once
 
-#include <memory>
 #include <functional>
-#include "utf8proc.h"
-#include "Utility.hpp"
-#include "IStream.hpp"
+#include <memory>
+#include <type_traits>
+#include <vector>
+
+#include "athena/IStream.hpp"
+#include "athena/Utility.hpp"
 
 namespace athena::io {
 /** @brief The IStreamReader class defines a basic API for reading from streams, Implementors are provided with one pure

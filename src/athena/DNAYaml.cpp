@@ -1,5 +1,10 @@
 #include "athena/DNAYaml.hpp"
 
+#include <cctype>
+#include <cstdlib>
+
+#include "athena/YAMLCommon.hpp"
+
 namespace athena::io {
 
 template <>

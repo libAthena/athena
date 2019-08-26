@@ -1,15 +1,12 @@
 #pragma once
 
-#include <sys/types.h>
-#include <fcntl.h>
+#include <cstddef>
+#include <cstdint>
 #include <string>
-#include <memory.h>
-
-#include "Global.hpp"
 
 #ifdef _WIN32
 #include <BaseTsd.h>
-typedef UINT_PTR SOCKET;
+using SOCKET = UINT_PTR;
 #endif
 
 struct sockaddr_in;

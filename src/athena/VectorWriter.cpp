@@ -1,10 +1,8 @@
 #include "athena/VectorWriter.hpp"
 
-#include <cstdio>
+#include <algorithm>
 #include <cstring>
 #include <vector>
-#include <iostream>
-#include <algorithm>
 
 namespace athena::io {
 

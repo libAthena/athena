@@ -1,11 +1,9 @@
 #pragma once
 
-#include "athena/FileInfo.hpp"
-#include <cstdio>
-#include <vector>
+#include <string>
 
 #if _WIN32
-typedef int mode_t;
+using mode_t = int;
 #endif
 
 namespace athena {
@@ -18,8 +16,6 @@ public:
 
   bool isDir() const;
   static bool isDir(std::string_view dir) { return Dir(dir).isDir(); }
-
-  std::vector<FileInfo> files() const;
 
   bool cd(std::string_view path);
   bool rm(std::string_view path);

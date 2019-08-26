@@ -1,7 +1,4 @@
 #include "athena/Checksums.hpp"
-#include "athena/FileReader.hpp"
-#include <iostream>
-#include <iomanip>
 
 namespace athena::checksums {
 atUint64 crc64(const atUint8* data, atUint64 length, atUint64 seed, atUint64 final) {

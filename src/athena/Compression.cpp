@@ -1,8 +1,9 @@
 #include "athena/Compression.hpp"
+
 #if AT_LZOKAY
 #include <lzokay.hpp>
 #endif
-#include <iostream>
+
 #include <zlib.h>
 #include "LZ77/LZType10.hpp"
 #include "LZ77/LZType11.hpp"

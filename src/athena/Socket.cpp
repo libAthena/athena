@@ -1,17 +1,20 @@
 #include "athena/Socket.hpp"
 
 #ifndef _WIN32
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
+#include <cerrno>
+
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <sys/socket.h>
 #include <unistd.h>
-#include <cerrno>
 #else
 #include <WinSock2.h>
 #include <Ws2tcpip.h>
 #endif
+
+#include "athena/Global.hpp"
 
 namespace athena::net {
 
