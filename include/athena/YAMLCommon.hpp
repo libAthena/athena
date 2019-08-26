@@ -166,7 +166,7 @@ struct YAMLStdStringViewReaderState {
   std::string_view::const_iterator begin;
   std::string_view::const_iterator end;
 
-  YAMLStdStringViewReaderState(std::string_view str) {
+  explicit YAMLStdStringViewReaderState(std::string_view str) {
     begin = str.begin();
     end = str.end();
   }

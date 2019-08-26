@@ -41,7 +41,7 @@ public:
   class RecordRAII {
     friend class YAMLDocReader;
     YAMLDocReader* m_r = nullptr;
-    RecordRAII(YAMLDocReader* r) : m_r(r) {}
+    explicit RecordRAII(YAMLDocReader* r) : m_r(r) {}
     RecordRAII() = default;
 
   public:
@@ -70,11 +70,11 @@ public:
   class VectorRAII {
     friend class YAMLDocReader;
     YAMLDocReader* m_r = nullptr;
-    VectorRAII(YAMLDocReader* r) : m_r(r) {}
+    explicit VectorRAII(YAMLDocReader* r) : m_r(r) {}
     VectorRAII() = default;
 
   public:
-    operator bool() const { return m_r != nullptr; }
+    explicit operator bool() const { return m_r != nullptr; }
     ~VectorRAII() {
       if (m_r)
         m_r->_leaveSubVector();

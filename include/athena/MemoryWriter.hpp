@@ -111,7 +111,7 @@ public:
    *
    * @param filename The file to create the stream from
    */
-  MemoryCopyWriter(std::string_view filename);
+  explicit MemoryCopyWriter(std::string_view filename);
 
   /*! @brief Sets the buffers position relative to the specified position.<br />
    *         It seeks relative to the current position by default.

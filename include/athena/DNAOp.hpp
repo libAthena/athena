@@ -21,8 +21,9 @@ struct PropId {
   template <class T>
   constexpr T opget() const;
   constexpr PropId() = default;
-  constexpr PropId(const char* name, uint32_t rcrc32, uint64_t crc64) : name(name), rcrc32(rcrc32), crc64(crc64) {}
-  constexpr PropId(const char* name)
+  constexpr explicit PropId(const char* name, uint32_t rcrc32, uint64_t crc64)
+  : name(name), rcrc32(rcrc32), crc64(crc64) {}
+  constexpr explicit PropId(const char* name)
   : name(name)
   , rcrc32(athena::checksums::literals::rcrc32_rec(0xFFFFFFFF, name))
   , crc64(athena::checksums::literals::crc64_rec(0xFFFFFFFFFFFFFFFF, name)) {}
@@ -41,7 +42,7 @@ constexpr uint64_t PropId::opget<uint64_t>() const {
 }
 
 namespace literals {
-constexpr PropId operator"" _propid(const char* s, size_t len) { return {s}; }
+constexpr PropId operator"" _propid(const char* s, size_t len) { return PropId{s}; }
 } // namespace literals
 
 #define AT_PROP_CASE(...) case athena::io::PropId(__VA_ARGS__).opget<typename Op::PropT>()

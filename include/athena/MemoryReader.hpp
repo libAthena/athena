@@ -28,7 +28,7 @@ public:
    *   \param takeOwnership Memory will be freed with the reader if set.
    *   \param globalErr     Whether or not global errors are enabled.
    */
-  MemoryReader(const void* data, atUint64 length, bool takeOwnership = false, bool globalErr = true);
+  explicit MemoryReader(const void* data, atUint64 length, bool takeOwnership = false, bool globalErr = true);
 
   /*! \brief Sets the buffers position relative to the specified position.<br />
    *         It seeks relative to the current position by default.
@@ -92,13 +92,13 @@ public:
    *   \param data The existing buffer
    *   \param length The length of the existing buffer
    */
-  MemoryCopyReader(const void* data, atUint64 length);
+  explicit MemoryCopyReader(const void* data, atUint64 length);
 
   /*! \brief This constructor creates an instance from a file on disk.
    *
    * \param filename The file to create the stream from
    */
-  MemoryCopyReader(const std::string& filename) : m_filepath(filename) { loadData(); }
+  explicit MemoryCopyReader(const std::string& filename) : m_filepath(filename) { loadData(); }
 
   void setData(const atUint8* data, atUint64 length);
 

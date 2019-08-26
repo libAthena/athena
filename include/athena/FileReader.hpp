@@ -18,8 +18,8 @@
 namespace athena::io {
 class FileReader : public IStreamReader {
 public:
-  FileReader(std::string_view filename, atInt32 cacheSize = (32 * 1024), bool globalErr = true);
-  FileReader(std::wstring_view filename, atInt32 cacheSize = (32 * 1024), bool globalErr = true);
+  explicit FileReader(std::string_view filename, atInt32 cacheSize = (32 * 1024), bool globalErr = true);
+  explicit FileReader(std::wstring_view filename, atInt32 cacheSize = (32 * 1024), bool globalErr = true);
   ~FileReader() override;
 
   std::string filename() const {
