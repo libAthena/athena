@@ -109,10 +109,3 @@ public:
   ~TransactionalFileWriter() override { flush(); }
 };
 } // namespace athena::io
-
-#ifndef FILEWRITER_BASE
-#define FILEWRITER_BASE()                                                                                              \
-private:                                                                                                               \
-  typedef athena::io::FileWriter base;
-
-#endif // FILEWRITER_BASE

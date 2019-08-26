@@ -71,10 +71,3 @@ protected:
   bool m_globalErr;
 };
 } // namespace athena::io
-
-#ifndef FILEREADER_BASE
-#define FILEREADER_BASE()                                                                                              \
-private:                                                                                                               \
-  typedef athena::io::FileReader base
-
-#endif // FILEREADER_BASE
