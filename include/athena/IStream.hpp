@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Global.hpp"
+#include "athena/Global.hpp"
 
 namespace athena::io {
 std::ostream& operator<<(std::ostream& os, Endian& endian);

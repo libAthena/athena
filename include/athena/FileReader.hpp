@@ -9,9 +9,11 @@
 #include <cstdio>
 #endif
 
-#include <string>
 #include <memory>
+#include <string>
+
 #include "athena/IStreamReader.hpp"
+#include "athena/Types.hpp"
 
 namespace athena::io {
 class FileReader : public IStreamReader {

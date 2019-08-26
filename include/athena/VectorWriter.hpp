@@ -1,10 +1,10 @@
 #pragma once
 
-#include <string>
-#include <memory>
-#include <functional>
+#include <cstdint>
 #include <vector>
+
 #include "athena/IStreamWriter.hpp"
+#include "athena/Types.hpp"
 
 namespace athena::io {
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LZBase.hpp"
+#include "LZ77/LZBase.hpp"
 
 class LZType11 : public LZBase {
 public:

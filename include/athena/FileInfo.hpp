@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "athena/Global.hpp"
+#include "athena/Types.hpp"
 
 namespace athena {
 class FileInfo {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <string>
 #include <memory>
-#include <functional>
+#include <string>
+
 #include "athena/IStreamWriter.hpp"
 
 namespace athena::io {

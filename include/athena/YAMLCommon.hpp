@@ -4,13 +4,13 @@
 
 #pragma once
 
-#include <cstring>
-#include <yaml.h>
-#include <utf8proc.h>
-#include <vector>
 #include <memory>
-#include <functional>
-#include "Global.hpp"
+#include <string>
+#include <vector>
+
+#include <yaml.h>
+
+#include "athena/Types.hpp"
 
 namespace athena::io {
 class IStreamReader;

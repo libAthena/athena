@@ -1,10 +1,13 @@
 #pragma once
 
-#include "YAMLDocReader.hpp"
-#include "YAMLDocWriter.hpp"
-#include "DNA.hpp"
-#include "FileReader.hpp"
-#include "FileWriter.hpp"
+#include <string>
+#include <type_traits>
+
+#include "athena/DNA.hpp"
+#include "athena/FileReader.hpp"
+#include "athena/FileWriter.hpp"
+#include "athena/YAMLDocReader.hpp"
+#include "athena/YAMLDocWriter.hpp"
 
 namespace athena::io {
 

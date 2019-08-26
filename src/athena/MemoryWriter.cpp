@@ -2,8 +2,6 @@
 
 #include <cstdio>
 #include <cstring>
-#include <vector>
-#include <iostream>
 
 #ifdef HW_RVL
 #include <malloc.h>

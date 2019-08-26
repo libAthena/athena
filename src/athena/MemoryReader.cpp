@@ -1,11 +1,8 @@
 #include "athena/MemoryReader.hpp"
 
-#include <cstdio>
-#include <cstdlib>
-#include <vector>
-#include <iostream>
-#include <cstring>
 #include <algorithm>
+#include <cstdio>
+#include <cstring>
 
 #ifdef HW_RVL
 #include <malloc.h>
