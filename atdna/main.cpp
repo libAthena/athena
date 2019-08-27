@@ -184,22 +184,22 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
   static std::string GetOpString(const std::string& fieldName, const std::string& propIdExpr,
                                  const std::string& endianExpr) {
 
-    return "<Op, "s + endianExpr + ">({" + propIdExpr + "}, " + fieldName + ", s)";
+    return "<Op, "s + endianExpr + ">(athena::io::PropId(" + propIdExpr + "), " + fieldName + ", s)";
   }
 
   static std::string GetOpString(const std::string& fieldName, const std::string& propIdExpr) {
 
-    return "<Op>({" + propIdExpr + "}, " + fieldName + ", s)";
+    return "<Op>(athena::io::PropId(" + propIdExpr + "), " + fieldName + ", s)";
   }
 
   static std::string GetVectorOpString(const std::string& fieldName, const std::string& propIdExpr,
                                        const std::string& sizeExpr, const std::string& endianExpr) {
-    return "<Op, "s + endianExpr + ">({" + propIdExpr + "}, " + fieldName + ", " + sizeExpr + ", s)";
+    return "<Op, "s + endianExpr + ">(athena::io::PropId(" + propIdExpr + "), " + fieldName + ", " + sizeExpr + ", s)";
   }
 
   static std::string GetVectorOpString(const std::string& fieldName, const std::string& propIdExpr,
                                        const std::string& sizeExpr) {
-    return "<Op>({" + propIdExpr + "}, " + fieldName + ", " + sizeExpr + ", s)";
+    return "<Op>(athena::io::PropId(" + propIdExpr + "), " + fieldName + ", " + sizeExpr + ", s)";
   }
 
   static void RecurseNestedTypeName(const clang::DeclContext* decl, std::string& templateStmt, std::string& qualType) {

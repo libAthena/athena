@@ -9,6 +9,7 @@
 #include <netinet/tcp.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <fcntl.h>
 #else
 #include <WinSock2.h>
 #include <Ws2tcpip.h>
