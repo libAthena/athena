@@ -15,8 +15,8 @@
 namespace athena::io {
 class FileWriter : public IStreamWriter {
 public:
-  FileWriter(std::string_view filename, bool overwrite = true, bool globalErr = true);
-  FileWriter(std::wstring_view filename, bool overwrite = true, bool globalErr = true);
+  explicit FileWriter(std::string_view filename, bool overwrite = true, bool globalErr = true);
+  explicit FileWriter(std::wstring_view filename, bool overwrite = true, bool globalErr = true);
   ~FileWriter() override;
 
   std::string filename() const {
@@ -71,7 +71,7 @@ class TransactionalFileWriter : public IStreamWriter {
   atUint64 m_position = 0;
 
 public:
-  TransactionalFileWriter(std::string_view filename, bool overwrite = true, bool globalErr = true)
+  explicit TransactionalFileWriter(std::string_view filename, bool overwrite = true, bool globalErr = true)
   : m_overwrite(overwrite), m_globalErr(globalErr) {
 #if _WIN32
     m_filename = utility::utf8ToWide(filename);
@@ -79,7 +79,7 @@ public:
     m_filename = filename;
 #endif
   }
-  TransactionalFileWriter(std::wstring_view filename, bool overwrite = true, bool globalErr = true)
+  explicit TransactionalFileWriter(std::wstring_view filename, bool overwrite = true, bool globalErr = true)
   : m_overwrite(overwrite), m_globalErr(globalErr) {
 #if _WIN32
     m_filename = filename;

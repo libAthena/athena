@@ -20,7 +20,7 @@ class YAMLDocWriter {
   void _leaveSubVector();
 
 public:
-  YAMLDocWriter(const char* classType, athena::io::IStreamReader* reader = nullptr);
+  explicit YAMLDocWriter(const char* classType, athena::io::IStreamReader* reader = nullptr);
   ~YAMLDocWriter();
 
   yaml_emitter_t* getEmitter() { return &m_emitter; }
@@ -32,7 +32,7 @@ public:
   class RecordRAII {
     friend class YAMLDocWriter;
     YAMLDocWriter* m_w = nullptr;
-    RecordRAII(YAMLDocWriter* w) : m_w(w) {}
+    explicit RecordRAII(YAMLDocWriter* w) : m_w(w) {}
     RecordRAII() = default;
 
   public:
@@ -55,7 +55,7 @@ public:
   class VectorRAII {
     friend class YAMLDocWriter;
     YAMLDocWriter* m_w = nullptr;
-    VectorRAII(YAMLDocWriter* w) : m_w(w) {}
+    explicit VectorRAII(YAMLDocWriter* w) : m_w(w) {}
     VectorRAII() = default;
 
   public:

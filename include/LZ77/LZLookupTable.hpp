@@ -15,7 +15,7 @@ struct LZLengthOffset {
 class LZLookupTable {
 public:
   LZLookupTable();
-  LZLookupTable(atInt32 minimumMatch, atInt32 slidingWindow = 4096, atInt32 lookAheadWindow = 18);
+  explicit LZLookupTable(atInt32 minimumMatch, atInt32 slidingWindow = 4096, atInt32 lookAheadWindow = 18);
   ~LZLookupTable();
   LZLengthOffset search(const atUint8* curPos, const atUint8* dataBegin, const atUint8* dataEnd);
   void setLookAheadWindow(atInt32 lookAheadWindow);
