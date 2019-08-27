@@ -133,9 +133,9 @@ struct DNAV : DNA<DNAE> {
 template <Endian DNAE>
 struct DNAVYaml : DNAV<DNAE> {
   virtual ~DNAVYaml() = default;
-  virtual void read(athena::io::IStreamReader& r) = 0;
-  virtual void write(athena::io::IStreamWriter& w) const = 0;
-  virtual void binarySize(size_t& s) const = 0;
+  void read(athena::io::IStreamReader& r) override = 0;
+  void write(athena::io::IStreamWriter& w) const override = 0;
+  void binarySize(size_t& s) const override = 0;
   virtual void read(athena::io::YAMLDocReader& r) = 0;
   virtual void write(athena::io::YAMLDocWriter& w) const = 0;
 };
