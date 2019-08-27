@@ -432,31 +432,39 @@ YAMLDocWriter::YAMLDocWriter(const char* classType, athena::io::IStreamReader* r
 YAMLDocWriter::~YAMLDocWriter() { yaml_emitter_delete(&m_emitter); }
 
 bool YAMLDocWriter::finish(athena::io::IStreamWriter* fout) {
+  const auto error = [this] {
+    HandleYAMLEmitterError(&m_emitter);
+    return false;
+  };
+
   yaml_event_t event = {};
 
-  if (fout)
+  if (fout) {
     yaml_emitter_set_output(&m_emitter, (yaml_write_handler_t*)YAMLAthenaWriter, fout);
-  if (!yaml_emitter_open(&m_emitter))
-    goto err;
+  }
+  if (!yaml_emitter_open(&m_emitter)) {
+    return error();
+  }
 
   event.type = YAML_DOCUMENT_START_EVENT;
   event.data.document_start.implicit = true;
-  if (!yaml_emitter_emit(&m_emitter, &event))
-    goto err;
-  if (!RecursiveFinish(&m_emitter, *m_rootNode))
+  if (!yaml_emitter_emit(&m_emitter, &event)) {
+    return error();
+  }
+  if (!RecursiveFinish(&m_emitter, *m_rootNode)) {
     return false;
+  }
   event.type = YAML_DOCUMENT_END_EVENT;
   event.data.document_end.implicit = true;
-  if (!yaml_emitter_emit(&m_emitter, &event))
-    goto err;
+  if (!yaml_emitter_emit(&m_emitter, &event)) {
+    return error();
+  }
 
-  if (!yaml_emitter_close(&m_emitter) || !yaml_emitter_flush(&m_emitter))
-    goto err;
+  if (!yaml_emitter_close(&m_emitter) || !yaml_emitter_flush(&m_emitter)) {
+    return error();
+  }
 
   return true;
-err:
-  HandleYAMLEmitterError(&m_emitter);
-  return false;
 }
 
 YAMLDocWriter::RecordRAII YAMLDocWriter::enterSubRecord(const char* name) {
