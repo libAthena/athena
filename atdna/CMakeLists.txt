@@ -130,11 +130,9 @@ set_source_files_properties(main.cpp PROPERTIES COMPILE_DEFINITIONS
 target_include_directories(atdna PRIVATE ${LLVM_INCLUDE_DIRS})
 target_link_directories(atdna PRIVATE ${LLVM_LIBRARY_DIRS})
 if(MSVC)
-set_target_properties(atdna PROPERTIES
-                      COMPILE_FLAGS "/GR-")
+  target_compile_options(atdna PRIVATE /GR-)
 else()
-set_target_properties(atdna PROPERTIES
-                      COMPILE_FLAGS "-fno-rtti -Wno-unused-parameter")
+  target_compile_options(atdna PRIVATE -fno-rtti -Wno-error)
 endif()
 
 # Define installs
