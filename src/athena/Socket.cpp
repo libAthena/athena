@@ -1,17 +1,21 @@
 #include "athena/Socket.hpp"
 
 #ifndef _WIN32
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
+#include <cerrno>
+
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <sys/socket.h>
 #include <unistd.h>
-#include <cerrno>
+#include <fcntl.h>
 #else
 #include <WinSock2.h>
 #include <Ws2tcpip.h>
 #endif
+
+#include "athena/Global.hpp"
 
 namespace athena::net {
 
@@ -45,8 +49,8 @@ void IPAddress::resolve(const std::string& address) {
       addrinfo hints;
       memset(&hints, 0, sizeof(hints));
       hints.ai_family = AF_INET;
-      addrinfo* result = NULL;
-      if (getaddrinfo(address.c_str(), NULL, &hints, &result) == 0) {
+      addrinfo* result = nullptr;
+      if (getaddrinfo(address.c_str(), nullptr, &hints, &result) == 0) {
         if (result) {
           addr = reinterpret_cast<sockaddr_in*>(result->ai_addr)->sin_addr;
           freeaddrinfo(result);

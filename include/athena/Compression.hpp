@@ -1,6 +1,6 @@
 #pragma once
 
-#include "athena/Global.hpp"
+#include "athena/Types.hpp"
 
 namespace athena::io::Compression {
 // Zlib compression

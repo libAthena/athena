@@ -1,6 +1,6 @@
 #pragma once
 
-#include "athena/Global.hpp"
+#include "athena/Types.hpp"
 
 namespace athena::checksums {
 atUint64 crc64(const atUint8* data, atUint64 length, atUint64 seed = 0xFFFFFFFFFFFFFFFF,

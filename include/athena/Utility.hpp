@@ -1,11 +1,11 @@
 ﻿#ifndef __UTILITY_H__
 #define __UTILITY_H__
 
+#include <cstring>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <cstdarg>
-#include <cstring>
+
 #include "athena/Global.hpp"
 #include "athena/Types.hpp"
 
@@ -181,9 +181,9 @@ atUint64 rand64();
 std::string join(const std::vector<std::string>& elems, std::string_view delims);
 void tolower(std::string& str);
 void toupper(std::string& str);
-bool parseBool(std::string_view boolean, bool* valid = NULL);
+bool parseBool(std::string_view boolean, bool* valid = nullptr);
 
-int countChar(std::string_view str, const char chr, int* lastOccur = NULL);
+int countChar(std::string_view str, char chr, int* lastOccur = nullptr);
 
 // trim from start
 std::string& ltrim(std::string& s);

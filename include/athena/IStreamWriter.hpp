@@ -1,22 +1,25 @@
 #pragma once
 
-#include "utf8proc.h"
-#include "IStream.hpp"
-#include "Utility.hpp"
-#include <memory>
+#include <string>
+#include <type_traits>
 #include <vector>
+
+#include "utf8proc.h"
+
+#include "athena/IStream.hpp"
+#include "athena/Utility.hpp"
 
 namespace athena::io {
 class IStreamWriter : public IStream {
 public:
-  virtual ~IStreamWriter() = default;
+  ~IStreamWriter() override = default;
 
   /** @brief Sets the buffers position relative to the specified position.<br />
    *         It seeks relative to the current position by default.
    *  @param position where in the buffer to seek
    *  @param origin The location to seek relative to
    */
-  virtual void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) = 0;
+  void seek(atInt64 position, SeekOrigin origin = SeekOrigin::Current) override = 0;
 
   /** @brief Sets the buffers position relative to the next 32-byte aligned position.<br />
    */
@@ -36,19 +39,19 @@ public:
    *
    *  @return True if at end; False otherwise.
    */
-  bool atEnd() const { return position() >= length(); }
+  bool atEnd() const override { return position() >= length(); }
 
   /** @brief Returns the current position in the stream.
    *
    *  @return The current position in the stream.
    */
-  virtual atUint64 position() const = 0;
+  atUint64 position() const override = 0;
 
   /** @brief Returns whether or not the stream is at the end.
    *
    *  @return True if at end; False otherwise.
    */
-  virtual atUint64 length() const = 0;
+  atUint64 length() const override = 0;
 
   /** @brief Writes a byte at the current position and advances the position by one byte.
    *  @param val The value to write
@@ -72,7 +75,7 @@ public:
    *  @param data The buffer to write
    *  @param length The amount to write
    */
-  virtual void writeUBytes(const atUint8* data, atUint64 len) = 0;
+  virtual void writeUBytes(const atUint8* data, atUint64 length) = 0;
 
   /** @brief Writes the given buffer with the specified length, buffers can be bigger than the length
    *  however it's undefined behavior to try and write a buffer which is smaller than the given length.
@@ -80,7 +83,7 @@ public:
    *  @param data The buffer to write
    *  @param length The amount to write
    */
-  void writeBytes(const void* data, atUint64 len) { writeUBytes((atUint8*)data, len); }
+  void writeBytes(const void* data, atUint64 length) { writeUBytes((atUint8*)data, length); }
 
   /** @brief Writes an Int16 to the buffer and advances the buffer.
    *         It also swaps the bytes depending on the platform and Stream settings.
@@ -977,9 +980,8 @@ public:
     if (length == 0)
       return;
 
-    std::unique_ptr<atUint8[]> tmp(new atUint8[length]);
-    memset(tmp.get(), val, length);
-    writeUBytes(tmp.get(), length);
+    const std::vector<atUint8> tmp(length, val);
+    writeUBytes(tmp.data(), length);
   }
 
   void fill(atInt8 val, atUint64 length) { fill((atUint8)val, length); }
@@ -990,10 +992,9 @@ public:
    *  Endianness is set with setEndian
    */
   template <class T>
-  void
-  enumerate(const std::vector<T>& vector,
-            typename std::enable_if<std::is_arithmetic<T>::value || std::is_same<T, atVec2f>::value ||
-                                    std::is_same<T, atVec3f>::value || std::is_same<T, atVec4f>::value>::type* = 0) {
+  void enumerate(const std::vector<T>& vector,
+                 std::enable_if_t<std::is_arithmetic_v<T> || std::is_same_v<T, atVec2f> || std::is_same_v<T, atVec3f> ||
+                                  std::is_same_v<T, atVec4f>>* = nullptr) {
     for (const T& item : vector)
       writeVal(item);
   }
@@ -1004,10 +1005,9 @@ public:
    *  Endianness is little
    */
   template <class T>
-  void enumerateLittle(
-      const std::vector<T>& vector,
-      typename std::enable_if<std::is_arithmetic<T>::value || std::is_same<T, atVec2f>::value ||
-                              std::is_same<T, atVec3f>::value || std::is_same<T, atVec4f>::value>::type* = 0) {
+  void enumerateLittle(const std::vector<T>& vector,
+                       std::enable_if_t<std::is_arithmetic_v<T> || std::is_same_v<T, atVec2f> ||
+                                        std::is_same_v<T, atVec3f> || std::is_same_v<T, atVec4f>>* = nullptr) {
     for (const T& item : vector)
       writeValLittle(item);
   }
@@ -1018,10 +1018,9 @@ public:
    *  Endianness is big
    */
   template <class T>
-  void
-  enumerateBig(const std::vector<T>& vector,
-               typename std::enable_if<std::is_arithmetic<T>::value || std::is_same<T, atVec2f>::value ||
-                                       std::is_same<T, atVec3f>::value || std::is_same<T, atVec4f>::value>::type* = 0) {
+  void enumerateBig(const std::vector<T>& vector,
+                    std::enable_if_t<std::is_arithmetic_v<T> || std::is_same_v<T, atVec2f> ||
+                                     std::is_same_v<T, atVec3f> || std::is_same_v<T, atVec4f>>* = nullptr) {
     for (const T& item : vector)
       writeValBig(item);
   }
@@ -1030,10 +1029,9 @@ public:
    *  @param vector The std::vector read from when writing data
    */
   template <class T>
-  void
-  enumerate(const std::vector<T>& vector,
-            typename std::enable_if<!std::is_arithmetic<T>::value && !std::is_same<T, atVec2f>::value &&
-                                    !std::is_same<T, atVec3f>::value && !std::is_same<T, atVec4f>::value>::type* = 0) {
+  void enumerate(const std::vector<T>& vector,
+                 std::enable_if_t<!std::is_arithmetic_v<T> && !std::is_same_v<T, atVec2f> &&
+                                  !std::is_same_v<T, atVec3f> && !std::is_same_v<T, atVec4f>>* = nullptr) {
     for (const T& item : vector)
       item.write(*this);
   }

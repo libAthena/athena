@@ -1,8 +1,9 @@
 #include "athena/Compression.hpp"
+
 #if AT_LZOKAY
 #include <lzokay.hpp>
 #endif
-#include <iostream>
+
 #include <zlib.h>
 #include "LZ77/LZType10.hpp"
 #include "LZ77/LZType11.hpp"
@@ -10,7 +11,7 @@
 namespace athena::io::Compression {
 
 atInt32 decompressZlib(const atUint8* src, atUint32 srcLen, atUint8* dst, atUint32 dstLen) {
-  z_stream strm = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  z_stream strm = {};
   strm.total_in = strm.avail_in = srcLen;
   strm.total_out = strm.avail_out = dstLen;
   strm.next_in = (Bytef*)src;
@@ -45,7 +46,7 @@ atInt32 decompressZlib(const atUint8* src, atUint32 srcLen, atUint8* dst, atUint
 }
 
 atInt32 compressZlib(const atUint8* src, atUint32 srcLen, atUint8* dst, atUint32 dstLen) {
-  z_stream strm = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  z_stream strm = {};
   strm.total_in = strm.avail_in = srcLen;
   strm.total_out = strm.avail_out = dstLen;
   strm.next_in = (Bytef*)src;

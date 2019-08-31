@@ -1,16 +1,20 @@
 #include "athena/Dir.hpp"
-#include <sys/stat.h>
+
+#include <climits>
 #include <cstdlib>
-#include <limits.h>
+#include <ctime>
+#include <sys/stat.h>
+
 #define __STDC_FORMAT_MACROS
 #include <cinttypes>
+
+#include "athena/FileInfo.hpp"
 #include "athena/Utility.hpp"
 
 #ifndef _WIN32
 #include <dirent.h>
 #include <unistd.h>
 #else
-#include <ctime>
 #include <direct.h>
 #endif
 
@@ -45,7 +49,7 @@ bool Dir::cd(std::string_view path) {
 bool Dir::rm(std::string_view path) { return !(remove((m_path + "/" + path.data()).c_str()) < 0); }
 
 bool Dir::touch() {
-  srand(time(NULL));
+  std::srand(std::time(nullptr));
   atUint64 tmp = utility::rand64();
   std::string tmpFile = fmt::format(fmt("{:016X}.tmp"), tmp);
   bool ret = FileInfo(m_path + "/" + tmpFile).touch();

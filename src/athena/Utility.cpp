@@ -1,15 +1,16 @@
 ﻿#include "athena/Utility.hpp"
-#include <iostream>
-#include <cstring>
-#include <cstdlib>
-#include <sstream>
+
 #include <algorithm>
 #include <cstdarg>
-#include <iterator>
 #include <cstdio>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <cstdlib>
+#include <cstring>
+#include <iterator>
 #include <random>
+#include <sstream>
+
+#include <sys/stat.h>
+#include <sys/types.h>
 #include "utf8proc.h"
 
 #ifdef _MSC_VER
@@ -100,7 +101,7 @@ int countChar(std::string_view str, const char chr, int* lastOccur) {
 
   for (char c : str) {
     if (c == chr) {
-      if (lastOccur != NULL)
+      if (lastOccur != nullptr)
         *lastOccur = index;
 
       ret++;

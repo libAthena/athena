@@ -19,34 +19,35 @@ protected:
   MemoryReader() = default;
 
 public:
-  virtual ~MemoryReader();
+  ~MemoryReader() override;
 
   /*! \brief This constructor references an existing buffer to read from.
    *
-   *   \param data The existing buffer
-   *   \param length The length of the existing buffer
-   *   \param takeOwnership Memory will be freed with the reader if set
+   *   \param data          The existing buffer.
+   *   \param length        The length of the existing buffer.
+   *   \param takeOwnership Memory will be freed with the reader if set.
+   *   \param globalErr     Whether or not global errors are enabled.
    */
-  MemoryReader(const void* data, atUint64 length, bool takeOwnership = false, bool globalErr = true);
+  explicit MemoryReader(const void* data, atUint64 length, bool takeOwnership = false, bool globalErr = true);
 
   /*! \brief Sets the buffers position relative to the specified position.<br />
    *         It seeks relative to the current position by default.
    *  \param position where in the buffer to seek
    *  \param origin The Origin to seek \sa SeekOrigin
    */
-  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
+  void seek(atInt64 position, SeekOrigin origin = SeekOrigin::Current) override;
 
   /*! \brief Returns the current position in the stream.
    *
    *  \return Int64 The current position in the stream.
    */
-  inline atUint64 position() const { return m_position; }
+  atUint64 position() const override { return m_position; }
 
   /*! \brief Returns whether or not the stream is at the end.
    *
    *  \return bool True if at end; False otherwise.
    */
-  inline atUint64 length() const { return m_length; }
+  atUint64 length() const override { return m_length; }
 
   /*! \brief Sets the buffer to the given one, deleting the current one.<br />
    *         <b>BEWARE:</b> As this deletes the current buffer it WILL cause a loss of data
@@ -74,7 +75,7 @@ public:
    *  \param len Length to read
    *  \return Number of bytes read
    */
-  atUint64 readUBytesToBuf(void* buf, atUint64 len);
+  atUint64 readUBytesToBuf(void* buf, atUint64 len) override;
 
 protected:
   const void* m_data = nullptr;
@@ -91,13 +92,13 @@ public:
    *   \param data The existing buffer
    *   \param length The length of the existing buffer
    */
-  MemoryCopyReader(const void* data, atUint64 length);
+  explicit MemoryCopyReader(const void* data, atUint64 length);
 
   /*! \brief This constructor creates an instance from a file on disk.
    *
    * \param filename The file to create the stream from
    */
-  MemoryCopyReader(const std::string& filename) : m_filepath(filename) { loadData(); }
+  explicit MemoryCopyReader(const std::string& filename) : m_filepath(filename) { loadData(); }
 
   void setData(const atUint8* data, atUint64 length);
 

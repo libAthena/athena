@@ -9,18 +9,20 @@
 #include <cstdio>
 #endif
 
-#include <string>
 #include <memory>
+#include <string>
+
 #include "athena/IStreamReader.hpp"
+#include "athena/Types.hpp"
 
 namespace athena::io {
 class FileReader : public IStreamReader {
 public:
-  FileReader(std::string_view filename, atInt32 cacheSize = (32 * 1024), bool globalErr = true);
-  FileReader(std::wstring_view filename, atInt32 cacheSize = (32 * 1024), bool globalErr = true);
-  virtual ~FileReader();
+  explicit FileReader(std::string_view filename, atInt32 cacheSize = (32 * 1024), bool globalErr = true);
+  explicit FileReader(std::wstring_view filename, atInt32 cacheSize = (32 * 1024), bool globalErr = true);
+  ~FileReader() override;
 
-  inline std::string filename() const {
+  std::string filename() const {
 #if _WIN32
     return utility::wideToUtf8(m_filename);
 #else
@@ -28,7 +30,7 @@ public:
 #endif
   }
 
-  inline std::wstring wfilename() const {
+  std::wstring wfilename() const {
 #if _WIN32
     return m_filename;
 #else
@@ -38,12 +40,12 @@ public:
 
   void open();
   void close();
-  inline bool isOpen() const { return m_fileHandle != 0; }
+  bool isOpen() const { return m_fileHandle != 0; }
   bool save();
-  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current);
-  atUint64 position() const;
-  atUint64 length() const;
-  atUint64 readUBytesToBuf(void* buf, atUint64 len);
+  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override;
+  atUint64 position() const override;
+  atUint64 length() const override;
+  atUint64 readUBytesToBuf(void* buf, atUint64 len) override;
 
   void setCacheSize(const atInt32 blockSize);
 
@@ -69,10 +71,3 @@ protected:
   bool m_globalErr;
 };
 } // namespace athena::io
-
-#ifndef FILEREADER_BASE
-#define FILEREADER_BASE()                                                                                              \
-private:                                                                                                               \
-  typedef athena::io::FileReader base
-
-#endif // FILEREADER_BASE

@@ -4,13 +4,13 @@
 
 #pragma once
 
-#include <cstring>
-#include <yaml.h>
-#include <utf8proc.h>
-#include <vector>
 #include <memory>
-#include <functional>
-#include "Global.hpp"
+#include <string>
+#include <vector>
+
+#include <yaml.h>
+
+#include "athena/Types.hpp"
 
 namespace athena::io {
 class IStreamReader;
@@ -27,14 +27,14 @@ struct YAMLNode {
 
   YAMLNode(yaml_node_type_t type) : m_type(type) {}
 
-  inline const YAMLNode* findMapChild(std::string_view key) const {
+  const YAMLNode* findMapChild(std::string_view key) const {
     for (const auto& item : m_mapChildren)
       if (!item.first.compare(key))
         return item.second.get();
     return nullptr;
   }
 
-  inline void assignMapChild(std::string_view key, std::unique_ptr<YAMLNode>&& node) {
+  void assignMapChild(std::string_view key, std::unique_ptr<YAMLNode>&& node) {
     for (auto& item : m_mapChildren)
       if (!item.first.compare(key)) {
         item.second = std::move(node);
@@ -166,13 +166,13 @@ struct YAMLStdStringViewReaderState {
   std::string_view::const_iterator begin;
   std::string_view::const_iterator end;
 
-  YAMLStdStringViewReaderState(std::string_view str) {
+  explicit YAMLStdStringViewReaderState(std::string_view str) {
     begin = str.begin();
     end = str.end();
   }
 };
 
-int YAMLStdStringReader(YAMLStdStringViewReaderState* str, unsigned char* buffer, size_t size, size_t* size_read);
+int YAMLStdStringReader(YAMLStdStringViewReaderState* reader, unsigned char* buffer, size_t size, size_t* size_read);
 
 int YAMLStdStringWriter(std::string* str, unsigned char* buffer, size_t size);
 

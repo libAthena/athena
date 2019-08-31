@@ -1,5 +1,7 @@
 #include "athena/FileWriter.hpp"
 
+#include <cstring>
+
 namespace athena::io {
 void TransactionalFileWriter::seek(atInt64 pos, SeekOrigin origin) {
   switch (origin) {

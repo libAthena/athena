@@ -6,12 +6,16 @@
  * Any changes to the types or namespacing must be reflected in 'atdna/main.cpp'
  */
 
-#include "Global.hpp"
-#include "IStreamReader.hpp"
-#include "IStreamWriter.hpp"
-#include "DNAOp.hpp"
-#include <vector>
 #include <memory>
+#include <string>
+#include <vector>
+
+#include <sys/types.h>
+
+#include "athena/DNAOp.hpp"
+#include "athena/Global.hpp"
+#include "athena/IStreamReader.hpp"
+#include "athena/IStreamWriter.hpp"
 
 namespace athena::io {
 
@@ -129,9 +133,9 @@ struct DNAV : DNA<DNAE> {
 template <Endian DNAE>
 struct DNAVYaml : DNAV<DNAE> {
   virtual ~DNAVYaml() = default;
-  virtual void read(athena::io::IStreamReader& r) = 0;
-  virtual void write(athena::io::IStreamWriter& w) const = 0;
-  virtual void binarySize(size_t& s) const = 0;
+  void read(athena::io::IStreamReader& r) override = 0;
+  void write(athena::io::IStreamWriter& w) const override = 0;
+  void binarySize(size_t& s) const override = 0;
   virtual void read(athena::io::YAMLDocReader& r) = 0;
   virtual void write(athena::io::YAMLDocWriter& w) const = 0;
 };

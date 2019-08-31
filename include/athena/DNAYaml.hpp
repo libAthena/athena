@@ -1,25 +1,28 @@
 #pragma once
 
-#include "YAMLDocReader.hpp"
-#include "YAMLDocWriter.hpp"
-#include "DNA.hpp"
-#include "FileReader.hpp"
-#include "FileWriter.hpp"
+#include <string>
+#include <type_traits>
+
+#include "athena/DNA.hpp"
+#include "athena/FileReader.hpp"
+#include "athena/FileWriter.hpp"
+#include "athena/YAMLDocReader.hpp"
+#include "athena/YAMLDocWriter.hpp"
 
 namespace athena::io {
 
 template <class T>
-inline const char* __GetDNAName(const T& dna, typename std::enable_if_t<athena::io::__IsDNAVRecord_v<T>>* = 0) {
+const char* __GetDNAName(const T& dna, std::enable_if_t<athena::io::__IsDNAVRecord_v<T>>* = nullptr) {
   return dna.DNATypeV();
 }
 
 template <class T>
-inline const char* __GetDNAName(const T& dna, typename std::enable_if_t<!athena::io::__IsDNAVRecord_v<T>>* = 0) {
+const char* __GetDNAName(const T& dna, std::enable_if_t<!athena::io::__IsDNAVRecord_v<T>>* = nullptr) {
   return dna.DNAType();
 }
 
 template <class T>
-inline std::string ToYAMLString(const T& dna) {
+std::string ToYAMLString(const T& dna) {
   YAMLDocWriter docWriter(__GetDNAName(dna));
 
   std::string res;
@@ -35,7 +38,7 @@ inline std::string ToYAMLString(const T& dna) {
 }
 
 template <class T>
-inline bool FromYAMLString(T& dna, std::string_view str) {
+bool FromYAMLString(T& dna, std::string_view str) {
   YAMLStdStringViewReaderState reader(str);
   YAMLDocReader docReader;
   yaml_parser_set_input(docReader.getParser(), (yaml_read_handler_t*)YAMLStdStringReader, &reader);
@@ -46,7 +49,7 @@ inline bool FromYAMLString(T& dna, std::string_view str) {
 }
 
 template <class DNASubtype>
-inline bool ValidateFromYAMLString(std::string_view str) {
+bool ValidateFromYAMLString(std::string_view str) {
   YAMLStdStringViewReaderState reader(str);
   YAMLDocReader docReader;
   yaml_parser_set_input(docReader.getParser(), (yaml_read_handler_t*)YAMLStdStringReader, &reader);
@@ -55,7 +58,7 @@ inline bool ValidateFromYAMLString(std::string_view str) {
 }
 
 template <class T>
-inline bool ToYAMLStream(const T& dna, athena::io::IStreamWriter& fout) {
+bool ToYAMLStream(const T& dna, athena::io::IStreamWriter& fout) {
   YAMLDocWriter docWriter(__GetDNAName(dna));
 
   yaml_emitter_set_unicode(docWriter.getEmitter(), true);
@@ -66,8 +69,7 @@ inline bool ToYAMLStream(const T& dna, athena::io::IStreamWriter& fout) {
 }
 
 template <class T>
-inline bool ToYAMLStream(const T& dna, athena::io::IStreamWriter& fout,
-                         void (T::*fn)(YAMLDocWriter& out) const) {
+bool ToYAMLStream(const T& dna, athena::io::IStreamWriter& fout, void (T::*fn)(YAMLDocWriter& out) const) {
   YAMLDocWriter docWriter(__GetDNAName(dna));
 
   yaml_emitter_set_unicode(docWriter.getEmitter(), true);
@@ -78,7 +80,7 @@ inline bool ToYAMLStream(const T& dna, athena::io::IStreamWriter& fout,
 }
 
 template <class T>
-inline bool FromYAMLStream(T& dna, athena::io::IStreamReader& fin) {
+bool FromYAMLStream(T& dna, athena::io::IStreamReader& fin) {
   YAMLDocReader docReader;
   if (!docReader.parse(&fin))
     return false;
@@ -87,7 +89,7 @@ inline bool FromYAMLStream(T& dna, athena::io::IStreamReader& fin) {
 }
 
 template <class T>
-inline bool FromYAMLStream(T& dna, athena::io::IStreamReader& fin, void (T::*fn)(YAMLDocReader& in)) {
+bool FromYAMLStream(T& dna, athena::io::IStreamReader& fin, void (T::*fn)(YAMLDocReader& in)) {
   YAMLDocReader docReader;
   if (!docReader.parse(&fin))
     return false;
@@ -96,7 +98,7 @@ inline bool FromYAMLStream(T& dna, athena::io::IStreamReader& fin, void (T::*fn)
 }
 
 template <class T, typename NameT>
-inline bool MergeToYAMLFile(const T& dna, const NameT& filename) {
+bool MergeToYAMLFile(const T& dna, const NameT& filename) {
   athena::io::FileReader r(filename);
   YAMLDocWriter docWriter(__GetDNAName(dna), r.isOpen() ? &r : nullptr);
   r.close();
@@ -109,7 +111,7 @@ inline bool MergeToYAMLFile(const T& dna, const NameT& filename) {
 }
 
 template <class DNASubtype>
-inline bool ValidateFromYAMLStream(athena::io::IStreamReader& fin) {
+bool ValidateFromYAMLStream(athena::io::IStreamReader& fin) {
   YAMLDocReader reader;
   atUint64 pos = fin.position();
   yaml_parser_set_input(reader.getParser(), (yaml_read_handler_t*)YAMLAthenaReader, &fin);

@@ -1,6 +1,13 @@
 #pragma once
 
-#include "YAMLCommon.hpp"
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <type_traits>
+#include <vector>
+
+#include "athena/Types.hpp"
+#include "athena/YAMLCommon.hpp"
 
 namespace athena::io {
 
@@ -13,19 +20,19 @@ class YAMLDocWriter {
   void _leaveSubVector();
 
 public:
-  YAMLDocWriter(const char* classType, athena::io::IStreamReader* reader = nullptr);
+  explicit YAMLDocWriter(const char* classType, athena::io::IStreamReader* reader = nullptr);
   ~YAMLDocWriter();
 
   yaml_emitter_t* getEmitter() { return &m_emitter; }
 
   bool finish(athena::io::IStreamWriter* fout);
 
-  inline YAMLNode* getCurNode() const { return m_subStack.empty() ? nullptr : m_subStack.back(); }
+  YAMLNode* getCurNode() const { return m_subStack.empty() ? nullptr : m_subStack.back(); }
 
   class RecordRAII {
     friend class YAMLDocWriter;
     YAMLDocWriter* m_w = nullptr;
-    RecordRAII(YAMLDocWriter* w) : m_w(w) {}
+    explicit RecordRAII(YAMLDocWriter* w) : m_w(w) {}
     RecordRAII() = default;
 
   public:
@@ -40,7 +47,7 @@ public:
   RecordRAII enterSubRecord(const char* name);
 
   template <class T>
-  void enumerate(const char* name, T& record, typename std::enable_if_t<__IsDNARecord_v<T>>* = 0) {
+  void enumerate(const char* name, T& record, std::enable_if_t<__IsDNARecord_v<T>>* = nullptr) {
     if (auto rec = enterSubRecord(name))
       record.write(*this);
   }
@@ -48,7 +55,7 @@ public:
   class VectorRAII {
     friend class YAMLDocWriter;
     YAMLDocWriter* m_w = nullptr;
-    VectorRAII(YAMLDocWriter* w) : m_w(w) {}
+    explicit VectorRAII(YAMLDocWriter* w) : m_w(w) {}
     VectorRAII() = default;
 
   public:
@@ -63,11 +70,11 @@ public:
   VectorRAII enterSubVector(const char* name);
 
   template <class T>
-  void enumerate(const char* name, const std::vector<T>& vector,
-                 typename std::enable_if_t<!std::is_arithmetic<T>::value && !std::is_same<T, atVec2f>::value &&
-                                           !std::is_same<T, atVec3f>::value && !std::is_same<T, atVec4f>::value &&
-                                           !std::is_same<T, atVec2d>::value && !std::is_same<T, atVec3d>::value &&
-                                           !std::is_same<T, atVec4d>::value>* = 0) {
+  void
+  enumerate(const char* name, const std::vector<T>& vector,
+            std::enable_if_t<!std::is_arithmetic_v<T> && !std::is_same_v<T, atVec2f> && !std::is_same_v<T, atVec3f> &&
+                             !std::is_same_v<T, atVec4f> && !std::is_same_v<T, atVec2d> &&
+                             !std::is_same_v<T, atVec3d> && !std::is_same_v<T, atVec4d>>* = nullptr) {
     if (auto v = enterSubVector(name))
       for (const T& item : vector)
         if (auto rec = enterSubRecord(nullptr))
@@ -76,10 +83,9 @@ public:
 
   template <class T>
   void enumerate(const char* name, const std::vector<T>& vector,
-                 typename std::enable_if_t<std::is_arithmetic<T>::value || std::is_same<T, atVec2f>::value ||
-                                           std::is_same<T, atVec3f>::value || std::is_same<T, atVec4f>::value ||
-                                           std::is_same<T, atVec2d>::value || std::is_same<T, atVec3d>::value ||
-                                           std::is_same<T, atVec4d>::value>* = 0) {
+                 std::enable_if_t<std::is_arithmetic_v<T> || std::is_same_v<T, atVec2f> || std::is_same_v<T, atVec3f> ||
+                                  std::is_same_v<T, atVec4f> || std::is_same_v<T, atVec2d> ||
+                                  std::is_same_v<T, atVec3d> || std::is_same_v<T, atVec4d>>* = nullptr) {
     if (auto v = enterSubVector(name))
       for (T item : vector)
         writeVal<T>(nullptr, item);
