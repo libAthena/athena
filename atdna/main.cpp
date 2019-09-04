@@ -137,15 +137,15 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           const auto* vType = static_cast<const clang::VectorType*>(field->getType().getTypePtr());
           if (vType->isVectorType()) {
             const auto* eType = static_cast<const clang::BuiltinType*>(vType->getElementType().getTypePtr());
-            const uint64_t width = context.getTypeInfo(eType).Width;
-            if (!eType->isBuiltinType() || !eType->isFloatingPoint() || (width != 32 && width != 64))
+            const uint64_t typeWidth = context.getTypeInfo(eType).Width;
+            if (!eType->isBuiltinType() || !eType->isFloatingPoint() || (typeWidth != 32 && typeWidth != 64))
               continue;
             if (vType->getNumElements() == 2) {
-              return width / 8 * 2;
+              return typeWidth / 8 * 2;
             } else if (vType->getNumElements() == 3) {
-              return width / 8 * 3;
+              return typeWidth / 8 * 3;
             } else if (vType->getNumElements() == 4) {
-              return width / 8 * 4;
+              return typeWidth / 8 * 4;
             }
           }
         }
@@ -687,18 +687,18 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
         } else {
           const clang::NamedDecl* nd = tsDecl->getTemplatedDecl();
           if (const clang::CXXRecordDecl* rd = clang::dyn_cast_or_null<clang::CXXRecordDecl>(nd)) {
-            std::string baseDNA;
-            if (isDNARecord(rd, baseDNA))
+            std::string baseDNA2;
+            if (isDNARecord(rd, baseDNA2)) {
               outputNodes.emplace_back(NodeType::Do, fieldName, GetOpString(fieldName, propIdExpr), false);
+            }
           }
         }
-      }
-
-      else if (regType->getTypeClass() == clang::Type::Record) {
+      } else if (regType->getTypeClass() == clang::Type::Record) {
         const clang::CXXRecordDecl* cxxRDecl = regType->getAsCXXRecordDecl();
-        std::string baseDNA;
-        if (cxxRDecl && isDNARecord(cxxRDecl, baseDNA))
+        std::string baseDNA2;
+        if (cxxRDecl && isDNARecord(cxxRDecl, baseDNA2)) {
           outputNodes.emplace_back(NodeType::Do, fieldName, GetOpString(fieldName, propIdExpr), false);
+        }
       }
     }
 
@@ -995,20 +995,18 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
         } else {
           const clang::NamedDecl* nd = tsDecl->getTemplatedDecl();
           if (const clang::CXXRecordDecl* rd = clang::dyn_cast_or_null<clang::CXXRecordDecl>(nd)) {
-            std::string baseDNA;
-            if (isDNARecord(rd, baseDNA)) {
+            std::string baseDNA2;
+            if (isDNARecord(rd, baseDNA2)) {
               fileOut << "  AT_PROP_CASE(" << propIdExpr << "):\n"
                       << "    Do" << GetOpString(fieldName, propIdExpr) << ";\n"
                       << "    return true;\n";
             }
           }
         }
-      }
-
-      else if (regType->getTypeClass() == clang::Type::Record) {
+      } else if (regType->getTypeClass() == clang::Type::Record) {
         const clang::CXXRecordDecl* cxxRDecl = regType->getAsCXXRecordDecl();
-        std::string baseDNA;
-        if (cxxRDecl && isDNARecord(cxxRDecl, baseDNA)) {
+        std::string baseDNA2;
+        if (cxxRDecl && isDNARecord(cxxRDecl, baseDNA2)) {
           fileOut << "  AT_PROP_CASE(" << propIdExpr << "):\n"
                   << "    Do" << GetOpString(fieldName, propIdExpr) << ";\n"
                   << "    return true;\n";
