@@ -1,19 +1,22 @@
+#include <cstdint>
 #include <cstdio>
-#include <iostream>
-#include "clang/AST/ASTConsumer.h"
-#include "clang/AST/RecursiveASTVisitor.h"
-#include "clang/Frontend/CompilerInstance.h"
-#include "clang/Frontend/FrontendAction.h"
-#include "clang/Frontend/Utils.h"
-#include "clang/Tooling/Tooling.h"
-#include "clang/Lex/Preprocessor.h"
-#include "clang/Sema/Sema.h"
-#include "clang/AST/RecordLayout.h"
-#include "clang/AST/DeclCXX.h"
-#include "clang/AST/TypeLoc.h"
-#include "clang/Basic/Version.h"
-#include "llvm/Support/Format.h"
-#include "llvm/Support/CommandLine.h"
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include <clang/AST/ASTConsumer.h>
+#include <clang/AST/DeclCXX.h>
+#include <clang/AST/RecursiveASTVisitor.h>
+#include <clang/Basic/Version.h>
+#include <clang/Frontend/CompilerInstance.h>
+#include <clang/Frontend/FrontendAction.h>
+#include <clang/Frontend/Utils.h>
+#include <clang/Sema/Sema.h>
+#include <clang/Tooling/Tooling.h>
+
+#include <llvm/Support/CommandLine.h>
+#include <llvm/Support/Format.h>
 
 using namespace std::literals;
 
