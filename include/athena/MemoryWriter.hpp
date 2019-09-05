@@ -90,11 +90,11 @@ public:
   void writeUBytes(const atUint8* data, atUint64 length) override;
 
 protected:
-  MemoryWriter() {}
-  atUint8* m_data;
-  atUint64 m_length;
-  atUint64 m_position;
-  bool m_bufferOwned;
+  MemoryWriter() = default;
+  atUint8* m_data = nullptr;
+  atUint64 m_length = 0;
+  atUint64 m_position = 0;
+  bool m_bufferOwned = false;
   std::string m_filepath; //!< Path to the target file
 };
 
