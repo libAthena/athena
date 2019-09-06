@@ -260,15 +260,14 @@ void MemoryCopyWriter::resize(atUint64 newSize) {
   }
 
   // Allocate and copy new buffer
-  atUint8* newArray = new atUint8[newSize];
-  memset(newArray, 0, newSize);
-
-  if (m_dataCopy)
-    memmove(newArray, m_dataCopy.get(), m_length);
-  m_dataCopy.reset(newArray);
+  auto newArray = std::make_unique<atUint8[]>(newSize);
+  if (m_dataCopy) {
+    std::memmove(newArray.get(), m_dataCopy.get(), m_length);
+  }
+  m_dataCopy = std::move(newArray);
 
   // Swap the pointer and size out for the new ones.
-  m_data = newArray;
+  m_data = m_dataCopy.get();
   m_length = newSize;
 }
 
