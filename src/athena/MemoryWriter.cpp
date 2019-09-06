@@ -10,7 +10,7 @@
 namespace athena::io {
 
 MemoryWriter::MemoryWriter(atUint8* data, atUint64 length, bool takeOwnership)
-: m_data((atUint8*)data), m_length(length), m_position(0), m_bufferOwned(takeOwnership) {
+: m_data(data), m_length(length), m_bufferOwned(takeOwnership) {
   if (!data) {
     atError(fmt("data cannot be NULL"));
     setError();
@@ -156,7 +156,7 @@ void MemoryWriter::setData(atUint8* data, atUint64 length, bool takeOwnership) {
   if (m_bufferOwned)
     delete m_data;
 
-  m_data = (atUint8*)data;
+  m_data = data;
   m_length = length;
   m_position = 0;
   m_bufferOwned = takeOwnership;
