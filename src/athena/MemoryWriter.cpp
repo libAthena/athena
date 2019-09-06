@@ -185,11 +185,11 @@ void MemoryWriter::save(std::string_view filename) {
     return;
   }
 
-  if (!filename.empty())
+  if (!filename.empty()) {
     m_filepath = filename;
+  }
 
-  FILE* out = fopen(m_filepath.c_str(), "wb");
-
+  std::unique_ptr<FILE, decltype(&std::fclose)> out{std::fopen(m_filepath.c_str(), "wb"), std::fclose};
   if (!out) {
     atError(fmt("Unable to open file '{}'"), m_filepath);
     setError();
@@ -200,22 +200,24 @@ void MemoryWriter::save(std::string_view filename) {
   atUint64 blocksize = BLOCKSZ;
 
   do {
-    if (blocksize > m_length - done)
+    if (blocksize > m_length - done) {
       blocksize = m_length - done;
+    }
 
-    atInt64 ret = fwrite(m_data + done, 1, blocksize, out);
+    const atInt64 ret = std::fwrite(m_data + done, 1, blocksize, out.get());
 
     if (ret < 0) {
       atError(fmt("Error writing data to disk"));
       setError();
       return;
-    } else if (ret == 0)
+    }
+
+    if (ret == 0) {
       break;
+    }
 
     done += blocksize;
   } while (done < m_length);
-
-  fclose(out);
 }
 
 void MemoryWriter::writeUBytes(const atUint8* data, atUint64 length) {
