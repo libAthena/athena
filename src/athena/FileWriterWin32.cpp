@@ -3,9 +3,6 @@
 #include <algorithm>
 #include <limits>
 
-#undef min
-#undef max
-
 namespace athena::io {
 FileWriter::FileWriter(std::string_view filename, bool overwrite, bool globalErr)
 : m_fileHandle(0), m_globalErr(globalErr) {
