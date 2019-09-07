@@ -89,7 +89,7 @@ atUint64 FileWriter::position() const {
   LARGE_INTEGER li = {};
   LARGE_INTEGER res;
   SetFilePointerEx(m_fileHandle, li, &res, FILE_CURRENT);
-  return res.QuadPart;
+  return static_cast<atUint64>(res.QuadPart);
 }
 
 atUint64 FileWriter::length() const { return utility::fileSize(m_filename); }
