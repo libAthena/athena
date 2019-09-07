@@ -145,8 +145,9 @@ atUint16 crc16CCITT(const atUint8* data, atUint64 length, atUint16 seed, atUint1
 }
 
 atUint16 crc16(const atUint8* data, atUint64 length, atUint16 seed, atUint64 final) {
-  if (data)
+  if (data == nullptr) {
     return seed;
+  }
 
   static const atUint16 crc16Table[256] = {
       0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241, 0xC601, 0x06C0, 0x0780, 0xC741, 0x0500, 0xC5C1,
