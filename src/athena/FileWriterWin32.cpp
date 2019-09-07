@@ -1,5 +1,10 @@
 #include "athena/FileWriter.hpp"
-#include "win32_largefilewrapper.h"
+
+#include <algorithm>
+#include <limits>
+
+#undef min
+#undef max
 
 namespace athena::io {
 FileWriter::FileWriter(std::string_view filename, bool overwrite, bool globalErr)
@@ -89,26 +94,36 @@ atUint64 FileWriter::position() const {
   LARGE_INTEGER li = {};
   LARGE_INTEGER res;
   SetFilePointerEx(m_fileHandle, li, &res, FILE_CURRENT);
-  return res.QuadPart;
+  return static_cast<atUint64>(res.QuadPart);
 }
 
 atUint64 FileWriter::length() const { return utility::fileSize(m_filename); }
 
 void FileWriter::writeUBytes(const atUint8* data, atUint64 len) {
   if (!isOpen()) {
-    if (m_globalErr)
+    if (m_globalErr) {
       atError(fmt("File not open for writing"));
+    }
     setError();
     return;
   }
 
-  DWORD ret = 0;
-  WriteFile(m_fileHandle, data, len, &ret, nullptr);
-  if (ret != len) {
-    if (m_globalErr)
-      atError(fmt("Unable to write to stream"));
-    setError();
-  }
+  atUint64 remaining = len;
+  do {
+    const auto toWrite = static_cast<DWORD>(std::min(remaining, atUint64{std::numeric_limits<DWORD>::max()}));
+    DWORD written = 0;
+
+    if (WriteFile(m_fileHandle, data, toWrite, &written, nullptr) == FALSE) {
+      if (m_globalErr) {
+        atError(fmt("Unable to write to file"));
+      }
+      setError();
+      return;
+    }
+
+    remaining -= written;
+    data += written;
+  } while (remaining != 0);
 }
 
 } // namespace athena::io
