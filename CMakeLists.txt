@@ -19,19 +19,6 @@ set(ATHENA_VERSION
 
 add_subdirectory(extern)
 
-if(WIN32)
-list(APPEND CORE_EXTRA src/win32_largefilewrapper.c include/win32_largefilewrapper.h
-     src/athena/FileWriterWin32.cpp src/athena/FileReaderWin32.cpp)
-else()
-list(APPEND CORE_EXTRA src/athena/FileWriterNix.cpp src/athena/FileReader.cpp)
-if(APPLE OR GEKKO OR NX OR ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
-list(APPEND CORE_EXTRA src/osx_largefilewrapper.c include/osx_largefilewrapper.h)
-if(GEKKO OR NX)
-list(APPEND CORE_EXTRA src/gekko_support.c include/gekko_support.h)
-endif()
-endif()
-endif()
-
 add_library(athena-core
     src/athena/Utility.cpp
     src/athena/MemoryReader.cpp
@@ -49,7 +36,6 @@ add_library(athena-core
     src/athena/FileInfo.cpp
     src/athena/Dir.cpp
     src/athena/DNAYaml.cpp
-    ${CORE_EXTRA}
 
     include/athena/IStream.hpp
     include/athena/IStreamReader.hpp
@@ -81,10 +67,41 @@ add_library(athena-core
     include/yaml.h
     include/utf8proc.h
 )
+if(WIN32)
+    target_sources(athena-core PRIVATE
+        src/win32_largefilewrapper.c
+        include/win32_largefilewrapper.h
+        src/athena/FileWriterWin32.cpp
+        src/athena/FileReaderWin32.cpp
+    )
+else()
+    target_sources(athena-core PRIVATE
+        src/athena/FileWriterNix.cpp
+        src/athena/FileReader.cpp
+    )
+    if(APPLE OR GEKKO OR NX OR ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
+        target_sources(athena-core PRIVATE
+            src/osx_largefilewrapper.c
+            include/osx_largefilewrapper.h
+        )
+
+        if(GEKKO OR NX)
+            target_sources(athena-core PRIVATE
+                src/gekko_support.c
+                include/gekko_support.h
+            )
+        endif()
+    endif()
+endif()
+
 target_include_directories(athena-core PUBLIC
-                           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-                           $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIR}>)
-target_link_libraries(athena-core PUBLIC athena-libyaml fmt)
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+   $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIR}>
+)
+target_link_libraries(athena-core PUBLIC
+    athena-libyaml
+    fmt
+)
 
 add_library(athena-sakura EXCLUDE_FROM_ALL
     src/athena/Sprite.cpp
@@ -129,7 +146,7 @@ add_library(athena-wiisave EXCLUDE_FROM_ALL
     include/sha1.h
 )
 if(NOT MSVC AND NOT GEKKO AND NOT NX)
-set_source_files_properties(src/aes.cpp PROPERTIES COMPILE_FLAGS -maes)
+    set_source_files_properties(src/aes.cpp PROPERTIES COMPILE_FLAGS -maes)
 endif()
 
 
