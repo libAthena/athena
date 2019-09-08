@@ -8,9 +8,6 @@
 #include <malloc.h>
 #endif // HW_RVL
 
-#undef min
-#undef max
-
 namespace athena::io {
 MemoryReader::MemoryReader(const void* data, atUint64 length, bool takeOwnership, bool globalErr)
 : m_data(data), m_length(length), m_position(0), m_owns(takeOwnership), m_globalErr(globalErr) {

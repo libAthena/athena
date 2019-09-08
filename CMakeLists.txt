@@ -74,6 +74,11 @@ if(WIN32)
         src/athena/FileWriterWin32.cpp
         src/athena/FileReaderWin32.cpp
     )
+
+    target_compile_definitions(athena-core PRIVATE
+        -DNOMINMAX
+        -DWIN32_LEAN_AND_MEAN
+    )
 else()
     target_sources(athena-core PRIVATE
         src/athena/FileWriterNix.cpp
