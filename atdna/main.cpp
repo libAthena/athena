@@ -681,13 +681,13 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
 
           if (directionVal == 0) {
             outputNodes.emplace_back(NodeType::DoSeek, std::move(fieldName),
-                                     "<Op>("s.append(offsetExprStr).append(", athena::Begin, s)"), false);
+                                     "<Op>("s.append(offsetExprStr).append(", athena::SeekOrigin::Begin, s)"), false);
           } else if (directionVal == 1) {
             outputNodes.emplace_back(NodeType::DoSeek, std::move(fieldName),
-                                     "<Op>("s.append(offsetExprStr).append(", athena::Current, s)"), false);
+                                     "<Op>("s.append(offsetExprStr).append(", athena::SeekOrigin::Current, s)"), false);
           } else if (directionVal == 2) {
             outputNodes.emplace_back(NodeType::DoSeek, std::move(fieldName),
-                                     "<Op>("s.append(offsetExprStr).append(", athena::End, s)"), false);
+                                     "<Op>("s.append(offsetExprStr).append(", athena::SeekOrigin::End, s)"), false);
           }
         } else if (!tsDecl->getName().compare("Align")) {
           llvm::APSInt align(64, 0);
