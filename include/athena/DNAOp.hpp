@@ -372,7 +372,7 @@ struct Read {
   }
   static void DoSeek(atInt64 amount, SeekOrigin whence, StreamT& r) { r.seek(amount, whence); }
   static void DoAlign(atInt64 amount, StreamT& r) {
-    r.seek((r.position() + amount - 1) / amount * amount, athena::Begin);
+    r.seek((r.position() + amount - 1) / amount * amount, athena::SeekOrigin::Begin);
   }
 };
 #define __READ_S(type, endian)                                                                                         \

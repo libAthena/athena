@@ -60,7 +60,7 @@ struct AT_SPECIALIZE_PARMS(atUint16, 42, atUint32, 87, atUint32, 2) TESTFile : p
   Value<atUint32> arrAltCount;
   Vector<atUint32, AT_DNA_COUNT(arrAltCount)> arrayAlt;
 
-  Seek<21, Current> seek;
+  Seek<21, SeekOrigin::Current> seek;
 
   Value<atUint32> arrCount2;
   Vector<TESTSubFile<ETest::ZERO>, AT_DNA_COUNT(arrCount[1] + arrCount2)> array2;
