@@ -1,7 +1,7 @@
 #include <athena/DNAYaml.hpp>
 
 using namespace athena;
-typedef io::DNA<Big> BigDNA;
+typedef io::DNA<Endian::Big> BigDNA;
 
 enum ETest : atUint8 { ZERO, ONE, TWO, THREE };
 
@@ -54,13 +54,13 @@ struct AT_SPECIALIZE_PARMS(atUint16, 42, atUint32, 87, atUint32, 2) TESTFile : p
   Value<TESTTemplateSubFile<atInt32, 36>> nestedTemplate1;
   Value<TESTTemplateSubFile<atInt64, 96>> nestedTemplate2;
 
-  Value<atUint32, Little> arrCount[2];
+  Value<atUint32, Endian::Little> arrCount[2];
   Vector<atUint32, AT_DNA_COUNT(arrCount[0])> array;
 
   Value<atUint32> arrAltCount;
   Vector<atUint32, AT_DNA_COUNT(arrAltCount)> arrayAlt;
 
-  Seek<21, Current> seek;
+  Seek<21, SeekOrigin::Current> seek;
 
   Value<atUint32> arrCount2;
   Vector<TESTSubFile<ETest::ZERO>, AT_DNA_COUNT(arrCount[1] + arrCount2)> array2;

@@ -16,8 +16,8 @@ constexpr bool isSystemBigEndian() { return false; }
 #else
 constexpr bool isSystemBigEndian() { return __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__; }
 #endif
-constexpr ::athena::Endian SystemEndian = isSystemBigEndian() ? Big : Little;
-constexpr ::athena::Endian NotSystemEndian = isSystemBigEndian() ? Little : Big;
+constexpr ::athena::Endian SystemEndian = isSystemBigEndian() ? ::athena::Endian::Big : ::athena::Endian::Little;
+constexpr ::athena::Endian NotSystemEndian = isSystemBigEndian() ? ::athena::Endian::Little : ::athena::Endian::Big;
 
 #if _MSC_VER
 #define BSWAP_CONSTEXPR inline
