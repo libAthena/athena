@@ -629,7 +629,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
         } else if (!tsDecl->getName().compare("Seek")) {
           size_t idx = 0;
           std::string offsetExprStr;
-          llvm::APSInt direction(64, 0);
+          llvm::APSInt direction(64, false);
           const clang::Expr* directionExpr = nullptr;
           bool bad = false;
           for (const clang::TemplateArgument& arg : *tsType) {
@@ -649,8 +649,11 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
                   offsetExprStr = offsetLiteral.toString(10);
                 }
               } else {
-                directionExpr = expr;
-                if (!expr->isIntegerConstantExpr(direction, context)) {
+                clang::APValue result;
+                if (expr->isCXX11ConstantExpr(context, &result)) {
+                  directionExpr = expr;
+                  direction = result.getInt();
+                } else {
                   clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getExprLoc(), AthenaError);
                   diag.AddString("Unable to use non-constant direction expression in Athena");
                   diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
