@@ -123,7 +123,7 @@ namespace athena {
 namespace error {
 enum class Level { Message, Warning, Error, Fatal };
 }
-enum SeekOrigin { Begin, Current, End };
+enum class SeekOrigin { Begin, Current, End };
 
 enum Endian { Little, Big };
 
