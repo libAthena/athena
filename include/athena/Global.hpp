@@ -125,7 +125,7 @@ enum class Level { Message, Warning, Error, Fatal };
 }
 enum class SeekOrigin { Begin, Current, End };
 
-enum Endian { Little, Big };
+enum class Endian { Little, Big };
 
 namespace io {
 template <Endian DNAE>

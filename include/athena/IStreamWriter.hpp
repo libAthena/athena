@@ -91,10 +91,11 @@ public:
    *  @param val The value to write to the buffer
    */
   void writeInt16(atInt16 val) {
-    if (m_endian == Big)
+    if (m_endian == Endian::Big) {
       utility::BigInt16(val);
-    else
+    } else {
       utility::LittleInt16(val);
+    }
     writeUBytes((atUint8*)&val, 2);
   }
   void writeVal(atInt16 val) { writeInt16(val); }
@@ -151,10 +152,11 @@ public:
    *  @param val The value to write to the buffer
    */
   void writeInt32(atInt32 val) {
-    if (m_endian == Big)
+    if (m_endian == Endian::Big) {
       utility::BigInt32(val);
-    else
+    } else {
       utility::LittleInt32(val);
+    }
     writeUBytes((atUint8*)&val, 4);
   }
   void writeVal(atInt32 val) { writeInt32(val); }
@@ -211,10 +213,11 @@ public:
    *  @param val The value to write to the buffer
    */
   void writeInt64(atInt64 val) {
-    if (m_endian == Big)
+    if (m_endian == Endian::Big) {
       utility::BigInt64(val);
-    else
+    } else {
       utility::LittleInt64(val);
+    }
     writeUBytes((atUint8*)&val, 8);
   }
   void writeVal(atInt64 val) { writeInt64(val); }
@@ -271,10 +274,11 @@ public:
    *  @param val The value to write to the buffer
    */
   void writeFloat(float val) {
-    if (m_endian == Big)
+    if (m_endian == Endian::Big) {
       val = utility::BigFloat(val);
-    else
+    } else {
       val = utility::LittleFloat(val);
+    }
     writeUBytes((atUint8*)&val, 4);
   }
   void writeVal(float val) { writeFloat(val); }
@@ -307,10 +311,11 @@ public:
    *  @param val The value to write to the buffer
    */
   void writeDouble(double val) {
-    if (m_endian == Big)
+    if (m_endian == Endian::Big) {
       utility::BigDouble(val);
-    else
+    } else {
       utility::LittleDouble(val);
+    }
     writeUBytes((atUint8*)&val, 8);
   }
   void writeVal(double val) { writeDouble(val); }
@@ -354,7 +359,7 @@ public:
    */
   void writeVec2f(const atVec2f& vec) {
     simd_floats tmp(vec.simd);
-    if (m_endian == Big) {
+    if (m_endian == Endian::Big) {
       tmp[0] = utility::BigFloat(tmp[0]);
       tmp[1] = utility::BigFloat(tmp[1]);
     } else {
@@ -398,7 +403,7 @@ public:
    */
   void writeVec3f(const atVec3f& vec) {
     simd_floats tmp(vec.simd);
-    if (m_endian == Big) {
+    if (m_endian == Endian::Big) {
       tmp[0] = utility::BigFloat(tmp[0]);
       tmp[1] = utility::BigFloat(tmp[1]);
       tmp[2] = utility::BigFloat(tmp[2]);
@@ -446,7 +451,7 @@ public:
    */
   void writeVec4f(const atVec4f& vec) {
     simd_floats tmp(vec.simd);
-    if (m_endian == Big) {
+    if (m_endian == Endian::Big) {
       tmp[0] = utility::BigFloat(tmp[0]);
       tmp[1] = utility::BigFloat(tmp[1]);
       tmp[2] = utility::BigFloat(tmp[2]);
@@ -498,7 +503,7 @@ public:
    */
   void writeVec2d(const atVec2d& vec) {
     simd_doubles tmp(vec.simd);
-    if (m_endian == Big) {
+    if (m_endian == Endian::Big) {
       tmp[0] = utility::BigDouble(tmp[0]);
       tmp[1] = utility::BigDouble(tmp[1]);
     } else {
@@ -542,7 +547,7 @@ public:
    */
   void writeVec3d(const atVec3d& vec) {
     simd_doubles tmp(vec.simd);
-    if (m_endian == Big) {
+    if (m_endian == Endian::Big) {
       tmp[0] = utility::BigDouble(tmp[0]);
       tmp[1] = utility::BigDouble(tmp[1]);
       tmp[2] = utility::BigDouble(tmp[2]);
@@ -590,7 +595,7 @@ public:
    */
   void writeVec4d(const atVec4d& vec) {
     simd_doubles tmp(vec.simd);
-    if (m_endian == Big) {
+    if (m_endian == Endian::Big) {
       tmp[0] = utility::BigDouble(tmp[0]);
       tmp[1] = utility::BigDouble(tmp[1]);
       tmp[2] = utility::BigDouble(tmp[2]);
