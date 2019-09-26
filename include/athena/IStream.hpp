@@ -23,9 +23,9 @@ protected:
   void setError() { m_hasError = true; }
   bool m_hasError = false;
 #if __BYTE_ORDER == __BIG_ENDIAN
-  Endian m_endian = Big;
+  Endian m_endian = Endian::Big;
 #else
-  Endian m_endian = Little;
+  Endian m_endian = Endian::Little;
 #endif
 };
 } // namespace athena::io

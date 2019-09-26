@@ -143,7 +143,7 @@ public:
   atInt16 readInt16() {
     atInt16 val = 0;
     readUBytesToBuf(&val, 2);
-    return m_endian == Big ? utility::BigInt16(val) : utility::LittleInt16(val);
+    return m_endian == Endian::Big ? utility::BigInt16(val) : utility::LittleInt16(val);
   }
   template <class T>
   atInt16 readVal(std::enable_if_t<std::is_same_v<T, atInt16>>* = nullptr) {
@@ -229,7 +229,7 @@ public:
   atInt32 readInt32() {
     atInt32 val = 0;
     readUBytesToBuf(&val, 4);
-    return m_endian == Big ? utility::BigInt32(val) : utility::LittleInt32(val);
+    return m_endian == Endian::Big ? utility::BigInt32(val) : utility::LittleInt32(val);
   }
   template <class T>
   atInt32 readVal(std::enable_if_t<std::is_same_v<T, atInt32>>* = nullptr) {
@@ -315,7 +315,7 @@ public:
   atInt64 readInt64() {
     atInt64 val = 0;
     readUBytesToBuf(&val, 8);
-    return m_endian == Big ? utility::BigInt64(val) : utility::LittleInt64(val);
+    return m_endian == Endian::Big ? utility::BigInt64(val) : utility::LittleInt64(val);
   }
   template <class T>
   atInt64 readVal(std::enable_if_t<std::is_same_v<T, atInt64>>* = nullptr) {
@@ -401,7 +401,7 @@ public:
   float readFloat() {
     float val = 0.f;
     readUBytesToBuf(&val, 4);
-    return m_endian == Big ? utility::BigFloat(val) : utility::LittleFloat(val);
+    return m_endian == Endian::Big ? utility::BigFloat(val) : utility::LittleFloat(val);
   }
   template <class T>
   float readVal(std::enable_if_t<std::is_same_v<T, float>>* = nullptr) {
@@ -446,7 +446,7 @@ public:
   double readDouble() {
     double val = 0.0;
     readUBytesToBuf(&val, 8);
-    return m_endian == Big ? utility::BigDouble(val) : utility::LittleDouble(val);
+    return m_endian == Endian::Big ? utility::BigDouble(val) : utility::LittleDouble(val);
   }
   template <class T>
   double readVal(std::enable_if_t<std::is_same_v<T, double>>* = nullptr) {
@@ -513,7 +513,7 @@ public:
   atVec2f readVec2f() {
     simd_floats val = {};
     readUBytesToBuf(val.data(), 8);
-    if (m_endian == Big) {
+    if (m_endian == Endian::Big) {
       val[0] = utility::BigFloat(val[0]);
       val[1] = utility::BigFloat(val[1]);
     } else {
@@ -581,7 +581,7 @@ public:
   atVec3f readVec3f() {
     simd_floats val = {};
     readUBytesToBuf(val.data(), 12);
-    if (m_endian == Big) {
+    if (m_endian == Endian::Big) {
       val[0] = utility::BigFloat(val[0]);
       val[1] = utility::BigFloat(val[1]);
       val[2] = utility::BigFloat(val[2]);
@@ -650,7 +650,7 @@ public:
   atVec4f readVec4f() {
     simd_floats val = {};
     readUBytesToBuf(val.data(), 16);
-    if (m_endian == Big) {
+    if (m_endian == Endian::Big) {
       val[0] = utility::BigFloat(val[0]);
       val[1] = utility::BigFloat(val[1]);
       val[2] = utility::BigFloat(val[2]);
@@ -720,7 +720,7 @@ public:
   atVec2d readVec2d() {
     simd_doubles val = {};
     readUBytesToBuf(val.data(), 16);
-    if (m_endian == Big) {
+    if (m_endian == Endian::Big) {
       val[0] = utility::BigDouble(val[0]);
       val[1] = utility::BigDouble(val[1]);
     } else {
@@ -788,7 +788,7 @@ public:
   atVec3d readVec3d() {
     simd_doubles val = {};
     readUBytesToBuf(val.data(), 24);
-    if (m_endian == Big) {
+    if (m_endian == Endian::Big) {
       val[0] = utility::BigDouble(val[0]);
       val[1] = utility::BigDouble(val[1]);
       val[2] = utility::BigDouble(val[2]);
@@ -857,7 +857,7 @@ public:
   atVec4d readVec4d() {
     simd_doubles val = {};
     readUBytesToBuf(val.data(), 32);
-    if (m_endian == Big) {
+    if (m_endian == Endian::Big) {
       val[0] = utility::BigDouble(val[0]);
       val[1] = utility::BigDouble(val[1]);
       val[2] = utility::BigDouble(val[2]);
