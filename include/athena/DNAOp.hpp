@@ -1148,29 +1148,29 @@ void __BinarySizeProp64(const T& obj, size_t& s) {
 #define AT_SUBSPECIALIZE_DNA(...)                                                                                      \
   template <>                                                                                                          \
   template <>                                                                                                          \
-  void __VA_ARGS__::Enumerate<athena::io::DNA<athena::Big>::BinarySize>(typename BinarySize::StreamT & s) {            \
+  void __VA_ARGS__::Enumerate<athena::io::DNA<athena::Endian::Big>::BinarySize>(typename BinarySize::StreamT & s) {    \
     _binarySize(s);                                                                                                    \
   }                                                                                                                    \
   template <>                                                                                                          \
   template <>                                                                                                          \
-  void __VA_ARGS__::Enumerate<athena::io::DNA<athena::Big>::Read>(typename Read::StreamT & r) {                        \
+  void __VA_ARGS__::Enumerate<athena::io::DNA<athena::Endian::Big>::Read>(typename Read::StreamT & r) {                \
     _read(r);                                                                                                          \
   }                                                                                                                    \
   template <>                                                                                                          \
   template <>                                                                                                          \
-  void __VA_ARGS__::Enumerate<athena::io::DNA<athena::Big>::Write>(typename Write::StreamT & w) {                      \
+  void __VA_ARGS__::Enumerate<athena::io::DNA<athena::Endian::Big>::Write>(typename Write::StreamT & w) {              \
     _write(w);                                                                                                         \
   }
 
 #define AT_SUBSPECIALIZE_DNA_YAML(...)                                                                                 \
   template <>                                                                                                          \
   template <>                                                                                                          \
-  void __VA_ARGS__::Enumerate<athena::io::DNA<athena::Big>::ReadYaml>(typename ReadYaml::StreamT & r) {                \
+  void __VA_ARGS__::Enumerate<athena::io::DNA<athena::Endian::Big>::ReadYaml>(typename ReadYaml::StreamT & r) {        \
     _read(r);                                                                                                          \
   }                                                                                                                    \
   template <>                                                                                                          \
   template <>                                                                                                          \
-  void __VA_ARGS__::Enumerate<athena::io::DNA<athena::Big>::WriteYaml>(typename WriteYaml::StreamT & w) {              \
+  void __VA_ARGS__::Enumerate<athena::io::DNA<athena::Endian::Big>::WriteYaml>(typename WriteYaml::StreamT & w) {      \
     _write(w);                                                                                                         \
   }                                                                                                                    \
   AT_SUBSPECIALIZE_DNA(__VA_ARGS__)
