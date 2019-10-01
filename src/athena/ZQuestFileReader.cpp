@@ -41,7 +41,7 @@ ZQuestFile* ZQuestFileReader::read() {
     gameString = std::string((const char*)readBytes(0x0A).get(), 0x0A);
 
     for (size_t i = 0; i < ZQuestFile::gameStringList().size(); i++) {
-      if (!ZQuestFile::gameStringList().at(i).substr(0, 0x0A).compare(gameString)) {
+      if (ZQuestFile::gameStringList().at(i).substr(0, 0x0A) == gameString) {
         gameString = ZQuestFile::gameStringList().at(i);
         game = (ZQuestFile::Game)i;
         break;

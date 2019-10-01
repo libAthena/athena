@@ -17,6 +17,8 @@
 #include "athena/IStreamReader.hpp"
 #include "athena/IStreamWriter.hpp"
 
+using namespace std::literals;
+
 namespace athena::io {
 
 /**
@@ -127,7 +129,7 @@ struct DNAV : DNA<DNAE> {
   virtual void read(athena::io::IStreamReader& r) = 0;
   virtual void write(athena::io::IStreamWriter& w) const = 0;
   virtual void binarySize(size_t& s) const = 0;
-  virtual const char* DNATypeV() const = 0;
+  virtual std::string_view DNATypeV() const = 0;
 };
 
 template <Endian DNAE>

@@ -15,20 +15,20 @@
 namespace athena::io {
 
 struct PropId {
-  const char* name = nullptr;
+  std::string_view name;
   uint32_t rcrc32 = 0xffffffff;
   uint64_t crc64 = 0x0;
   template <class T>
   constexpr T opget() const;
   constexpr PropId() = default;
-  constexpr explicit PropId(const char* name, uint32_t rcrc32, uint64_t crc64)
+  constexpr explicit PropId(std::string_view name, uint32_t rcrc32, uint64_t crc64)
   : name(name), rcrc32(rcrc32), crc64(crc64) {}
-  constexpr explicit PropId(const char* name)
+  constexpr explicit PropId(std::string_view name)
   : name(name)
-  , rcrc32(athena::checksums::literals::rcrc32_rec(0xFFFFFFFF, name))
-  , crc64(athena::checksums::literals::crc64_rec(0xFFFFFFFFFFFFFFFF, name)) {}
-  constexpr PropId(const char* name, uint32_t rcrc32)
-  : name(name), rcrc32(rcrc32), crc64(athena::checksums::literals::crc64_rec(0xFFFFFFFFFFFFFFFF, name)) {}
+  , rcrc32(athena::checksums::literals::rcrc32_rec(0xFFFFFFFF, name.data()))
+  , crc64(athena::checksums::literals::crc64_rec(0xFFFFFFFFFFFFFFFF, name.data())) {}
+  constexpr PropId(std::string_view name, uint32_t rcrc32)
+  : name(name), rcrc32(rcrc32), crc64(athena::checksums::literals::crc64_rec(0xFFFFFFFFFFFFFFFF, name.data())) {}
 };
 
 template <>
@@ -628,7 +628,7 @@ struct ReadYaml {
     if (auto __v = r.enterSubVector(id.name, _count)) {
       vector.reserve(_count);
       for (size_t i = 0; i < _count; ++i)
-        vector.push_back(r.readBool(nullptr));
+        vector.push_back(r.readBool());
     }
     /* Horrible reference abuse (but it works) */
     const_cast<S&>(count) = vector.size();
@@ -733,7 +733,7 @@ struct WriteYaml {
     /* libc++ specializes vector<bool> as a bitstream */
     if (auto __v = w.enterSubVector(id.name))
       for (const T& v : vector)
-        w.writeBool(nullptr, v);
+        w.writeBool(v);
   }
   static void Do(const PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, StreamT& w) {
     w.writeUBytes(id.name, buf, count);
@@ -944,7 +944,7 @@ void __BinarySizeProp64(const T& obj, size_t& s) {
   }                                                                                                                    \
   template <class Op>                                                                                                  \
   void Enumerate(typename Op::StreamT& s);                                                                             \
-  static const char* DNAType();
+  static std::string_view DNAType();
 
 #define AT_DECL_DNA                                                                                                    \
   AT_DECL_DNA_DO                                                                                                       \
@@ -985,7 +985,7 @@ void __BinarySizeProp64(const T& obj, size_t& s) {
   void read(athena::io::IStreamReader& r) override { athena::io::__Read(*this, r); }                                   \
   void write(athena::io::IStreamWriter& w) const override { athena::io::__Write(*this, w); }                           \
   void binarySize(size_t& s) const override { athena::io::__BinarySize(*this, s); }                                    \
-  const char* DNATypeV() const override { return DNAType(); }
+  std::string_view DNATypeV() const override { return DNAType(); }
 
 #define AT_DECL_DNAV_NO_TYPE                                                                                           \
   AT_DECL_DNA_DO                                                                                                       \
@@ -1055,7 +1055,7 @@ void __BinarySizeProp64(const T& obj, size_t& s) {
   void Enumerate(typename Op::StreamT& s);                                                                             \
   template <class Op>                                                                                                  \
   bool Lookup(uint64_t hash, typename Op::StreamT& s);                                                                 \
-  static const char* DNAType();                                                                                        \
+  static std::string_view DNAType();                                                                                   \
   void read(athena::io::IStreamReader& r) { athena::io::__Read(*this, r); }                                            \
   void write(athena::io::IStreamWriter& w) const { athena::io::__Write(*this, w); }                                    \
   void binarySize(size_t& s) const { athena::io::__BinarySize(*this, s); }                                             \

@@ -96,7 +96,7 @@ void WiiFile::addChild(WiiFile* file) {
     tmpName = tmpName.substr(0, tmpName.find('/'));
 
     for (atUint32 i = 0; i < m_children.size(); i++) {
-      if (!m_children[i]->filename().compare(tmpName)) {
+      if (m_children[i]->filename() == tmpName) {
         std::string newName = file->filename();
         newName = newName.substr(newName.rfind("/") + 1, newName.size() - newName.rfind("/"));
         file->setFilename(newName);
@@ -114,7 +114,7 @@ void WiiFile::addChild(WiiFile* file) {
 
 WiiFile* WiiFile::child(const std::string& name) {
   std::vector<WiiFile*>::iterator iter =
-      std::find_if(m_children.begin(), m_children.end(), [&name](WiiFile* f) { return !f->filename().compare(name); });
+      std::find_if(m_children.begin(), m_children.end(), [&name](WiiFile* f) { return f->filename() == name; });
 
   if (iter != m_children.end())
     return *iter;

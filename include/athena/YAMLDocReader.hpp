@@ -31,8 +31,8 @@ public:
 
   bool parse(athena::io::IStreamReader* reader);
 
-  bool ClassTypeOperation(std::function<bool(const char* dnaType)> func);
-  bool ValidateClassType(const char* expectedType);
+  bool ClassTypeOperation(std::function<bool(std::string_view dnaType)> func);
+  bool ValidateClassType(std::string_view expectedType);
 
   const YAMLNode* getRootNode() const { return m_rootNode.get(); }
   const YAMLNode* getCurNode() const { return m_subStack.empty() ? nullptr : m_subStack.back(); }
@@ -59,10 +59,10 @@ public:
   };
   friend class RecordRAII;
 
-  RecordRAII enterSubRecord(const char* name);
+  RecordRAII enterSubRecord(std::string_view name = {});
 
   template <class T>
-  void enumerate(const char* name, T& record, std::enable_if_t<__IsDNARecord_v<T>>* = nullptr) {
+  void enumerate(std::string_view name, T& record, std::enable_if_t<__IsDNARecord_v<T>>* = nullptr) {
     if (auto rec = enterSubRecord(name))
       record.read(*this);
   }
@@ -82,10 +82,11 @@ public:
   };
   friend class VectorRAII;
 
-  VectorRAII enterSubVector(const char* name, size_t& countOut);
+  VectorRAII enterSubVector(std::string_view name, size_t& countOut);
+  VectorRAII enterSubVector(size_t& countOut) { return enterSubVector({}, countOut); }
 
   template <class T>
-  size_t enumerate(const char* name, std::vector<T>& vector,
+  size_t enumerate(std::string_view name, std::vector<T>& vector,
                    std::enable_if_t<!std::is_arithmetic_v<T> && !std::is_same_v<T, atVec2f> &&
                                     !std::is_same_v<T, atVec3f> && !std::is_same_v<T, atVec4f>>* = nullptr) {
     size_t countOut;
@@ -94,7 +95,7 @@ public:
       vector.reserve(countOut);
       for (size_t i = 0; i < countOut; ++i) {
         vector.emplace_back();
-        if (auto rec = enterSubRecord(nullptr))
+        if (auto rec = enterSubRecord())
           vector.back().read(*this);
       }
     }
@@ -102,7 +103,7 @@ public:
   }
 
   template <class T>
-  size_t enumerate(const char* name, std::vector<T>& vector,
+  size_t enumerate(std::string_view name, std::vector<T>& vector,
                    std::enable_if_t<std::is_arithmetic_v<T> || std::is_same_v<T, atVec2f> ||
                                     std::is_same_v<T, atVec3f> || std::is_same_v<T, atVec4f>>* = nullptr) {
     size_t countOut;
@@ -116,53 +117,53 @@ public:
   }
 
   template <class T>
-  size_t enumerate(const char* name, std::vector<T>& vector, std::function<void(YAMLDocReader&, T&)> readf) {
+  size_t enumerate(std::string_view name, std::vector<T>& vector, std::function<void(YAMLDocReader&, T&)> readf) {
     size_t countOut;
     if (auto v = enterSubVector(name, countOut)) {
       vector.clear();
       vector.reserve(countOut);
       for (size_t i = 0; i < countOut; ++i) {
         vector.emplace_back();
-        if (auto rec = enterSubRecord(nullptr))
+        if (auto rec = enterSubRecord())
           readf(*this, vector.back());
       }
     }
     return countOut;
   }
 
-  bool hasVal(const char* name) const {
+  bool hasVal(std::string_view name) const {
     if (m_subStack.size()) {
       const YAMLNode* mnode = m_subStack.back();
-      if (mnode->m_type == YAML_MAPPING_NODE && name)
+      if (mnode->m_type == YAML_MAPPING_NODE && !name.empty())
         for (const auto& item : mnode->m_mapChildren)
-          if (!item.first.compare(name))
+          if (item.first == name)
             return true;
     }
     return false;
   }
 
   template <typename RETURNTYPE>
-  RETURNTYPE readVal(const char* name);
-  bool readBool(const char* name);
-  atInt8 readByte(const char* name);
-  atUint8 readUByte(const char* name);
-  atInt16 readInt16(const char* name);
-  atUint16 readUint16(const char* name);
-  atInt32 readInt32(const char* name);
-  atUint32 readUint32(const char* name);
-  atInt64 readInt64(const char* name);
-  atUint64 readUint64(const char* name);
-  float readFloat(const char* name);
-  double readDouble(const char* name);
-  atVec2f readVec2f(const char* name);
-  atVec3f readVec3f(const char* name);
-  atVec4f readVec4f(const char* name);
-  atVec2d readVec2d(const char* name);
-  atVec3d readVec3d(const char* name);
-  atVec4d readVec4d(const char* name);
-  std::unique_ptr<atUint8[]> readUBytes(const char* name);
-  std::string readString(const char* name);
-  std::wstring readWString(const char* name);
+  RETURNTYPE readVal(std::string_view name = {});
+  bool readBool(std::string_view name = {});
+  atInt8 readByte(std::string_view name = {});
+  atUint8 readUByte(std::string_view name = {});
+  atInt16 readInt16(std::string_view name = {});
+  atUint16 readUint16(std::string_view name = {});
+  atInt32 readInt32(std::string_view name = {});
+  atUint32 readUint32(std::string_view name = {});
+  atInt64 readInt64(std::string_view name = {});
+  atUint64 readUint64(std::string_view name = {});
+  float readFloat(std::string_view name = {});
+  double readDouble(std::string_view name = {});
+  atVec2f readVec2f(std::string_view name = {});
+  atVec3f readVec3f(std::string_view name = {});
+  atVec4f readVec4f(std::string_view name = {});
+  atVec2d readVec2d(std::string_view name = {});
+  atVec3d readVec3d(std::string_view name = {});
+  atVec4d readVec4d(std::string_view name = {});
+  std::unique_ptr<atUint8[]> readUBytes(std::string_view name = {});
+  std::string readString(std::string_view name = {});
+  std::wstring readWString(std::string_view name = {});
 };
 
 } // namespace athena::io

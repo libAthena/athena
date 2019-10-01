@@ -71,7 +71,7 @@ bool parseBool(std::string_view boolean, bool* valid) {
   tolower(val);
 
   // Check for true first
-  if (!val.compare("true") || !val.compare("1") || !val.compare("yes") || !val.compare("on")) {
+  if (val == "true" || val == "1" || val == "yes" || val == "on") {
     if (valid)
       *valid = true;
 
@@ -79,7 +79,7 @@ bool parseBool(std::string_view boolean, bool* valid) {
   }
 
   // Now false
-  if (!val.compare("false") || !val.compare("0") || !val.compare("no") || !val.compare("off")) {
+  if (val == "false" || val == "0" || val == "no" || val == "off") {
     if (valid)
       *valid = true;
 

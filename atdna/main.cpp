@@ -91,9 +91,9 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
             bool hasWrite = false;
             for (const clang::CXXMethodDecl* method : rDecl->methods()) {
               std::string compName = method->getDeclName().getAsString();
-              if (!compName.compare("read"))
+              if (compName == "read")
                 hasRead = true;
-              else if (!compName.compare("write"))
+              else if (compName == "write")
                 hasWrite = true;
             }
             if (hasRead && hasWrite) {
@@ -130,7 +130,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
     } else if (theType->isRecordType()) {
       const clang::CXXRecordDecl* rDecl = theType->getAsCXXRecordDecl();
       for (const clang::FieldDecl* field : rDecl->fields()) {
-        if (!field->getName().compare("clangVec")) {
+        if (field->getName() == "clangVec") {
           const auto* vType = static_cast<const clang::VectorType*>(field->getType().getTypePtr());
           if (vType->isVectorType()) {
             const auto* eType = static_cast<const clang::BuiltinType*>(vType->getElementType().getTypePtr());
@@ -164,7 +164,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
 
   static std::string GetPropIdExpr(const clang::FieldDecl* field, const std::string& fieldName) {
     std::string fieldStr = GetFieldString(fieldName);
-    std::string propIdExpr = "\"" + fieldStr + "\"";
+    std::string propIdExpr = "\"" + fieldStr + "\"sv";
     for (clang::Attr* attr : field->attrs()) {
       if (clang::AnnotateAttr* annot = clang::dyn_cast_or_null<clang::AnnotateAttr>(attr)) {
         llvm::StringRef textRef = annot->getAnnotation();
@@ -172,7 +172,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           unsigned long num = strtoul(textRef.data() + 7, nullptr, 16);
           std::string tmpS;
           llvm::raw_string_ostream s(tmpS);
-          s << llvm::format("\"%s\", 0x%08X", fieldStr.c_str(), num);
+          s << llvm::format("\"%s\"sv, 0x%08X", fieldStr.c_str(), num);
           propIdExpr = s.str();
           break;
         }
@@ -366,7 +366,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
         const clang::TemplateDecl* tsDecl = tsType->getTemplateName().getAsTemplateDecl();
         const clang::TemplateParameterList* classParms = tsDecl->getTemplateParameters();
 
-        if (!tsDecl->getName().compare("Value")) {
+        if (tsDecl->getName() == "Value") {
           llvm::APSInt endian(64, -1);
           std::string endianExprStr;
           bool defaultEndian = true;
@@ -407,7 +407,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           }
 
           outputNodes.emplace_back(NodeType::Do, fieldName, ioOp, false);
-        } else if (!tsDecl->getName().compare("Vector")) {
+        } else if (tsDecl->getName() == "Vector") {
           llvm::APSInt endian(64, -1);
           std::string endianExprStr;
           bool defaultEndian = true;
@@ -483,7 +483,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           }
 
           outputNodes.emplace_back(NodeType::Do, fieldName, ioOp, false);
-        } else if (!tsDecl->getName().compare("Buffer")) {
+        } else if (tsDecl->getName() == "Buffer") {
           const clang::Expr* sizeExpr = nullptr;
           std::string sizeExprStr;
           for (const clang::TemplateArgument& arg : *tsType) {
@@ -516,7 +516,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           std::string ioOp = GetVectorOpString(fieldName, propIdExpr, sizeExprStr);
 
           outputNodes.emplace_back(NodeType::Do, fieldName, ioOp, false);
-        } else if (!tsDecl->getName().compare("String")) {
+        } else if (tsDecl->getName() == "String") {
           std::string sizeExprStr;
           for (const clang::TemplateArgument& arg : *tsType) {
             if (arg.getKind() == clang::TemplateArgument::Expression) {
@@ -543,7 +543,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
             ioOp = GetOpString(fieldName, propIdExpr);
 
           outputNodes.emplace_back(NodeType::Do, fieldName, ioOp, false);
-        } else if (!tsDecl->getName().compare("WString")) {
+        } else if (tsDecl->getName() == "WString") {
           llvm::APSInt endian(64, -1);
           std::string endianExprStr;
           bool defaultEndian = true;
@@ -597,7 +597,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           }
 
           outputNodes.emplace_back(NodeType::Do, fieldName, ioOp, false);
-        } else if (!tsDecl->getName().compare("Seek")) {
+        } else if (tsDecl->getName() == "Seek") {
           size_t idx = 0;
           std::string offsetExprStr;
           llvm::APSInt direction(64, 0);
@@ -659,7 +659,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           else if (directionVal == 2)
             outputNodes.emplace_back(NodeType::DoSeek, fieldName, "<Op>("s + offsetExprStr + ", athena::End, s)",
                                      false);
-        } else if (!tsDecl->getName().compare("Align")) {
+        } else if (tsDecl->getName() == "Align") {
           llvm::APSInt align(64, 0);
           bool bad = false;
           for (const clang::TemplateArgument& arg : *tsType) {
@@ -758,7 +758,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
         const clang::TemplateDecl* tsDecl = tsType->getTemplateName().getAsTemplateDecl();
         const clang::TemplateParameterList* classParms = tsDecl->getTemplateParameters();
 
-        if (!tsDecl->getName().compare("Value")) {
+        if (tsDecl->getName() == "Value") {
           llvm::APSInt endian(64, -1);
           std::string endianExprStr;
           bool defaultEndian = true;
@@ -802,7 +802,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
                   << "    Do" << ioOp << ";\n"
                   << "    return true;\n";
 
-        } else if (!tsDecl->getName().compare("Vector")) {
+        } else if (tsDecl->getName() == "Vector") {
           llvm::APSInt endian(64, -1);
           std::string endianExprStr;
           bool defaultEndian = true;
@@ -869,7 +869,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           fileOut << "  AT_PROP_CASE(" << propIdExpr << "):\n"
                   << "    Do" << ioOp << ";\n"
                   << "    return true;\n";
-        } else if (!tsDecl->getName().compare("Buffer")) {
+        } else if (tsDecl->getName() == "Buffer") {
           const clang::Expr* sizeExpr = nullptr;
           std::string sizeExprStr;
           for (const clang::TemplateArgument& arg : *tsType) {
@@ -904,7 +904,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           fileOut << "  AT_PROP_CASE(" << propIdExpr << "):\n"
                   << "    Do" << ioOp << ";\n"
                   << "    return true;\n";
-        } else if (!tsDecl->getName().compare("String")) {
+        } else if (tsDecl->getName() == "String") {
           std::string sizeExprStr;
           for (const clang::TemplateArgument& arg : *tsType) {
             if (arg.getKind() == clang::TemplateArgument::Expression) {
@@ -933,7 +933,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           fileOut << "  AT_PROP_CASE(" << propIdExpr << "):\n"
                   << "    Do" << ioOp << ";\n"
                   << "    return true;\n";
-        } else if (!tsDecl->getName().compare("WString")) {
+        } else if (tsDecl->getName() == "WString") {
           llvm::APSInt endian(64, -1);
           std::string endianExprStr;
           bool defaultEndian = true;
@@ -1038,8 +1038,7 @@ public:
     bool isYamlDNA = false;
     for (const clang::CXXMethodDecl* method : decl->methods())
       if (method->getDeclName().isIdentifier() &&
-          (!method->getName().compare(llvm::StringLiteral("read")) ||
-           !method->getName().compare(llvm::StringLiteral("write"))) &&
+          (method->getName() == "read" || method->getName() == "write") &&
           method->getNumParams() == 1 &&
           method->getParamDecl(0)->getType().getAsString() == "athena::io::YAMLDocReader &") {
         isYamlDNA = true;
@@ -1050,7 +1049,7 @@ public:
     bool isPropDNA = false;
     for (const clang::Decl* d : decl->decls())
       if (const clang::FunctionTemplateDecl* m = clang::dyn_cast_or_null<clang::FunctionTemplateDecl>(d))
-        if (m->getDeclName().isIdentifier() && !m->getName().compare(llvm::StringLiteral("Lookup"))) {
+        if (m->getDeclName().isIdentifier() && m->getName() == "Lookup") {
           isPropDNA = true;
           break;
         }
@@ -1062,7 +1061,7 @@ public:
       if (regType) {
         const clang::CXXRecordDecl* rDecl = regType->getAsCXXRecordDecl();
         if (rDecl) {
-          if (!rDecl->getName().compare("Delete")) {
+          if (rDecl->getName() == "Delete") {
             const clang::CXXRecordDecl* rParentDecl = llvm::dyn_cast_or_null<clang::CXXRecordDecl>(rDecl->getParent());
             if (rParentDecl) {
               std::string parentCheck = rParentDecl->getTypeForDecl()->getCanonicalTypeInternal().getAsString();
@@ -1093,8 +1092,8 @@ public:
     for (const auto& specialization : specializations) {
       for (int i = 0; i < specialization.second; ++i)
         fileOut << "template <>\n";
-      fileOut << "const char* " << specialization.first << "::DNAType() {\n  return \"" << specialization.first
-              << "\";\n}\n";
+      fileOut << "std::string_view " << specialization.first << "::DNAType() {\n  return \"" << specialization.first
+              << "\"sv;\n}\n";
     }
     fileOut << "\n\n";
 

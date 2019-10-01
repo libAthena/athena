@@ -6,6 +6,7 @@
 #include "athena/YAMLCommon.hpp"
 
 namespace athena::io {
+using namespace std::literals;
 
 template <>
 bool NodeToVal(const YAMLNode* node) {
@@ -344,26 +345,26 @@ std::unique_ptr<YAMLNode> ValToNode(std::u32string_view val) {
   return ret;
 }
 
-static const char* ErrorString(yaml_error_type_t errt) {
+static std::string_view ErrorString(yaml_error_type_t errt) {
   switch (errt) {
   case YAML_NO_ERROR:
-    return "No Error";
+    return "No Error"sv;
   case YAML_MEMORY_ERROR:
-    return "Memory Error";
+    return "Memory Error"sv;
   case YAML_READER_ERROR:
-    return "Reader Error";
+    return "Reader Error"sv;
   case YAML_SCANNER_ERROR:
-    return "Scanner Error";
+    return "Scanner Error"sv;
   case YAML_PARSER_ERROR:
-    return "Parser Error";
+    return "Parser Error"sv;
   case YAML_COMPOSER_ERROR:
-    return "Composer Error";
+    return "Composer Error"sv;
   case YAML_WRITER_ERROR:
-    return "Writer Error";
+    return "Writer Error"sv;
   case YAML_EMITTER_ERROR:
-    return "Emitter Error";
+    return "Emitter Error"sv;
   }
-  return "Unknown Error";
+  return "Unknown Error"sv;
 }
 
 void HandleYAMLParserError(yaml_parser_t* parser) {
@@ -403,7 +404,7 @@ int YAMLAthenaWriter(athena::io::IStreamWriter* writer, unsigned char* buffer, s
   return 1;
 }
 
-YAMLDocWriter::YAMLDocWriter(const char* classType, athena::io::IStreamReader* reader) {
+YAMLDocWriter::YAMLDocWriter(std::string_view classType, athena::io::IStreamReader* reader) {
   if (!yaml_emitter_initialize(&m_emitter)) {
     HandleYAMLEmitterError(&m_emitter);
     return;
@@ -422,7 +423,7 @@ YAMLDocWriter::YAMLDocWriter(const char* classType, athena::io::IStreamReader* r
   }
 
   m_subStack.emplace_back(m_rootNode.get());
-  if (classType) {
+  if (!classType.empty()) {
     auto classVal = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
     classVal->m_scalarString.assign(classType);
     m_rootNode->assignMapChild("DNAType", std::move(classVal));
@@ -467,13 +468,13 @@ bool YAMLDocWriter::finish(athena::io::IStreamWriter* fout) {
   return true;
 }
 
-YAMLDocWriter::RecordRAII YAMLDocWriter::enterSubRecord(const char* name) {
+YAMLDocWriter::RecordRAII YAMLDocWriter::enterSubRecord(std::string_view name) {
   YAMLNode* curSub = m_subStack.back();
   if (curSub->m_type != YAML_MAPPING_NODE && curSub->m_type != YAML_SEQUENCE_NODE)
     return {};
   YAMLNode* newNode = new YAMLNode(YAML_MAPPING_NODE);
   if (curSub->m_type == YAML_MAPPING_NODE)
-    curSub->assignMapChild(name ? name : std::string_view{}, std::unique_ptr<YAMLNode>(newNode));
+    curSub->assignMapChild(!name.empty() ? name : std::string_view{}, std::unique_ptr<YAMLNode>(newNode));
   else if (curSub->m_type == YAML_SEQUENCE_NODE)
     curSub->m_seqChildren.emplace_back(newNode);
   m_subStack.push_back(newNode);
@@ -502,13 +503,13 @@ void YAMLDocWriter::_leaveSubRecord() {
   }
 }
 
-YAMLDocWriter::VectorRAII YAMLDocWriter::enterSubVector(const char* name) {
+YAMLDocWriter::VectorRAII YAMLDocWriter::enterSubVector(std::string_view name) {
   YAMLNode* curSub = m_subStack.back();
   if (curSub->m_type != YAML_MAPPING_NODE && curSub->m_type != YAML_SEQUENCE_NODE)
     return {};
   YAMLNode* newNode = new YAMLNode(YAML_SEQUENCE_NODE);
   if (curSub->m_type == YAML_MAPPING_NODE)
-    curSub->assignMapChild(name ? name : std::string_view{}, std::unique_ptr<YAMLNode>(newNode));
+    curSub->assignMapChild(!name.empty() ? name : std::string_view{}, std::unique_ptr<YAMLNode>(newNode));
   else if (curSub->m_type == YAML_SEQUENCE_NODE)
     curSub->m_seqChildren.emplace_back(newNode);
   m_subStack.push_back(newNode);
@@ -521,82 +522,82 @@ void YAMLDocWriter::_leaveSubVector() {
 }
 
 template <typename INTYPE>
-void YAMLDocWriter::writeVal(const char* name, const INTYPE& val) {
+void YAMLDocWriter::writeVal(std::string_view name, const INTYPE& val) {
   YAMLNode* curSub = m_subStack.back();
   if (curSub->m_type == YAML_MAPPING_NODE)
-    curSub->assignMapChild(name ? name : std::string_view{}, std::move(ValToNode(val)));
+    curSub->assignMapChild(!name.empty() ? name : std::string_view{}, ValToNode(val));
   else if (curSub->m_type == YAML_SEQUENCE_NODE)
-    curSub->m_seqChildren.emplace_back(std::move(ValToNode(val)));
+    curSub->m_seqChildren.emplace_back(ValToNode(val));
 }
 
-template void YAMLDocWriter::writeVal<atInt8>(const char* name, const atInt8& val);
-template void YAMLDocWriter::writeVal<atUint8>(const char* name, const atUint8& val);
-template void YAMLDocWriter::writeVal<atInt16>(const char* name, const atInt16& val);
-template void YAMLDocWriter::writeVal<atUint16>(const char* name, const atUint16& val);
-template void YAMLDocWriter::writeVal<atInt32>(const char* name, const atInt32& val);
-template void YAMLDocWriter::writeVal<atUint32>(const char* name, const atUint32& val);
-template void YAMLDocWriter::writeVal<float>(const char* name, const float& val);
-template void YAMLDocWriter::writeVal<double>(const char* name, const double& val);
-template void YAMLDocWriter::writeVal<atVec3f>(const char* name, const atVec3f& val);
-template void YAMLDocWriter::writeVal<atVec4f>(const char* name, const atVec4f& val);
-template void YAMLDocWriter::writeVal<bool>(const char* name, const bool& val);
+template void YAMLDocWriter::writeVal<atInt8>(std::string_view name, const atInt8& val);
+template void YAMLDocWriter::writeVal<atUint8>(std::string_view name, const atUint8& val);
+template void YAMLDocWriter::writeVal<atInt16>(std::string_view name, const atInt16& val);
+template void YAMLDocWriter::writeVal<atUint16>(std::string_view name, const atUint16& val);
+template void YAMLDocWriter::writeVal<atInt32>(std::string_view name, const atInt32& val);
+template void YAMLDocWriter::writeVal<atUint32>(std::string_view name, const atUint32& val);
+template void YAMLDocWriter::writeVal<float>(std::string_view name, const float& val);
+template void YAMLDocWriter::writeVal<double>(std::string_view name, const double& val);
+template void YAMLDocWriter::writeVal<atVec3f>(std::string_view name, const atVec3f& val);
+template void YAMLDocWriter::writeVal<atVec4f>(std::string_view name, const atVec4f& val);
+template void YAMLDocWriter::writeVal<bool>(std::string_view name, const bool& val);
 
 template <typename INTYPE>
-void YAMLDocWriter::writeVal(const char* name, const INTYPE& val, size_t byteCount) {
+void YAMLDocWriter::writeVal(std::string_view name, const INTYPE& val, size_t byteCount) {
   YAMLNode* curSub = m_subStack.back();
   if (curSub->m_type == YAML_MAPPING_NODE)
-    curSub->assignMapChild(name ? name : std::string_view{}, std::move(ValToNode(val, byteCount)));
+    curSub->assignMapChild(!name.empty() ? name : std::string_view{}, ValToNode(val, byteCount));
   else if (curSub->m_type == YAML_SEQUENCE_NODE)
-    curSub->m_seqChildren.emplace_back(std::move(ValToNode(val, byteCount)));
+    curSub->m_seqChildren.emplace_back(ValToNode(val, byteCount));
 }
 
-void YAMLDocWriter::writeBool(const char* name, const bool& val) { writeVal<bool>(name, val); }
+void YAMLDocWriter::writeBool(std::string_view name, const bool& val) { writeVal<bool>(name, val); }
 
-void YAMLDocWriter::writeByte(const char* name, const atInt8& val) { writeVal<atInt8>(name, val); }
+void YAMLDocWriter::writeByte(std::string_view name, const atInt8& val) { writeVal<atInt8>(name, val); }
 
-void YAMLDocWriter::writeUByte(const char* name, const atUint8& val) { writeVal<atUint8>(name, val); }
+void YAMLDocWriter::writeUByte(std::string_view name, const atUint8& val) { writeVal<atUint8>(name, val); }
 
-void YAMLDocWriter::writeInt16(const char* name, const atInt16& val) { writeVal<atInt16>(name, val); }
+void YAMLDocWriter::writeInt16(std::string_view name, const atInt16& val) { writeVal<atInt16>(name, val); }
 
-void YAMLDocWriter::writeUint16(const char* name, const atUint16& val) { writeVal<atUint16>(name, val); }
+void YAMLDocWriter::writeUint16(std::string_view name, const atUint16& val) { writeVal<atUint16>(name, val); }
 
-void YAMLDocWriter::writeInt32(const char* name, const atInt32& val) { writeVal<atInt32>(name, val); }
+void YAMLDocWriter::writeInt32(std::string_view name, const atInt32& val) { writeVal<atInt32>(name, val); }
 
-void YAMLDocWriter::writeUint32(const char* name, const atUint32& val) { writeVal<atUint32>(name, val); }
+void YAMLDocWriter::writeUint32(std::string_view name, const atUint32& val) { writeVal<atUint32>(name, val); }
 
-void YAMLDocWriter::writeInt64(const char* name, const atInt64& val) { writeVal<atInt64>(name, val); }
+void YAMLDocWriter::writeInt64(std::string_view name, const atInt64& val) { writeVal<atInt64>(name, val); }
 
-void YAMLDocWriter::writeUint64(const char* name, const atUint64& val) { writeVal<atUint64>(name, val); }
+void YAMLDocWriter::writeUint64(std::string_view name, const atUint64& val) { writeVal<atUint64>(name, val); }
 
-void YAMLDocWriter::writeFloat(const char* name, const float& val) { writeVal<float>(name, val); }
+void YAMLDocWriter::writeFloat(std::string_view name, const float& val) { writeVal<float>(name, val); }
 
-void YAMLDocWriter::writeDouble(const char* name, const double& val) { writeVal<double>(name, val); }
+void YAMLDocWriter::writeDouble(std::string_view name, const double& val) { writeVal<double>(name, val); }
 
-void YAMLDocWriter::writeVec2f(const char* name, const atVec2f& val) { writeVal<atVec2f>(name, val); }
+void YAMLDocWriter::writeVec2f(std::string_view name, const atVec2f& val) { writeVal<atVec2f>(name, val); }
 
-void YAMLDocWriter::writeVec3f(const char* name, const atVec3f& val) { writeVal<atVec3f>(name, val); }
+void YAMLDocWriter::writeVec3f(std::string_view name, const atVec3f& val) { writeVal<atVec3f>(name, val); }
 
-void YAMLDocWriter::writeVec4f(const char* name, const atVec4f& val) { writeVal<atVec4f>(name, val); }
+void YAMLDocWriter::writeVec4f(std::string_view name, const atVec4f& val) { writeVal<atVec4f>(name, val); }
 
-void YAMLDocWriter::writeVec2d(const char* name, const atVec2d& val) { writeVal<atVec2d>(name, val); }
+void YAMLDocWriter::writeVec2d(std::string_view name, const atVec2d& val) { writeVal<atVec2d>(name, val); }
 
-void YAMLDocWriter::writeVec3d(const char* name, const atVec3d& val) { writeVal<atVec3d>(name, val); }
+void YAMLDocWriter::writeVec3d(std::string_view name, const atVec3d& val) { writeVal<atVec3d>(name, val); }
 
-void YAMLDocWriter::writeVec4d(const char* name, const atVec4d& val) { writeVal<atVec4d>(name, val); }
+void YAMLDocWriter::writeVec4d(std::string_view name, const atVec4d& val) { writeVal<atVec4d>(name, val); }
 
-void YAMLDocWriter::writeUBytes(const char* name, const std::unique_ptr<atUint8[]>& val, size_t byteCount) {
+void YAMLDocWriter::writeUBytes(std::string_view name, const std::unique_ptr<atUint8[]>& val, size_t byteCount) {
   writeVal<const std::unique_ptr<atUint8[]>&>(name, val, byteCount);
 }
 
-void YAMLDocWriter::writeString(const char* name, std::string_view val) { writeVal<std::string_view>(name, val); }
+void YAMLDocWriter::writeString(std::string_view name, std::string_view val) { writeVal<std::string_view>(name, val); }
 
-void YAMLDocWriter::writeWString(const char* name, std::wstring_view val) { writeVal<std::wstring_view>(name, val); }
+void YAMLDocWriter::writeWString(std::string_view name, std::wstring_view val) { writeVal<std::wstring_view>(name, val); }
 
-void YAMLDocWriter::writeU16String(const char* name, std::u16string_view val) {
+void YAMLDocWriter::writeU16String(std::string_view name, std::u16string_view val) {
   writeVal<std::u16string_view>(name, val);
 }
 
-void YAMLDocWriter::writeU32String(const char* name, std::u32string_view val) {
+void YAMLDocWriter::writeU32String(std::string_view name, std::u32string_view val) {
   writeVal<std::u32string_view>(name, val);
 }
 
@@ -711,7 +712,7 @@ bool YAMLDocReader::parse(athena::io::IStreamReader* reader) {
   return true;
 }
 
-bool YAMLDocReader::ClassTypeOperation(std::function<bool(const char* dnaType)> func) {
+bool YAMLDocReader::ClassTypeOperation(std::function<bool(std::string_view dnaType)> func) {
   yaml_event_t event;
   if (!yaml_parser_parse(&m_parser, &event)) {
     HandleYAMLParserError(&m_parser);
@@ -762,14 +763,14 @@ bool YAMLDocReader::ClassTypeOperation(std::function<bool(const char* dnaType)> 
   return false;
 }
 
-bool YAMLDocReader::ValidateClassType(const char* expectedType) {
-  if (!expectedType)
+bool YAMLDocReader::ValidateClassType(std::string_view expectedType) {
+  if (expectedType.empty())
     return false;
 
-  return ClassTypeOperation([&](const char* dnaType) -> bool { return (strcmp(expectedType, dnaType) == 0); });
+  return ClassTypeOperation([&](std::string_view dnaType) { return expectedType == dnaType; });
 }
 
-YAMLDocReader::RecordRAII YAMLDocReader::enterSubRecord(const char* name) {
+YAMLDocReader::RecordRAII YAMLDocReader::enterSubRecord(std::string_view name) {
   YAMLNode* curSub = m_subStack.back();
   if (curSub->m_type == YAML_SEQUENCE_NODE) {
     int& seqIdx = m_seqTrackerStack.back();
@@ -777,11 +778,11 @@ YAMLDocReader::RecordRAII YAMLDocReader::enterSubRecord(const char* name) {
     if (m_subStack.back()->m_type == YAML_SEQUENCE_NODE)
       m_seqTrackerStack.push_back(0);
     return RecordRAII{this};
-  } else if (!name) {
+  } else if (name.empty()) {
     atError(fmt("Expected YAML sequence"));
   }
   for (const auto& item : curSub->m_mapChildren) {
-    if (!item.first.compare(name)) {
+    if (item.first == name) {
       m_subStack.push_back(item.second.get());
       if (m_subStack.back()->m_type == YAML_SEQUENCE_NODE)
         m_seqTrackerStack.push_back(0);
@@ -799,16 +800,16 @@ void YAMLDocReader::_leaveSubRecord() {
   }
 }
 
-YAMLDocReader::VectorRAII YAMLDocReader::enterSubVector(const char* name, size_t& countOut) {
+YAMLDocReader::VectorRAII YAMLDocReader::enterSubVector(std::string_view name, size_t& countOut) {
   YAMLNode* curSub = m_subStack.back();
-  if (!name && curSub->m_type == YAML_SEQUENCE_NODE) {
+  if (name.empty() && curSub->m_type == YAML_SEQUENCE_NODE) {
     m_subStack.push_back(curSub);
     m_seqTrackerStack.push_back(0);
     countOut = curSub->m_seqChildren.size();
     return VectorRAII{this};
   } else {
     for (const auto& item : curSub->m_mapChildren) {
-      if (!item.first.compare(name)) {
+      if (item.first == name) {
         YAMLNode* nextSub = item.second.get();
         if (nextSub->m_type == YAML_SEQUENCE_NODE) {
           countOut = nextSub->m_seqChildren.size();
@@ -834,7 +835,7 @@ void YAMLDocReader::_leaveSubVector() {
 }
 
 template <typename RETURNTYPE>
-RETURNTYPE YAMLDocReader::readVal(const char* name) {
+RETURNTYPE YAMLDocReader::readVal(std::string_view name) {
   if (m_subStack.size()) {
     const YAMLNode* mnode = m_subStack.back();
     if (mnode->m_type == YAML_SCALAR_NODE) {
@@ -842,75 +843,75 @@ RETURNTYPE YAMLDocReader::readVal(const char* name) {
     } else if (mnode->m_type == YAML_SEQUENCE_NODE) {
       int& seqIdx = m_seqTrackerStack.back();
       return NodeToVal<RETURNTYPE>(mnode->m_seqChildren[seqIdx++].get());
-    } else if (mnode->m_type == YAML_MAPPING_NODE && name) {
+    } else if (mnode->m_type == YAML_MAPPING_NODE && !name.empty()) {
       for (const auto& item : mnode->m_mapChildren) {
-        if (!item.first.compare(name)) {
+        if (item.first == name) {
           return NodeToVal<RETURNTYPE>(item.second.get());
         }
       }
     }
   }
-  if (name)
+  if (!name.empty())
     atWarning(fmt("Unable to find field '{}'; returning 0"), name);
   return RETURNTYPE();
 }
 
-template atInt8 YAMLDocReader::readVal<atInt8>(const char* name);
-template atUint8 YAMLDocReader::readVal<atUint8>(const char* name);
-template atInt16 YAMLDocReader::readVal<atInt16>(const char* name);
-template atUint16 YAMLDocReader::readVal<atUint16>(const char* name);
-template atInt32 YAMLDocReader::readVal<atInt32>(const char* name);
-template atUint32 YAMLDocReader::readVal<atUint32>(const char* name);
-template float YAMLDocReader::readVal<float>(const char* name);
-template double YAMLDocReader::readVal<double>(const char* name);
-template atVec3f YAMLDocReader::readVal<atVec3f>(const char* name);
-template atVec4f YAMLDocReader::readVal<atVec4f>(const char* name);
-template bool YAMLDocReader::readVal<bool>(const char* name);
+template atInt8 YAMLDocReader::readVal<atInt8>(std::string_view name);
+template atUint8 YAMLDocReader::readVal<atUint8>(std::string_view name);
+template atInt16 YAMLDocReader::readVal<atInt16>(std::string_view name);
+template atUint16 YAMLDocReader::readVal<atUint16>(std::string_view name);
+template atInt32 YAMLDocReader::readVal<atInt32>(std::string_view name);
+template atUint32 YAMLDocReader::readVal<atUint32>(std::string_view name);
+template float YAMLDocReader::readVal<float>(std::string_view name);
+template double YAMLDocReader::readVal<double>(std::string_view name);
+template atVec3f YAMLDocReader::readVal<atVec3f>(std::string_view name);
+template atVec4f YAMLDocReader::readVal<atVec4f>(std::string_view name);
+template bool YAMLDocReader::readVal<bool>(std::string_view name);
 
-bool YAMLDocReader::readBool(const char* name) { return readVal<bool>(name); }
+bool YAMLDocReader::readBool(std::string_view name) { return readVal<bool>(name); }
 
-atInt8 YAMLDocReader::readByte(const char* name) { return readVal<atInt8>(name); }
+atInt8 YAMLDocReader::readByte(std::string_view name) { return readVal<atInt8>(name); }
 
-atUint8 YAMLDocReader::readUByte(const char* name) { return readVal<atUint8>(name); }
+atUint8 YAMLDocReader::readUByte(std::string_view name) { return readVal<atUint8>(name); }
 
-atInt16 YAMLDocReader::readInt16(const char* name) { return readVal<atInt16>(name); }
+atInt16 YAMLDocReader::readInt16(std::string_view name) { return readVal<atInt16>(name); }
 
-atUint16 YAMLDocReader::readUint16(const char* name) { return readVal<atUint16>(name); }
+atUint16 YAMLDocReader::readUint16(std::string_view name) { return readVal<atUint16>(name); }
 
-atInt32 YAMLDocReader::readInt32(const char* name) { return readVal<atInt32>(name); }
+atInt32 YAMLDocReader::readInt32(std::string_view name) { return readVal<atInt32>(name); }
 
-atUint32 YAMLDocReader::readUint32(const char* name) { return readVal<atUint32>(name); }
+atUint32 YAMLDocReader::readUint32(std::string_view name) { return readVal<atUint32>(name); }
 
-atInt64 YAMLDocReader::readInt64(const char* name) { return readVal<atInt64>(name); }
+atInt64 YAMLDocReader::readInt64(std::string_view name) { return readVal<atInt64>(name); }
 
-atUint64 YAMLDocReader::readUint64(const char* name) { return readVal<atUint64>(name); }
+atUint64 YAMLDocReader::readUint64(std::string_view name) { return readVal<atUint64>(name); }
 
-float YAMLDocReader::readFloat(const char* name) { return readVal<float>(name); }
+float YAMLDocReader::readFloat(std::string_view name) { return readVal<float>(name); }
 
-double YAMLDocReader::readDouble(const char* name) { return readVal<double>(name); }
+double YAMLDocReader::readDouble(std::string_view name) { return readVal<double>(name); }
 
-atVec2f YAMLDocReader::readVec2f(const char* name) { return readVal<atVec2f>(name); }
+atVec2f YAMLDocReader::readVec2f(std::string_view name) { return readVal<atVec2f>(name); }
 
-atVec3f YAMLDocReader::readVec3f(const char* name) { return readVal<atVec3f>(name); }
-atVec4f YAMLDocReader::readVec4f(const char* name) { return readVal<atVec4f>(name); }
+atVec3f YAMLDocReader::readVec3f(std::string_view name) { return readVal<atVec3f>(name); }
+atVec4f YAMLDocReader::readVec4f(std::string_view name) { return readVal<atVec4f>(name); }
 
-atVec2d YAMLDocReader::readVec2d(const char* name) { return readVal<atVec2d>(name); }
+atVec2d YAMLDocReader::readVec2d(std::string_view name) { return readVal<atVec2d>(name); }
 
-atVec3d YAMLDocReader::readVec3d(const char* name) { return readVal<atVec3d>(name); }
+atVec3d YAMLDocReader::readVec3d(std::string_view name) { return readVal<atVec3d>(name); }
 
-atVec4d YAMLDocReader::readVec4d(const char* name) { return readVal<atVec4d>(name); }
+atVec4d YAMLDocReader::readVec4d(std::string_view name) { return readVal<atVec4d>(name); }
 
-std::unique_ptr<atUint8[]> YAMLDocReader::readUBytes(const char* name) {
+std::unique_ptr<atUint8[]> YAMLDocReader::readUBytes(std::string_view name) {
   return readVal<std::unique_ptr<atUint8[]>>(name);
 }
 
-std::string YAMLDocReader::readString(const char* name) { return readVal<std::string>(name); }
+std::string YAMLDocReader::readString(std::string_view name) { return readVal<std::string>(name); }
 
-std::wstring YAMLDocReader::readWString(const char* name) { return readVal<std::wstring>(name); }
+std::wstring YAMLDocReader::readWString(std::string_view name) { return readVal<std::wstring>(name); }
 
-static bool EmitKeyScalar(yaml_emitter_t* doc, const char* val) {
+static bool EmitKeyScalar(yaml_emitter_t* doc, std::string_view val) {
   yaml_event_t event;
-  if (!yaml_scalar_event_initialize(&event, nullptr, nullptr, (yaml_char_t*)val, strlen(val), true, true,
+  if (!yaml_scalar_event_initialize(&event, nullptr, nullptr, (yaml_char_t*)val.data(), val.size(), true, true,
                                     YAML_PLAIN_SCALAR_STYLE))
     return false;
   return yaml_emitter_emit(doc, &event) != 0;

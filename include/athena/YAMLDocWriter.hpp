@@ -20,7 +20,8 @@ class YAMLDocWriter {
   void _leaveSubVector();
 
 public:
-  explicit YAMLDocWriter(const char* classType, athena::io::IStreamReader* reader = nullptr);
+  explicit YAMLDocWriter(std::string_view classType, athena::io::IStreamReader* reader = nullptr);
+  explicit YAMLDocWriter(athena::io::IStreamReader* reader = nullptr) : YAMLDocWriter({}, reader) {}
   ~YAMLDocWriter();
 
   yaml_emitter_t* getEmitter() { return &m_emitter; }
@@ -44,10 +45,10 @@ public:
   };
   friend class RecordRAII;
 
-  RecordRAII enterSubRecord(const char* name);
+  RecordRAII enterSubRecord(std::string_view name = {});
 
   template <class T>
-  void enumerate(const char* name, T& record, std::enable_if_t<__IsDNARecord_v<T>>* = nullptr) {
+  void enumerate(std::string_view name, T& record, std::enable_if_t<__IsDNARecord_v<T>>* = nullptr) {
     if (auto rec = enterSubRecord(name))
       record.write(*this);
   }
@@ -67,64 +68,90 @@ public:
   };
   friend class VectorRAII;
 
-  VectorRAII enterSubVector(const char* name);
+  VectorRAII enterSubVector(std::string_view name = {});
 
   template <class T>
   void
-  enumerate(const char* name, const std::vector<T>& vector,
+  enumerate(std::string_view name, const std::vector<T>& vector,
             std::enable_if_t<!std::is_arithmetic_v<T> && !std::is_same_v<T, atVec2f> && !std::is_same_v<T, atVec3f> &&
                              !std::is_same_v<T, atVec4f> && !std::is_same_v<T, atVec2d> &&
                              !std::is_same_v<T, atVec3d> && !std::is_same_v<T, atVec4d>>* = nullptr) {
     if (auto v = enterSubVector(name))
       for (const T& item : vector)
-        if (auto rec = enterSubRecord(nullptr))
+        if (auto rec = enterSubRecord())
           item.write(*this);
   }
 
   template <class T>
-  void enumerate(const char* name, const std::vector<T>& vector,
+  void enumerate(std::string_view name, const std::vector<T>& vector,
                  std::enable_if_t<std::is_arithmetic_v<T> || std::is_same_v<T, atVec2f> || std::is_same_v<T, atVec3f> ||
                                   std::is_same_v<T, atVec4f> || std::is_same_v<T, atVec2d> ||
                                   std::is_same_v<T, atVec3d> || std::is_same_v<T, atVec4d>>* = nullptr) {
     if (auto v = enterSubVector(name))
       for (T item : vector)
-        writeVal<T>(nullptr, item);
+        writeVal<T>(item);
   }
 
   template <class T>
-  void enumerate(const char* name, const std::vector<T>& vector, std::function<void(YAMLDocWriter&, const T&)> writef) {
+  void enumerate(std::string_view name, const std::vector<T>& vector, std::function<void(YAMLDocWriter&, const T&)> writef) {
     if (auto v = enterSubVector(name))
       for (const T& item : vector)
-        if (auto rec = enterSubRecord(nullptr))
+        if (auto rec = enterSubRecord())
           writef(*this, item);
   }
 
   template <typename INTYPE>
-  void writeVal(const char* name, const INTYPE& val);
+  void writeVal(std::string_view name, const INTYPE& val);
   template <typename INTYPE>
-  void writeVal(const char* name, const INTYPE& val, size_t byteCount);
-  void writeBool(const char* name, const bool& val);
-  void writeByte(const char* name, const atInt8& val);
-  void writeUByte(const char* name, const atUint8& val);
-  void writeInt16(const char* name, const atInt16& val);
-  void writeUint16(const char* name, const atUint16& val);
-  void writeInt32(const char* name, const atInt32& val);
-  void writeUint32(const char* name, const atUint32& val);
-  void writeInt64(const char* name, const atInt64& val);
-  void writeUint64(const char* name, const atUint64& val);
-  void writeFloat(const char* name, const float& val);
-  void writeDouble(const char* name, const double& val);
-  void writeVec2f(const char* name, const atVec2f& val);
-  void writeVec3f(const char* name, const atVec3f& val);
-  void writeVec4f(const char* name, const atVec4f& val);
-  void writeVec2d(const char* name, const atVec2d& val);
-  void writeVec3d(const char* name, const atVec3d& val);
-  void writeVec4d(const char* name, const atVec4d& val);
-  void writeUBytes(const char* name, const std::unique_ptr<atUint8[]>& val, size_t byteCount);
-  void writeString(const char* name, std::string_view val);
-  void writeWString(const char* name, std::wstring_view val);
-  void writeU16String(const char* name, std::u16string_view val);
-  void writeU32String(const char* name, std::u32string_view val);
+  void writeVal(const INTYPE& val) { writeVal<INTYPE>(std::string_view{}, val); }
+  template <typename INTYPE>
+  void writeVal(std::string_view name, const INTYPE& val, size_t byteCount);
+  template <typename INTYPE>
+  void writeVal(const INTYPE& val, size_t byteCount) { writeVal<INTYPE>(std::string_view{}, val, byteCount); }
+  void writeBool(std::string_view name, const bool& val);
+  void writeBool(const bool& val) { writeBool({}, val); }
+  void writeByte(std::string_view name, const atInt8& val);
+  void writeByte(const atInt8& val) { writeByte({}, val); }
+  void writeUByte(std::string_view name, const atUint8& val);
+  void writeUByte(const atUint8& val) { writeUByte({}, val); }
+  void writeInt16(std::string_view name, const atInt16& val);
+  void writeInt16(const atInt16& val) { writeInt16({}, val); }
+  void writeUint16(std::string_view name, const atUint16& val);
+  void writeUint16(const atUint16& val) { writeUint16({}, val); }
+  void writeInt32(std::string_view name, const atInt32& val);
+  void writeInt32(const atInt32& val) { writeInt32({}, val); }
+  void writeUint32(std::string_view name, const atUint32& val);
+  void writeUint32(const atUint32& val) { writeUint32({}, val); }
+  void writeInt64(std::string_view name, const atInt64& val);
+  void writeInt64(const atInt64& val) { writeInt64({}, val); }
+  void writeUint64(std::string_view name, const atUint64& val);
+  void writeUint64(const atUint64& val) { writeUint64({}, val); }
+  void writeFloat(std::string_view name, const float& val);
+  void writeFloat(const float& val) { writeFloat({}, val); }
+  void writeDouble(std::string_view name, const double& val);
+  void writeDouble(const double& val) { writeDouble({}, val); }
+  void writeVec2f(std::string_view name, const atVec2f& val);
+  void writeVec2f(const atVec2f& val) { writeVec2f({}, val); }
+  void writeVec3f(std::string_view name, const atVec3f& val);
+  void writeVec3f(const atVec3f& val) { writeVec3f({}, val); }
+  void writeVec4f(std::string_view name, const atVec4f& val);
+  void writeVec4f(const atVec4f& val) { writeVec4f({}, val); }
+  void writeVec2d(std::string_view name, const atVec2d& val);
+  void writeVec2d(const atVec2d& val) { writeVec2d({}, val); }
+  void writeVec3d(std::string_view name, const atVec3d& val);
+  void writeVec3d(const atVec3d& val) { writeVec3d({}, val); }
+  void writeVec4d(std::string_view name, const atVec4d& val);
+  void writeVec4d(const atVec4d& val) { writeVec4d({}, val); }
+  void writeUBytes(std::string_view name, const std::unique_ptr<atUint8[]>& val, size_t byteCount);
+  void writeUBytes(const std::unique_ptr<atUint8[]>& val, size_t byteCount) { writeUBytes({}, val, byteCount); }
+  void writeString(std::string_view name, std::string_view val);
+  void writeString(std::string_view val) { writeString({}, val); }
+  void writeWString(std::string_view name, std::wstring_view val);
+  void writeWString(std::wstring_view val) { writeWString({}, val); }
+  void writeU16String(std::string_view name, std::u16string_view val);
+  void writeU16String(std::u16string_view val) { writeU16String({}, val); }
+  void writeU32String(std::string_view name, std::u32string_view val);
+  void writeU32String(std::u32string_view val) { writeU32String({}, val); }
 
   void setStyle(YAMLNodeStyle s);
 };
