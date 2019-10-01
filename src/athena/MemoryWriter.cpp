@@ -10,7 +10,7 @@
 namespace athena::io {
 
 MemoryWriter::MemoryWriter(atUint8* data, atUint64 length, bool takeOwnership)
-: m_data((atUint8*)data), m_length(length), m_position(0), m_bufferOwned(takeOwnership) {
+: m_data(data), m_length(length), m_bufferOwned(takeOwnership) {
   if (!data) {
     atError(fmt("data cannot be NULL"));
     setError();
@@ -156,7 +156,7 @@ void MemoryWriter::setData(atUint8* data, atUint64 length, bool takeOwnership) {
   if (m_bufferOwned)
     delete m_data;
 
-  m_data = (atUint8*)data;
+  m_data = data;
   m_length = length;
   m_position = 0;
   m_bufferOwned = takeOwnership;
@@ -185,11 +185,11 @@ void MemoryWriter::save(std::string_view filename) {
     return;
   }
 
-  if (!filename.empty())
+  if (!filename.empty()) {
     m_filepath = filename;
+  }
 
-  FILE* out = fopen(m_filepath.c_str(), "wb");
-
+  std::unique_ptr<FILE, decltype(&std::fclose)> out{std::fopen(m_filepath.c_str(), "wb"), std::fclose};
   if (!out) {
     atError(fmt("Unable to open file '{}'"), m_filepath);
     setError();
@@ -200,22 +200,24 @@ void MemoryWriter::save(std::string_view filename) {
   atUint64 blocksize = BLOCKSZ;
 
   do {
-    if (blocksize > m_length - done)
+    if (blocksize > m_length - done) {
       blocksize = m_length - done;
+    }
 
-    atInt64 ret = fwrite(m_data + done, 1, blocksize, out);
+    const atInt64 ret = std::fwrite(m_data + done, 1, blocksize, out.get());
 
     if (ret < 0) {
       atError(fmt("Error writing data to disk"));
       setError();
       return;
-    } else if (ret == 0)
+    }
+
+    if (ret == 0) {
       break;
+    }
 
     done += blocksize;
   } while (done < m_length);
-
-  fclose(out);
 }
 
 void MemoryWriter::writeUBytes(const atUint8* data, atUint64 length) {
@@ -258,15 +260,14 @@ void MemoryCopyWriter::resize(atUint64 newSize) {
   }
 
   // Allocate and copy new buffer
-  atUint8* newArray = new atUint8[newSize];
-  memset(newArray, 0, newSize);
-
-  if (m_dataCopy)
-    memmove(newArray, m_dataCopy.get(), m_length);
-  m_dataCopy.reset(newArray);
+  auto newArray = std::make_unique<atUint8[]>(newSize);
+  if (m_dataCopy) {
+    std::memmove(newArray.get(), m_dataCopy.get(), m_length);
+  }
+  m_dataCopy = std::move(newArray);
 
   // Swap the pointer and size out for the new ones.
-  m_data = newArray;
+  m_data = m_dataCopy.get();
   m_length = newSize;
 }
 

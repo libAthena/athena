@@ -303,8 +303,9 @@ atUint32 simpleEnc(const atUint8* src, atInt32 size, atInt32 pos, atUint32* pMat
 }
 
 atUint32 decompressLZ77(const atUint8* src, atUint32 srcLen, atUint8** dst) {
-  if (*(atUint8*)src == 0x11)
+  if (*src == 0x11) {
     return LZType11().decompress(src, dst, srcLen);
+  }
 
   return LZType10(2).decompress(src, dst, srcLen);
 }

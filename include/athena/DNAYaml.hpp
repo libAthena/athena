@@ -116,7 +116,7 @@ bool ValidateFromYAMLStream(athena::io::IStreamReader& fin) {
   atUint64 pos = fin.position();
   yaml_parser_set_input(reader.getParser(), (yaml_read_handler_t*)YAMLAthenaReader, &fin);
   bool retval = reader.ValidateClassType(DNASubtype::DNAType());
-  fin.seek(pos, athena::Begin);
+  fin.seek(pos, athena::SeekOrigin::Begin);
   return retval;
 }
 

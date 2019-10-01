@@ -87,33 +87,33 @@ typedef struct stat64 atStat64_t;
 
 #ifndef ENABLE_BITWISE_ENUM
 #define ENABLE_BITWISE_ENUM(type)                                                                                      \
-  constexpr type operator|(type a, type b) {                                                                           \
+  constexpr type operator|(type a, type b) noexcept {                                                                  \
     using T = std::underlying_type_t<type>;                                                                            \
     return type(static_cast<T>(a) | static_cast<T>(b));                                                                \
   }                                                                                                                    \
-  constexpr type operator&(type a, type b) {                                                                           \
+  constexpr type operator&(type a, type b) noexcept {                                                                  \
     using T = std::underlying_type_t<type>;                                                                            \
     return type(static_cast<T>(a) & static_cast<T>(b));                                                                \
   }                                                                                                                    \
-  inline type& operator|=(type& a, const type& b) {                                                                    \
+  constexpr type& operator|=(type& a, type b) noexcept {                                                               \
     using T = std::underlying_type_t<type>;                                                                            \
     a = type(static_cast<T>(a) | static_cast<T>(b));                                                                   \
     return a;                                                                                                          \
   }                                                                                                                    \
-  inline type& operator&=(type& a, const type& b) {                                                                    \
+  constexpr type& operator&=(type& a, type b) noexcept {                                                               \
     using T = std::underlying_type_t<type>;                                                                            \
     a = type(static_cast<T>(a) & static_cast<T>(b));                                                                   \
     return a;                                                                                                          \
   }                                                                                                                    \
-  constexpr type operator~(type key) {                                                                                 \
+  constexpr type operator~(type key) noexcept {                                                                        \
     using T = std::underlying_type_t<type>;                                                                            \
     return type(~static_cast<T>(key));                                                                                 \
   }                                                                                                                    \
-  constexpr bool True(type key) {                                                                                      \
+  constexpr bool True(type key) noexcept {                                                                             \
     using T = std::underlying_type_t<type>;                                                                            \
     return static_cast<T>(key) != 0;                                                                                   \
   }                                                                                                                    \
-  constexpr bool False(type key) {                                                                                     \
+  constexpr bool False(type key) noexcept {                                                                            \
     using T = std::underlying_type_t<type>;                                                                            \
     return static_cast<T>(key) == 0;                                                                                   \
   }
@@ -123,9 +123,9 @@ namespace athena {
 namespace error {
 enum class Level { Message, Warning, Error, Fatal };
 }
-enum SeekOrigin { Begin, Current, End };
+enum class SeekOrigin { Begin, Current, End };
 
-enum Endian { Little, Big };
+enum class Endian { Little, Big };
 
 namespace io {
 template <Endian DNAE>
