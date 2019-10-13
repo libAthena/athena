@@ -169,7 +169,7 @@ std::unique_ptr<YAMLNode> ValToNode(const atVec2f& val) {
   for (size_t i = 0; i < 2; ++i) {
     auto comp = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
     comp->m_scalarString = fmt::format(fmt("{}"), f[i]);
-    ret->m_seqChildren.emplace_back(std::move(comp));
+    ret->m_seqChildren.push_back(std::move(comp));
   }
   return ret;
 }
@@ -186,7 +186,7 @@ std::unique_ptr<YAMLNode> ValToNode(const atVec3f& val) {
   for (size_t i = 0; i < 3; ++i) {
     auto comp = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
     comp->m_scalarString = fmt::format(fmt("{}"), f[i]);
-    ret->m_seqChildren.emplace_back(std::move(comp));
+    ret->m_seqChildren.push_back(std::move(comp));
   }
   return ret;
 }
@@ -203,7 +203,7 @@ std::unique_ptr<YAMLNode> ValToNode(const atVec4f& val) {
   for (size_t i = 0; i < 4; ++i) {
     auto comp = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
     comp->m_scalarString = fmt::format(fmt("{}"), f[i]);
-    ret->m_seqChildren.emplace_back(std::move(comp));
+    ret->m_seqChildren.push_back(std::move(comp));
   }
   return ret;
 }
@@ -220,7 +220,7 @@ std::unique_ptr<YAMLNode> ValToNode(const atVec2d& val) {
   for (size_t i = 0; i < 2; ++i) {
     auto comp = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
     comp->m_scalarString = fmt::format(fmt("{}"), f[i]);
-    ret->m_seqChildren.emplace_back(std::move(comp));
+    ret->m_seqChildren.push_back(std::move(comp));
   }
   return ret;
 }
@@ -237,7 +237,7 @@ std::unique_ptr<YAMLNode> ValToNode(const atVec3d& val) {
   for (size_t i = 0; i < 3; ++i) {
     auto comp = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
     comp->m_scalarString = fmt::format(fmt("{}"), f[i]);
-    ret->m_seqChildren.emplace_back(std::move(comp));
+    ret->m_seqChildren.push_back(std::move(comp));
   }
   return ret;
 }
@@ -254,7 +254,7 @@ std::unique_ptr<YAMLNode> ValToNode(const atVec4d& val) {
   for (size_t i = 0; i < 4; ++i) {
     auto comp = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
     comp->m_scalarString = fmt::format(fmt("{}"), f[i]);
-    ret->m_seqChildren.emplace_back(std::move(comp));
+    ret->m_seqChildren.push_back(std::move(comp));
   }
   return ret;
 }
@@ -422,7 +422,7 @@ YAMLDocWriter::YAMLDocWriter(std::string_view classType, athena::io::IStreamRead
     m_rootNode = std::make_unique<YAMLNode>(YAML_MAPPING_NODE);
   }
 
-  m_subStack.emplace_back(m_rootNode.get());
+  m_subStack.push_back(m_rootNode.get());
   if (!classType.empty()) {
     auto classVal = std::make_unique<YAMLNode>(YAML_SCALAR_NODE);
     classVal->m_scalarString.assign(classType);
@@ -472,12 +472,13 @@ YAMLDocWriter::RecordRAII YAMLDocWriter::enterSubRecord(std::string_view name) {
   YAMLNode* curSub = m_subStack.back();
   if (curSub->m_type != YAML_MAPPING_NODE && curSub->m_type != YAML_SEQUENCE_NODE)
     return {};
-  YAMLNode* newNode = new YAMLNode(YAML_MAPPING_NODE);
+  auto newNode = std::make_unique<YAMLNode>(YAML_MAPPING_NODE);
+  YAMLNode* newPtr = newNode.get();
   if (curSub->m_type == YAML_MAPPING_NODE)
-    curSub->assignMapChild(!name.empty() ? name : std::string_view{}, std::unique_ptr<YAMLNode>(newNode));
+    curSub->assignMapChild(!name.empty() ? name : std::string_view{}, std::move(newNode));
   else if (curSub->m_type == YAML_SEQUENCE_NODE)
-    curSub->m_seqChildren.emplace_back(newNode);
-  m_subStack.push_back(newNode);
+    curSub->m_seqChildren.push_back(std::move(newNode));
+  m_subStack.push_back(newPtr);
   return RecordRAII{this};
 }
 
@@ -507,12 +508,13 @@ YAMLDocWriter::VectorRAII YAMLDocWriter::enterSubVector(std::string_view name) {
   YAMLNode* curSub = m_subStack.back();
   if (curSub->m_type != YAML_MAPPING_NODE && curSub->m_type != YAML_SEQUENCE_NODE)
     return {};
-  YAMLNode* newNode = new YAMLNode(YAML_SEQUENCE_NODE);
+  auto newNode = std::make_unique<YAMLNode>(YAML_SEQUENCE_NODE);
+  YAMLNode* newPtr = newNode.get();
   if (curSub->m_type == YAML_MAPPING_NODE)
-    curSub->assignMapChild(!name.empty() ? name : std::string_view{}, std::unique_ptr<YAMLNode>(newNode));
+    curSub->assignMapChild(!name.empty() ? name : std::string_view{}, std::move(newNode));
   else if (curSub->m_type == YAML_SEQUENCE_NODE)
-    curSub->m_seqChildren.emplace_back(newNode);
-  m_subStack.push_back(newNode);
+    curSub->m_seqChildren.push_back(std::move(newNode));
+  m_subStack.push_back(newPtr);
   return VectorRAII{this};
 }
 
@@ -527,7 +529,7 @@ void YAMLDocWriter::writeVal(std::string_view name, const INTYPE& val) {
   if (curSub->m_type == YAML_MAPPING_NODE)
     curSub->assignMapChild(!name.empty() ? name : std::string_view{}, ValToNode(val));
   else if (curSub->m_type == YAML_SEQUENCE_NODE)
-    curSub->m_seqChildren.emplace_back(ValToNode(val));
+    curSub->m_seqChildren.push_back(ValToNode(val));
 }
 
 template void YAMLDocWriter::writeVal<atInt8>(std::string_view name, const atInt8& val);
@@ -548,7 +550,7 @@ void YAMLDocWriter::writeVal(std::string_view name, const INTYPE& val, size_t by
   if (curSub->m_type == YAML_MAPPING_NODE)
     curSub->assignMapChild(!name.empty() ? name : std::string_view{}, ValToNode(val, byteCount));
   else if (curSub->m_type == YAML_SEQUENCE_NODE)
-    curSub->m_seqChildren.emplace_back(ValToNode(val, byteCount));
+    curSub->m_seqChildren.push_back(ValToNode(val, byteCount));
 }
 
 void YAMLDocWriter::writeBool(std::string_view name, const bool& val) { writeVal<bool>(name, val); }
@@ -611,7 +613,7 @@ static void InsertNode(std::vector<YAMLNode*>& nodeStack, std::unique_ptr<YAMLNo
   }
   YAMLNode* parent = nodeStack.back();
   if (parent->m_type == YAML_SEQUENCE_NODE) {
-    parent->m_seqChildren.emplace_back(std::move(newNode));
+    parent->m_seqChildren.push_back(std::move(newNode));
   } else if (parent->m_type == YAML_MAPPING_NODE) {
     if (!mapKey)
       mapKey = std::move(newNode);
@@ -658,7 +660,7 @@ std::unique_ptr<YAMLNode> YAMLDocReader::ParseEvents(athena::io::IStreamReader* 
     case YAML_SEQUENCE_START_EVENT: {
       YAMLNode* newSeq = new YAMLNode(YAML_SEQUENCE_NODE);
       InsertNode(nodeStack, mapKey, retVal, std::unique_ptr<YAMLNode>(newSeq));
-      nodeStack.emplace_back(newSeq);
+      nodeStack.push_back(newSeq);
       break;
     }
     case YAML_SEQUENCE_END_EVENT: {
@@ -668,7 +670,7 @@ std::unique_ptr<YAMLNode> YAMLDocReader::ParseEvents(athena::io::IStreamReader* 
     case YAML_MAPPING_START_EVENT: {
       YAMLNode* newMap = new YAMLNode(YAML_MAPPING_NODE);
       InsertNode(nodeStack, mapKey, retVal, std::unique_ptr<YAMLNode>(newMap));
-      nodeStack.emplace_back(newMap);
+      nodeStack.push_back(newMap);
       break;
     }
     case YAML_MAPPING_END_EVENT: {

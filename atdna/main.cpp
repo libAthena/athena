@@ -1166,7 +1166,11 @@ class ATDNAAction : public clang::ASTFrontendAction {
     return {};
   }
 
+#if LLVM_VERSION_MAJOR >= 9
+  std::optional<clang::DependencyFileGenerator> TheDependencyFileGenerator;
+#else
   std::unique_ptr<clang::DependencyFileGenerator> TheDependencyFileGenerator;
+#endif
 
 public:
   explicit ATDNAAction() = default;
@@ -1175,9 +1179,14 @@ public:
     clang::DependencyOutputOptions DepOpts;
     DepOpts.OutputFile = DepFileOut.getValue();
     DepOpts.Targets = DepFileTargets;
+#if LLVM_VERSION_MAJOR >= 9
+    if (!DepOpts.OutputFile.empty())
+      TheDependencyFileGenerator.emplace(DepOpts).attachToPreprocessor(compiler.getPreprocessor());
+#else
     if (!DepOpts.OutputFile.empty())
       TheDependencyFileGenerator.reset(
-          clang::DependencyFileGenerator::CreateAndAttachToPreprocessor(compiler.getPreprocessor(), DepOpts));
+        clang::DependencyFileGenerator::CreateAndAttachToPreprocessor(compiler.getPreprocessor(), DepOpts));
+#endif
 
     std::unique_ptr<StreamOut> fileout;
     StreamOut* fileoutOld;
