@@ -2,6 +2,7 @@
 
 #include <cctype>
 #include <cstdlib>
+#include <type_traits>
 
 #include "athena/YAMLCommon.hpp"
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <type_traits>
 
 #include "athena/DNA.hpp"
 #include "athena/FileReader.hpp"
@@ -12,13 +11,12 @@
 namespace athena::io {
 
 template <class T>
-inline std::string_view __GetDNAName(const T& dna, std::enable_if_t<athena::io::__IsDNAVRecord_v<T>>* = nullptr) {
-  return dna.DNATypeV();
-}
-
-template <class T>
-inline std::string_view __GetDNAName(const T& dna, std::enable_if_t<!athena::io::__IsDNAVRecord_v<T>>* = nullptr) {
-  return dna.DNAType();
+std::string_view __GetDNAName(const T& dna) {
+  if constexpr (__IsDNAVRecord_v<T>) {
+    return dna.DNATypeV();
+  } else {
+    return dna.DNAType();
+  }
 }
 
 template <class T>
