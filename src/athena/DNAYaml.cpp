@@ -139,20 +139,22 @@ std::unique_ptr<YAMLNode> ValToNode(double val) {
 
 template <typename RETURNTYPE>
 RETURNTYPE NodeToVec(const YAMLNode* node) {
-  constexpr bool isDouble = std::is_same<RETURNTYPE, atVec2d>::value || std::is_same<RETURNTYPE, atVec3d>::value ||
-                            std::is_same<RETURNTYPE, atVec4d>::value;
+  constexpr bool isDouble =
+      std::is_same_v<RETURNTYPE, atVec2d> || std::is_same_v<RETURNTYPE, atVec3d> || std::is_same_v<RETURNTYPE, atVec4d>;
   RETURNTYPE retval = {};
   auto it = node->m_seqChildren.begin();
   simd_values<std::conditional_t<isDouble, double, float>> f;
   for (size_t i = 0; i < 4 && it != node->m_seqChildren.end(); ++i, ++it) {
     YAMLNode* snode = it->get();
     if (snode->m_type == YAML_SCALAR_NODE) {
-      if (isDouble)
+      if constexpr (isDouble) {
         f[i] = NodeToVal<double>(snode);
-      else
+      } else {
         f[i] = NodeToVal<float>(snode);
-    } else
+      }
+    } else {
       f[i] = 0.0;
+    }
   }
   retval.simd.copy_from(f);
   return retval;
