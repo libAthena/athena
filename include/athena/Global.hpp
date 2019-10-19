@@ -30,14 +30,8 @@
 #if !defined(S_ISLNK)
 #define S_ISLNK(m) 0
 #endif
+#endif // _MSC_VER
 
-#define PRISize "Iu"
-
-#else
-
-#define PRISize "zu"
-
-#endif
 // clang-format off
 #ifndef AT_PRETTY_FUNCTION
 #   if defined(__PRETTY_FUNCTION__) || defined(__GNUC__)
