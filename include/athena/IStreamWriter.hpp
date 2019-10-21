@@ -83,7 +83,7 @@ public:
    *  @param data The buffer to write
    *  @param length The amount to write
    */
-  void writeBytes(const void* data, atUint64 length) { writeUBytes((atUint8*)data, length); }
+  void writeBytes(const void* data, atUint64 length) { writeUBytes(reinterpret_cast<const atUint8*>(data), length); }
 
   /** @brief Writes an Int16 to the buffer and advances the buffer.
    *         It also swaps the bytes depending on the platform and Stream settings.
@@ -96,7 +96,7 @@ public:
     } else {
       utility::LittleInt16(val);
     }
-    writeUBytes((atUint8*)&val, 2);
+    writeBytes(&val, sizeof(val));
   }
   void writeVal(atInt16 val) { writeInt16(val); }
 
@@ -107,7 +107,7 @@ public:
    */
   void writeInt16Little(atInt16 val) {
     utility::LittleInt16(val);
-    writeUBytes((atUint8*)&val, 2);
+    writeBytes(&val, sizeof(val));
   }
   void writeValLittle(atInt16 val) { writeInt16Little(val); }
 
@@ -118,7 +118,7 @@ public:
    */
   void writeInt16Big(atInt16 val) {
     utility::BigInt16(val);
-    writeUBytes((atUint8*)&val, 2);
+    writeBytes(&val, sizeof(val));
   }
   void writeValBig(atInt16 val) { writeInt16Big(val); }
 
@@ -157,7 +157,7 @@ public:
     } else {
       utility::LittleInt32(val);
     }
-    writeUBytes((atUint8*)&val, 4);
+    writeBytes(&val, sizeof(val));
   }
   void writeVal(atInt32 val) { writeInt32(val); }
 
@@ -168,7 +168,7 @@ public:
    */
   void writeInt32Little(atInt32 val) {
     utility::LittleInt32(val);
-    writeUBytes((atUint8*)&val, 4);
+    writeBytes(&val, sizeof(val));
   }
   void writeValLittle(atInt32 val) { writeInt32Little(val); }
 
@@ -179,7 +179,7 @@ public:
    */
   void writeInt32Big(atInt32 val) {
     utility::BigInt32(val);
-    writeUBytes((atUint8*)&val, 4);
+    writeBytes(&val, sizeof(val));
   }
   void writeValBig(atInt32 val) { writeInt32Big(val); }
 
@@ -218,7 +218,7 @@ public:
     } else {
       utility::LittleInt64(val);
     }
-    writeUBytes((atUint8*)&val, 8);
+    writeBytes(&val, sizeof(val));
   }
   void writeVal(atInt64 val) { writeInt64(val); }
 
@@ -229,7 +229,7 @@ public:
    */
   void writeInt64Little(atInt64 val) {
     utility::LittleInt64(val);
-    writeUBytes((atUint8*)&val, 8);
+    writeBytes(&val, sizeof(val));
   }
   void writeValLittle(atInt64 val) { writeInt64Little(val); }
 
@@ -240,7 +240,7 @@ public:
    */
   void writeInt64Big(atInt64 val) {
     utility::BigInt64(val);
-    writeUBytes((atUint8*)&val, 8);
+    writeBytes(&val, sizeof(val));
   }
   void writeValBig(atInt64 val) { writeInt64Big(val); }
 
@@ -279,7 +279,7 @@ public:
     } else {
       val = utility::LittleFloat(val);
     }
-    writeUBytes((atUint8*)&val, 4);
+    writeBytes(&val, sizeof(val));
   }
   void writeVal(float val) { writeFloat(val); }
 
@@ -290,7 +290,7 @@ public:
    */
   void writeFloatLittle(float val) {
     utility::LittleFloat(val);
-    writeUBytes((atUint8*)&val, 4);
+    writeBytes(&val, sizeof(val));
   }
   void writeValLittle(float val) { writeFloatLittle(val); }
 
@@ -301,7 +301,7 @@ public:
    */
   void writeFloatBig(float val) {
     val = utility::BigFloat(val);
-    writeUBytes((atUint8*)&val, 4);
+    writeBytes(&val, sizeof(val));
   }
   void writeValBig(float val) { writeFloatBig(val); }
 
@@ -316,7 +316,7 @@ public:
     } else {
       utility::LittleDouble(val);
     }
-    writeUBytes((atUint8*)&val, 8);
+    writeBytes(&val, sizeof(val));
   }
   void writeVal(double val) { writeDouble(val); }
 
@@ -327,7 +327,7 @@ public:
    */
   void writeDoubleLittle(double val) {
     utility::LittleDouble(val);
-    writeUBytes((atUint8*)&val, 8);
+    writeBytes(&val, sizeof(val));
   }
   void writeValLittle(double val) { writeDoubleLittle(val); }
 
@@ -338,7 +338,7 @@ public:
    */
   void writeDoubleBig(double val) {
     utility::BigDouble(val);
-    writeUBytes((atUint8*)&val, 8);
+    writeBytes(&val, sizeof(val));
   }
   void writeValBig(double val) { writeDoubleBig(val); }
 
@@ -347,7 +347,10 @@ public:
    *
    *  @param val The value to write to the buffer
    */
-  void writeBool(bool val) { writeUBytes((atUint8*)&val, 1); }
+  void writeBool(bool val) {
+    const auto u8Value = atUint8(val);
+    writeUBytes(&u8Value, sizeof(u8Value));
+  }
   void writeVal(bool val) { writeBool(val); }
   void writeValLittle(bool val) { writeBool(val); }
   void writeValBig(bool val) { writeBool(val); }
@@ -366,7 +369,7 @@ public:
       tmp[0] = utility::LittleFloat(tmp[0]);
       tmp[1] = utility::LittleFloat(tmp[1]);
     }
-    writeUBytes((atUint8*)tmp.data(), 8);
+    writeBytes(tmp.data(), sizeof(simd_floats::value_type[2]));
   }
   void writeVal(const atVec2f& val) { writeVec2f(val); }
 
@@ -379,7 +382,7 @@ public:
     simd_floats tmp(vec.simd);
     tmp[0] = utility::LittleFloat(tmp[0]);
     tmp[1] = utility::LittleFloat(tmp[1]);
-    writeUBytes((atUint8*)tmp.data(), 8);
+    writeBytes(tmp.data(), sizeof(simd_floats::value_type[2]));
   }
   void writeValLittle(const atVec2f& val) { writeVec2fLittle(val); }
 
@@ -392,7 +395,7 @@ public:
     simd_floats tmp(vec.simd);
     tmp[0] = utility::BigFloat(tmp[0]);
     tmp[1] = utility::BigFloat(tmp[1]);
-    writeUBytes((atUint8*)tmp.data(), 8);
+    writeBytes(tmp.data(), sizeof(simd_floats::value_type[2]));
   }
   void writeValBig(const atVec2f& val) { writeVec2fBig(val); }
 
@@ -412,7 +415,7 @@ public:
       tmp[1] = utility::LittleFloat(tmp[1]);
       tmp[2] = utility::LittleFloat(tmp[2]);
     }
-    writeUBytes((atUint8*)tmp.data(), 12);
+    writeBytes(tmp.data(), sizeof(simd_floats::value_type[3]));
   }
   void writeVal(const atVec3f& val) { writeVec3f(val); }
 
@@ -426,7 +429,7 @@ public:
     tmp[0] = utility::LittleFloat(tmp[0]);
     tmp[1] = utility::LittleFloat(tmp[1]);
     tmp[2] = utility::LittleFloat(tmp[2]);
-    writeUBytes((atUint8*)tmp.data(), 12);
+    writeBytes(tmp.data(), sizeof(simd_floats::value_type[3]));
   }
   void writeValLittle(const atVec3f& val) { writeVec3fLittle(val); }
 
@@ -440,7 +443,7 @@ public:
     tmp[0] = utility::BigFloat(tmp[0]);
     tmp[1] = utility::BigFloat(tmp[1]);
     tmp[2] = utility::BigFloat(tmp[2]);
-    writeUBytes((atUint8*)tmp.data(), 12);
+    writeBytes(tmp.data(), sizeof(simd_floats::value_type[3]));
   }
   void writeValBig(const atVec3f& val) { writeVec3fBig(val); }
 
@@ -462,7 +465,7 @@ public:
       tmp[2] = utility::LittleFloat(tmp[2]);
       tmp[3] = utility::LittleFloat(tmp[3]);
     }
-    writeUBytes((atUint8*)tmp.data(), 16);
+    writeBytes(tmp.data(), sizeof(simd_floats::value_type[4]));
   }
   void writeVal(const atVec4f& val) { writeVec4f(val); }
 
@@ -477,7 +480,7 @@ public:
     tmp[1] = utility::LittleFloat(tmp[1]);
     tmp[2] = utility::LittleFloat(tmp[2]);
     tmp[3] = utility::LittleFloat(tmp[3]);
-    writeUBytes((atUint8*)tmp.data(), 16);
+    writeBytes(tmp.data(), sizeof(simd_floats::value_type[4]));
   }
   void writeValLittle(const atVec4f& val) { writeVec4fLittle(val); }
 
@@ -492,7 +495,7 @@ public:
     tmp[1] = utility::BigFloat(tmp[1]);
     tmp[2] = utility::BigFloat(tmp[2]);
     tmp[3] = utility::BigFloat(tmp[3]);
-    writeUBytes((atUint8*)tmp.data(), 16);
+    writeBytes(tmp.data(), sizeof(simd_floats::value_type[4]));
   }
   void writeValBig(const atVec4f& val) { writeVec4fBig(val); }
 
@@ -510,7 +513,7 @@ public:
       tmp[0] = utility::LittleDouble(tmp[0]);
       tmp[1] = utility::LittleDouble(tmp[1]);
     }
-    writeUBytes((atUint8*)tmp.data(), 16);
+    writeBytes(tmp.data(), sizeof(simd_doubles::value_type[2]));
   }
   void writeVal(const atVec2d& val) { writeVec2d(val); }
 
@@ -523,7 +526,7 @@ public:
     simd_doubles tmp(vec.simd);
     tmp[0] = utility::LittleDouble(tmp[0]);
     tmp[1] = utility::LittleDouble(tmp[1]);
-    writeUBytes((atUint8*)tmp.data(), 16);
+    writeBytes(tmp.data(), sizeof(simd_doubles::value_type[2]));
   }
   void writeValLittle(const atVec2d& val) { writeVec2dLittle(val); }
 
@@ -536,7 +539,7 @@ public:
     simd_doubles tmp(vec.simd);
     tmp[0] = utility::BigDouble(tmp[0]);
     tmp[1] = utility::BigDouble(tmp[1]);
-    writeUBytes((atUint8*)tmp.data(), 16);
+    writeBytes(tmp.data(), sizeof(simd_doubles::value_type[2]));
   }
   void writeValBig(const atVec2d& val) { writeVec2dBig(val); }
 
@@ -556,7 +559,7 @@ public:
       tmp[1] = utility::LittleDouble(tmp[1]);
       tmp[2] = utility::LittleDouble(tmp[2]);
     }
-    writeUBytes((atUint8*)tmp.data(), 24);
+    writeBytes(tmp.data(), sizeof(simd_doubles::value_type[3]));
   }
   void writeVal(const atVec3d& val) { writeVec3d(val); }
 
@@ -570,7 +573,7 @@ public:
     tmp[0] = utility::LittleDouble(tmp[0]);
     tmp[1] = utility::LittleDouble(tmp[1]);
     tmp[2] = utility::LittleDouble(tmp[2]);
-    writeUBytes((atUint8*)tmp.data(), 24);
+    writeBytes(tmp.data(), sizeof(simd_doubles::value_type[3]));
   }
   void writeValLittle(const atVec3d& val) { writeVec3dLittle(val); }
 
@@ -584,7 +587,7 @@ public:
     tmp[0] = utility::BigDouble(tmp[0]);
     tmp[1] = utility::BigDouble(tmp[1]);
     tmp[2] = utility::BigDouble(tmp[2]);
-    writeUBytes((atUint8*)tmp.data(), 24);
+    writeBytes(tmp.data(), sizeof(simd_doubles::value_type[3]));
   }
   void writeValBig(const atVec3d& val) { writeVec3dBig(val); }
 
@@ -606,7 +609,7 @@ public:
       tmp[2] = utility::LittleDouble(tmp[2]);
       tmp[3] = utility::LittleDouble(tmp[3]);
     }
-    writeUBytes((atUint8*)tmp.data(), 32);
+    writeBytes(tmp.data(), sizeof(simd_doubles::value_type[4]));
   }
   void writeVal(const atVec4d& val) { writeVec4d(val); }
 
@@ -621,7 +624,7 @@ public:
     tmp[1] = utility::LittleDouble(tmp[1]);
     tmp[2] = utility::LittleDouble(tmp[2]);
     tmp[3] = utility::LittleDouble(tmp[3]);
-    writeUBytes((atUint8*)tmp.data(), 32);
+    writeBytes(tmp.data(), sizeof(simd_doubles::value_type[4]));
   }
   void writeValLittle(const atVec4d& val) { writeVec4dLittle(val); }
 
@@ -636,7 +639,7 @@ public:
     tmp[1] = utility::BigDouble(tmp[1]);
     tmp[2] = utility::BigDouble(tmp[2]);
     tmp[3] = utility::BigDouble(tmp[3]);
-    writeUBytes((atUint8*)tmp.data(), 32);
+    writeBytes(tmp.data(), sizeof(simd_doubles::value_type[4]));
   }
   void writeValBig(const atVec4d& val) { writeVec4dBig(val); }
 
