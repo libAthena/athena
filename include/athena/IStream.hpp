@@ -3,7 +3,6 @@
 #include "athena/Global.hpp"
 
 namespace athena::io {
-std::ostream& operator<<(std::ostream& os, Endian& endian);
 
 class IStream {
 public:
