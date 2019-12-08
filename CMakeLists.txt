@@ -215,7 +215,7 @@ endforeach()
 # Define installs
 install(DIRECTORY include DESTINATION ${INSTALL_INCLUDE_DIR}/athena COMPONENT athena)
 install(DIRECTORY extern/fmt/include DESTINATION ${INSTALL_INCLUDE_DIR}/fmt COMPONENT athena)
-install(TARGETS athena-core
+install(TARGETS athena-core fmt
         DESTINATION ${INSTALL_LIB_DIR} EXPORT AthenaTargets COMPONENT athena)
 if(WIN32 AND NOT CYGWIN)
 install(FILES Athena.ico DESTINATION ${INSTALL_LIB_DIR} COMPONENT athena)

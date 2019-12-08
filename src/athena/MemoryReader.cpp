@@ -40,7 +40,7 @@ MemoryCopyReader::MemoryCopyReader(const void* data, atUint64 length) : MemoryRe
 void MemoryReader::seek(atInt64 position, SeekOrigin origin) {
   switch (origin) {
   case SeekOrigin::Begin:
-    if ((position < 0 || (atInt64)position > (atInt64)m_length)) {
+    if ((position < 0 || atInt64(position) > atInt64(m_length))) {
       if (m_globalErr)
         atFatal(fmt("Position {:08X} outside stream bounds "), position);
       m_position = m_length;
@@ -48,14 +48,14 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin) {
       return;
     }
 
-    m_position = position;
+    m_position = atUint64(position);
     break;
 
   case SeekOrigin::Current:
-    if ((((atInt64)m_position + position) < 0 || (m_position + position) > m_length)) {
+    if (((atInt64(m_position) + position) < 0 || (m_position + atUint64(position)) > m_length)) {
       if (m_globalErr)
         atFatal(fmt("Position {:08X} outside stream bounds "), position);
-      m_position = m_length;
+      m_position = (position < 0 ? 0 ? m_length;
       setError();
       return;
     }

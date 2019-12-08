@@ -85,7 +85,7 @@ void FileReader::seek(atInt64 pos, SeekOrigin origin) {
       fread(m_cacheData.get(), 1, m_blockSize, m_fileHandle);
       m_curBlock = atInt32(block);
     }
-  } else if (fseeko64(m_fileHandle, pos, (int)origin) != 0) {
+  } else if (fseeko64(m_fileHandle, pos, int(origin)) != 0) {
     if (m_globalErr)
       atError(fmt("Unable to seek in file"));
     setError();
@@ -102,7 +102,7 @@ atUint64 FileReader::position() const {
   if (m_blockSize > 0)
     return m_offset;
   else
-    return ftello64(m_fileHandle);
+    return atUint64(ftello64(m_fileHandle));
 }
 
 atUint64 FileReader::length() const {
@@ -156,7 +156,7 @@ atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len) {
       ++block;
     }
     m_offset += len;
-    return dst - (atUint8*)buf;
+    return atUint64(dst - reinterpret_cast<atUint8*>(buf));
   }
 }
 

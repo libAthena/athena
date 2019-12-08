@@ -1,8 +1,8 @@
 #include "athena/FileWriter.hpp"
 
-#if __APPLE__ || __FreeBSD__
+#if defined(__APPLE__) || defined(__FreeBSD__)
 #include "osx_largefilewrapper.h"
-#elif GEKKO || __SWITCH__
+#elif defined(GEKKO) || defined(__SWITCH__)
 #include "gekko_support.h"
 #include "osx_largefilewrapper.h"
 #endif
@@ -11,8 +11,8 @@
 
 namespace athena::io {
 FileWriter::FileWriter(std::string_view filename, bool overwrite, bool globalErr)
-: m_fileHandle(NULL), m_globalErr(globalErr) {
-#if _WIN32
+: m_fileHandle(nullptr), m_globalErr(globalErr) {
+#ifdef _WIN32
   m_filename = utility::utf8ToWide(filename);
 #else
   m_filename = filename;
@@ -21,8 +21,8 @@ FileWriter::FileWriter(std::string_view filename, bool overwrite, bool globalErr
 }
 
 FileWriter::FileWriter(std::wstring_view filename, bool overwrite, bool globalErr)
-: m_fileHandle(NULL), m_globalErr(globalErr) {
-#if _WIN32
+: m_fileHandle(nullptr), m_globalErr(globalErr) {
+#ifdef _WIN32
   m_filename = filename;
 #else
   m_filename = utility::wideToUtf8(filename);
@@ -67,7 +67,7 @@ void FileWriter::close() {
   }
 
   fclose(m_fileHandle);
-  m_fileHandle = NULL;
+  m_fileHandle = nullptr;
 
   std::string tmpFilename = m_filename + '~';
 #ifdef __SWITCH__
@@ -86,14 +86,14 @@ void FileWriter::seek(atInt64 pos, SeekOrigin origin) {
     return;
   }
 
-  if (fseeko64(m_fileHandle, pos, (int)origin) != 0) {
+  if (fseeko64(m_fileHandle, pos, int(origin)) != 0) {
     if (m_globalErr)
       atError(fmt("Unable to seek in file"));
     setError();
   }
 }
 
-atUint64 FileWriter::position() const { return ftello64(m_fileHandle); }
+atUint64 FileWriter::position() const { return atUint64(ftello64(m_fileHandle)); }
 
 atUint64 FileWriter::length() const { return utility::fileSize(m_filename); }
 

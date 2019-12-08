@@ -43,7 +43,7 @@ public:
 
   /*! @brief Writes the given buffer with the specified length, buffers can be bigger than the length
    *  however it's undefined behavior to try and write a buffer which is smaller than the given length.
-   *  If you are needing to fill in an area please use IStreamWriter::fill(atUint64) instead.
+   *  If you are needing to fill in an area please use @sa IStreamWriter::fill(atUint64) instead.
    *
    * @param data The buffer to write
    * @param length The amount to write
