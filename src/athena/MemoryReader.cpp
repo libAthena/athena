@@ -55,7 +55,7 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin) {
     if (((atInt64(m_position) + position) < 0 || (m_position + atUint64(position)) > m_length)) {
       if (m_globalErr)
         atFatal(fmt("Position {:08X} outside stream bounds "), position);
-      m_position = (position < 0 ? 0 ? m_length;
+      m_position = (position < 0 ? 0 : m_length);
       setError();
       return;
     }
