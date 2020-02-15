@@ -17,14 +17,14 @@ SkywardSwordFile* SkywardSwordFileReader::read() {
   SkywardSwordFile* file = NULL;
 
   if (length() != 0xFBE0) {
-    atError("File not the expected size of 0xFBE0");
+    atError(fmt("File not the expected size of 0xFBE0"));
     return nullptr;
   }
 
   atUint32 magic = readUint32();
 
   if (magic != SkywardSwordFile::USMagic && magic != SkywardSwordFile::JAMagic && magic != SkywardSwordFile::EUMagic) {
-    atError("Not a valid Skyward Sword save file");
+    atError(fmt("Not a valid Skyward Sword save file"));
     return nullptr;
   }
 
@@ -32,7 +32,7 @@ SkywardSwordFile* SkywardSwordFileReader::read() {
   atUint32 headerSize = readUint32(); // Seems to be (headerSize - 1)
 
   if (headerSize != 0x1D) {
-    atError("Invalid header size, Corrupted data?");
+    atError(fmt("Invalid header size, Corrupted data?"));
     return nullptr;
   }
 

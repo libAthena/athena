@@ -27,14 +27,14 @@ std::unique_ptr<WiiSave> WiiSaveReader::readSave() {
   WiiSave* ret = new WiiSave;
 
   if (length() < 0xF0C0) {
-    atError("Not a valid WiiSave");
+    atError(fmt("Not a valid WiiSave"));
     return nullptr;
   }
 
   WiiBanner* banner = this->readBanner();
 
   if (!banner) {
-    atError("Invalid banner");
+    atError(fmt("Invalid banner"));
     return nullptr;
   }
 
@@ -42,14 +42,14 @@ std::unique_ptr<WiiSave> WiiSaveReader::readSave() {
   atUint32 bkVer = readUint32();
 
   if (bkVer != 0x00000070) {
-    atError("Invalid BacKup header size");
+    atError(fmt("Invalid BacKup header size"));
     return nullptr;
   }
 
   atUint32 bkMagic = readUint32();
 
   if (bkMagic != 0x426B0001) {
-    atError("Invalid BacKup header magic");
+    atError(fmt("Invalid BacKup header magic"));
     return nullptr;
   }
 
@@ -130,7 +130,7 @@ WiiBanner* WiiSaveReader::readBanner() {
     std::cerr << std::endl;
     setData(oldData, oldLen);
     seek(oldPos, SeekOrigin::Begin);
-    atError("MD5 Mismatch");
+    atError(fmt("MD5 Mismatch"));
     return nullptr;
   }
 
@@ -158,7 +158,7 @@ WiiBanner* WiiSaveReader::readBanner() {
     // Make sure to reset m_reader values back to the old ones.
     setData(oldData, oldLen);
     seek(oldPos, SeekOrigin::Begin);
-    atError("Invalid Header Magic");
+    atError(fmt("Invalid Header Magic"));
     return nullptr;
   }
 

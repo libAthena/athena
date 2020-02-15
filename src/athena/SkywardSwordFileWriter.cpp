@@ -14,7 +14,7 @@ SkywardSwordFileWriter::SkywardSwordFileWriter(const std::string& filename) : Me
 
 void SkywardSwordFileWriter::write(SkywardSwordFile* file) {
   if (!file) {
-    atError("file cannot be NULL");
+    atError(fmt("file cannot be NULL"));
     return;
   }
 
@@ -31,7 +31,7 @@ void SkywardSwordFileWriter::write(SkywardSwordFile* file) {
 
   for (SkywardSwordQuest* q : quests) {
     if (q->length() != 0x53C0) {
-      atError("q->data() not 0x53C0 bytes in length");
+      atError(fmt("q->data() not 0x53C0 bytes in length"));
       return;
     }
 
