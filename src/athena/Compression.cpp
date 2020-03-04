@@ -12,36 +12,25 @@ namespace athena::io::Compression {
 
 atInt32 decompressZlib(const atUint8* src, atUint32 srcLen, atUint8* dst, atUint32 dstLen) {
   z_stream strm = {};
-  strm.total_in = strm.avail_in = srcLen;
-  strm.total_out = strm.avail_out = dstLen;
-  strm.next_in = (Bytef*)src;
-  strm.next_out = (Bytef*)dst;
-
+  strm.avail_in = srcLen;
+  strm.avail_out = dstLen;
+  strm.next_in = const_cast<Bytef*>(src);
+  strm.next_out = dst;
   strm.zalloc = Z_NULL;
   strm.zfree = Z_NULL;
   strm.opaque = Z_NULL;
 
-  atInt32 err = -1;
-  atInt32 ret = -1;
+  atInt32 ret;
+  // 15 window bits, and the | 16 tells zlib to to detect if using gzip or zlib
+  ret = inflateInit2(&strm, MAX_WBITS | 16);
 
-  err = inflateInit(&strm); // 15 window bits, and the +32 tells zlib to to detect if using gzip or zlib
-
-  if (err == Z_OK) {
-    err = inflate(&strm, Z_FINISH);
-
-    if (err == Z_STREAM_END)
+  if (ret == Z_OK) {
+    ret = inflate(&strm, Z_FINISH);
+    if (ret == Z_STREAM_END) {
       ret = strm.total_out;
-    else {
-      inflateEnd(&strm);
-      return err;
     }
-  } else {
-    inflateEnd(&strm);
-    return err;
   }
-
   inflateEnd(&strm);
-
   return ret;
 }
 
