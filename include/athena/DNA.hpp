@@ -144,9 +144,9 @@ struct DNAVYaml : DNAV<DNAE> {
 
 /** Macro to supply count variable to atdna and mute it for other compilers */
 #ifdef __clang__
-#define AT_DNA_COUNT(cnt) sizeof(cnt)
+#define AT_DNA_COUNT(...) sizeof(__VA_ARGS__)
 #else
-#define AT_DNA_COUNT(cnt) 0
+#define AT_DNA_COUNT(...) 0
 #endif
 
 } // namespace athena::io
