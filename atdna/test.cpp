@@ -18,9 +18,9 @@ int main(int argc, const char** argv) {
 
   const bool pass = !w.hasError() && w.position() - pos == binSize && binSize == EXPECTED_BYTES;
   if (pass) {
-    fmt::print(fmt("[PASS] {} bytes written\n"), size_t(w.position() - pos));
+    fmt::print(FMT_STRING("[PASS] {} bytes written\n"), size_t(w.position() - pos));
   } else {
-    fmt::print(fmt("[FAIL] {} bytes written; {} bytes sized; {} bytes expected\n"), size_t(w.position() - pos), binSize,
+    fmt::print(FMT_STRING("[FAIL] {} bytes written; {} bytes sized; {} bytes expected\n"), size_t(w.position() - pos), binSize,
                EXPECTED_BYTES);
   }
 

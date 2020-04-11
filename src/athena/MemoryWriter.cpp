@@ -12,7 +12,7 @@ namespace athena::io {
 MemoryWriter::MemoryWriter(atUint8* data, atUint64 length, bool takeOwnership)
 : m_data(data), m_length(length), m_bufferOwned(takeOwnership) {
   if (!data) {
-    atError(fmt("data cannot be NULL"));
+    atError(FMT_STRING("data cannot be NULL"));
     setError();
     return;
   }
@@ -32,7 +32,7 @@ MemoryCopyWriter::MemoryCopyWriter(atUint8* data, atUint64 length) {
   m_bufferOwned = false;
 
   if (length == 0) {
-    atError(fmt("length cannot be 0"));
+    atError(FMT_STRING("length cannot be 0"));
     setError();
     return;
   }
@@ -51,7 +51,7 @@ MemoryCopyWriter::MemoryCopyWriter(std::string_view filename) {
   m_bufferOwned = false;
 
   if (!m_data) {
-    atError(fmt("Could not allocate memory!"));
+    atError(FMT_STRING("Could not allocate memory!"));
     setError();
     return;
   }
@@ -61,13 +61,13 @@ void MemoryWriter::seek(atInt64 position, SeekOrigin origin) {
   switch (origin) {
   case SeekOrigin::Begin:
     if (position < 0) {
-      atError(fmt("Position outside stream bounds"));
+      atError(FMT_STRING("Position outside stream bounds"));
       setError();
       return;
     }
 
     if ((atUint64)position > m_length) {
-      atError(fmt("data exceeds available buffer space"));
+      atError(FMT_STRING("data exceeds available buffer space"));
       setError();
       return;
     }
@@ -77,13 +77,13 @@ void MemoryWriter::seek(atInt64 position, SeekOrigin origin) {
 
   case SeekOrigin::Current:
     if ((((atInt64)m_position + position) < 0)) {
-      atError(fmt("Position outside stream bounds"));
+      atError(FMT_STRING("Position outside stream bounds"));
       setError();
       return;
     }
 
     if (m_position + position > m_length) {
-      atError(fmt("data exceeds available buffer space"));
+      atError(FMT_STRING("data exceeds available buffer space"));
       setError();
       return;
     }
@@ -93,13 +93,13 @@ void MemoryWriter::seek(atInt64 position, SeekOrigin origin) {
 
   case SeekOrigin::End:
     if (((atInt64)m_length - position) < 0) {
-      atError(fmt("Position outside stream bounds"));
+      atError(FMT_STRING("Position outside stream bounds"));
       setError();
       return;
     }
 
     if ((atUint64)position > m_length) {
-      atError(fmt("data exceeds available buffer space"));
+      atError(FMT_STRING("data exceeds available buffer space"));
       setError();
       return;
     }
@@ -113,7 +113,7 @@ void MemoryCopyWriter::seek(atInt64 position, SeekOrigin origin) {
   switch (origin) {
   case SeekOrigin::Begin:
     if (position < 0) {
-      atError(fmt("Position outside stream bounds"));
+      atError(FMT_STRING("Position outside stream bounds"));
       setError();
       return;
     }
@@ -126,7 +126,7 @@ void MemoryCopyWriter::seek(atInt64 position, SeekOrigin origin) {
 
   case SeekOrigin::Current:
     if ((((atInt64)m_position + position) < 0)) {
-      atError(fmt("Position outside stream bounds"));
+      atError(FMT_STRING("Position outside stream bounds"));
       setError();
       return;
     }
@@ -139,7 +139,7 @@ void MemoryCopyWriter::seek(atInt64 position, SeekOrigin origin) {
 
   case SeekOrigin::End:
     if (((atInt64)m_length - position) < 0) {
-      atError(fmt("Position outside stream bounds"));
+      atError(FMT_STRING("Position outside stream bounds"));
       setError();
       return;
     }
@@ -180,7 +180,7 @@ atUint8* MemoryWriter::data() const {
 
 void MemoryWriter::save(std::string_view filename) {
   if (filename.empty() && m_filepath.empty()) {
-    atError(fmt("No file specified, cannot save."));
+    atError(FMT_STRING("No file specified, cannot save."));
     setError();
     return;
   }
@@ -191,7 +191,7 @@ void MemoryWriter::save(std::string_view filename) {
 
   std::unique_ptr<FILE, decltype(&std::fclose)> out{std::fopen(m_filepath.c_str(), "wb"), std::fclose};
   if (!out) {
-    atError(fmt("Unable to open file '{}'"), m_filepath);
+    atError(FMT_STRING("Unable to open file '{}'"), m_filepath);
     setError();
     return;
   }
@@ -207,7 +207,7 @@ void MemoryWriter::save(std::string_view filename) {
     const atInt64 ret = std::fwrite(m_data + done, 1, blocksize, out.get());
 
     if (ret < 0) {
-      atError(fmt("Error writing data to disk"));
+      atError(FMT_STRING("Error writing data to disk"));
       setError();
       return;
     }
@@ -222,13 +222,13 @@ void MemoryWriter::save(std::string_view filename) {
 
 void MemoryWriter::writeUBytes(const atUint8* data, atUint64 length) {
   if (!data) {
-    atError(fmt("data cannnot be NULL"));
+    atError(FMT_STRING("data cannnot be NULL"));
     setError();
     return;
   }
 
   if (m_position + length > m_length) {
-    atError(fmt("data length exceeds available buffer space"));
+    atError(FMT_STRING("data length exceeds available buffer space"));
     setError();
     return;
   }
@@ -240,7 +240,7 @@ void MemoryWriter::writeUBytes(const atUint8* data, atUint64 length) {
 
 void MemoryCopyWriter::writeUBytes(const atUint8* data, atUint64 length) {
   if (!data) {
-    atError(fmt("data cannnot be NULL"));
+    atError(FMT_STRING("data cannnot be NULL"));
     setError();
     return;
   }
@@ -255,7 +255,7 @@ void MemoryCopyWriter::writeUBytes(const atUint8* data, atUint64 length) {
 
 void MemoryCopyWriter::resize(atUint64 newSize) {
   if (newSize < m_length) {
-    atError(fmt("New size cannot be less to the old size."));
+    atError(FMT_STRING("New size cannot be less to the old size."));
     return;
   }
 

@@ -13,7 +13,7 @@ MemoryReader::MemoryReader(const void* data, atUint64 length, bool takeOwnership
 : m_data(data), m_length(length), m_position(0), m_owns(takeOwnership), m_globalErr(globalErr) {
   if (!data) {
     if (m_globalErr)
-      atError(fmt("data cannot be NULL"));
+      atError(FMT_STRING("data cannot be NULL"));
     setError();
     return;
   }
@@ -27,7 +27,7 @@ MemoryReader::~MemoryReader() {
 MemoryCopyReader::MemoryCopyReader(const void* data, atUint64 length) : MemoryReader(data, length, false) {
   if (!data) {
     if (m_globalErr)
-      atError(fmt("data cannot be NULL"));
+      atError(FMT_STRING("data cannot be NULL"));
     setError();
     return;
   }
@@ -42,7 +42,7 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin) {
   case SeekOrigin::Begin:
     if ((position < 0 || atInt64(position) > atInt64(m_length))) {
       if (m_globalErr)
-        atFatal(fmt("Position {:08X} outside stream bounds "), position);
+        atFatal(FMT_STRING("Position {:08X} outside stream bounds "), position);
       m_position = m_length;
       setError();
       return;
@@ -54,7 +54,7 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin) {
   case SeekOrigin::Current:
     if (((atInt64(m_position) + position) < 0 || (m_position + atUint64(position)) > m_length)) {
       if (m_globalErr)
-        atFatal(fmt("Position {:08X} outside stream bounds "), position);
+        atFatal(FMT_STRING("Position {:08X} outside stream bounds "), position);
       m_position = (position < 0 ? 0 : m_length);
       setError();
       return;
@@ -66,7 +66,7 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin) {
   case SeekOrigin::End:
     if ((((atInt64)m_length - position < 0) || (m_length - position) > m_length)) {
       if (m_globalErr)
-        atFatal(fmt("Position {:08X} outside stream bounds "), position);
+        atFatal(FMT_STRING("Position {:08X} outside stream bounds "), position);
       m_position = m_length;
       setError();
       return;
@@ -104,7 +104,7 @@ atUint8* MemoryReader::data() const {
 atUint64 MemoryReader::readUBytesToBuf(void* buf, atUint64 length) {
   if (m_position >= m_length) {
     if (m_globalErr)
-      atFatal(fmt("Position {:08X} outside stream bounds "), m_position);
+      atFatal(FMT_STRING("Position {:08X} outside stream bounds "), m_position);
     m_position = m_length;
     setError();
     return 0;
@@ -123,7 +123,7 @@ void MemoryCopyReader::loadData() {
 
   if (!in) {
     if (m_globalErr)
-      atError(fmt("Unable to open file '%s'"), m_filepath);
+      atError(FMT_STRING("Unable to open file '%s'"), m_filepath);
     setError();
     return;
   }
@@ -145,7 +145,7 @@ void MemoryCopyReader::loadData() {
 
     if (ret < 0) {
       if (m_globalErr)
-        atError(fmt("Error reading data from disk"));
+        atError(FMT_STRING("Error reading data from disk"));
       setError();
       return;
     } else if (ret == 0)

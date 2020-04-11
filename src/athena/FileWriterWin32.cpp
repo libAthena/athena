@@ -45,7 +45,7 @@ void FileWriter::open(bool overwrite) {
   if (m_fileHandle == INVALID_HANDLE_VALUE) {
     m_fileHandle = 0;
     if (m_globalErr)
-      atError(fmt("Unable to open file '{}'"), filename());
+      atError(FMT_STRING("Unable to open file '{}'"), filename());
     setError();
     return;
   }
@@ -57,7 +57,7 @@ void FileWriter::open(bool overwrite) {
 void FileWriter::close() {
   if (!m_fileHandle) {
     if (m_globalErr)
-      atError(fmt("Cannot close an unopened stream"));
+      atError(FMT_STRING("Cannot close an unopened stream"));
     setError();
     return;
   }
@@ -73,7 +73,7 @@ void FileWriter::close() {
 void FileWriter::seek(atInt64 pos, SeekOrigin origin) {
   if (!isOpen()) {
     if (m_globalErr)
-      atError(fmt("Unable to seek in file, not open"));
+      atError(FMT_STRING("Unable to seek in file, not open"));
     setError();
     return;
   }
@@ -82,7 +82,7 @@ void FileWriter::seek(atInt64 pos, SeekOrigin origin) {
   li.QuadPart = pos;
   if (!SetFilePointerEx(m_fileHandle, li, nullptr, DWORD(origin))) {
     if (m_globalErr)
-      atError(fmt("Unable to seek in file"));
+      atError(FMT_STRING("Unable to seek in file"));
     setError();
   }
 }
@@ -99,7 +99,7 @@ atUint64 FileWriter::length() const { return utility::fileSize(m_filename); }
 void FileWriter::writeUBytes(const atUint8* data, atUint64 len) {
   if (!isOpen()) {
     if (m_globalErr) {
-      atError(fmt("File not open for writing"));
+      atError(FMT_STRING("File not open for writing"));
     }
     setError();
     return;
@@ -112,7 +112,7 @@ void FileWriter::writeUBytes(const atUint8* data, atUint64 len) {
 
     if (WriteFile(m_fileHandle, data, toWrite, &written, nullptr) == FALSE) {
       if (m_globalErr) {
-        atError(fmt("Unable to write to file"));
+        atError(FMT_STRING("Unable to write to file"));
       }
       setError();
       return;
