@@ -73,6 +73,8 @@ else()
        LLVMMC
        LLVMProfileData
        LLVMSupport
+       LLVMRemarks
+       LLVMBitStreamReader
        ${LLVMDEMANGLE_LIB})
 endif()
 
