@@ -262,11 +262,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
               templateStmt += ", ";
               qualType += ", ";
             }
-            if (nonTypeParm->getType()->isBooleanType()) {
-              templateStmt += std::string("bool ") + nonTypeParm->getName().str();
-            } else {
-              templateStmt += nonTypeParm->getType().getAsString().append(1, ' ').append(nonTypeParm->getName().str());
-            }
+            templateStmt += nonTypeParm->getType().getAsString(context.getPrintingPolicy()).append(1, ' ').append(nonTypeParm->getName().str());
             qualType += nonTypeParm->getName();
             needsComma = true;
           }
