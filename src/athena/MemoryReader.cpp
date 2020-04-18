@@ -21,7 +21,7 @@ MemoryReader::MemoryReader(const void* data, atUint64 length, bool takeOwnership
 
 MemoryReader::~MemoryReader() {
   if (m_owns)
-    delete[] reinterpret_cast<const atUint8*>(m_data);
+    delete[] static_cast<const atUint8*>(m_data);
 }
 
 MemoryCopyReader::MemoryCopyReader(const void* data, atUint64 length) : MemoryReader(data, length, false) {
@@ -111,7 +111,7 @@ atUint64 MemoryReader::readUBytesToBuf(void* buf, atUint64 length) {
   }
 
   length = std::min(length, m_length - m_position);
-  memmove(buf, reinterpret_cast<const atUint8*>(m_data) + m_position, length);
+  memmove(buf, static_cast<const atUint8*>(m_data) + m_position, length);
   m_position += length;
   return length;
 }

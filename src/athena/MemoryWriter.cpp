@@ -233,7 +233,7 @@ void MemoryWriter::writeUBytes(const atUint8* data, atUint64 length) {
     return;
   }
 
-  memmove(reinterpret_cast<atInt8*>(m_data + m_position), data, length);
+  memmove(m_data + m_position, data, length);
 
   m_position += length;
 }
@@ -248,7 +248,7 @@ void MemoryCopyWriter::writeUBytes(const atUint8* data, atUint64 length) {
   if (m_position + length > m_length)
     resize(m_position + length);
 
-  memmove(reinterpret_cast<atInt8*>(m_data + m_position), data, length);
+  memmove(m_data + m_position, data, length);
 
   m_position += length;
 }
