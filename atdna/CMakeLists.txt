@@ -10,12 +10,11 @@ get_directory_property(ATDNA_DEFINES COMPILE_DEFINITIONS)
 list(REMOVE_ITEM ATDNA_DEFINES _GLIBCXX_DEBUG=1)
 set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${ATDNA_DEFINES}")
 
-# Force this binary to Release flags (to make MSVC happy)
+# Force this binary to /MD flags (to make MSVC happy)
 if(MSVC)
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_RELEASE}")
-  set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
+  set(CMAKE_CXX_FLAGS_DEBUG "/MD /Zi /Ob0 /Od /RTC1")
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MD /O2 /Ob2 /DNDEBUG")
-  set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "-debug -incremental:no")
+  set(CMAKE_CXX_FLAGS_RELEASE "/MD /Zi /O2 /Ob1 /DNDEBUG")
 endif()
 
 # Find dependencies
