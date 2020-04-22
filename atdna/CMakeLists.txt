@@ -30,6 +30,8 @@ else()
 endif()
 
 if(ATDNA_DYNAMIC_LLVM)
+  find_library(CLANGCPP_LIB clang-cpp HINTS "${LLVM_ROOT_DIR}/lib")
+  if (NOT CLANGCPP_LIB)
   list(APPEND LLVM_LIBS
        clangFrontend
        clangTooling
@@ -43,6 +45,11 @@ if(ATDNA_DYNAMIC_LLVM)
        clangLex
        clangBasic
        LLVM)
+    else()
+    list(APPEND LLVM_LIBS
+          clang-cpp
+          LLVM)
+    endif()
 else()
   find_library(LLVMDEMANGLE_LIB LLVMDemangle HINTS "${LLVM_ROOT_DIR}/lib")
   find_library(LLVMBINARYFORMAT_LIB LLVMBinaryFormat HINTS "${LLVM_ROOT_DIR}/lib")
@@ -52,18 +59,27 @@ else()
   if (NOT LLVMBINARYFORMAT_LIB)
     set(LLVMBINARYFORMAT_LIB "")
   endif()
+  find_library(CLANG_CPP_LIB clang-cpp HINTS "${LLVM_ROOT_DIR}/lib")
+  if (NOT CLANG_CPP_LIB)
+    list(APPEND CLANG_LIBS
+         clangFrontend
+         clangTooling
+         clangDriver
+         clangSerialization
+         clangParse
+         clangSema
+         clangAnalysis
+         clangEdit
+         clangAST
+         clangLex
+         clangBasic)
+  else()
+      list(APPEND CLANG_LIBS
+           clang-cpp)
+  endif()
+
   list(APPEND LLVM_LIBS
-       clangFrontend
-       clangTooling
-       clangDriver
-       clangSerialization
-       clangParse
-       clangSema
-       clangAnalysis
-       clangEdit
-       clangAST
-       clangLex
-       clangBasic
+       ${CLANG_LIBS}
        LLVMCore
        LLVMOption
        LLVMMCParser
@@ -134,6 +150,7 @@ if(MSVC)
   target_compile_options(atdna PRIVATE /GR-)
 else()
   target_compile_options(atdna PRIVATE -fno-rtti -Wno-error)
+  set_property(TARGET atdna PROPERTY CXX_STANDARD 17)
 endif()
 
 # Define installs
