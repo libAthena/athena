@@ -10,12 +10,11 @@ get_directory_property(ATDNA_DEFINES COMPILE_DEFINITIONS)
 list(REMOVE_ITEM ATDNA_DEFINES _GLIBCXX_DEBUG=1)
 set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${ATDNA_DEFINES}")
 
-# Force this binary to Release flags (to make MSVC happy)
+# Force this binary to /MD flags (to make MSVC happy)
 if(MSVC)
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_RELEASE}")
-  set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
+  set(CMAKE_CXX_FLAGS_DEBUG "/MD /Zi /Ob0 /Od /RTC1")
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MD /O2 /Ob2 /DNDEBUG")
-  set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "-debug -incremental:no")
+  set(CMAKE_CXX_FLAGS_RELEASE "/MD /Zi /O2 /Ob1 /DNDEBUG")
 endif()
 
 # Find dependencies
@@ -31,6 +30,8 @@ else()
 endif()
 
 if(ATDNA_DYNAMIC_LLVM)
+  find_library(CLANGCPP_LIB clang-cpp HINTS "${LLVM_ROOT_DIR}/lib")
+  if (NOT CLANGCPP_LIB)
   list(APPEND LLVM_LIBS
        clangFrontend
        clangTooling
@@ -44,6 +45,11 @@ if(ATDNA_DYNAMIC_LLVM)
        clangLex
        clangBasic
        LLVM)
+    else()
+    list(APPEND LLVM_LIBS
+          clang-cpp
+          LLVM)
+    endif()
 else()
   find_library(LLVMDEMANGLE_LIB LLVMDemangle HINTS "${LLVM_ROOT_DIR}/lib")
   find_library(LLVMBINARYFORMAT_LIB LLVMBinaryFormat HINTS "${LLVM_ROOT_DIR}/lib")
@@ -53,18 +59,27 @@ else()
   if (NOT LLVMBINARYFORMAT_LIB)
     set(LLVMBINARYFORMAT_LIB "")
   endif()
+  find_library(CLANG_CPP_LIB clang-cpp HINTS "${LLVM_ROOT_DIR}/lib")
+  if (NOT CLANG_CPP_LIB)
+    list(APPEND CLANG_LIBS
+         clangFrontend
+         clangTooling
+         clangDriver
+         clangSerialization
+         clangParse
+         clangSema
+         clangAnalysis
+         clangEdit
+         clangAST
+         clangLex
+         clangBasic)
+  else()
+      list(APPEND CLANG_LIBS
+           clang-cpp)
+  endif()
+
   list(APPEND LLVM_LIBS
-       clangFrontend
-       clangTooling
-       clangDriver
-       clangSerialization
-       clangParse
-       clangSema
-       clangAnalysis
-       clangEdit
-       clangAST
-       clangLex
-       clangBasic
+       ${CLANG_LIBS}
        LLVMCore
        LLVMOption
        LLVMMCParser
@@ -73,6 +88,8 @@ else()
        LLVMMC
        LLVMProfileData
        LLVMSupport
+       LLVMRemarks
+       LLVMBitStreamReader
        ${LLVMDEMANGLE_LIB})
 endif()
 
@@ -133,6 +150,7 @@ if(MSVC)
   target_compile_options(atdna PRIVATE /GR-)
 else()
   target_compile_options(atdna PRIVATE -fno-rtti -Wno-error)
+  set_property(TARGET atdna PROPERTY CXX_STANDARD 17)
 endif()
 
 # Define installs

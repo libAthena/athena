@@ -262,7 +262,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
               templateStmt += ", ";
               qualType += ", ";
             }
-            templateStmt += nonTypeParm->getType().getAsString().append(1, ' ').append(nonTypeParm->getName().str());
+            templateStmt += nonTypeParm->getType().getAsString(context.getPrintingPolicy()).append(1, ' ').append(nonTypeParm->getName().str());
             qualType += nonTypeParm->getName();
             needsComma = true;
           }
@@ -1261,10 +1261,13 @@ int main(int argc, const char** argv) {
   }
 
   llvm::IntrusiveRefCntPtr<clang::FileManager> fman(new clang::FileManager(clang::FileSystemOptions()));
+#if LLVM_VERSION_MAJOR >= 10
+  clang::tooling::ToolInvocation TI(std::move(args), std::make_unique<ATDNAAction>(), fman.get());
+#else
   ATDNAAction* action = new ATDNAAction();
   clang::tooling::ToolInvocation TI(std::move(args), action, fman.get());
+#endif
   if (!TI.run())
     return 1;
-
   return 0;
 }

@@ -104,7 +104,7 @@ atUint8* MemoryReader::data() const {
 atUint64 MemoryReader::readUBytesToBuf(void* buf, atUint64 length) {
   if (m_position >= m_length) {
     if (m_globalErr)
-      atFatal(FMT_STRING("Position {:08X} outside stream bounds "), m_position);
+      atError(FMT_STRING("Position {:08X} outside stream bounds "), m_position);
     m_position = m_length;
     setError();
     return 0;
