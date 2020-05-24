@@ -44,7 +44,7 @@ set(llvm_config_names llvm-config-3.9 llvm-config39
                       llvm-config-3.1 llvm-config31 llvm-config)
 find_program(LLVM_CONFIG
     NAMES ${llvm_config_names}
-    PATHS ${LLVM_ROOT_DIR}/bin NO_DEFAULT_PATH
+    PATHS ${LLVM_ROOT_DIR}/bin /usr/local/opt/llvm/bin NO_DEFAULT_PATH
     DOC "Path to llvm-config tool.")
 find_program(LLVM_CONFIG NAMES ${llvm_config_names})
 
@@ -207,4 +207,3 @@ endif()
 find_package_handle_standard_args(LLVM
     REQUIRED_VARS LLVM_ROOT_DIR LLVM_HOST_TARGET
     VERSION_VAR LLVM_VERSION_STRING)
-
