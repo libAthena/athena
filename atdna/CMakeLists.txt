@@ -10,13 +10,6 @@ get_directory_property(ATDNA_DEFINES COMPILE_DEFINITIONS)
 list(REMOVE_ITEM ATDNA_DEFINES _GLIBCXX_DEBUG=1)
 set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${ATDNA_DEFINES}")
 
-# Force this binary to /MD flags (to make MSVC happy)
-if(MSVC)
-  set(CMAKE_CXX_FLAGS_DEBUG "/MD /Zi /Ob0 /Od /RTC1")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MD /O2 /Ob2 /DNDEBUG")
-  set(CMAKE_CXX_FLAGS_RELEASE "/MD /Zi /O2 /Ob1 /DNDEBUG")
-endif()
-
 # Find dependencies
 include(FindLLVM.cmake)
 if(NOT LLVM_FOUND)
@@ -147,7 +140,9 @@ set_source_files_properties(main.cpp PROPERTIES COMPILE_DEFINITIONS
 target_include_directories(atdna PRIVATE ${LLVM_INCLUDE_DIRS})
 target_link_directories(atdna PRIVATE ${LLVM_LIBRARY_DIRS})
 if(MSVC)
-  target_compile_options(atdna PRIVATE /GR-)
+  # Allow linking against release-built LLVM libraries
+  target_compile_options(atdna PRIVATE /GR- /D_ITERATOR_DEBUG_LEVEL=0)
+  set_property(TARGET atdna PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
 else()
   target_compile_options(atdna PRIVATE -fno-rtti -Wno-error)
   set_property(TARGET atdna PROPERTY CXX_STANDARD 17)
