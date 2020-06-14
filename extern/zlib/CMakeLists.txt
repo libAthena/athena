@@ -1,5 +1,5 @@
 if(NOT WIN32) # remove when specter/freetype is gone
-find_library(ZLIB_LIB zlib)
+find_library(ZLIB_LIB NAMES zlib z)
 endif()
 if(NOT ZLIB_LIB)
 message(STATUS "Using Athena's built-in zlib")
