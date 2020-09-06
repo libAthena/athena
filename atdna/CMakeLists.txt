@@ -25,24 +25,24 @@ endif()
 if(ATDNA_DYNAMIC_LLVM)
   find_library(CLANGCPP_LIB clang-cpp HINTS "${LLVM_ROOT_DIR}/lib")
   if (NOT CLANGCPP_LIB)
-  list(APPEND LLVM_LIBS
-       clangFrontend
-       clangTooling
-       clangDriver
-       clangSerialization
-       clangParse
-       clangSema
-       clangAnalysis
-       clangEdit
-       clangAST
-       clangLex
-       clangBasic
-       LLVM)
-    else()
+    list(APPEND LLVM_LIBS
+         clangFrontend
+         clangTooling
+         clangDriver
+         clangSerialization
+         clangParse
+         clangSema
+         clangAnalysis
+         clangEdit
+         clangAST
+         clangLex
+         clangBasic
+         LLVM)
+  else()
     list(APPEND LLVM_LIBS
           clang-cpp
           LLVM)
-    endif()
+  endif()
 else()
   find_library(LLVMDEMANGLE_LIB LLVMDemangle HINTS "${LLVM_ROOT_DIR}/lib")
   find_library(LLVMBINARYFORMAT_LIB LLVMBinaryFormat HINTS "${LLVM_ROOT_DIR}/lib")
@@ -83,7 +83,8 @@ else()
        LLVMSupport
        LLVMRemarks
        LLVMBitStreamReader
-       ${LLVMDEMANGLE_LIB})
+       ${LLVMDEMANGLE_LIB}
+       LLVMFrontendOpenMP)
 endif()
 
 string(FIND ${LLVM_VERSION_STRING} "svn" SVN_FILTER_IDX)
@@ -139,13 +140,14 @@ set_source_files_properties(main.cpp PROPERTIES COMPILE_DEFINITIONS
                             "INSTALL_PREFIX=${ABS_INSTALL_BIN_DIR};__STDC_LIMIT_MACROS=1;__STDC_CONSTANT_MACROS=1")
 target_include_directories(atdna PRIVATE ${LLVM_INCLUDE_DIRS})
 target_link_directories(atdna PRIVATE ${LLVM_LIBRARY_DIRS})
+# Clang 10.0.x headers currently broken with C++20
+set_property(TARGET atdna PROPERTY CXX_STANDARD 17)
 if(MSVC)
   # Allow linking against release-built LLVM libraries
   target_compile_options(atdna PRIVATE /GR- /D_ITERATOR_DEBUG_LEVEL=0)
   set_property(TARGET atdna PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
 else()
   target_compile_options(atdna PRIVATE -fno-rtti -Wno-error)
-  set_property(TARGET atdna PROPERTY CXX_STANDARD 17)
 endif()
 
 # Define installs
