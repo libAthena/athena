@@ -119,7 +119,7 @@ function(atdna out incdirs cdefs)
                        ARGS ${extraargs} -o ${out_rel} -MD -MT ${out_rel} -MF ${out_rel}.d
                        "$<$<BOOL:${incdirs}>:-I$<JOIN:${incdirs},;-I>>"
                        "$<$<BOOL:${cdefs}>:-D$<JOIN:${cdefs},;-D>>"
-                       "-I${athena_SOURCE_DIR}/include" -isystem "${CLANG_INCLUDE_DIR}" ${ins}
+                       "-I${athena_SOURCE_DIR}/include" ${ins}
                        DEPENDS atdna ${ins} IMPLICIT_DEPENDS ${ins_impdeps}
                        DEPFILE "${CMAKE_CURRENT_BINARY_DIR}/${out}.d"
                        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
@@ -131,7 +131,7 @@ function(atdna out incdirs cdefs)
                        ARGS ${extraargs} -o ${out_rel}
                        "$<$<BOOL:${incdirs}>:-I$<JOIN:${incdirs},;-I>>"
                        "$<$<BOOL:${cdefs}>:-D$<JOIN:${cdefs},;-D>>"
-                       "-I${athena_SOURCE_DIR}/include" -isystem "${CLANG_INCLUDE_DIR}" ${ins}
+                       "-I${athena_SOURCE_DIR}/include" ${ins}
                        DEPENDS atdna ${ins} IMPLICIT_DEPENDS ${ins_impdeps}
                        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                        COMMENT "Generating DNA ${out_rel}"

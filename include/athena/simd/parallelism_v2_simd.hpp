@@ -718,54 +718,78 @@ public:
     return *this;
   }
 
-  __simd_reference operator++() && { return std::move(*this) = __ptr_->__get(__index_) + 1; }
+  __simd_reference operator++() && { return std::move(*this) = _Vp(*this) + 1; }
 
   _Vp operator++(int) && {
-    auto __val = __ptr_->__get(__index_);
+    auto __val = _Vp(*this);
     __ptr_->__set(__index_, __val + 1);
     return __val;
   }
 
-  __simd_reference operator--() && { return std::move(*this) = __ptr_->__get(__index_) - 1; }
+  __simd_reference operator--() && { return std::move(*this) = _Vp(*this) - 1; }
 
   _Vp operator--(int) && {
-    auto __val = __ptr_->__get(__index_);
+    auto __val = _Vp(*this);
     __ptr_->__set(__index_, __val - 1);
     return __val;
   }
 
-  __simd_reference operator+=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) + __value; }
+  __simd_reference operator+=(_Vp __value) && { return std::move(*this) = _Vp(*this) + __value; }
 
-  __simd_reference operator-=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) - __value; }
+  __simd_reference operator-=(_Vp __value) && { return std::move(*this) = _Vp(*this) - __value; }
 
-  __simd_reference operator*=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) * __value; }
+  __simd_reference operator*=(_Vp __value) && { return std::move(*this) = _Vp(*this) * __value; }
 
-  __simd_reference operator/=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) / __value; }
+  __simd_reference operator/=(_Vp __value) && { return std::move(*this) = _Vp(*this) / __value; }
 
-  __simd_reference operator%=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) % __value; }
+  __simd_reference operator%=(_Vp __value) && { return std::move(*this) = _Vp(*this) % __value; }
 
-  __simd_reference operator>>=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) >> __value; }
+  __simd_reference operator>>=(_Vp __value) && { return std::move(*this) = _Vp(*this) >> __value; }
 
-  __simd_reference operator<<=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) << __value; }
+  __simd_reference operator<<=(_Vp __value) && { return std::move(*this) = _Vp(*this) << __value; }
 
-  __simd_reference operator&=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) & __value; }
+  __simd_reference operator&=(_Vp __value) && { return std::move(*this) = _Vp(*this) & __value; }
 
-  __simd_reference operator|=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) | __value; }
+  __simd_reference operator|=(_Vp __value) && { return std::move(*this) = _Vp(*this) | __value; }
 
-  __simd_reference operator^=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) ^ __value; }
+  __simd_reference operator^=(_Vp __value) && { return std::move(*this) = _Vp(*this) ^ __value; }
 
-  bool operator<(_Vp __value) const { return __ptr_->__get(__index_) < __value; }
+  bool operator<(const __simd_reference& __value) const { return _Vp(*this) < _Vp(__value); }
 
-  bool operator<=(_Vp __value) const { return __ptr_->__get(__index_) <= __value; }
+  bool operator<=(const __simd_reference& __value) const { return _Vp(*this) <= _Vp(__value); }
 
-  bool operator>(_Vp __value) const { return __ptr_->__get(__index_) > __value; }
+  bool operator>(const __simd_reference& __value) const { return _Vp(*this) > _Vp(__value); }
 
-  bool operator>=(_Vp __value) const { return __ptr_->__get(__index_) >= __value; }
+  bool operator>=(const __simd_reference& __value) const { return _Vp(*this) >= _Vp(__value); }
 
-  bool operator==(_Vp __value) const { return __ptr_->__get(__index_) == __value; }
+  bool operator==(const __simd_reference& __value) const { return _Vp(*this) == _Vp(__value); }
 
-  bool operator!=(_Vp __value) const { return __ptr_->__get(__index_) != __value; }
+  bool operator!=(const __simd_reference& __value) const { return _Vp(*this) != _Vp(__value); }
+
+  bool operator<(_Vp __value) const { return _Vp(*this) < __value; }
+
+  bool operator<=(_Vp __value) const { return _Vp(*this) <= __value; }
+
+  bool operator>(_Vp __value) const { return _Vp(*this) > __value; }
+
+  bool operator>=(_Vp __value) const { return _Vp(*this) >= __value; }
+
+  bool operator==(_Vp __value) const { return _Vp(*this) == __value; }
+
+  bool operator!=(_Vp __value) const { return _Vp(*this) != __value; }
 };
+template <class _Vp, class _Tp, class _Abi>
+inline bool operator<(_Vp a, const __simd_reference<_Vp, _Tp, _Abi>& b) { return a < _Vp(b); }
+template <class _Vp, class _Tp, class _Abi>
+inline bool operator<=(_Vp a, const __simd_reference<_Vp, _Tp, _Abi>& b) { return a <= _Vp(b); }
+template <class _Vp, class _Tp, class _Abi>
+inline bool operator>(_Vp a, const __simd_reference<_Vp, _Tp, _Abi>& b) { return a > _Vp(b); }
+template <class _Vp, class _Tp, class _Abi>
+inline bool operator>=(_Vp a, const __simd_reference<_Vp, _Tp, _Abi>& b) { return a >= _Vp(b); }
+template <class _Vp, class _Tp, class _Abi>
+inline bool operator==(_Vp a, const __simd_reference<_Vp, _Tp, _Abi>& b) { return a == _Vp(b); }
+template <class _Vp, class _Tp, class _Abi>
+inline bool operator!=(_Vp a, const __simd_reference<_Vp, _Tp, _Abi>& b) { return a != _Vp(b); }
 
 template <class _Tp, class _Abi>
 class __simd_mask_reference {

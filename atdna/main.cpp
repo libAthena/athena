@@ -1243,17 +1243,13 @@ int main(int argc, const char** argv) {
     llvm::cl::PrintHelpMessage();
 
   std::vector<std::string> args = {
-      "clang-tool",
-#ifdef __linux__
-      "--gcc-toolchain=/usr",
-#endif
+      XSTR(ATDNA_ARGV0),
       "-fsyntax-only",
-      "-std=c++1z",
+      "-std=c++2a",
       "-D__atdna__=1",
       "-Wno-expansion-to-defined",
       "-Wno-nullability-completeness",
       "-Werror=shadow-field",
-      "-I" XSTR(INSTALL_PREFIX) "/lib/clang/" CLANG_VERSION_STRING "/include",
       "-I" XSTR(INSTALL_PREFIX) "/include/Athena",
   };
   for (int a = 1; a < argc; ++a) {

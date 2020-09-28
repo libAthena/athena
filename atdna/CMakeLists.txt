@@ -142,8 +142,11 @@ endif()
 # ATDNA target
 add_executable(atdna main.cpp test.hpp ${PLAT_SRCS})
 target_link_libraries(atdna ${LLVM_LIBS} ${PLAT_LIBS})
-set_source_files_properties(main.cpp PROPERTIES COMPILE_DEFINITIONS
-                            "INSTALL_PREFIX=${ABS_INSTALL_BIN_DIR};__STDC_LIMIT_MACROS=1;__STDC_CONSTANT_MACROS=1")
+target_compile_definitions(atdna PRIVATE
+        INSTALL_PREFIX=${ABS_INSTALL_BIN_DIR}
+        __STDC_LIMIT_MACROS=1
+        __STDC_CONSTANT_MACROS=1
+        ATDNA_ARGV0=${LLVM_ROOT_DIR}/bin/clang-tool)
 target_include_directories(atdna PRIVATE ${LLVM_INCLUDE_DIRS})
 target_link_directories(atdna PRIVATE ${LLVM_LIBRARY_DIRS})
 if(MSVC)
@@ -170,10 +173,8 @@ export(PACKAGE atdna)
 
 # Create the atdnaConfig.cmake
 # ... for the build tree
-set(CONF_CLANG_INCLUDE_DIR "${CLANG_INCLUDE_DIR}")
 configure_file(atdnaConfig.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/atdnaConfig.cmake" @ONLY)
 # ... for the install tree
-set(CONF_CLANG_INCLUDE_DIR "\${ATHENA_INCLUDE_DIR}/clang")
 configure_file(atdnaConfig.cmake.in "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/atdnaConfig.cmake" @ONLY)
 # ... for both
 configure_file(atdnaConfigVersion.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/atdnaConfigVersion.cmake" @ONLY)
@@ -193,8 +194,7 @@ install(EXPORT atdnaTargets DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT atdna)
 
 enable_testing()
 add_test(NAME test-dna COMMAND $<TARGET_FILE:atdna> -o test.cpp
-         "-I${ATHENA_INCLUDE_DIR}" -isystem "${CLANG_INCLUDE_DIR}"
-         ${CMAKE_SOURCE_DIR}/test.hpp)
+         "-I${ATHENA_INCLUDE_DIR}" ${CMAKE_SOURCE_DIR}/test.hpp)
 
 endif()
 
