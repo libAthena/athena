@@ -267,6 +267,7 @@ install(EXPORT AthenaTargets DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT athena)
 ################
 
 add_subdirectory(atdna)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 # Test target
 add_executable(atdna-test atdna/test.cpp atdna/test.hpp)
 target_atdna(atdna-test atdna_test.cpp atdna/test.hpp)
@@ -275,6 +276,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Switch")
     target_link_libraries(atdna-test athena-core nx)
 else()
     target_link_libraries(atdna-test athena-core)
+endif()
 endif()
 
 #########

@@ -192,9 +192,11 @@ install(EXPORT atdnaTargets DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT atdna)
 # CTest #
 #########
 
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 enable_testing()
 add_test(NAME test-dna COMMAND $<TARGET_FILE:atdna> -o test.cpp
          "-I${ATHENA_INCLUDE_DIR}" ${CMAKE_SOURCE_DIR}/test.hpp)
+endif()
 
 endif()
 
