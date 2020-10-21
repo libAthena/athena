@@ -713,83 +713,59 @@ public:
 
   operator _Vp() const { return __ptr_->__get(__index_); }
 
-  __simd_reference operator=(_Vp __value) && {
+  constexpr __simd_reference& operator=(_Vp __value) && {
     __ptr_->__set(__index_, __value);
     return *this;
   }
 
-  __simd_reference operator++() && { return std::move(*this) = _Vp(*this) + 1; }
+  __simd_reference operator++() && { return std::move(*this) = __ptr_->__get(__index_) + 1; }
 
   _Vp operator++(int) && {
-    auto __val = _Vp(*this);
+    auto __val = __ptr_->__get(__index_);
     __ptr_->__set(__index_, __val + 1);
     return __val;
   }
 
-  __simd_reference operator--() && { return std::move(*this) = _Vp(*this) - 1; }
+  __simd_reference operator--() && { return std::move(*this) = __ptr_->__get(__index_) - 1; }
 
   _Vp operator--(int) && {
-    auto __val = _Vp(*this);
+    auto __val = __ptr_->__get(__index_);
     __ptr_->__set(__index_, __val - 1);
     return __val;
   }
 
-  __simd_reference operator+=(_Vp __value) && { return std::move(*this) = _Vp(*this) + __value; }
+  __simd_reference operator+=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) + __value; }
 
-  __simd_reference operator-=(_Vp __value) && { return std::move(*this) = _Vp(*this) - __value; }
+  __simd_reference operator-=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) - __value; }
 
-  __simd_reference operator*=(_Vp __value) && { return std::move(*this) = _Vp(*this) * __value; }
+  __simd_reference operator*=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) * __value; }
 
-  __simd_reference operator/=(_Vp __value) && { return std::move(*this) = _Vp(*this) / __value; }
+  __simd_reference operator/=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) / __value; }
 
-  __simd_reference operator%=(_Vp __value) && { return std::move(*this) = _Vp(*this) % __value; }
+  __simd_reference operator%=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) % __value; }
 
-  __simd_reference operator>>=(_Vp __value) && { return std::move(*this) = _Vp(*this) >> __value; }
+  __simd_reference operator>>=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) >> __value; }
 
-  __simd_reference operator<<=(_Vp __value) && { return std::move(*this) = _Vp(*this) << __value; }
+  __simd_reference operator<<=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) << __value; }
 
-  __simd_reference operator&=(_Vp __value) && { return std::move(*this) = _Vp(*this) & __value; }
+  __simd_reference operator&=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) & __value; }
 
-  __simd_reference operator|=(_Vp __value) && { return std::move(*this) = _Vp(*this) | __value; }
+  __simd_reference operator|=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) | __value; }
 
-  __simd_reference operator^=(_Vp __value) && { return std::move(*this) = _Vp(*this) ^ __value; }
+  __simd_reference operator^=(_Vp __value) && { return std::move(*this) = __ptr_->__get(__index_) ^ __value; }
 
-  bool operator<(const __simd_reference& __value) const { return _Vp(*this) < _Vp(__value); }
+  bool operator<(_Vp __value) const { return __ptr_->__get(__index_) < __value; }
 
-  bool operator<=(const __simd_reference& __value) const { return _Vp(*this) <= _Vp(__value); }
+  bool operator<=(_Vp __value) const { return __ptr_->__get(__index_) <= __value; }
 
-  bool operator>(const __simd_reference& __value) const { return _Vp(*this) > _Vp(__value); }
+  bool operator>(_Vp __value) const { return __ptr_->__get(__index_) > __value; }
 
-  bool operator>=(const __simd_reference& __value) const { return _Vp(*this) >= _Vp(__value); }
+  bool operator>=(_Vp __value) const { return __ptr_->__get(__index_) >= __value; }
 
-  bool operator==(const __simd_reference& __value) const { return _Vp(*this) == _Vp(__value); }
+  bool operator==(_Vp __value) const { return __ptr_->__get(__index_) == __value; }
 
-  bool operator!=(const __simd_reference& __value) const { return _Vp(*this) != _Vp(__value); }
-
-  bool operator<(_Vp __value) const { return _Vp(*this) < __value; }
-
-  bool operator<=(_Vp __value) const { return _Vp(*this) <= __value; }
-
-  bool operator>(_Vp __value) const { return _Vp(*this) > __value; }
-
-  bool operator>=(_Vp __value) const { return _Vp(*this) >= __value; }
-
-  bool operator==(_Vp __value) const { return _Vp(*this) == __value; }
-
-  bool operator!=(_Vp __value) const { return _Vp(*this) != __value; }
+  bool operator!=(_Vp __value) const { return __ptr_->__get(__index_) != __value; }
 };
-template <class _Vp, class _Tp, class _Abi>
-inline bool operator<(_Vp a, const __simd_reference<_Vp, _Tp, _Abi>& b) { return a < _Vp(b); }
-template <class _Vp, class _Tp, class _Abi>
-inline bool operator<=(_Vp a, const __simd_reference<_Vp, _Tp, _Abi>& b) { return a <= _Vp(b); }
-template <class _Vp, class _Tp, class _Abi>
-inline bool operator>(_Vp a, const __simd_reference<_Vp, _Tp, _Abi>& b) { return a > _Vp(b); }
-template <class _Vp, class _Tp, class _Abi>
-inline bool operator>=(_Vp a, const __simd_reference<_Vp, _Tp, _Abi>& b) { return a >= _Vp(b); }
-template <class _Vp, class _Tp, class _Abi>
-inline bool operator==(_Vp a, const __simd_reference<_Vp, _Tp, _Abi>& b) { return a == _Vp(b); }
-template <class _Vp, class _Tp, class _Abi>
-inline bool operator!=(_Vp a, const __simd_reference<_Vp, _Tp, _Abi>& b) { return a != _Vp(b); }
 
 template <class _Tp, class _Abi>
 class __simd_mask_reference {
@@ -1223,9 +1199,9 @@ public:
   using mask_type = simd_mask<_Tp, _Abi>;
   using abi_type = _Abi;
 
-  simd() = default;
-  simd(const simd&) = default;
-  simd& operator=(const simd&) = default;
+  constexpr simd() = default;
+  constexpr simd(const simd&) = default;
+  constexpr simd& operator=(const simd&) = default;
 
   static constexpr size_t size() noexcept { return simd_size<_Tp, _Abi>::value; }
 
@@ -1254,13 +1230,14 @@ private:
   }
 
   template <class _Generator, size_t... __indicies>
-  void __generator_init(_Generator&& __g, std::index_sequence<__indicies...>) {
+  constexpr void __generator_init(_Generator&& __g, std::index_sequence<__indicies...>) {
     int __not_used[]{((*this)[__indicies] = __g(std::integral_constant<size_t, __indicies>()), 0)...};
     (void)__not_used;
   }
 
 public:
-  simd(const typename __simd_storage<_Tp, _Abi>::storage_type& s) : __s_(s) {}
+  constexpr simd(const __simd_storage<_Tp, _Abi>& s) : __s_(s) {}
+  constexpr simd(const typename __simd_storage<_Tp, _Abi>::storage_type& s) : __s_(s) {}
 
 #if 0
 // implicit type conversion constructor
@@ -1278,7 +1255,7 @@ public:
   template <class _Up, class _UAbi,
             class = typename std::enable_if<
                 std::is_constructible<__simd_storage<_Tp, _Abi>, __simd_storage<_Up, _UAbi>>::value>>
-  simd(const simd<_Up, _UAbi>& __v) : __s_(__v.__s_) {}
+  constexpr simd(const simd<_Up, _UAbi>& __v) : __s_(__v.__s_) {}
 
 #if 0
   template <class _Up, class _UAbi,
@@ -1306,8 +1283,8 @@ public:
 
   // generator constructor
   template <class _Generator,
-            int = typename std::enable_if<__can_generate<_Generator>(
-              std::make_index_sequence<simd_size<_Tp, _Abi>::value>()), int>::type()>
+            int = typename std::enable_if<
+                __can_generate<_Generator>(std::make_index_sequence<simd_size<_Tp, _Abi>::value>()), int>::type()>
   explicit simd(_Generator&& __g) {
     __generator_init(std::forward<_Generator>(__g), std::make_index_sequence<simd_size<_Tp, _Abi>::value>());
   }
@@ -1349,10 +1326,13 @@ public:
   // stores [simd.store]
   void copy_to(simd_data<simd>& __buffer) const { __s_.__copy_to(__buffer); }
 
-  // scalar access [simd.subscr]
-  reference operator[](size_t __i) { return reference(&__s_, __i); }
+  constexpr void set(_Tp a, _Tp b, _Tp c = {}, _Tp d = {}) { __s_.__set4(a, b, c, d); }
+  constexpr void broadcast(_Tp rv) { __s_.__broadcast(rv); }
 
-  value_type operator[](size_t __i) const { return __s_.__get(__i); }
+  // scalar access [simd.subscr]
+  constexpr reference operator[](size_t __i) { return reference(&__s_, __i); }
+
+  constexpr value_type operator[](size_t __i) const { return __s_.__get(__i); }
 
   // unary operators [simd.unary]
   simd& operator++();
@@ -1401,15 +1381,13 @@ public:
   friend mask_type operator>(const simd&, const simd&);
   friend mask_type operator<(const simd&, const simd&);
 
-  value_type dot2(const simd& other) const { return __s_.__dot2(other.__s_); }
-  value_type dot3(const simd& other) const { return __s_.__dot3(other.__s_); }
-  value_type dot4(const simd& other) const { return __s_.__dot4(other.__s_); }
+  constexpr value_type dot2(const simd& other) const { return __s_.__dot2(other.__s_); }
+  constexpr value_type dot3(const simd& other) const { return __s_.__dot3(other.__s_); }
+  constexpr value_type dot4(const simd& other) const { return __s_.__dot4(other.__s_); }
 
   template <int x, int y, int z, int w>
-  simd shuffle() const {
-    simd s;
-    s.__s_ = __s_.template __shuffle<x, y, z, w>();
-    return s;
+  constexpr simd shuffle() const {
+    return __s_.template __shuffle<x, y, z, w>();
   }
 
   const typename __simd_storage<_Tp, _Abi>::storage_type& native() const { return __s_.__native(); }
@@ -1499,50 +1477,48 @@ private:
   friend class simd_mask;
 
 public:
-  _Tp __get(size_t __index) const noexcept { return __storage_[__index]; };
-  void __set(size_t __index, _Tp __val) noexcept { __storage_[__index] = __val; }
-  std::enable_if_t<__num_element >= 4> __set4(float a, float b, float c, float d) noexcept {
+  constexpr _Tp __get(size_t __index) const noexcept { return __storage_[__index]; };
+  constexpr void __set(size_t __index, _Tp __val) noexcept { __storage_[__index] = __val; }
+  constexpr std::enable_if_t<__num_element >= 4> __set4(float a, float b, float c, float d) noexcept {
     __storage_[0] = a;
     __storage_[1] = b;
     __storage_[2] = c;
     __storage_[3] = d;
   }
-  void __broadcast(float __val) noexcept { std::fill(__storage_.begin(), __storage_.end(), __val); }
-  std::enable_if_t<__num_element >= 2, _Tp> __dot2(const __simd_storage& other) const noexcept {
+  constexpr void __broadcast(float __val) noexcept { std::fill(__storage_.begin(), __storage_.end(), __val); }
+  constexpr std::enable_if_t<__num_element >= 2, _Tp> __dot2(const __simd_storage& other) const noexcept {
     return __storage_[0] * other.__storage_[0] + __storage_[1] * other.__storage_[1];
   }
-  std::enable_if_t<__num_element >= 3, _Tp> __dot3(const __simd_storage& other) const noexcept {
+  constexpr std::enable_if_t<__num_element >= 3, _Tp> __dot3(const __simd_storage& other) const noexcept {
     return __storage_[0] * other.__storage_[0] + __storage_[1] * other.__storage_[1] +
            __storage_[2] * other.__storage_[2];
   }
-  std::enable_if_t<__num_element >= 4, _Tp> __dot4(const __simd_storage& other) const noexcept {
+  constexpr std::enable_if_t<__num_element >= 4, _Tp> __dot4(const __simd_storage& other) const noexcept {
     return __storage_[0] * other.__storage_[0] + __storage_[1] * other.__storage_[1] +
            __storage_[2] * other.__storage_[2] + __storage_[3] * other.__storage_[3];
   }
   template <int x, int y, int z, int w>
-  std::enable_if_t<__num_element >= 4, __simd_storage> __shuffle() const noexcept {
-    __simd_storage s;
-    s.__storage_[0] = __storage_[x];
-    s.__storage_[1] = __storage_[y];
-    s.__storage_[2] = __storage_[z];
-    s.__storage_[3] = __storage_[w];
-    return s;
+  constexpr std::enable_if_t<__num_element >= 4, __simd_storage> __shuffle() const noexcept {
+    return {__storage_[x], __storage_[y], __storage_[z], __storage_[w]};
   }
 
-  void __copy_from(const simd_data<simd<_Tp, __simd_abi<_StorageKind::_Array, __num_element>>>& __buffer) noexcept {
+  constexpr void
+  __copy_from(const simd_data<simd<_Tp, __simd_abi<_StorageKind::_Array, __num_element>>>& __buffer) noexcept {
     std::copy(__buffer.begin(), __buffer.end(), __storage_.begin());
   }
 
-  void __copy_to(simd_data<simd<_Tp, __simd_abi<_StorageKind::_Array, __num_element>>>& __buffer) const noexcept {
+  constexpr void __copy_to(simd_data<simd<_Tp, __simd_abi<_StorageKind::_Array, __num_element>>>& __buffer) const
+      noexcept {
     std::copy(__storage_.begin(), __storage_.end(), __buffer.begin());
   }
 
-  __simd_storage() = default;
+  constexpr __simd_storage() = default;
   template <class _Up, int __Unum_element>
-  explicit __simd_storage(const __simd_storage<_Up, __simd_abi<_StorageKind::_Array, __Unum_element>>& other) {
+  constexpr explicit __simd_storage(
+      const __simd_storage<_Up, __simd_abi<_StorageKind::_Array, __Unum_element>>& other) {
     std::copy(other.__native().begin(), other.__native().end(), __storage_.begin());
   }
-  const storage_type& __native() const { return __storage_; }
+  constexpr const storage_type& __native() const { return __storage_; }
 };
 
 template <class _Tp, int __num_element>
@@ -1550,8 +1526,8 @@ class __simd_mask_storage<_Tp, __simd_abi<_StorageKind::_Array, __num_element>> 
   std::bitset<__num_element> __storage_;
 
 public:
-  bool __get(size_t __index) const noexcept { return __storage_.test(__index); }
-  void __set(size_t __index, bool __val) noexcept { __storage_.set(__index, __val); }
+  [[nodiscard]] constexpr bool __get(size_t __index) const noexcept { return __storage_.test(__index); }
+  constexpr void __set(size_t __index, bool __val) noexcept { __storage_.set(__index, __val); }
 };
 
 } // namespace athena::_simd

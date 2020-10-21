@@ -15,6 +15,8 @@ using namespace std;
 #include "simd_avx.hpp"
 #elif __SSE__
 #include "simd_sse.hpp"
+#elif __ARM_NEON
+#include "simd_neon.hpp"
 #else
 namespace simd_abi {
 template <typename T>
