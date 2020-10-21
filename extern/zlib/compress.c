@@ -1,5 +1,5 @@
 /* compress.c -- compress a memory buffer
- * Copyright (C) 1995-2005 Jean-loup Gailly.
+ * Copyright (C) 1995-2005, 2014, 2016 Jean-loup Gailly, Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -19,66 +19,57 @@
    memory, Z_BUF_ERROR if there was not enough room in the output buffer,
    Z_STREAM_ERROR if the level parameter is invalid.
 */
-#ifdef WIN32
-int ZEXPORT compress2(Bytef* dest, uLongf* destLen, const Bytef* source, uLong sourceLen, int level)
-#else
-int ZEXPORT compress2(dest, destLen, source, sourceLen, level)
-Bytef* dest;
-uLongf* destLen;
-const Bytef* source;
-uLong sourceLen;
-int level;
-#endif
+int ZEXPORT compress2 (dest, destLen, source, sourceLen, level)
+    Bytef *dest;
+    uLongf *destLen;
+    const Bytef *source;
+    uLong sourceLen;
+    int level;
 {
     z_stream stream;
     int err;
+    const uInt max = (uInt)-1;
+    uLong left;
 
-    stream.next_in = (Bytef*)source;
-    stream.avail_in = (uInt)sourceLen;
-#ifdef MAXSEG_64K
-
-    /* Check for source > 64K on 16-bit machine: */
-    if ((uLong)stream.avail_in != sourceLen) return Z_BUF_ERROR;
-
-#endif
-    stream.next_out = dest;
-    stream.avail_out = (uInt) * destLen;
-
-    if ((uLong)stream.avail_out != *destLen) return Z_BUF_ERROR;
+    left = *destLen;
+    *destLen = 0;
 
     stream.zalloc = (alloc_func)0;
     stream.zfree = (free_func)0;
     stream.opaque = (voidpf)0;
 
     err = deflateInit(&stream, level);
-
     if (err != Z_OK) return err;
 
-    err = deflate(&stream, Z_FINISH);
+    stream.next_out = dest;
+    stream.avail_out = 0;
+    stream.next_in = (z_const Bytef *)source;
+    stream.avail_in = 0;
 
-    if (err != Z_STREAM_END)
-    {
-        deflateEnd(&stream);
-        return err == Z_OK ? Z_BUF_ERROR : err;
-    }
+    do {
+        if (stream.avail_out == 0) {
+            stream.avail_out = left > (uLong)max ? max : (uInt)left;
+            left -= stream.avail_out;
+        }
+        if (stream.avail_in == 0) {
+            stream.avail_in = sourceLen > (uLong)max ? max : (uInt)sourceLen;
+            sourceLen -= stream.avail_in;
+        }
+        err = deflate(&stream, sourceLen ? Z_NO_FLUSH : Z_FINISH);
+    } while (err == Z_OK);
 
     *destLen = stream.total_out;
-
-    err = deflateEnd(&stream);
-    return err;
+    deflateEnd(&stream);
+    return err == Z_STREAM_END ? Z_OK : err;
 }
 
 /* ===========================================================================
  */
-#ifdef WIN32
-int ZEXPORT compress(Bytef* dest, uLongf* destLen, const Bytef* source, uLong sourceLen)
-#else
-int ZEXPORT compress(dest, destLen, source, sourceLen)
-Bytef* dest;
-uLongf* destLen;
-const Bytef* source;
-uLong sourceLen;
-#endif
+int ZEXPORT compress (dest, destLen, source, sourceLen)
+    Bytef *dest;
+    uLongf *destLen;
+    const Bytef *source;
+    uLong sourceLen;
 {
     return compress2(dest, destLen, source, sourceLen, Z_DEFAULT_COMPRESSION);
 }
@@ -87,12 +78,8 @@ uLong sourceLen;
      If the default memLevel or windowBits for deflateInit() is changed, then
    this function needs to be updated.
  */
-#ifdef WIN32
-uLong ZEXPORT compressBound(uLong sourceLen)
-#else
-uLong ZEXPORT compressBound(sourceLen)
-uLong sourceLen;
-#endif
+uLong ZEXPORT compressBound (sourceLen)
+    uLong sourceLen;
 {
     return sourceLen + (sourceLen >> 12) + (sourceLen >> 14) +
            (sourceLen >> 25) + 13;
