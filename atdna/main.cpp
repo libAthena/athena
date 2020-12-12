@@ -419,7 +419,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           regType = regType->getUnqualifiedDesugaredType();
       }
 
-      std::string fieldName = field->getName();
+      std::string fieldName = field->getName().str();
       std::string propIdExpr = GetPropIdExpr(field, fieldName);
 
       if (regType->getTypeClass() == clang::Type::TemplateSpecialization) {
@@ -431,6 +431,8 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           llvm::APSInt endian(64, -1);
           std::string endianExprStr;
           bool defaultEndian = true;
+          /* FIXME: The is the following code required? */
+#if 0
           if (classParms->size() >= 2) {
             const clang::NamedDecl* endianParm = classParms->getParam(1);
             if (endianParm->getKind() == clang::Decl::NonTypeTemplateParm) {
@@ -439,7 +441,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
               nttParm->print(strStream, context.getPrintingPolicy());
             }
           }
-
+#endif
           for (const clang::TemplateArgument& arg : *tsType) {
             if (arg.getKind() == clang::TemplateArgument::Expression) {
               const clang::Expr* expr = arg.getAsExpr();
@@ -818,7 +820,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           regType = regType->getUnqualifiedDesugaredType();
       }
 
-      std::string fieldName = field->getName();
+      std::string fieldName = field->getName().str();
       std::string propIdExpr = GetPropIdExpr(field, fieldName);
 
       if (regType->getTypeClass() == clang::Type::TemplateSpecialization) {
