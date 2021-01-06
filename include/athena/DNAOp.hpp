@@ -500,7 +500,7 @@ struct Write {
   static std::enable_if_t<std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
                                                       StreamT& w) {
     /* libc++ specializes vector<bool> as a bitstream */
-    for (const T& v : vector)
+    for (const T v : vector)
       w.writeBool(v);
   }
   static void Do(const PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, StreamT& w) {
@@ -732,7 +732,7 @@ struct WriteYaml {
                                                       StreamT& w) {
     /* libc++ specializes vector<bool> as a bitstream */
     if (auto __v = w.enterSubVector(id.name))
-      for (const T& v : vector)
+      for (const T v : vector)
         w.writeBool(v);
   }
   static void Do(const PropId& id, std::unique_ptr<atUint8[]>& buf, size_t count, StreamT& w) {

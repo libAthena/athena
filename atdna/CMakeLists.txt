@@ -10,13 +10,6 @@ get_directory_property(ATDNA_DEFINES COMPILE_DEFINITIONS)
 list(REMOVE_ITEM ATDNA_DEFINES _GLIBCXX_DEBUG=1)
 set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${ATDNA_DEFINES}")
 
-# Force this binary to /MD flags (to make MSVC happy)
-if(MSVC)
-  set(CMAKE_CXX_FLAGS_DEBUG "/MD /Zi /Ob0 /Od /RTC1")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MD /O2 /Ob2 /DNDEBUG")
-  set(CMAKE_CXX_FLAGS_RELEASE "/MD /Zi /O2 /Ob1 /DNDEBUG")
-endif()
-
 # Find dependencies
 include(FindLLVM.cmake)
 if(NOT LLVM_FOUND)
@@ -32,24 +25,24 @@ endif()
 if(ATDNA_DYNAMIC_LLVM)
   find_library(CLANGCPP_LIB clang-cpp HINTS "${LLVM_ROOT_DIR}/lib")
   if (NOT CLANGCPP_LIB)
-  list(APPEND LLVM_LIBS
-       clangFrontend
-       clangTooling
-       clangDriver
-       clangSerialization
-       clangParse
-       clangSema
-       clangAnalysis
-       clangEdit
-       clangAST
-       clangLex
-       clangBasic
-       LLVM)
-    else()
+    list(APPEND LLVM_LIBS
+         clangFrontend
+         clangTooling
+         clangDriver
+         clangSerialization
+         clangParse
+         clangSema
+         clangAnalysis
+         clangEdit
+         clangAST
+         clangLex
+         clangBasic
+         LLVM)
+  else()
     list(APPEND LLVM_LIBS
           clang-cpp
           LLVM)
-    endif()
+  endif()
 else()
   find_library(LLVMDEMANGLE_LIB LLVMDemangle HINTS "${LLVM_ROOT_DIR}/lib")
   find_library(LLVMBINARYFORMAT_LIB LLVMBinaryFormat HINTS "${LLVM_ROOT_DIR}/lib")
@@ -90,7 +83,8 @@ else()
        LLVMSupport
        LLVMRemarks
        LLVMBitStreamReader
-       ${LLVMDEMANGLE_LIB})
+       ${LLVMDEMANGLE_LIB}
+       LLVMFrontendOpenMP)
 endif()
 
 string(FIND ${LLVM_VERSION_STRING} "svn" SVN_FILTER_IDX)
@@ -149,11 +143,14 @@ target_compile_definitions(atdna PRIVATE
         ATDNA_ARGV0=${LLVM_ROOT_DIR}/bin/clang-tool)
 target_include_directories(atdna PRIVATE ${LLVM_INCLUDE_DIRS})
 target_link_directories(atdna PRIVATE ${LLVM_LIBRARY_DIRS})
+# Clang 10.0.x headers currently broken with C++20
+set_property(TARGET atdna PROPERTY CXX_STANDARD 17)
 if(MSVC)
-  target_compile_options(atdna PRIVATE /GR-)
+  # Allow linking against release-built LLVM libraries
+  target_compile_options(atdna PRIVATE /GR- /D_ITERATOR_DEBUG_LEVEL=0)
+  set_property(TARGET atdna PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
 else()
   target_compile_options(atdna PRIVATE -fno-rtti -Wno-error)
-  set_property(TARGET atdna PROPERTY CXX_STANDARD 17)
 endif()
 
 # Define installs

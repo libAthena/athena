@@ -207,4 +207,3 @@ endif()
 find_package_handle_standard_args(LLVM
     REQUIRED_VARS LLVM_ROOT_DIR LLVM_HOST_TARGET
     VERSION_VAR LLVM_VERSION_STRING)
-

@@ -1,7 +1,7 @@
-if(NOT WIN32 AND NOT NX)
-find_package(ZLIB)
+if(NOT WIN32 AND NOT NX) # remove when specter/freetype is gone
+find_library(ZLIB_LIB NAMES zlib z)
 endif()
-if(WIN32 OR NOT ZLIB_FOUND)
+if(NOT ZLIB_LIB)
 message(STATUS "Using Athena's built-in zlib")
 add_library(z
     adler32.c
@@ -35,6 +35,6 @@ endif()
 set(ZLIB_LIBRARIES z CACHE PATH "Zlib libraries" FORCE)
 set(ZLIB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "Zlib include path" FORCE)
 else()
-set(ZLIB_LIBRARIES ${ZLIB_LIBRARIES} CACHE PATH "Zlib libraries" FORCE)
+set(ZLIB_LIBRARIES ${ZLIB_LIB} CACHE PATH "Zlib libraries" FORCE)
 find_path(ZLIB_INCLUDE_DIR zlib.h)
 endif()

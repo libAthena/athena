@@ -441,8 +441,6 @@ bool YAMLDocWriter::finish(athena::io::IStreamWriter* fout) {
     return false;
   };
 
-  yaml_event_t event = {};
-
   if (fout) {
     yaml_emitter_set_output(&m_emitter, (yaml_write_handler_t*)YAMLAthenaWriter, fout);
   }
@@ -450,16 +448,15 @@ bool YAMLDocWriter::finish(athena::io::IStreamWriter* fout) {
     return error();
   }
 
-  event.type = YAML_DOCUMENT_START_EVENT;
-  event.data.document_start.implicit = true;
+  yaml_event_t event;
+  yaml_document_start_event_initialize(&event, nullptr, nullptr, nullptr, 1);
   if (!yaml_emitter_emit(&m_emitter, &event)) {
     return error();
   }
   if (!RecursiveFinish(&m_emitter, *m_rootNode)) {
     return false;
   }
-  event.type = YAML_DOCUMENT_END_EVENT;
-  event.data.document_end.implicit = true;
+  yaml_document_end_event_initialize(&event, 1);
   if (!yaml_emitter_emit(&m_emitter, &event)) {
     return error();
   }
