@@ -18,7 +18,7 @@ class __simd_storage<float, m128_abi> {
 public:
   using storage_type = float32x4_t;
   storage_type __storage_{};
-  [[nodiscard]] constexpr float __get(size_t __index) const noexcept { return __storage_[__index]; }
+  [[nodiscard]] float __get(size_t __index) const noexcept { return __storage_[__index]; }
   inline void __set(size_t __index, float __val) noexcept { __storage_[__index] = __val; }
   constexpr __simd_storage(float a, float b, float c, float d) : __storage_{a, b, c, d} {}
   constexpr void __set4(float a, float b, float c, float d) noexcept { __storage_ = storage_type{a, b, c, d}; }

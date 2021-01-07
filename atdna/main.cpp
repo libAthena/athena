@@ -51,6 +51,8 @@ static llvm::cl::list<std::string> IncludeSearchPaths("I", llvm::cl::desc("Heade
 
 static llvm::cl::list<std::string> SystemIncludeSearchPaths("isystem", llvm::cl::desc("System Header search path"));
 
+static llvm::cl::list<std::string> StandardCXXLibISystem("stdlib++-isystem", llvm::cl::desc("Standard C++ library search path"));
+
 static llvm::cl::opt<std::string> StandardCXXLib("stdlib", llvm::cl::desc("Standard C++ library"));
 
 static llvm::cl::opt<bool> DepFile("MD", llvm::cl::desc("Make Dependency file"));

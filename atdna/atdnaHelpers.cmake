@@ -108,8 +108,8 @@ function(atdna out incdirs cdefs)
       message(FATAL_ERROR "CMAKE_OSX_SYSROOT not set")
     endif()
     list(APPEND extraargs
-         -I ${COMPILER_DIR}/../include/c++/v1
-         -isysroot ${CMAKE_OSX_SYSROOT})
+         -isysroot ${CMAKE_OSX_SYSROOT}
+         -stdlib++-isystem "${COMPILER_DIR}/../include/c++/v1")
   endif()
 
   # Make target
