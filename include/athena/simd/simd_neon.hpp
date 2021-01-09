@@ -35,12 +35,7 @@ public:
   }
   template <int x, int y, int z, int w>
   [[nodiscard]] inline __simd_storage __shuffle() const noexcept {
-    storage_type ret;
-    ret = vmovq_n_f32(vgetq_lane_f32(__storage_, x));
-    ret = vsetq_lane_f32(vgetq_lane_f32(__storage_, y), ret, 1);
-    ret = vsetq_lane_f32(vgetq_lane_f32(__storage_, z), ret, 2);
-    ret = vsetq_lane_f32(vgetq_lane_f32(__storage_, w), ret, 3);
-    return __simd_storage(ret);
+    return __simd_storage{__storage_[x], __storage_[y], __storage_[z], __storage_[w]};
   }
 
   inline void __copy_from(const simd_data<simd<float, m128_abi>>& __buffer) noexcept {
@@ -71,8 +66,7 @@ public:
 
 template <>
 inline simd<float, m128_abi> simd<float, m128_abi>::operator-() const {
-  return vreinterpretq_f32_s32(
-      veorq_s32(vreinterpretq_s32_f32(__s_.__storage_), vreinterpretq_s32_f32(vdupq_n_f32(-0.f))));
+  return vnegq_f32(__s_.__storage_);
 }
 
 inline simd<float, m128_abi> operator+(const simd<float, m128_abi>& a, const simd<float, m128_abi>& b) {
@@ -172,7 +166,7 @@ public:
   [[nodiscard]] inline double __dot3(const __simd_storage<double, m128d_abi>& other) const noexcept {
     const vector_type mul1 = vmulq_f64(__storage_.val[0], other.__storage_.val[0]);
     const vector_type mul2 = vmulq_f64(__storage_.val[1], other.__storage_.val[1]);
-    return vaddvq_f64(vcombine_f64(vcreate_f64(vaddvq_f64(mul1)), vget_low_f64(mul2)));
+    return vaddvq_f64(vcombine_f64(vdup_n_f64(vaddvq_f64(mul1)), vget_low_f64(mul2)));
   }
   [[nodiscard]] inline double __dot4(const __simd_storage<double, m128d_abi>& other) const noexcept {
     const vector_type mul1 = vmulq_f64(__storage_.val[0], other.__storage_.val[0]);
@@ -215,8 +209,7 @@ template <>
 inline simd<double, m128d_abi> simd<double, m128d_abi>::operator-() const {
   simd<double, m128d_abi> ret;
   for (int i = 0; i < 2; ++i)
-    ret.__s_.__storage_.val[i] = vreinterpretq_f64_s64(
-        veorq_s64(vreinterpretq_s64_f64(__s_.__storage_.val[i]), vreinterpretq_s64_f64(vdupq_n_f64(-0.0))));
+    ret.__s_.__storage_.val[i] = vnegq_f64(__s_.__storage_.val[i]);
   return ret;
 }
 
