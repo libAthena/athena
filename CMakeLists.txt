@@ -154,7 +154,7 @@ add_library(athena-wiisave EXCLUDE_FROM_ALL
     include/md5.h
     include/sha1.h
 )
-if(NOT MSVC AND NOT GEKKO AND NOT NX)
+if(NOT MSVC AND ${CMAKE_SYSTEM_PROCESSOR} STREQUAL x86_64)
     set_source_files_properties(src/aes.cpp PROPERTIES COMPILE_FLAGS -maes)
 endif()
 
