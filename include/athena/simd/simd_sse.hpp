@@ -30,8 +30,25 @@ class __simd_storage<float, m128_abi> {
 public:
   using storage_type = __m128;
   storage_type __storage_{};
-  [[nodiscard]] inline float __get(size_t __index) const noexcept { return __storage_[__index]; }
-  inline void __set(size_t __index, float __val) noexcept { __storage_[__index] = __val; }
+  [[nodiscard]] inline float __get(size_t __index) const noexcept {
+#if _MSC_VER && !defined(__clang__)
+    alignas(16) std::array<float, 4> sse_data;
+    _mm_store_ps(sse_data.data(), __storage_);
+    return sse_data[__index];
+#else
+    return __storage_[__index];
+#endif
+  }
+  inline void __set(size_t __index, float __val) noexcept {
+#if _MSC_VER && !defined(__clang__)
+    alignas(16) std::array<float, 4> sse_data;
+    _mm_store_ps(sse_data.data(), __storage_);
+    sse_data[__index] = __val;
+    __storage_ = _mm_load_ps(sse_data.data());
+#else
+    __storage_[__index] = __val;
+#endif
+  }
   constexpr __simd_storage(float a, float b, float c, float d) : __storage_{a, b, c, d} {}
   constexpr void __set4(float a, float b, float c, float d) noexcept { __storage_ = storage_type{a, b, c, d}; }
   constexpr explicit __simd_storage(float rv) : __storage_{rv, rv, rv, rv} {}
@@ -192,8 +209,25 @@ class __simd_storage<double, m128d_abi> {
 public:
   using storage_type = std::array<__m128d, 2>;
   storage_type __storage_{};
-  [[nodiscard]] inline double __get(size_t __index) const noexcept { return __storage_[__index / 2][__index % 2]; }
-  inline void __set(size_t __index, double __val) noexcept { __storage_[__index / 2][__index % 2] = __val; }
+  [[nodiscard]] inline double __get(size_t __index) const noexcept {
+#if _MSC_VER && !defined(__clang__)
+    alignas(16) std::array<double, 2> sse_data;
+    _mm_store_pd(sse_data.data(), __storage_[__index / 2]);
+    return sse_data[__index % 2];
+#else
+    return __storage_[__index / 2][__index % 2];
+#endif
+  }
+  inline void __set(size_t __index, double __val) noexcept {
+#if _MSC_VER && !defined(__clang__)
+    alignas(16) std::array<double, 2> sse_data;
+    _mm_store_pd(sse_data.data(), __storage_[__index / 2]);
+    sse_data[__index % 2] = __val;
+    __storage_[__index / 2] = _mm_load_pd(sse_data.data());
+#else
+      __storage_[__index / 2][__index % 2] = __val;
+#endif
+  }
   // Make GCC happy
   static constexpr storage_type __make_array(__m128d a, __m128d b) { return {a, b}; }
   constexpr __simd_storage(double a, double b, double c, double d) : __storage_(__make_array(__m128d{a, b}, __m128d{c, d})) {}
