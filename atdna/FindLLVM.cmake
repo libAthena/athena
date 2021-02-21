@@ -42,9 +42,16 @@ set(llvm_config_names llvm-config-3.9 llvm-config39
                       llvm-config-3.3 llvm-config33
                       llvm-config-3.2 llvm-config32
                       llvm-config-3.1 llvm-config31 llvm-config)
+if(APPLE AND CMAKE_SYSTEM_PROCESSOR STREQUAL x86_64)
+    set(LLVM_HOMEBREW_PATH /usr/local/opt/llvm/bin)
+elseif(APPLE AND CMAKE_SYSTEM_PROCESSOR STREQUAL arm64)
+    set(LLVM_HOMEBREW_PATH /opt/homebrew/opt/llvm/bin)
+else()
+    set(LLVM_HOMEBREW_PATH "")
+endif()
 find_program(LLVM_CONFIG
     NAMES ${llvm_config_names}
-    PATHS ${LLVM_ROOT_DIR}/bin /usr/local/opt/llvm/bin /opt/homebrew/opt/llvm/bin NO_DEFAULT_PATH
+    PATHS ${LLVM_ROOT_DIR}/bin ${LLVM_HOMEBREW_PATH} NO_DEFAULT_PATH
     DOC "Path to llvm-config tool.")
 find_program(LLVM_CONFIG NAMES ${llvm_config_names})
 
