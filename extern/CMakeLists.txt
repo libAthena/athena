@@ -1,4 +1,7 @@
 add_subdirectory(lzokay)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  target_compile_options(lzokay PRIVATE -Wno-maybe-uninitialized)
+endif ()
 add_subdirectory(zlib)
 add_subdirectory(yaml)
 if(NOT TARGET fmt)
