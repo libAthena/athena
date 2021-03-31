@@ -3,8 +3,10 @@
 # across all dependencies.
 #
 
-# CMake 3.20: Don't transform add_custom_command DEPFILE for Ninja
-cmake_policy(SET CMP0116 OLD)
+if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.20")
+  # Don't transform add_custom_command DEPFILE for Ninja
+  cmake_policy(SET CMP0116 OLD)
+endif ()
 
 function(_atdna_gather_include_directories_impl target_name)
   get_target_property(target_dependencies ${target_name} INTERFACE_LINK_LIBRARIES)
