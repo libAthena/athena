@@ -156,7 +156,7 @@ template <typename First, typename... Rest>
 constexpr auto __FIRST_ARG__(First first, Rest...) { return first; }
 template <typename S, typename... Args>
 auto __make_args_checked__(const S& format_str, Args&&... args) {
-  return fmt::internal::make_args_checked<Args...>(format_str, std::forward<Args>(args)...);
+  return fmt::make_args_checked<Args...>(format_str, std::forward<Args>(args)...);
 }
 
 #ifndef NDEBUG

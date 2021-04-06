@@ -57,7 +57,7 @@ static void __defaultExceptionHandler(athena::error::Level level, const char* fi
     break;
   }
 
-  std::string msg = fmt::internal::vformat(fmt, args);
+  std::string msg = fmt::vformat(fmt, args);
   std::cerr << levelStr << " " << file << " " << function << "(" << line << "): " << msg << std::endl;
 }
 
