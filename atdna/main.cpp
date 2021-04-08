@@ -1250,6 +1250,9 @@ int main(int argc, const char** argv) {
       XSTR(ATDNA_ARGV0),
       "-fsyntax-only",
       "-std=c++2a",
+#if __x86_64__
+      "-mno-sse",
+#endif
       "-D__atdna__=1",
       "-Wno-expansion-to-defined",
       "-Wno-nullability-completeness",

@@ -18,7 +18,7 @@ using namespace std;
 #elif __ARM_NEON
 #include "simd_neon.hpp"
 #else
-namespace simd_abi {
+namespace athena::_simd::simd_abi {
 template <typename T>
 struct athena_native {};
 template <>

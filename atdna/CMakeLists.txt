@@ -4,17 +4,22 @@
 
 if(NOT CMAKE_CROSSCOMPILING)
 
-string(REPLACE -stdlib=libc++ "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-
 get_directory_property(ATDNA_DEFINES COMPILE_DEFINITIONS)
 list(REMOVE_ITEM ATDNA_DEFINES _GLIBCXX_DEBUG=1)
 set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${ATDNA_DEFINES}")
 
 # Find dependencies
-include(FindLLVM.cmake)
-if(NOT LLVM_FOUND)
-    message(STATUS "Unable to locate LLVM installation; skipping atdna")
+if(APPLE AND CMAKE_SYSTEM_PROCESSOR STREQUAL x86_64)
+  set(LLVM_HOMEBREW_PATH /usr/local/opt/llvm)
+elseif(APPLE AND CMAKE_SYSTEM_PROCESSOR STREQUAL arm64)
+  set(LLVM_HOMEBREW_PATH /opt/homebrew/opt/llvm)
 else()
+  set(LLVM_HOMEBREW_PATH "")
+endif()
+find_package(Clang REQUIRED PATHS ${LLVM_HOMEBREW_PATH})
+find_package(LLVM REQUIRED PATHS ${CLANG_INSTALL_PREFIX})
+
+if(LLVM_FOUND)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   option(ATDNA_DYNAMIC_LLVM "Use dynamic library targets when linking LLVM" ON)
@@ -22,90 +27,34 @@ else()
   option(ATDNA_DYNAMIC_LLVM "Use dynamic library targets when linking LLVM" OFF)
 endif()
 
-if(ATDNA_DYNAMIC_LLVM)
-  find_library(CLANGCPP_LIB clang-cpp HINTS "${LLVM_ROOT_DIR}/lib")
-  if (NOT CLANGCPP_LIB)
-    list(APPEND LLVM_LIBS
-         clangFrontend
-         clangTooling
-         clangDriver
-         clangSerialization
-         clangParse
-         clangSema
-         clangAnalysis
-         clangEdit
-         clangAST
-         clangLex
-         clangBasic
-         LLVM)
-  else()
-    list(APPEND LLVM_LIBS
-          clang-cpp
-          LLVM)
-  endif()
+list(APPEND CLANG_LIBS clangTooling)
+set(LLVM_LIBS "")
+
+if (ATDNA_DYNAMIC_LLVM)
+  list(APPEND LLVM_LIBS LLVM)
 else()
-  find_library(LLVMDEMANGLE_LIB LLVMDemangle HINTS "${LLVM_ROOT_DIR}/lib")
-  find_library(LLVMBINARYFORMAT_LIB LLVMBinaryFormat HINTS "${LLVM_ROOT_DIR}/lib")
-  if (NOT LLVMDEMANGLE_LIB)
-    set(LLVMDEMANGLE_LIB "")
-  endif()
-  if (NOT LLVMBINARYFORMAT_LIB)
-    set(LLVMBINARYFORMAT_LIB "")
-  endif()
-  find_library(CLANG_CPP_LIB clang-cpp HINTS "${LLVM_ROOT_DIR}/lib")
-  if (NOT CLANG_CPP_LIB)
-    list(APPEND CLANG_LIBS
-         clangFrontend
-         clangTooling
-         clangDriver
-         clangSerialization
-         clangParse
-         clangSema
-         clangAnalysis
-         clangEdit
-         clangAST
-         clangLex
-         clangBasic)
-  else()
-      list(APPEND CLANG_LIBS
-           clang-cpp)
-  endif()
+  function(recursive_remove_library target library)
+    get_target_property(target_dependencies ${target} INTERFACE_LINK_LIBRARIES)
+    foreach(dep ${target_dependencies})
+      if (NOT "${dep}" STREQUAL "${library}" AND TARGET "${dep}")
+        recursive_remove_library(${dep} ${library})
+      endif()
+    endforeach()
+    list(FIND target_dependencies "${library}" list_index)
+    if (${list_index} GREATER -1)
+      list(REMOVE_AT target_dependencies ${list_index})
+      set_property(TARGET ${target} PROPERTY INTERFACE_LINK_LIBRARIES "${target_dependencies}")
+    endif()
+  endfunction()
 
-  list(APPEND LLVM_LIBS
-       ${CLANG_LIBS}
-       LLVMCore
-       LLVMOption
-       LLVMMCParser
-       LLVMBitReader
-       ${LLVMBINARYFORMAT_LIB}
-       LLVMMC
-       LLVMProfileData
-       LLVMSupport
-       LLVMRemarks
-       LLVMBitStreamReader
-       ${LLVMDEMANGLE_LIB}
-       LLVMFrontendOpenMP)
-endif()
-
-string(FIND ${LLVM_VERSION_STRING} "svn" SVN_FILTER_IDX)
-if(NOT SVN_FILTER_IDX EQUAL -1)
-   string(SUBSTRING ${LLVM_VERSION_STRING} 0 ${SVN_FILTER_IDX} LLVM_VERSION_BASE)
-else()
-   set(LLVM_VERSION_BASE ${LLVM_VERSION_STRING})
-endif()
-
-set(CLANG_INCLUDE_DIR ${LLVM_LIBRARY_DIRS}/clang/${LLVM_VERSION_BASE}/include
-    CACHE PATH "Clang include dir" FORCE)
-
-if(UNIX)
-  list(APPEND PLAT_LIBS z pthread curses)
-  if (APPLE)
-    list(APPEND PLAT_LIBS dl)
-  elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    list(APPEND PLAT_LIBS dl tinfo)
-  endif()
-elseif(WIN32)
-  list(APPEND PLAT_LIBS Version)
+  # Remove LLVM dynamic library from Clang dependencies
+  foreach (lib ${CLANG_LIBS})
+    recursive_remove_library(${lib} LLVM)
+  endforeach ()
+  # Add LLVM static libs
+  list(APPEND LLVM_LIBS LLVMFrontendOpenMP LLVMOption)
+  # Hack around link order issues
+  target_link_libraries(clangAST INTERFACE LLVMFrontendOpenMP)
 endif()
 
 # Offer the user the choice of overriding the installation directories
@@ -135,14 +84,13 @@ endif()
 
 # ATDNA target
 add_executable(atdna main.cpp test.hpp ${PLAT_SRCS})
-target_link_libraries(atdna ${LLVM_LIBS} ${PLAT_LIBS})
+target_link_libraries(atdna ${CLANG_LIBS} ${LLVM_LIBS})
 target_compile_definitions(atdna PRIVATE
         INSTALL_PREFIX=${ABS_INSTALL_BIN_DIR}
         __STDC_LIMIT_MACROS=1
         __STDC_CONSTANT_MACROS=1
-        ATDNA_ARGV0=${LLVM_ROOT_DIR}/bin/clang-tool)
-target_include_directories(atdna PRIVATE ${LLVM_INCLUDE_DIRS})
-target_link_directories(atdna PRIVATE ${LLVM_LIBRARY_DIRS})
+        ATDNA_ARGV0=clang-tool)
+target_include_directories(atdna PRIVATE ${CLANG_INCLUDE_DIRS})
 # Clang 10.0.x headers currently broken with C++20
 set_property(TARGET atdna PROPERTY CXX_STANDARD 17)
 if(MSVC)
@@ -150,7 +98,7 @@ if(MSVC)
   target_compile_options(atdna PRIVATE /GR- /D_ITERATOR_DEBUG_LEVEL=0)
   set_property(TARGET atdna PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
 else()
-  target_compile_options(atdna PRIVATE -fno-rtti -Wno-error)
+  target_compile_options(atdna PRIVATE -fno-rtti -fvisibility=hidden -Wno-error)
 endif()
 
 # Define installs

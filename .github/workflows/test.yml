@@ -1,0 +1,121 @@
+name: Test
+on:
+  push:
+jobs:
+  test-linux:
+    name: Build Linux (GCC x86_64)
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y install cmake ninja-build ccache llvm-11-dev libclang-11-dev clang-11
+
+      - name: Configure ccache
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          key: ubuntu-20.04-gcc
+          max-size: 1G
+
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DClang_DIR=/usr/lib/cmake/clang-11 -DATDNA_DYNAMIC_LLVM=OFF \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            ..
+          cmake --build .
+
+      - name: Test
+        working-directory: build
+        run: ./atdna-test
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: atdna-linux-x86_64
+          path: |
+            build/atdna/atdna
+
+  test-linux-arm64:
+    name: Build Linux (GCC aarch64)
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - uses: uraimo/run-on-arch-action@v2.0.9
+        name: Build
+        id: build
+        with:
+          arch: aarch64
+          distro: ubuntu20.04
+          githubToken: ${{github.token}}
+          dockerRunArgs: |
+            --volume "${PWD}:/workspace"
+          install: |
+            apt-get -y update
+            apt-get -y install build-essential cmake ninja-build llvm-11-dev libclang-11-dev clang-11
+          run: |
+            mkdir /workspace/build
+            cd /workspace/build
+            cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+              -DClang_DIR=/usr/lib/cmake/clang-11 -DATDNA_DYNAMIC_LLVM=OFF ..
+            cmake --build .
+            ./atdna-test
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: atdna-linux-aarch64
+          path: |
+            build/atdna/atdna
+
+  test-macos:
+    name: Build macOS (AppleClang universal)
+    runs-on: macos-10.15
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          brew install ninja ccache
+          # universal clang+llvm from macports
+          curl -LSfs https://axiodl.com/files/clang-11-11.1.0_1.mpkg -o /tmp/clang-11-11.1.0_1.mpkg
+          sudo installer -pkg /tmp/clang-11-11.1.0_1.mpkg -target /
+
+      - name: Configure ccache
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          key: macos-10.15-appleclang
+          max-size: 1G
+
+      - name: Build
+        run: |
+          cmake -B build -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+            -DClang_DIR=/opt/local/libexec/llvm-11/lib/cmake/clang \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache .
+          cmake --build build
+          dsymutil build/atdna/atdna
+
+      - name: Test
+        working-directory: build
+        run: ./atdna-test
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: atdna-macos-x86_64
+          path: |
+            build/atdna/atdna
+            build/atdna/atdna.dSYM
