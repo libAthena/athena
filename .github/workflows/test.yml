@@ -166,7 +166,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: atdna-macos-x86_64
+          name: atdna-win32-x86_64
           path: |
             build/atdna/atdna.exe
             build/atdna/atdna.pdb
