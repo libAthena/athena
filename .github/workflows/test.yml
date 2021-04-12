@@ -37,7 +37,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: atdna-{{env.ATHENA_VERSION}}-linux-x86_64
+          name: atdna-${{env.ATHENA_VERSION}}-linux-x86_64
           path: |
             build/athena-*.tar.gz
 
@@ -62,15 +62,15 @@ jobs:
             apt-get -y update
             apt-get -y install build-essential cmake ninja-build llvm-11-dev libclang-11-dev clang-11
           run: |
-            cmake -B build -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-              -DClang_DIR=/usr/lib/cmake/clang-11 -DATDNA_DYNAMIC_LLVM=OFF ..
+            cmake -B build . -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+              -DClang_DIR=/usr/lib/cmake/clang-11 -DATDNA_DYNAMIC_LLVM=OFF
             cmake --build build --target package --verbose
             build/atdna-test
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: atdna-{{env.ATHENA_VERSION}}-linux-aarch64
+          name: atdna-${{env.ATHENA_VERSION}}-linux-aarch64
           path: |
             build/athena-*.tar.gz
 
@@ -99,9 +99,9 @@ jobs:
 
       - name: Configure CMake
         run: |
-          cmake -B build -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+          cmake -B build . -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
             -DLLVM_ROOT_DIR=/opt/local/libexec/llvm-11 \
-            -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache .
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
 
       - name: Build
         run: cmake --build build --target package --verbose
@@ -113,7 +113,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: athena-{{env.ATHENA_VERSION}}-macos-universal
+          name: athena-${{env.ATHENA_VERSION}}-macos-universal
           path: |
             build/athena-*.tar.gz
 
@@ -145,9 +145,9 @@ jobs:
       - name: Configure CMake
         run: |
           $workspace = $env:RUNNER_WORKSPACE -replace '\\', '/'
-          cmake -B build -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo `
+          cmake -B build . -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo `
             -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded `
-            -DLLVM_ROOT_DIR="$workspace/LLVM" .
+            -DLLVM_ROOT_DIR="$workspace/LLVM"
 
       - name: Build
         run: cmake --build build --target package --verbose
@@ -159,6 +159,6 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: athena-{{env.ATHENA_VERSION}}-win32-x86_64
+          name: athena-${{env.ATHENA_VERSION}}-win32-x86_64
           path: |
             build/athena-*.7z
