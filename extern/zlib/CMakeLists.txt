@@ -1,4 +1,9 @@
-if(NOT WIN32 AND NOT NX) # remove when specter/freetype is gone
+if (APPLE)
+# use toolchain zlib
+find_package(ZLIB REQUIRED)
+set(ZLIB_LIBRARIES ZLIB::ZLIB)
+else()
+if(NOT WIN32 AND NOT NX) # remove WIN32 when specter/freetype is gone
 find_library(ZLIB_LIB NAMES zlib z)
 endif()
 if(NOT ZLIB_LIB)
@@ -36,5 +41,7 @@ set(ZLIB_LIBRARIES z CACHE PATH "Zlib libraries" FORCE)
 set(ZLIB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH "Zlib include path" FORCE)
 else()
 set(ZLIB_LIBRARIES ${ZLIB_LIB} CACHE PATH "Zlib libraries" FORCE)
-find_path(ZLIB_INCLUDE_DIR zlib.h)
+find_path(ZLIB_INCLUDE_DIR zlib.h PATHS "${PNG_LIB}/../../include")
+message(STATUS "Using zlib at ${ZLIB_LIB}, include: ${ZLIB_INCLUDE_DIR}")
+endif()
 endif()
