@@ -17,12 +17,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Jackoalan / Antidote"
             VALUE "FileDescription", "ATDNA"
-            VALUE "FileVersion", "@ATHENA_MAJOR_VERSION@.@ATHENA_MINOR_VERSION@.@ATHENA_PATCH_VERSION@"
+            VALUE "FileVersion", "@ATHENA_VERSION@"
             VALUE "LegalCopyright", "Copyright (C) 2016 Jackoalan / Antidote"
             VALUE "InternalName", "atdna"
             VALUE "OriginalFilename", "atdna.exe"
             VALUE "ProductName", "ATDNA"
-            VALUE "ProductVersion", "@ATHENA_MAJOR_VERSION@.@ATHENA_MINOR_VERSION@.@ATHENA_PATCH_VERSION@"
+            VALUE "ProductVersion", "@ATHENA_VERSION@"
         END
     END
     BLOCK "VarFileInfo"

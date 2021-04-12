@@ -22,14 +22,13 @@ jobs:
           key: ubuntu-20.04-gcc
           max-size: 1G
 
-      - name: Build
+      - name: Configure CMake
         run: |
-          mkdir build
-          cd build
-          cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DClang_DIR=/usr/lib/cmake/clang-11 -DATDNA_DYNAMIC_LLVM=OFF \
-            -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            ..
-          cmake --build .
+          cmake -B build . -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DClang_DIR=/usr/lib/cmake/clang-11 \
+            -DATDNA_DYNAMIC_LLVM=OFF -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+      - name: Build
+        run: cmake --build build --target package --verbose
 
       - name: Test
         working-directory: build
@@ -38,9 +37,9 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: atdna-linux-x86_64
+          name: atdna-{{env.ATHENA_VERSION}}-linux-x86_64
           path: |
-            build/atdna/atdna
+            build/athena-*.tar.gz
 
   test-linux-arm64:
     name: Build Linux (GCC aarch64)
@@ -52,8 +51,7 @@ jobs:
           submodules: recursive
 
       - uses: uraimo/run-on-arch-action@v2.0.9
-        name: Build
-        id: build
+        name: Build & test
         with:
           arch: aarch64
           distro: ubuntu20.04
@@ -64,19 +62,17 @@ jobs:
             apt-get -y update
             apt-get -y install build-essential cmake ninja-build llvm-11-dev libclang-11-dev clang-11
           run: |
-            mkdir /workspace/build
-            cd /workspace/build
-            cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            cmake -B build -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
               -DClang_DIR=/usr/lib/cmake/clang-11 -DATDNA_DYNAMIC_LLVM=OFF ..
-            cmake --build .
-            ./atdna-test
+            cmake --build build --target package --verbose
+            build/atdna-test
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: atdna-linux-aarch64
+          name: atdna-{{env.ATHENA_VERSION}}-linux-aarch64
           path: |
-            build/atdna/atdna
+            build/athena-*.tar.gz
 
   test-macos:
     name: Build macOS (AppleClang universal)
@@ -108,9 +104,7 @@ jobs:
             -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache .
 
       - name: Build
-        run: |
-          cmake --build build
-          dsymutil build/atdna/atdna
+        run: cmake --build build --target package --verbose
 
       - name: Test
         working-directory: build
@@ -119,10 +113,9 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: atdna-macos-x86_64
+          name: athena-{{env.ATHENA_VERSION}}-macos-universal
           path: |
-            build/atdna/atdna
-            build/atdna/atdna.dSYM
+            build/athena-*.tar.gz
 
   test-windows-msvc:
     name: Build Windows (MSVC x86_64)
@@ -157,7 +150,7 @@ jobs:
             -DLLVM_ROOT_DIR="$workspace/LLVM" .
 
       - name: Build
-        run: cmake --build build
+        run: cmake --build build --target package --verbose
 
       - name: Test
         working-directory: build
@@ -166,7 +159,6 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: atdna-win32-x86_64
+          name: athena-{{env.ATHENA_VERSION}}-win32-x86_64
           path: |
-            build/atdna/atdna.exe
-            build/atdna/atdna.pdb
+            build/athena-*.7z

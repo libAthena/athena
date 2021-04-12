@@ -5,12 +5,65 @@ cmake_policy(SET CMP0091 NEW)
 ##################
 # Athena Version #
 ##################
+find_package(Git)
+if (GIT_FOUND)
+  # make sure version information gets re-run when the current Git HEAD changes
+  execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} rev-parse --git-path HEAD
+      OUTPUT_VARIABLE athena_git_head_filename
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${athena_git_head_filename}")
 
-set(ATHENA_MAJOR_VERSION 2)
-set(ATHENA_MINOR_VERSION 3)
-set(ATHENA_PATCH_VERSION 0)
-set(ATHENA_VERSION
-    ${ATHENA_MAJOR_VERSION}.${ATHENA_MINOR_VERSION}.${ATHENA_PATCH_VERSION})
+  execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} rev-parse --symbolic-full-name HEAD
+      OUTPUT_VARIABLE athena_git_head_symbolic
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+      COMMAND ${GIT_EXECUTABLE} rev-parse --git-path ${athena_git_head_symbolic}
+      OUTPUT_VARIABLE athena_git_head_symbolic_filename
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${athena_git_head_symbolic_filename}")
+
+  # defines ATHENA_WC_REVISION
+  execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
+      OUTPUT_VARIABLE ATHENA_WC_REVISION
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
+  # defines ATHENA_WC_DESCRIBE
+  execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} describe --tag --long --dirty
+      OUTPUT_VARIABLE ATHENA_WC_DESCRIBE
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  # remove hash (and trailing "-0" if needed) from description
+  string(REGEX REPLACE "(-0)?-[^-]+((-dirty)?)$" "\\2" ATHENA_WC_DESCRIBE "${ATHENA_WC_DESCRIBE}")
+
+  # defines ATHENA_WC_BRANCH
+  execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
+      OUTPUT_VARIABLE ATHENA_WC_BRANCH
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
+  # defines ATHENA_WC_DATE
+  execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} log -1 --format=%ad
+      OUTPUT_VARIABLE ATHENA_WC_DATE
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
+else ()
+  message(STATUS "Unable to find git, commit information will not be available")
+endif ()
+
+if (ATHENA_WC_DESCRIBE)
+  string(REGEX REPLACE "v?([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+).*" "\\1.\\2.\\3.\\4" ATHENA_VERSION_STRING "${ATHENA_WC_DESCRIBE}")
+  string(REGEX REPLACE "v?([0-9]+)\.([0-9]+)\.([0-9]+).*" "\\1.\\2.\\3" ATHENA_VERSION "${ATHENA_VERSION_STRING}")
+  string(REGEX REPLACE "v?([0-9]+)\.([0-9]+)\.([0-9]+).*" "\\1" ATHENA_MAJOR_VERSION "${ATHENA_VERSION_STRING}")
+  string(REGEX REPLACE "v?([0-9]+)\.([0-9]+)\.([0-9]+).*" "\\2" ATHENA_MINOR_VERSION "${ATHENA_VERSION_STRING}")
+  string(REGEX REPLACE "v?([0-9]+)\.([0-9]+)\.([0-9]+).*" "\\3" ATHENA_PATCH_VERSION "${ATHENA_VERSION_STRING}")
+else ()
+  set(ATHENA_WC_DESCRIBE "UNKNOWN-VERSION")
+  set(ATHENA_VERSION "0.0.0")
+  set(ATHENA_MAJOR_VERSION "0")
+  set(ATHENA_MINOR_VERSION "0")
+  set(ATHENA_PATCH_VERSION "0")
+endif ()
+
+# Add version information to CI environment variables
+if(DEFINED ENV{GITHUB_ENV})
+  file(APPEND "$ENV{GITHUB_ENV}" "ATHENA_VERSION=${ATHENA_WC_DESCRIBE}")
+endif()
 
 project(athena VERSION ${ATHENA_VERSION} LANGUAGES C CXX)
 
@@ -351,25 +404,37 @@ endif()
 
 include(InstallRequiredSystemLibraries)
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Athena")
-set(CPACK_PACKAGE_VENDOR "Antidote / Jackoalan")
+set(CPACK_PACKAGE_VENDOR "AxioDL Team")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_PACKAGE_VERSION_MAJOR ${ATHENA_MAJOR_VERSION})
 set(CPACK_PACKAGE_VERSION_MINOR ${ATHENA_MINOR_VERSION})
 set(CPACK_PACKAGE_VERSION_PATCH ${ATHENA_PATCH_VERSION})
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "athena")
-if(WIN32 AND NOT UNIX)
-    # There is a bug in NSI that does not handle full unix paths properly. Make
-    # sure there is at least one set of four (4) backlasshes.
-    set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "athena")
-    set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\AthenaNSIS.bmp")
-    set(CPACK_NSIS_MODIFY_PATH ON)
-    set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\Athena.ico")
-    set(CPACK_NSIS_MUI_UNIICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\Athena.ico")
-    set(CPACK_NSIS_INSTALLED_ICON_NAME "Uninstall.exe")
-    set(CPACK_NSIS_DISPLAY_NAME "Athena")
-    set(CPACK_NSIS_URL_INFO_ABOUT "http://libathena.github.io")
-    set(CPACK_NSIS_CONTACT "antidote.crk@gmail.com")
-endif()
+set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
+
+string(TOLOWER CMAKE_SYSTEM_PROCESSOR ARCHITECTURE_NAME)
+if (CMAKE_SYSTEM_NAME STREQUAL Windows)
+  set(SYSTEM_NAME win32)
+elseif (CMAKE_SYSTEM_NAME STREQUAL Darwin)
+  set(SYSTEM_NAME macos)
+  list(LENGTH CMAKE_OSX_ARCHITECTURES num_archs)
+  if (num_archs GREATER 1)
+    set(ARCHITECTURE_NAME universal)
+  elseif(num_archs EQUAL 1)
+    set(ARCHITECTURE_NAME ${CMAKE_OSX_ARCHITECTURES})
+  endif()
+elseif (CMAKE_SYSTEM_NAME STREQUAL Linux)
+  set(SYSTEM_NAME linux)
+else ()
+  set(SYSTEM_NAME "${CMAKE_SYSTEM_NAME}")
+endif ()
+set(CPACK_PACKAGE_FILE_NAME "athena-${ATHENA_WC_DESCRIBE}-${SYSTEM_NAME}-${ARCHITECTURE_NAME}")
+
+if (WIN32)
+  set(CPACK_GENERATOR 7Z)
+else ()
+  set(CPACK_GENERATOR TGZ)
+endif ()
 include(CPack)
 
