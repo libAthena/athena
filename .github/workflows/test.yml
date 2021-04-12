@@ -89,6 +89,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          brew update
           brew install ninja ccache
           # universal clang+llvm from macports
           curl -LSfs https://axiodl.com/files/clang-11-11.1.0_1.mpkg -o /tmp/clang-11-11.1.0_1.mpkg
@@ -100,11 +101,14 @@ jobs:
           key: macos-10.15-appleclang
           max-size: 1G
 
-      - name: Build
+      - name: Configure CMake
         run: |
           cmake -B build -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
             -DClang_DIR=/opt/local/libexec/llvm-11/lib/cmake/clang \
             -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache .
+
+      - name: Build
+        run: |
           cmake --build build
           dsymutil build/atdna/atdna
 
@@ -119,3 +123,53 @@ jobs:
           path: |
             build/atdna/atdna
             build/atdna/atdna.dSYM
+
+  test-windows-msvc:
+    name: Build Windows (MSVC x86_64)
+    runs-on: windows-2019
+    env:
+      LLVM_VERSION: 10.0.1
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Install LLVM
+        run: |
+          $TempDir = "$env:RUNNER_WORKSPACE\temp"
+          $Filename = "LLVM-$env:LLVM_VERSION-win64.exe"
+          New-Item -Path "$TempDir" -ItemType Directory -ea 0
+          (New-Object Net.WebClient).DownloadFile("https://axiodl.com/files/$Filename", "$TempDir\$Filename")
+          Start-Process "$TempDir\$Filename" -ArgumentList "/S /D=$env:RUNNER_WORKSPACE\LLVM" -Wait
+
+      - name: Install dependencies
+        run: choco install ninja
+
+      - name: Enable Visual Studio environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Create build directory
+        run: cmake -E make_directory ${{github.workspace}}/build
+
+      - name: Configure CMake
+        run: |
+          $workspace = $env:RUNNER_WORKSPACE -replace '\\', '/'
+          cmake -B build -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo `
+            -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded `
+            -DLLVM_ROOT_DIR="$workspace/LLVM" .
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Test
+        working-directory: build
+        run: ./atdna-test.exe
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: atdna-macos-x86_64
+          path: |
+            build/atdna/atdna.exe
+            build/atdna/atdna.pdb
