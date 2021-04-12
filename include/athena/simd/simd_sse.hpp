@@ -31,7 +31,7 @@ public:
   using storage_type = __m128;
   storage_type __storage_{};
   [[nodiscard]] inline float __get(size_t __index) const noexcept {
-#if _MSC_VER && !defined(__clang__)
+#if _MSC_VER
     alignas(16) std::array<float, 4> sse_data;
     _mm_store_ps(sse_data.data(), __storage_);
     return sse_data[__index];
@@ -40,7 +40,7 @@ public:
 #endif
   }
   inline void __set(size_t __index, float __val) noexcept {
-#if _MSC_VER && !defined(__clang__)
+#if _MSC_VER
     alignas(16) std::array<float, 4> sse_data;
     _mm_store_ps(sse_data.data(), __storage_);
     sse_data[__index] = __val;
@@ -210,7 +210,7 @@ public:
   using storage_type = std::array<__m128d, 2>;
   storage_type __storage_{};
   [[nodiscard]] inline double __get(size_t __index) const noexcept {
-#if _MSC_VER && !defined(__clang__)
+#if _MSC_VER
     alignas(16) std::array<double, 2> sse_data;
     _mm_store_pd(sse_data.data(), __storage_[__index / 2]);
     return sse_data[__index % 2];
@@ -219,13 +219,13 @@ public:
 #endif
   }
   inline void __set(size_t __index, double __val) noexcept {
-#if _MSC_VER && !defined(__clang__)
+#if _MSC_VER
     alignas(16) std::array<double, 2> sse_data;
     _mm_store_pd(sse_data.data(), __storage_[__index / 2]);
     sse_data[__index % 2] = __val;
     __storage_[__index / 2] = _mm_load_pd(sse_data.data());
 #else
-      __storage_[__index / 2][__index % 2] = __val;
+    __storage_[__index / 2][__index % 2] = __val;
 #endif
   }
   // Make GCC happy

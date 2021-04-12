@@ -18,4 +18,7 @@ PKGBUILD
 **/doc
 **/obj
 **/Makefile
-
+/build
+/out
+/cmake-build-*
+/.idea
