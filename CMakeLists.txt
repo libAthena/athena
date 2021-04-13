@@ -334,8 +334,8 @@ foreach(p LIB INCLUDE CMAKE)
 endforeach()
 
 # Define installs
-install(DIRECTORY include/ DESTINATION ${INSTALL_INCLUDE_DIR}/athena COMPONENT athena)
-install(DIRECTORY extern/fmt/include/fmt/ DESTINATION ${INSTALL_INCLUDE_DIR}/fmt COMPONENT athena)
+install(DIRECTORY include/athena DESTINATION ${INSTALL_INCLUDE_DIR} COMPONENT athena)
+install(DIRECTORY extern/fmt/include/fmt DESTINATION ${INSTALL_INCLUDE_DIR} COMPONENT athena)
 install(TARGETS athena-core fmt
         DESTINATION ${INSTALL_LIB_DIR} EXPORT AthenaTargets COMPONENT athena)
 if(WIN32 AND NOT CYGWIN)
