@@ -44,7 +44,7 @@ jobs:
           path: |
             build/athena-*.tar.gz
 
-  build-linux-arm64:
+  build-linux-aarch64:
     name: Build Linux (GCC aarch64)
     runs-on: ubuntu-20.04
     steps:
