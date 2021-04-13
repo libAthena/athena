@@ -186,7 +186,7 @@ add_library(athena-core
     include/athena/YAMLDocReader.hpp
     include/athena/YAMLDocWriter.hpp
     include/yaml.h
-    include/utf8proc.h
+    include/athena/utf8proc.h
 )
 if(WIN32)
     target_sources(athena-core PRIVATE

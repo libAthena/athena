@@ -11,7 +11,7 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
-#include "utf8proc.h"
+#include "athena/utf8proc.h"
 
 #ifdef _MSC_VER
 #include <functional>
