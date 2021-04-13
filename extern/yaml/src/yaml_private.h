@@ -1,7 +1,7 @@
 
 #include "config.h"
 
-#include <yaml.h>
+#include <athena/yaml.h>
 
 #include <assert.h>
 #include <limits.h>

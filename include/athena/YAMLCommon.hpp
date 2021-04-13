@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include <yaml.h>
+#include "yaml.h"
 
 #include "athena/Types.hpp"
 

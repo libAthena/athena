@@ -2,7 +2,7 @@
 # ATDNA Build #
 ###############
 
-if(NOT CMAKE_CROSSCOMPILING)
+if(NOT TARGET atdna AND NOT CMAKE_CROSSCOMPILING)
 
 get_directory_property(ATDNA_DEFINES COMPILE_DEFINITIONS)
 list(REMOVE_ITEM ATDNA_DEFINES _GLIBCXX_DEBUG=1)
@@ -149,6 +149,6 @@ endif()
 
 endif()
 
-include(atdnaHelpers.cmake)
-
 endif()
+
+include(atdnaHelpers.cmake)

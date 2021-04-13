@@ -185,7 +185,7 @@ add_library(athena-core
     include/athena/YAMLCommon.hpp
     include/athena/YAMLDocReader.hpp
     include/athena/YAMLDocWriter.hpp
-    include/yaml.h
+    include/athena/yaml.h
     include/athena/utf8proc.h
 )
 if(WIN32)
@@ -214,7 +214,7 @@ else()
         if(GEKKO OR NX)
             target_sources(athena-core PRIVATE
                 src/gekko_support.c
-                include/gekko_support.h
+                include/athena/gekko_support.h
             )
         endif()
     endif()
