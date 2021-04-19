@@ -1518,9 +1518,10 @@ public:
       const __simd_storage<_Up, __simd_abi<_StorageKind::_Array, __Unum_element>>& other) {
     std::copy(other.__native().begin(), other.__native().end(), __storage_.begin());
   }
-  template <typename... _T2, typename std::enable_if_t<sizeof...(_T2) == __num_element, int> = 0>
+  template <typename... _T2, std::enable_if_t<(... && std::is_convertible_v<_T2, _Tp>), bool> = true,
+            std::enable_if_t<sizeof...(_T2) == __num_element, bool> = true>
   constexpr __simd_storage(_T2... values) : __storage_{values...} {}
-  template <typename std::enable_if_t<__num_element == 4, int> = 0>
+  template <std::enable_if_t<__num_element == 4, bool> = true>
   constexpr __simd_storage(_Tp __rv) : __storage_{__rv, __rv, __rv, __rv} {}
   constexpr const storage_type& __native() const { return __storage_; }
 };
