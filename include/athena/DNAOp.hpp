@@ -147,18 +147,20 @@ struct BinarySize {
   }
   template <class T, Endian DNAE>
   static std::enable_if_t<std::is_array_v<T>> Do(const PropId& id, T& var, StreamT& s) {
-    for (auto& v : var)
-      BinarySize<PropOp>::Do<std::remove_reference_t<decltype(v)>, DNAE>(id, v, s);
+    for (auto& v : var) {
+      BinarySize<PropOp>::template Do<std::remove_reference_t<decltype(v)>, DNAE>(id, v, s);
+    }
   }
   template <class T, Endian DNAE>
   static void DoSize(const PropId& id, T& var, StreamT& s) {
-    BinarySize<PropOp>::Do<T, DNAE>(id, var, s);
+    BinarySize<PropOp>::template Do<T, DNAE>(id, var, s);
   }
   template <class T, class S, Endian DNAE>
   static std::enable_if_t<!std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
                                                        StreamT& s) {
-    for (T& v : vector)
-      BinarySize<PropOp>::Do<T, DNAE>(id, v, s);
+    for (T& v : vector) {
+      BinarySize<PropOp>::template Do<T, DNAE>(id, v, s);
+    }
   }
   template <class T, class S, Endian DNAE>
   static std::enable_if_t<std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
@@ -255,7 +257,7 @@ struct PropCount {
   }
   template <class T, Endian DNAE>
   static void DoSize(const PropId& id, T& var, StreamT& s) {
-    PropCount<PropOp>::Do<T, DNAE>(id, var, s);
+    PropCount<PropOp>::template Do<T, DNAE>(id, var, s);
   }
   template <class T, class S, Endian DNAE>
   static void Do(const PropId& id, std::vector<T>& vector, const S& count, StreamT& s) {
@@ -327,12 +329,13 @@ struct Read {
   }
   template <class T, Endian DNAE>
   static std::enable_if_t<std::is_array_v<T>> Do(const PropId& id, T& var, StreamT& s) {
-    for (auto& v : var)
-      Read<PropOp>::Do<std::remove_reference_t<decltype(v)>, DNAE>(id, v, s);
+    for (auto& v : var) {
+      Read<PropOp>::template Do<std::remove_reference_t<decltype(v)>, DNAE>(id, v, s);
+    }
   }
   template <class T, Endian DNAE>
   static void DoSize(const PropId& id, T& var, StreamT& s) {
-    Read<PropOp>::Do<T, DNAE>(id, var, s);
+    Read<PropOp>::template Do<T, DNAE>(id, var, s);
   }
   template <class T, class S, Endian DNAE>
   static std::enable_if_t<!std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
@@ -341,7 +344,7 @@ struct Read {
     vector.reserve(count);
     for (size_t i = 0; i < static_cast<size_t>(count); ++i) {
       vector.emplace_back();
-      Read<PropOp>::Do<T, DNAE>(id, vector.back(), r);
+      Read<PropOp>::template Do<T, DNAE>(id, vector.back(), r);
     }
   }
   template <class T, class S, Endian DNAE>
@@ -483,18 +486,20 @@ struct Write {
   }
   template <class T, Endian DNAE>
   static std::enable_if_t<std::is_array_v<T>> Do(const PropId& id, T& var, StreamT& s) {
-    for (auto& v : var)
-      Write<PropOp>::Do<std::remove_reference_t<decltype(v)>, DNAE>(id, v, s);
+    for (auto& v : var) {
+      Write<PropOp>::template Do<std::remove_reference_t<decltype(v)>, DNAE>(id, v, s);
+    }
   }
   template <class T, Endian DNAE>
   static void DoSize(const PropId& id, T& var, StreamT& s) {
-    Write<PropOp>::Do<T, DNAE>(id, var, s);
+    Write<PropOp>::template Do<T, DNAE>(id, var, s);
   }
   template <class T, class S, Endian DNAE>
   static std::enable_if_t<!std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
                                                        StreamT& w) {
-    for (T& v : vector)
-      Write<PropOp>::Do<T, DNAE>(id, v, w);
+    for (T& v : vector) {
+      Write<PropOp>::template Do<T, DNAE>(id, v, w);
+    }
   }
   template <class T, class S, Endian DNAE>
   static std::enable_if_t<std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
@@ -596,9 +601,11 @@ struct ReadYaml {
   template <class T, Endian DNAE>
   static std::enable_if_t<std::is_array_v<T>> Do(const PropId& id, T& var, StreamT& r) {
     size_t _count;
-    if (auto __v = r.enterSubVector(id.name, _count))
-      for (size_t i = 0; i < _count && i < std::extent_v<T>; ++i)
-        ReadYaml<PropOp>::Do<std::remove_reference_t<decltype(var[i])>, DNAE>({}, var[i], r);
+    if (auto __v = r.enterSubVector(id.name, _count)) {
+      for (size_t i = 0; i < _count && i < std::extent_v<T>; ++i) {
+        ReadYaml<PropOp>::template Do<std::remove_reference_t<decltype(var[i])>, DNAE>({}, var[i], r);
+      }
+    }
   }
   template <class T, Endian DNAE>
   static void DoSize(const PropId& id, T& var, StreamT& s) {
@@ -613,7 +620,7 @@ struct ReadYaml {
       vector.reserve(_count);
       for (size_t i = 0; i < _count; ++i) {
         vector.emplace_back();
-        ReadYaml<PropOp>::Do<T, DNAE>({}, vector.back(), r);
+        ReadYaml<PropOp>::template Do<T, DNAE>({}, vector.back(), r);
       }
     }
     /* Horrible reference abuse (but it works) */
@@ -712,9 +719,11 @@ struct WriteYaml {
   }
   template <class T, Endian DNAE>
   static std::enable_if_t<std::is_array_v<T>> Do(const PropId& id, T& var, StreamT& w) {
-    if (auto __v = w.enterSubVector(id.name))
-      for (auto& v : var)
-        WriteYaml<PropOp>::Do<std::remove_reference_t<decltype(v)>, DNAE>({}, v, w);
+    if (auto __v = w.enterSubVector(id.name)) {
+      for (auto& v : var) {
+        WriteYaml<PropOp>::template Do<std::remove_reference_t<decltype(v)>, DNAE>({}, v, w);
+      }
+    }
   }
   template <class T, Endian DNAE>
   static void DoSize(const PropId& id, T& var, StreamT& s) {
@@ -723,9 +732,11 @@ struct WriteYaml {
   template <class T, class S, Endian DNAE>
   static std::enable_if_t<!std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
                                                        StreamT& w) {
-    if (auto __v = w.enterSubVector(id.name))
-      for (T& v : vector)
-        WriteYaml<PropOp>::Do<T, DNAE>(id, v, w);
+    if (auto __v = w.enterSubVector(id.name)) {
+      for (T& v : vector) {
+        WriteYaml<PropOp>::template Do<T, DNAE>(id, v, w);
+      }
+    }
   }
   template <class T, class S, Endian DNAE>
   static std::enable_if_t<std::is_same_v<T, bool>> Do(const PropId& id, std::vector<T>& vector, const S& count,
