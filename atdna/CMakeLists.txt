@@ -64,11 +64,7 @@ endif()
 # Offer the user the choice of overriding the installation directories
 set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
 set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
-if(WIN32 AND NOT CYGWIN)
-  set(INSTALL_CMAKE_DIR cmake)
-else()
-  set(INSTALL_CMAKE_DIR lib/cmake/atdna)
-endif()
+set(INSTALL_CMAKE_DIR lib/cmake/atdna)
 
 # Make relative paths absolute (needed later on)
 foreach(p BIN INCLUDE CMAKE)

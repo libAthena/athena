@@ -317,11 +317,7 @@ set(ATHENA_ICO ${CMAKE_CURRENT_SOURCE_DIR}/Athena.ico)
 # Offer the user the choice of overriding the installation directories
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
 set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
-if(WIN32 AND NOT CYGWIN)
-  set(INSTALL_CMAKE_DIR cmake)
-else()
-  set(INSTALL_CMAKE_DIR lib/cmake/athena)
-endif()
+set(INSTALL_CMAKE_DIR lib/cmake/athena)
 
 # Make relative paths absolute (needed later on)
 foreach(p LIB INCLUDE CMAKE)
