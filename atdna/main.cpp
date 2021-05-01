@@ -86,7 +86,7 @@ static inline bool GetIntegerConstantExpr(const clang::Expr* expr, llvm::APSInt&
 }
 #else
 static inline bool GetIntegerConstantExpr(const clang::Expr* expr, llvm::APSInt& out, const clang::ASTContext& ctx) {
-  return expr->isIntegerConstantExpr(out, context);
+  return expr->isIntegerConstantExpr(out, ctx);
 }
 #endif
 
