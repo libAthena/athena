@@ -75,6 +75,21 @@ using StreamOut = llvm::raw_pwrite_stream;
 using StreamOut = llvm::raw_fd_ostream;
 #endif
 
+#if LLVM_VERSION_MAJOR >= 12
+static inline bool GetIntegerConstantExpr(const clang::Expr* expr, llvm::APSInt& out, const clang::ASTContext& ctx) {
+  const auto optional = expr->getIntegerConstantExpr(ctx);
+  if (optional) {
+    out = optional.getValue();
+    return true;
+  }
+  return false;
+}
+#else
+static inline bool GetIntegerConstantExpr(const clang::Expr* expr, llvm::APSInt& out, const clang::ASTContext& ctx) {
+  return expr->isIntegerConstantExpr(out, context);
+}
+#endif
+
 class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
   clang::ASTContext& context;
   StreamOut& fileOut;
@@ -595,7 +610,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
                   argExpr = static_cast<const clang::ParenExpr*>(argExpr)->getSubExpr();
                 llvm::raw_string_ostream strStream(sizeExprStr);
                 argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
-              } else if (expr->isIntegerConstantExpr(sizeLiteral, context)) {
+              } else if (GetIntegerConstantExpr(expr, sizeLiteral, context)) {
                 sizeExprStr = sizeLiteral.toString(10);
               }
             }
@@ -637,7 +652,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
                     argExpr = static_cast<const clang::ParenExpr*>(argExpr)->getSubExpr();
                   llvm::raw_string_ostream strStream2(sizeExprStr);
                   argExpr->printPretty(strStream2, nullptr, context.getPrintingPolicy());
-                } else if (expr->isIntegerConstantExpr(sizeLiteral, context)) {
+                } else if (GetIntegerConstantExpr(expr, sizeLiteral, context)) {
                   sizeExprStr = sizeLiteral.toString(10);
                 }
               } else if (idx == 1) {
@@ -684,7 +699,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
                     argExpr = static_cast<const clang::ParenExpr*>(argExpr)->getSubExpr();
                   llvm::raw_string_ostream strStream(offsetExprStr);
                   argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
-                } else if (expr->isIntegerConstantExpr(offsetLiteral, context)) {
+                } else if (GetIntegerConstantExpr(expr, offsetLiteral, context)) {
                   offsetExprStr = offsetLiteral.toString(10);
                 }
               } else {
@@ -736,7 +751,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           for (const clang::TemplateArgument& arg : *tsType) {
             if (arg.getKind() == clang::TemplateArgument::Expression) {
               const clang::Expr* expr = arg.getAsExpr();
-              if (!expr->isIntegerConstantExpr(align, context)) {
+              if (!GetIntegerConstantExpr(expr, align, context)) {
                 clang::DiagnosticBuilder diag = context.getDiagnostics().Report(expr->getExprLoc(), AthenaError);
                 diag.AddString("Unable to use non-constant align expression in Athena");
                 diag.AddSourceRange(clang::CharSourceRange(expr->getSourceRange(), true));
@@ -989,7 +1004,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
                   argExpr = static_cast<const clang::ParenExpr*>(argExpr)->getSubExpr();
                 llvm::raw_string_ostream strStream(sizeExprStr);
                 argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
-              } else if (expr->isIntegerConstantExpr(sizeLiteral, context)) {
+              } else if (GetIntegerConstantExpr(expr, sizeLiteral, context)) {
                 sizeExprStr = sizeLiteral.toString(10);
               }
             }
@@ -1032,7 +1047,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
                     argExpr = static_cast<const clang::ParenExpr*>(argExpr)->getSubExpr();
                   llvm::raw_string_ostream strStream2(sizeExprStr);
                   argExpr->printPretty(strStream2, nullptr, context.getPrintingPolicy());
-                } else if (expr->isIntegerConstantExpr(sizeLiteral, context)) {
+                } else if (GetIntegerConstantExpr(expr, sizeLiteral, context)) {
                   sizeExprStr = sizeLiteral.toString(10);
                 }
               } else if (idx == 1) {
@@ -1231,7 +1246,11 @@ public:
     std::unique_ptr<StreamOut> fileout;
     StreamOut* fileoutOld;
     if (OutputFilename.size())
+#if LLVM_VERSION_MAJOR >= 12
+      fileout = MakeStreamOut(compiler.createOutputFile(OutputFilename, false, true, true), fileoutOld);
+#else
       fileout = MakeStreamOut(compiler.createOutputFile(OutputFilename, false, true, "", "", true), fileoutOld);
+#endif
     else
       fileout = MakeStreamOut(compiler.createDefaultOutputFile(false, "a", "cpp"), fileoutOld);
     AthenaError =
