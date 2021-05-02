@@ -31,10 +31,11 @@ else()
   option(ATDNA_DYNAMIC_LLVM "Use dynamic library targets when linking LLVM" OFF)
 endif()
 
-list(APPEND CLANG_LIBS clangTooling)
+set(CLANG_LIBS "")
 set(LLVM_LIBS "")
 
 if (ATDNA_DYNAMIC_LLVM)
+  list(APPEND CLANG_LIBS clang-cpp)
   list(APPEND LLVM_LIBS LLVM)
 else()
   function(recursive_remove_library target library)
@@ -56,6 +57,7 @@ else()
     recursive_remove_library(${lib} LLVM)
   endforeach ()
   # Add LLVM static libs
+  list(APPEND CLANG_LIBS clangTooling)
   list(APPEND LLVM_LIBS LLVMFrontendOpenMP LLVMOption)
   # Hack around link order issues
   target_link_libraries(clangAST INTERFACE LLVMFrontendOpenMP)
@@ -89,7 +91,7 @@ target_compile_definitions(atdna PRIVATE
         INSTALL_PREFIX=${ABS_INSTALL_BIN_DIR}
         __STDC_LIMIT_MACROS=1
         __STDC_CONSTANT_MACROS=1
-        ATDNA_ARGV0=clang-tool)
+        ATDNA_ARGV0=${LLVM_TOOLS_BINARY_DIR}/clang-tool)
 target_include_directories(atdna PRIVATE ${CLANG_INCLUDE_DIRS})
 # Clang 10.0.x headers currently broken with C++20
 set_property(TARGET atdna PROPERTY CXX_STANDARD 17)
