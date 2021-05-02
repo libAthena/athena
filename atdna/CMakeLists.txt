@@ -87,11 +87,16 @@ endif()
 # ATDNA target
 add_executable(atdna main.cpp test.hpp ${PLAT_SRCS})
 target_link_libraries(atdna ${CLANG_LIBS} ${LLVM_LIBS})
+if (APPLE)
+  set(ATDNA_ARGV0 clang-tool)
+else ()
+  set(ATDNA_ARGV0 "${LLVM_TOOLS_BINARY_DIR}/clang-tool")
+endif ()
 target_compile_definitions(atdna PRIVATE
         INSTALL_PREFIX=${ABS_INSTALL_BIN_DIR}
         __STDC_LIMIT_MACROS=1
         __STDC_CONSTANT_MACROS=1
-        ATDNA_ARGV0=${LLVM_TOOLS_BINARY_DIR}/clang-tool)
+        ATDNA_ARGV0=${ATDNA_ARGV0})
 target_include_directories(atdna PRIVATE ${CLANG_INCLUDE_DIRS})
 # Clang 10.0.x headers currently broken with C++20
 set_property(TARGET atdna PROPERTY CXX_STANDARD 17)
