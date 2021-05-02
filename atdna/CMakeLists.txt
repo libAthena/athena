@@ -52,13 +52,13 @@ else()
     endif()
   endfunction()
 
+  # Add LLVM static libs
+  list(APPEND CLANG_LIBS clangTooling)
+  list(APPEND LLVM_LIBS LLVMFrontendOpenMP LLVMOption)
   # Remove LLVM dynamic library from Clang dependencies
   foreach (lib ${CLANG_LIBS})
     recursive_remove_library(${lib} LLVM)
   endforeach ()
-  # Add LLVM static libs
-  list(APPEND CLANG_LIBS clangTooling)
-  list(APPEND LLVM_LIBS LLVMFrontendOpenMP LLVMOption)
   # Hack around link order issues
   target_link_libraries(clangAST INTERFACE LLVMFrontendOpenMP)
 endif()
