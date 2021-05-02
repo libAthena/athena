@@ -8,26 +8,26 @@ cmake_policy(SET CMP0091 NEW)
 find_package(Git)
 if (GIT_FOUND)
   # make sure version information gets re-run when the current Git HEAD changes
-  execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} rev-parse --git-path HEAD
+  execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} rev-parse --git-path HEAD
       OUTPUT_VARIABLE athena_git_head_filename
       OUTPUT_STRIP_TRAILING_WHITESPACE)
   set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${athena_git_head_filename}")
 
-  execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} rev-parse --symbolic-full-name HEAD
+  execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} rev-parse --symbolic-full-name HEAD
       OUTPUT_VARIABLE athena_git_head_symbolic
       OUTPUT_STRIP_TRAILING_WHITESPACE)
-  execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       COMMAND ${GIT_EXECUTABLE} rev-parse --git-path ${athena_git_head_symbolic}
       OUTPUT_VARIABLE athena_git_head_symbolic_filename
       OUTPUT_STRIP_TRAILING_WHITESPACE)
   set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${athena_git_head_symbolic_filename}")
 
   # defines ATHENA_WC_REVISION
-  execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
+  execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
       OUTPUT_VARIABLE ATHENA_WC_REVISION
       OUTPUT_STRIP_TRAILING_WHITESPACE)
   # defines ATHENA_WC_DESCRIBE
-  execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} describe --tag --long --dirty --exclude latest
+  execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} describe --tag --long --dirty --exclude latest
       OUTPUT_VARIABLE ATHENA_WC_DESCRIBE
       OUTPUT_STRIP_TRAILING_WHITESPACE)
 
@@ -35,11 +35,11 @@ if (GIT_FOUND)
   string(REGEX REPLACE "(-0)?-[^-]+((-dirty)?)$" "\\2" ATHENA_WC_DESCRIBE "${ATHENA_WC_DESCRIBE}")
 
   # defines ATHENA_WC_BRANCH
-  execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
+  execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
       OUTPUT_VARIABLE ATHENA_WC_BRANCH
       OUTPUT_STRIP_TRAILING_WHITESPACE)
   # defines ATHENA_WC_DATE
-  execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} log -1 --format=%ad
+  execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} log -1 --format=%ad
       OUTPUT_VARIABLE ATHENA_WC_DATE
       OUTPUT_STRIP_TRAILING_WHITESPACE)
 else ()
@@ -61,8 +61,8 @@ else ()
 endif ()
 
 # Add version information to CI environment variables
-if(DEFINED ENV{GITHUB_ENV})
-  file(APPEND "$ENV{GITHUB_ENV}" "ATHENA_VERSION=${ATHENA_WC_DESCRIBE}")
+if(DEFINED ENV{GITHUB_ENV} AND CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  file(APPEND "$ENV{GITHUB_ENV}" "ATHENA_VERSION=${ATHENA_WC_DESCRIBE}\n")
 endif()
 
 project(athena VERSION ${ATHENA_VERSION} LANGUAGES C CXX)
