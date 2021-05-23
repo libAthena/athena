@@ -38,6 +38,8 @@ void FileReader::open() {
     return;
   }
 
+  m_fileSize = utility::fileSize(m_filename);
+
   // reset error
   m_hasError = false;
 }
@@ -112,7 +114,7 @@ atUint64 FileReader::length() const {
     return 0;
   }
 
-  return utility::fileSize(m_filename);
+  return m_fileSize;
 }
 
 atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len) {
@@ -126,11 +128,10 @@ atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len) {
   if (m_blockSize <= 0)
     return fread(buf, 1, len, m_fileHandle);
   else {
-    atUint64 fs = utility::fileSize(m_filename);
-    if (m_offset >= fs)
+    if (m_offset >= m_fileSize)
       return 0;
-    if (m_offset + len >= fs)
-      len = fs - m_offset;
+    if (m_offset + len >= m_fileSize)
+      len = m_fileSize - m_offset;
 
     size_t block = m_offset / m_blockSize;
     atUint64 cacheOffset = m_offset % m_blockSize;

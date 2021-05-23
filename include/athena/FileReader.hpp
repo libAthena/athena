@@ -40,8 +40,7 @@ public:
 
   void open();
   void close();
-  bool isOpen() const { return m_fileHandle != 0; }
-  bool save();
+  bool isOpen() const { return m_fileHandle != nullptr; }
   void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override;
   atUint64 position() const override;
   atUint64 length() const override;
@@ -64,6 +63,7 @@ protected:
   std::string m_filename;
 #endif
   HandleType m_fileHandle;
+  atUint64 m_fileSize;
   std::unique_ptr<atUint8[]> m_cacheData;
   atInt32 m_blockSize;
   atInt32 m_curBlock;
