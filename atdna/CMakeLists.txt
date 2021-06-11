@@ -101,12 +101,19 @@ target_include_directories(atdna PRIVATE ${CLANG_INCLUDE_DIRS})
 # Clang 10.0.x headers currently broken with C++20
 set_property(TARGET atdna PROPERTY CXX_STANDARD 17)
 if(MSVC)
-  if (NOT VCPKG_TOOLCHAIN)
+  if (VCPKG_TOOLCHAIN)
+    # Assumes static build of LLVM
+    if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+      set_property(TARGET atdna PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDebug")
+    else ()
+      set_property(TARGET atdna PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded")
+    endif ()
+  else ()
     # Allow linking against release-built LLVM libraries
     target_compile_options(atdna PRIVATE /GR- /D_ITERATOR_DEBUG_LEVEL=0)
     set_property(TARGET atdna PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
   endif ()
-else()
+else ()
   target_compile_options(atdna PRIVATE -fno-rtti -fvisibility=hidden -Wno-error)
 endif()
 
