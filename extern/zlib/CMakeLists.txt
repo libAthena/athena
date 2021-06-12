@@ -1,7 +1,8 @@
 if (APPLE)
 # use toolchain zlib
 find_package(ZLIB REQUIRED)
-set(ZLIB_LIBRARIES ZLIB::ZLIB CACHE STRING "zlib libraries" FORCE)
+add_library(z ALIAS ZLIB::ZLIB) # alias hack to allow use from global context
+set(ZLIB_LIBRARIES z CACHE STRING "zlib libraries" FORCE)
 else()
 if(NOT WIN32 AND NOT NX) # remove WIN32 when specter/freetype is gone
 find_library(ZLIB_LIB NAMES zlib z)
