@@ -22,3 +22,4 @@ PKGBUILD
 /out
 /cmake-build-*
 /.idea
+/.buildcache
