@@ -26,7 +26,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get -y update
-          sudo apt-get -y install cmake ninja-build llvm-11-dev libclang-11-dev clang-11
+          sudo apt-get -y install cmake ninja-build llvm-11-dev libclang-11-dev clang-11 zlib1g-dev
 
           # setup buildcache
           curl -LSfs https://github.com/mbitsnbites/buildcache/releases/download/$BUILDCACHE_VERSION/buildcache-linux.tar.gz | tar xz -C "$RUNNER_WORKSPACE"
@@ -84,7 +84,7 @@ jobs:
             --volume "${PWD}:/workspace"
           install: |
             apt-get -y update
-            apt-get -y install build-essential cmake ninja-build llvm-11-dev libclang-11-dev clang-11
+            apt-get -y install build-essential cmake ninja-build llvm-11-dev libclang-11-dev clang-11 zlib1g-dev
           run: |
             cmake -B build . -GNinja \
               -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo \
