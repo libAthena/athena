@@ -222,11 +222,11 @@ endif()
 
 target_include_directories(athena-core PUBLIC
    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-   $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIR}>
 )
 target_link_libraries(athena-core PUBLIC
     athena-libyaml
     fmt
+    ${ZLIB_LIBRARIES}
 )
 
 add_library(athena-sakura EXCLUDE_FROM_ALL
