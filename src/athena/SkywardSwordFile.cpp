@@ -19,7 +19,7 @@ void SkywardSwordFile::addQuest(athena::SkywardSwordQuest* q) {
 
 SkywardSwordQuest* SkywardSwordFile::quest(atUint32 id) {
   if (id > m_quests.size() - 1) {
-    atWarning("index out of range");
+    atWarning(fmt("index out of range"));
     return nullptr;
   }
 

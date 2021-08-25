@@ -16,7 +16,7 @@ Sakura::SpriteFile* SpriteFileReader::readFile() {
   atUint32 magic = readUint32();
 
   if (magic != Sakura::SpriteFile::Magic) {
-    atError("Not a valid Sakura Sprite container");
+    atError(fmt("Not a valid Sakura Sprite container"));
     return nullptr;
   }
 
@@ -24,7 +24,7 @@ Sakura::SpriteFile* SpriteFileReader::readFile() {
 
   // TODO: Make this more verbose
   if (version != Sakura::SpriteFile::Version) {
-    atError("Unsupported version");
+    atError(fmt("Unsupported version"));
     return nullptr;
   }
 
@@ -51,7 +51,7 @@ Sakura::SpriteFile* SpriteFileReader::readFile() {
   // which require data to be 32 byte aligned, or it causes some issues.
   // It's also convenient to have this, for later expansion.
   atUint32 reserved = readUint32();
-  UNUSED(reserved);
+  //UNUSED(reserved);
 
   // Next we have to load the textures
   // If we tried to add them one at a time to the sprite container
@@ -175,7 +175,7 @@ Sakura::SpriteFile* SpriteFileReader::readFile() {
 
 #endif
     else {
-      atError("Sprite names cannot be empty");
+      atError(fmt("Sprite names cannot be empty"));
       return nullptr;
     }
   }

@@ -246,6 +246,11 @@ add_library(athena-sakura EXCLUDE_FROM_ALL
     include/athena/SpritePart.hpp
 )
 
+target_include_directories(athena-sakura PUBLIC
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/extern/fmt/include>
+)
+
 add_library(athena-wiisave EXCLUDE_FROM_ALL
     src/athena/WiiBanner.cpp
     src/athena/WiiFile.cpp
@@ -275,6 +280,10 @@ if(NOT MSVC AND ${CMAKE_SYSTEM_PROCESSOR} STREQUAL x86_64)
     set_source_files_properties(src/aes.cpp PROPERTIES COMPILE_FLAGS -maes)
 endif()
 
+target_include_directories(athena-wiisave PUBLIC
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/extern/fmt/include>
+)
 
 add_library(athena-zelda EXCLUDE_FROM_ALL
     src/athena/ALTTPFile.cpp
@@ -309,6 +318,11 @@ add_library(athena-zelda EXCLUDE_FROM_ALL
     include/athena/ZQuestFile.hpp
     include/athena/ZQuestFileReader.hpp
     include/athena/ZQuestFileWriter.hpp
+)
+
+target_include_directories(athena-zelda PUBLIC
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/extern/fmt/include>
 )
 
 # Icon

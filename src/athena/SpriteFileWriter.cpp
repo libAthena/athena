@@ -11,7 +11,7 @@ SpriteFileWriter::SpriteFileWriter(std::string_view filepath) : MemoryCopyWriter
 
 void SpriteFileWriter::writeFile(Sakura::SpriteFile* file) {
   if (!file) {
-    atError("file cannot be NULL");
+    atError(fmt("file cannot be NULL"));
     return;
   }
 
