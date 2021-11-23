@@ -51,7 +51,8 @@ static llvm::cl::list<std::string> IncludeSearchPaths("I", llvm::cl::desc("Heade
 
 static llvm::cl::list<std::string> SystemIncludeSearchPaths("isystem", llvm::cl::desc("System Header search path"));
 
-static llvm::cl::list<std::string> StandardCXXLibISystem("stdlib++-isystem", llvm::cl::desc("Standard C++ library search path"));
+static llvm::cl::list<std::string> StandardCXXLibISystem("stdlib++-isystem",
+                                                         llvm::cl::desc("Standard C++ library search path"));
 
 static llvm::cl::opt<std::string> StandardCXXLib("stdlib", llvm::cl::desc("Standard C++ library"));
 
@@ -188,7 +189,11 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
     for (clang::Attr* attr : field->attrs()) {
       if (clang::AnnotateAttr* annot = clang::dyn_cast_or_null<clang::AnnotateAttr>(attr)) {
         llvm::StringRef textRef = annot->getAnnotation();
-        if (textRef.startswith_lower("rcrc32=")) {
+#if LLVM_VERSION_MAJOR >= 13
+        if (textRef.startswith_insensitive("rcrc32=")) {
+#else
+        if (textRef.startswith_lower("rcrc32="))
+#endif
           unsigned long num = strtoul(textRef.data() + 7, nullptr, 16);
           std::string tmpS;
           llvm::raw_string_ostream s(tmpS);
@@ -256,7 +261,11 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           if (needsComma)
             qualType += ", ";
           llvm::raw_string_ostream OS(qualType);
+#if LLVM_VERSION_MAJOR >= 13
+          arg.print(context.getPrintingPolicy(), OS, false);
+#else
           arg.print(context.getPrintingPolicy(), OS);
+#endif
           needsComma = true;
         }
         qualType += '>';
@@ -279,7 +288,10 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
               templateStmt += ", ";
               qualType += ", ";
             }
-            templateStmt += nonTypeParm->getType().getAsString(context.getPrintingPolicy()).append(1, ' ').append(nonTypeParm->getName().str());
+            templateStmt += nonTypeParm->getType()
+                                .getAsString(context.getPrintingPolicy())
+                                .append(1, ' ')
+                                .append(nonTypeParm->getName().str());
             qualType += nonTypeParm->getName();
             needsComma = true;
           }
@@ -326,7 +338,11 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
             if (needsComma)
               specializations.back().first += ", ";
             llvm::raw_string_ostream OS(specializations.back().first);
-            arg.print(context.getPrintingPolicy(), OS);
+#if LLVM_VERSION_MAJOR >= 13
+            arg.print(context.getPrintingPolicy(), OS, false);
+#else
+          arg.print(context.getPrintingPolicy(), OS, false);
+#endif
             needsComma = true;
           }
           specializations.back().first += '>';
@@ -342,7 +358,11 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
         for (clang::Attr* attr : rec->attrs()) {
           if (clang::AnnotateAttr* annot = clang::dyn_cast_or_null<clang::AnnotateAttr>(attr)) {
             llvm::StringRef textRef = annot->getAnnotation();
+#if LLVM_VERSION_MAJOR >= 13
+            if (textRef.startswith_insensitive("specparms=")) {
+#else
             if (textRef.startswith_lower("specparms=")) {
+#endif
               llvm::SmallVector<llvm::StringRef, 16> specParms;
               textRef.substr(10).split(specParms, ',');
               int numTuples = int(specParms.size()) / numParms;
@@ -611,7 +631,13 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
                 llvm::raw_string_ostream strStream(sizeExprStr);
                 argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
               } else if (GetIntegerConstantExpr(expr, sizeLiteral, context)) {
+#if LLVM_VERSION_MAJOR >= 13
+                llvm::SmallVector<char> strStream;
+                sizeLiteral.toString(strStream, 10);
+                sizeExprStr = std::string(strStream.begin(), strStream.end());
+#else
                 sizeExprStr = sizeLiteral.toString(10);
+#endif
               }
             }
           }
@@ -653,7 +679,13 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
                   llvm::raw_string_ostream strStream2(sizeExprStr);
                   argExpr->printPretty(strStream2, nullptr, context.getPrintingPolicy());
                 } else if (GetIntegerConstantExpr(expr, sizeLiteral, context)) {
+#if LLVM_VERSION_MAJOR >= 13
+                  llvm::SmallVector<char> strStream;
+                  sizeLiteral.toString(strStream, 10);
+                  sizeExprStr = std::string(strStream.begin(), strStream.end());
+#else
                   sizeExprStr = sizeLiteral.toString(10);
+#endif
                 }
               } else if (idx == 1) {
                 defaultEndian = false;
@@ -700,7 +732,13 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
                   llvm::raw_string_ostream strStream(offsetExprStr);
                   argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
                 } else if (GetIntegerConstantExpr(expr, offsetLiteral, context)) {
+#if LLVM_VERSION_MAJOR >= 13
+                  llvm::SmallVector<char> strStream;
+                  offsetLiteral.toString(strStream, 10);
+                  offsetExprStr = std::string(strStream.begin(), strStream.end());
+#else
                   offsetExprStr = offsetLiteral.toString(10);
+#endif
                 }
               } else {
                 clang::APValue result;
@@ -765,8 +803,15 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
 
           const int64_t alignVal = align.getSExtValue();
           if (alignVal) {
+#if LLVM_VERSION_MAJOR >= 13
+            llvm::SmallVector<char> alignStream;
+            align.toString(alignStream, 10, true);
+            outputNodes.emplace_back(NodeType::DoAlign, std::move(fieldName),
+                                     "<Op>("s.append(alignStream.begin(), alignStream.end()).append(", s)"), false);
+#else
             outputNodes.emplace_back(NodeType::DoAlign, std::move(fieldName),
                                      "<Op>("s.append(align.toString(10, true)).append(", s)"), false);
+#endif
           }
         } else {
           const clang::NamedDecl* nd = tsDecl->getTemplatedDecl();
@@ -1005,7 +1050,13 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
                 llvm::raw_string_ostream strStream(sizeExprStr);
                 argExpr->printPretty(strStream, nullptr, context.getPrintingPolicy());
               } else if (GetIntegerConstantExpr(expr, sizeLiteral, context)) {
+#if LLVM_VERSION_MAJOR >= 13
+                llvm::SmallVector<char> strStream;
+                sizeLiteral.toString(strStream, 10);
+                sizeExprStr = std::string(strStream.begin(), strStream.end());
+#else
                 sizeExprStr = sizeLiteral.toString(10);
+#endif
               }
             }
           }
@@ -1048,7 +1099,13 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
                   llvm::raw_string_ostream strStream2(sizeExprStr);
                   argExpr->printPretty(strStream2, nullptr, context.getPrintingPolicy());
                 } else if (GetIntegerConstantExpr(expr, sizeLiteral, context)) {
+#if LLVM_VERSION_MAJOR >= 13
+                  llvm::SmallVector<char> strStream;
+                  sizeLiteral.toString(strStream, 10);
+                  sizeExprStr = std::string(strStream.begin(), strStream.end());
+#else
                   sizeExprStr = sizeLiteral.toString(10);
+#endif
                 }
               } else if (idx == 1) {
                 llvm::raw_string_ostream strStream(endianExprStr);
@@ -1266,17 +1323,17 @@ int main(int argc, const char** argv) {
     llvm::cl::PrintHelpMessage();
 
   std::vector<std::string> args = {
-      XSTR(ATDNA_ARGV0),
-      "-fsyntax-only",
-      "-std=c++2a",
+    XSTR(ATDNA_ARGV0),
+    "-fsyntax-only",
+    "-std=c++2a",
 #if __x86_64__
-      "-mno-sse",
+    "-mno-sse",
 #endif
-      "-D__atdna__=1",
-      "-Wno-expansion-to-defined",
-      "-Wno-nullability-completeness",
-      "-Werror=shadow-field",
-      "-I" XSTR(INSTALL_PREFIX) "/include/Athena",
+    "-D__atdna__=1",
+    "-Wno-expansion-to-defined",
+    "-Wno-nullability-completeness",
+    "-Werror=shadow-field",
+    "-I" XSTR(INSTALL_PREFIX) "/include/Athena",
   };
   for (int a = 1; a < argc; ++a) {
     args.emplace_back(argv[a]);
