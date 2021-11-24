@@ -190,10 +190,11 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
       if (clang::AnnotateAttr* annot = clang::dyn_cast_or_null<clang::AnnotateAttr>(attr)) {
         llvm::StringRef textRef = annot->getAnnotation();
 #if LLVM_VERSION_MAJOR >= 13
-        if (textRef.startswith_insensitive("rcrc32=")) {
+        if (textRef.startswith_insensitive("rcrc32="))
 #else
         if (textRef.startswith_lower("rcrc32="))
 #endif
+        {
           unsigned long num = strtoul(textRef.data() + 7, nullptr, 16);
           std::string tmpS;
           llvm::raw_string_ostream s(tmpS);
@@ -341,7 +342,7 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
 #if LLVM_VERSION_MAJOR >= 13
             arg.print(context.getPrintingPolicy(), OS, false);
 #else
-          arg.print(context.getPrintingPolicy(), OS, false);
+            arg.print(context.getPrintingPolicy(), OS);
 #endif
             needsComma = true;
           }
@@ -359,10 +360,11 @@ class ATDNAEmitVisitor : public clang::RecursiveASTVisitor<ATDNAEmitVisitor> {
           if (clang::AnnotateAttr* annot = clang::dyn_cast_or_null<clang::AnnotateAttr>(attr)) {
             llvm::StringRef textRef = annot->getAnnotation();
 #if LLVM_VERSION_MAJOR >= 13
-            if (textRef.startswith_insensitive("specparms=")) {
+            if (textRef.startswith_insensitive("specparms="))
 #else
-            if (textRef.startswith_lower("specparms=")) {
+            if (textRef.startswith_lower("specparms="))
 #endif
+            {
               llvm::SmallVector<llvm::StringRef, 16> specParms;
               textRef.substr(10).split(specParms, ',');
               int numTuples = int(specParms.size()) / numParms;
