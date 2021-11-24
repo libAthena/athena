@@ -23,24 +23,26 @@ else ()
       trees.c
       uncompr.c
       zutil.c
-      crc32.h
-      deflate.h
-      gzguts.h
-      inffast.h
-      inffixed.h
-      inflate.h
-      inftrees.h
-      trees.h
-      zconf.h
-      zlib.h
-      zutil.h)
+      include/crc32.h
+      include/deflate.h
+      include/gzguts.h
+      include/inffast.h
+      include/inffixed.h
+      include/inflate.h
+      include/inftrees.h
+      include/trees.h
+      include/zconf.h
+      include/zlib.h
+      include/zutil.h)
   if (WIN32 AND NOT UNIX)
-    install(FILES zconf.h zlib.h DESTINATION include COMPONENT zlib)
+    install(FILES include/zconf.h include/zlib.h DESTINATION include COMPONENT zlib)
     install(TARGETS z DESTINATION lib COMPONENT zlib)
   else ()
     target_compile_options(z PRIVATE -Wno-implicit-fallthrough)
   endif ()
-  target_include_directories(z INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+  target_include_directories(z PUBLIC
+          $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+          $<INSTALL_INTERFACE:include>)
   set(ZLIB_LIBRARIES z CACHE STRING "zlib libraries" FORCE)
   set(ATHENA_ZLIB YES CACHE BOOL "Using built-in zlib" FORCE)
 endif ()
