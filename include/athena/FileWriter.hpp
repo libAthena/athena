@@ -1,13 +1,6 @@
 #pragma once
 
-#ifdef _WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
-#else
 #include <cstdio>
-#endif
 
 #include "athena/IStreamWriter.hpp"
 #include "athena/Types.hpp"
@@ -43,7 +36,7 @@ public:
   void writeUBytes(const atUint8* data, atUint64 len) override;
 
 #ifdef _WIN32
-  using HandleType = HANDLE;
+  using HandleType = void*;
 #else
   using HandleType = FILE*;
 #endif

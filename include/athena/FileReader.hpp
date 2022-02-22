@@ -1,14 +1,6 @@
 #pragma once
 
-#if _WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
-#else
 #include <cstdio>
-#endif
-
 #include <memory>
 #include <string>
 
@@ -49,7 +41,7 @@ public:
   void setCacheSize(const atInt32 blockSize);
 
 #if _WIN32
-  using HandleType = HANDLE;
+  using HandleType = void*;
 #else
   using HandleType = FILE*;
 #endif
