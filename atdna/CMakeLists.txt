@@ -115,6 +115,11 @@ if(MSVC)
   endif ()
 else ()
   target_compile_options(atdna PRIVATE -fno-rtti -fvisibility=hidden -Wno-error)
+  if (METAFORCE_ASAN AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    # On Linux, we need to compile without ASAN; explicitly disable it here
+    target_compile_options(atdna PRIVATE -stdlib=libstdc++ -fno-sanitize=address)
+    target_link_options(atdna PRIVATE -stdlib=libstdc++ -fno-sanitize=address)
+  endif ()
 endif()
 
 # Define installs
