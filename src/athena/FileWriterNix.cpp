@@ -3,7 +3,7 @@
 #if defined(__APPLE__) || defined(__FreeBSD__)
 #include "osx_largefilewrapper.h"
 #elif defined(GEKKO) || defined(__SWITCH__)
-#include "gekko_support.h"
+#include "athena/gekko_support.h"
 #include "osx_largefilewrapper.h"
 #endif
 
