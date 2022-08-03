@@ -1,8 +1,8 @@
 # - Config file for the atdna package
- 
+
 # Compute paths
 get_filename_component(ATDNA_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
- 
+
 # Our library dependencies (contains definitions for IMPORTED targets)
 if(NOT TARGET atdna AND NOT atdna_BINARY_DIR)
   include("${ATDNA_CMAKE_DIR}/atdnaTargets.cmake")
@@ -26,7 +26,9 @@ function(atdna out)
   get_property(incdirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
   set(inccli "")
   foreach(dir ${incdirs})
-    list(APPEND inccli "-I${dir}")
+    if (NOT dir MATCHES ".*emscripten.*")
+      list(APPEND inccli "-I${dir}")
+    endif()
   endforeach()
 
   # Get local defines for atdna

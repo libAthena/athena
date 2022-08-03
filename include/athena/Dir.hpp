@@ -4,6 +4,8 @@
 
 #if _WIN32
 using mode_t = int;
+#else
+#include <sys/stat.h>
 #endif
 
 namespace athena {

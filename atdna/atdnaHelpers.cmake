@@ -92,6 +92,18 @@ function(atdna out incdirs cdefs)
     list(APPEND ins_impdeps ${CMAKE_CURRENT_SOURCE_DIR}/${arg})
   endforeach()
 
+  set(inccli "")
+  foreach(dir ${incdirs})
+    if (NOT dir MATCHES ".*emscripten.*")
+      list(APPEND inccli "-I${dir}")
+    endif()
+  endforeach()
+
+  set(cdefcli "")
+  foreach(def ${cdefs})
+    list(APPEND cdefcli "-D${def}")
+  endforeach()
+
   # MS extra
   unset(extraargs)
   if(MSVC)
@@ -124,8 +136,7 @@ function(atdna out incdirs cdefs)
     # Use Ninja's DEPFILE parser in cooperation with atdna
     add_custom_command(OUTPUT ${out} COMMAND $<TARGET_FILE:atdna>
                        ARGS ${extraargs} -o ${out_rel} -MD -MT ${out_rel} -MF ${out_rel}.d
-                       "$<$<BOOL:${incdirs}>:-I$<JOIN:${incdirs},;-I>>"
-                       "$<$<BOOL:${cdefs}>:-D$<JOIN:${cdefs},;-D>>"
+                       ${inccli} ${cdefcli}
                        "-I${athena_SOURCE_DIR}/include" ${ins}
                        DEPENDS atdna ${ins} IMPLICIT_DEPENDS ${ins_impdeps}
                        DEPFILE "${CMAKE_CURRENT_BINARY_DIR}/${out}.d"
@@ -136,8 +147,7 @@ function(atdna out incdirs cdefs)
     # Use CMake's built-in dependency scanner for makefile targets
     add_custom_command(OUTPUT ${out} COMMAND $<TARGET_FILE:atdna>
                        ARGS ${extraargs} -o ${out_rel}
-                       "$<$<BOOL:${incdirs}>:-I$<JOIN:${incdirs},;-I>>"
-                       "$<$<BOOL:${cdefs}>:-D$<JOIN:${cdefs},;-D>>"
+                       ${inccli} ${cdefcli}
                        "-I${athena_SOURCE_DIR}/include" ${ins}
                        DEPENDS atdna ${ins} IMPLICIT_DEPENDS ${ins_impdeps}
                        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
