@@ -54,10 +54,10 @@ else()
 
   # Add LLVM static libs
   list(APPEND CLANG_LIBS clangTooling)
-  if (LLVM_VERSION_MAJOR GREATER_EQUAL 15)
-    list(APPEND CLANG_LIBS clangSupport)
-  endif ()
   list(APPEND LLVM_LIBS LLVMFrontendOpenMP LLVMOption)
+  if (LLVM_VERSION_MAJOR GREATER_EQUAL 15)
+    list(APPEND LLVM_LIBS LLVMWindowsDriver)
+  endif ()
   # Remove LLVM dynamic library from Clang dependencies
   foreach (lib ${CLANG_LIBS})
     recursive_remove_library(${lib} LLVM)
