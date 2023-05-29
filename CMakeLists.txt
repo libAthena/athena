@@ -69,6 +69,11 @@ endif()
 
 project(athena VERSION ${ATHENA_VERSION} LANGUAGES C CXX)
 
+if (ATDNA_STATIC)
+  set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+  add_link_options(-static)
+endif ()
+
 if (MSVC)
   # Shaddup MSVC
   add_compile_definitions(UNICODE=1 _UNICODE=1 __SSE__=1

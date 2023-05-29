@@ -12,7 +12,9 @@ env:
 jobs:
   build-linux-x86_64:
     name: Build Linux (GCC x86_64)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    container:
+      image: alpine:3.17
 
     env:
       LLVM_MAJOR: 15
@@ -26,33 +28,19 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get -y update
-          sudo apt-get -y install cmake ninja-build llvm-$LLVM_MAJOR-dev libclang-$LLVM_MAJOR-dev clang-$LLVM_MAJOR zlib1g-dev
-
-          # setup buildcache
-          curl -LSfs https://github.com/mbitsnbites/buildcache/releases/download/$BUILDCACHE_VERSION/buildcache-linux.tar.gz | tar xz -C "$RUNNER_WORKSPACE"
-          echo "$RUNNER_WORKSPACE"/buildcache/bin >> $GITHUB_PATH
-
-      - name: Restore buildcache
-        uses: actions/cache@v2
-        with:
-          path: ${{env.BUILDCACHE_DIR}}
-          key: buildcache-ubuntu-20.04-x86_64
+          apk add --no-cache git cmake ninja clang-dev clang-static llvm-dev llvm-static musl-dev \
+            gcc g++ libxml2-dev libxml2-static zlib-dev zlib-static
 
       - name: Configure CMake
         run: |
           cmake -B build . -GNinja \
             -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo \
-            -DATDNA_DYNAMIC_LLVM=OFF \
-            -DClang_DIR:PATH=/usr/lib/cmake/clang-$LLVM_MAJOR \
-            -DCMAKE_C_COMPILER_LAUNCHER:STRING=buildcache \
-            -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=buildcache
+            -DATDNA_DYNAMIC_LLVM:BOOL=OFF \
+            -DATDNA_STATIC:BOOL=ON \
+            -DCMAKE_CXX_FLAGS:STRING="-I/usr/lib/llvm15/include -Dstat64=stat"
 
       - name: Build
         run: cmake --build build --target package --verbose
-
-      - name: Print buildcache stats
-        run: buildcache -s
 
       - name: Test
         working-directory: build
@@ -82,18 +70,19 @@ jobs:
         name: Build & test
         with:
           arch: aarch64
-          distro: ubuntu20.04
+          base_image: --platform=linux/arm64/v8 alpine:3.17
           githubToken: ${{github.token}}
           dockerRunArgs: |
             --volume "${PWD}:/workspace"
           install: |
-            apt-get -y update
-            apt-get -y install build-essential cmake ninja-build llvm-$LLVM_MAJOR-dev libclang-$LLVM_MAJOR-dev clang-$LLVM_MAJOR zlib1g-dev
+            apk add --no-cache git cmake ninja clang-dev clang-static llvm-dev llvm-static musl-dev \
+              gcc g++ libxml2-dev libxml2-static zlib-dev zlib-static
           run: |
             cmake -B build . -GNinja \
               -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo \
               -DATDNA_DYNAMIC_LLVM:BOOL=OFF \
-              -DClang_DIR:PATH=/usr/lib/cmake/clang-$LLVM_MAJOR
+              -DATDNA_STATIC:BOOL=ON \
+              -DCMAKE_CXX_FLAGS:STRING="-I/usr/lib/llvm15/include -Dstat64=stat"
             cmake --build build --target package --verbose
             build/atdna-test
 

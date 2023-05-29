@@ -73,6 +73,13 @@ else()
     list(TRANSFORM target_dependencies REPLACE ".*diaguids.*" "${DIASDK_GUIDS_LIBRARY}")
     set_property(TARGET LLVMDebugInfoPDB PROPERTY INTERFACE_LINK_LIBRARIES "${target_dependencies}")
   endif ()
+
+  # Allow static linking against zstd
+  if (ATDNA_STATIC)
+    get_target_property(target_dependencies LLVMSupport INTERFACE_LINK_LIBRARIES)
+    list(TRANSFORM target_dependencies REPLACE "zstd::libzstd_shared" "zstd::libzstd_static")
+    set_property(TARGET LLVMSupport PROPERTY INTERFACE_LINK_LIBRARIES "${target_dependencies}")
+  endif ()
 endif()
 
 # Offer the user the choice of overriding the installation directories
