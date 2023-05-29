@@ -144,6 +144,7 @@ jobs:
           cmake -B build . -GNinja \
             -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo \
             -DCMAKE_OSX_ARCHITECTURES:STRING="x86_64;arm64" \
+            -DCMAKE_PREFIX_PATH:PATH=/opt/local \
             -DLLVM_ROOT_DIR:PATH=/opt/local/libexec/llvm-$LLVM_MAJOR \
             -DCMAKE_C_COMPILER_LAUNCHER:STRING=buildcache \
             -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=buildcache
