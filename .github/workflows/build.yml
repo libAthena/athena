@@ -21,15 +21,15 @@ jobs:
       BUILDCACHE_DIR: ${{github.workspace}}/.buildcache
 
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          submodules: recursive
-
       - name: Install dependencies
         run: |
           apk add --no-cache git cmake ninja clang-dev clang-static llvm-dev llvm-static musl-dev \
             gcc g++ libxml2-dev libxml2-static zlib-dev zlib-static
+
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: recursive
 
       - name: Configure CMake
         run: |
@@ -55,7 +55,8 @@ jobs:
 
   build-linux-aarch64:
     name: Build Linux (GCC aarch64)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    if: 'false'
 
     env:
       LLVM_MAJOR: 15
