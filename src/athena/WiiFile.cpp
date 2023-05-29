@@ -78,7 +78,7 @@ bool WiiFile::isFile() const { return (m_type == WiiFile::File); }
 
 void WiiFile::addChild(WiiFile* file) {
   if (!isDirectory()) {
-    atWarning("{} is not a directory", filename());
+    atWarning(fmt("{} is not a directory"), filename());
     return;
   }
 

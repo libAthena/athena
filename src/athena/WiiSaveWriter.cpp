@@ -30,7 +30,7 @@ WiiSaveWriter::WiiSaveWriter(const std::string& filename) : MemoryCopyWriter(fil
 bool WiiSaveWriter::writeSave(WiiSave* save, atUint8* macAddress, atUint32 ngId, atUint8* ngPriv, atUint8* ngSig,
                               atUint32 ngKeyId, const std::string& filepath) {
   if (!save) {
-    atError("save cannot be NULL");
+    atError(fmt("save cannot be NULL"));
     return false;
   }
 

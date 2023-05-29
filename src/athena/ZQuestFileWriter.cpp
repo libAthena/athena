@@ -11,7 +11,7 @@ ZQuestFileWriter::ZQuestFileWriter(const std::string& filename) : MemoryCopyWrit
 
 void ZQuestFileWriter::write(ZQuestFile* quest, bool compress) {
   if (!quest) {
-    atError("quest cannot be NULL");
+    atError(fmt("quest cannot be NULL"));
     return;
   }
 

@@ -9,7 +9,7 @@ ALTTPFile::ALTTPFile(std::vector<ALTTPQuest*> quests, std::vector<ALTTPQuest*> b
 
 void ALTTPFile::setQuest(atUint32 id, ALTTPQuest* val) {
   if (id > m_quests.size()) {
-    atWarning("index out of range");
+    atWarning(fmt("index out of range"));
     return;
   }
 
@@ -19,7 +19,7 @@ void ALTTPFile::setQuest(atUint32 id, ALTTPQuest* val) {
 std::vector<ALTTPQuest*> ALTTPFile::questList() const { return m_quests; }
 ALTTPQuest* ALTTPFile::quest(atUint32 id) const {
   if (id > m_quests.size()) {
-    atWarning("index out of range");
+    atWarning(fmt("index out of range"));
     return nullptr;
   }
 

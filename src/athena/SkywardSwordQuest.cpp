@@ -43,7 +43,7 @@ atUint8* SkywardSwordQuest::skipData() const { return m_skipData.get(); }
 
 void SkywardSwordQuest::setPlayerName(const std::string& name) {
   if (name.length() > 8)
-    atDebug("WARNING: name cannot be greater than 8 characters, automatically truncating");
+    atDebug(fmt("WARNING: name cannot be greater than 8 characters, automatically truncating"));
 
   const utf8proc_uint8_t* buf = reinterpret_cast<const utf8proc_uint8_t*>(name.c_str());
   for (atUint32 i = 0; i < 8; i++) {
@@ -57,7 +57,7 @@ void SkywardSwordQuest::setPlayerName(const std::string& name) {
     utf8proc_int32_t wc;
     utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
     if (len < 0) {
-      atError("invalid UTF-8 string");
+      atError(fmt("invalid UTF-8 string"));
       return;
     }
     buf += len;
