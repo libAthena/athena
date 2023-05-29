@@ -106,7 +106,7 @@ jobs:
 
   build-macos-universal:
     name: Build macOS (AppleClang universal)
-    runs-on: macos-latest
+    runs-on: macos-13
 
     env:
       LLVM_MAJOR: 15
@@ -167,7 +167,7 @@ jobs:
 
   build-win32-amd64:
     name: Build Windows (MSVC AMD64)
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     env:
       LLVM_VERSION: 15.0.7
