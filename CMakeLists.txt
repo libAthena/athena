@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10 FATAL_ERROR) # because of c++17
 # Set MSVC runtime library flags from CMAKE_MSVC_RUNTIME_LIBRARY
 cmake_policy(SET CMP0091 NEW)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 ##################
 # Athena Version #
 ##################

@@ -64,6 +64,15 @@ else()
   endforeach ()
   # Hack around link order issues
   target_link_libraries(clangAST INTERFACE LLVMFrontendOpenMP)
+
+  # Fix linking diaguids on Windows
+  if (WIN32 AND TARGET LLVMDebugInfoPDB)
+    find_package(DiaSDK REQUIRED)
+
+    get_target_property(target_dependencies LLVMDebugInfoPDB INTERFACE_LINK_LIBRARIES)
+    list(TRANSFORM target_dependencies REPLACE ".*diaguids.*" "${DIASDK_GUIDS_LIBRARY}")
+    set_property(TARGET LLVMDebugInfoPDB PROPERTY INTERFACE_LINK_LIBRARIES "${target_dependencies}")
+  endif ()
 endif()
 
 # Offer the user the choice of overriding the installation directories
