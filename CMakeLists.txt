@@ -156,6 +156,7 @@ add_library(athena-core
     src/LZ77/LZBase.cpp
     src/athena/FileInfo.cpp
     src/athena/Dir.cpp
+    src/sha1.cpp
 
     include/athena/IStream.hpp
     include/athena/IStreamReader.hpp
@@ -183,6 +184,7 @@ add_library(athena-core
     include/athena/YAMLDocWriter.hpp
     include/athena/yaml.h
     include/athena/utf8proc.h
+    include/sha1.h
 )
 if(WIN32)
     target_sources(athena-core PRIVATE
@@ -254,7 +256,6 @@ add_library(athena-wiisave EXCLUDE_FROM_ALL
     src/bn.cpp
     src/ec.cpp
     src/md5.cpp
-    src/sha1.cpp
     src/aes.cpp
 
     include/athena/WiiBanner.hpp
@@ -267,7 +268,6 @@ add_library(athena-wiisave EXCLUDE_FROM_ALL
     include/bn.hpp
     include/ec.hpp
     include/md5.h
-    include/sha1.h
 )
 target_include_directories(athena-wiisave PUBLIC
         include
