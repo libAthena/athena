@@ -171,7 +171,7 @@ Socket::EResult Socket::accept(Socket& remoteSocketOut, sockaddr_in& fromAddress
 #else
     EResult res = LastWSAError();
     if (res == EResult::Error)
-      atError(FMT_STRING("Failed to accept incoming connection"));
+      atError("Failed to accept incoming connection");
 #endif
     return res;
   }
