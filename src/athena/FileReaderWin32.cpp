@@ -42,7 +42,7 @@ void FileReader::open() {
     m_fileHandle = 0;
     std::string _filename = filename();
     if (m_globalErr)
-      atError(FMT_STRING("File not found '{}'"), _filename);
+      atError("File not found '{}'") _filename);
     setError();
     return;
   }
@@ -54,7 +54,7 @@ void FileReader::open() {
 void FileReader::close() {
   if (!m_fileHandle) {
     if (m_globalErr)
-      atError(FMT_STRING("Cannot close an unopened stream"));
+      atError("Cannot close an unopened stream");
     setError();
     return;
   }
@@ -85,7 +85,7 @@ void FileReader::seek(atInt64 pos, SeekOrigin origin) {
     if (m_offset > length()) {
       oldOff = m_offset;
       if (m_globalErr)
-        atError(FMT_STRING("Unable to seek in file"));
+        atError("Unable to seek in file");
       setError();
       return;
     }
@@ -104,7 +104,7 @@ void FileReader::seek(atInt64 pos, SeekOrigin origin) {
     li.QuadPart = pos;
     if (!SetFilePointerEx(m_fileHandle, li, nullptr, DWORD(origin))) {
       if (m_globalErr)
-        atError(FMT_STRING("Unable to seek in file"));
+        atError("Unable to seek in file");
       setError();
     }
   }
@@ -113,7 +113,7 @@ void FileReader::seek(atInt64 pos, SeekOrigin origin) {
 atUint64 FileReader::position() const {
   if (!isOpen()) {
     if (m_globalErr)
-      atError(FMT_STRING("File not open"));
+      atError("File not open");
     return 0;
   }
 
@@ -130,7 +130,7 @@ atUint64 FileReader::position() const {
 atUint64 FileReader::length() const {
   if (!isOpen()) {
     if (m_globalErr)
-      atError(FMT_STRING("File not open"));
+      atError("File not open");
     return 0;
   }
 
@@ -142,7 +142,7 @@ atUint64 FileReader::length() const {
 atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len) {
   if (!isOpen()) {
     if (m_globalErr)
-      atError(FMT_STRING("File not open for reading"));
+      atError("File not open for reading");
     setError();
     return 0;
   }
