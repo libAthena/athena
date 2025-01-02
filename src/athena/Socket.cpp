@@ -16,6 +16,7 @@
 #endif
 
 #include "athena/Global.hpp"
+#include <string.h>
 
 namespace athena::net {
 
@@ -84,7 +85,7 @@ bool Socket::openSocket() {
 
   m_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (m_socket == -1) {
-    atError(FMT_STRING("Can't allocate socket"));
+    atError("Can't allocate socket");
     return false;
   }
 
@@ -138,13 +139,13 @@ bool Socket::openAndListen(const IPAddress& address, uint32_t port) {
   sockaddr_in addr = createAddress(address.toInteger(), port);
   if (bind(m_socket, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) == -1) {
     /* Not likely to happen, but... */
-    atError(FMT_STRING("Failed to bind listener socket to port {}"), port);
+    atError("Failed to bind listener socket to port {}", port);
     return false;
   }
 
   if (::listen(m_socket, 0) == -1) {
     /* Oops, socket is deaf */
-    atError(FMT_STRING("Failed to listen to port {}"), port);
+    atError("Failed to listen to port {}", port);
     return false;
   }
 
@@ -163,8 +164,10 @@ Socket::EResult Socket::accept(Socket& remoteSocketOut, sockaddr_in& fromAddress
   if (remoteSocket == -1) {
 #ifndef _WIN32
     EResult res = (errno == EAGAIN) ? EResult::Busy : EResult::Error;
-    if (res == EResult::Error)
-      atError(FMT_STRING("Failed to accept incoming connection: {}"), strerror(errno));
+    if (res == EResult::Error) {
+      auto err = strerror(errno);
+      atError("Failed to accept incoming connection: {}", err);
+    }
 #else
     EResult res = LastWSAError();
     if (res == EResult::Error)

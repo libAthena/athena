@@ -51,7 +51,6 @@ Sakura::SpriteFile* SpriteFileReader::readFile() {
   // which require data to be 32 byte aligned, or it causes some issues.
   // It's also convenient to have this, for later expansion.
   atUint32 reserved = readUint32();
-  UNUSED(reserved);
 
   // Next we have to load the textures
   // If we tried to add them one at a time to the sprite container

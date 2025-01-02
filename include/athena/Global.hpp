@@ -3,7 +3,7 @@
 #include <ostream>
 #include "athena/Types.hpp"
 
-#include <fmt/format.h>
+#include <format>
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4996)
@@ -17,11 +17,11 @@
 #include <sys/stat.h>
 
 #if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)
-#define S_ISREG(m) (((m)&S_IFMT) == S_IFREG)
+#define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
 #endif
 
 #if !defined(S_ISDIR) && defined(S_IFMT) && defined(S_IFDIR)
-#define S_ISDIR(m) (((m)&S_IFMT) == S_IFDIR)
+#define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
 #endif
 
 #if !defined(S_ISLNK)
@@ -118,27 +118,10 @@ enum class SeekOrigin { Begin, Current, End };
 
 enum class Endian { Little, Big };
 
-namespace io {
-template <Endian DNAE>
-struct DNA;
-template <Endian DNAE>
-struct DNAV;
-
-template <class T>
-using __IsDNARecord = std::disjunction<std::is_base_of<DNA<Endian::Big>, T>, std::is_base_of<DNA<Endian::Little>, T>>;
-template <class T>
-constexpr bool __IsDNARecord_v = __IsDNARecord<T>::value;
-
-template <class T>
-using __IsDNAVRecord =
-    std::disjunction<std::is_base_of<DNAV<Endian::Big>, T>, std::is_base_of<DNAV<Endian::Little>, T>>;
-template <class T>
-constexpr bool __IsDNAVRecord_v = __IsDNAVRecord<T>::value;
-} // namespace io
 } // namespace athena
 
 typedef void (*atEXCEPTION_HANDLER)(athena::error::Level level, const char* /*file*/, const char*, int /*line*/,
-                                    fmt::string_view fmt, fmt::format_args args);
+                                    std::string_view fmt, std::format_args args);
 
 atEXCEPTION_HANDLER atGetExceptionHandler();
 /**
@@ -150,54 +133,47 @@ void atSetExceptionHandler(atEXCEPTION_HANDLER func);
 std::ostream& operator<<(std::ostream& os, const athena::SeekOrigin& origin);
 std::ostream& operator<<(std::ostream& os, const athena::Endian& endian);
 
-template <typename First, typename... Rest>
-constexpr auto __FIRST_ARG__(First first, Rest...) { return first; }
-template <typename S, typename... Args>
-auto __make_args_checked__(const S& format_str, Args&&... args) {
-  return fmt::make_args_checked<Args...>(format_str, std::forward<Args>(args)...);
-}
-
 #ifndef NDEBUG
-#define atDebug(...)                                                                                                   \
+#define atDebug(fmt, ...)                                                                                              \
   do {                                                                                                                 \
     atEXCEPTION_HANDLER __handler = atGetExceptionHandler();                                                           \
     if (__handler)                                                                                                     \
-      __handler(athena::error::Level::Message, __FILE__, AT_PRETTY_FUNCTION, __LINE__, __FIRST_ARG__(__VA_ARGS__),     \
-                __make_args_checked__(__VA_ARGS__));                                                                   \
+      __handler(athena::error::Level::Message, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt,                            \
+                std::make_format_args(__VA_ARGS__));                                                                   \
   } while (0)
 #else
 #define atDebug(...)
 #endif
 
-#define atMessage(...)                                                                                                 \
+#define atMessage(fmt, ...)                                                                                            \
   do {                                                                                                                 \
     atEXCEPTION_HANDLER __handler = atGetExceptionHandler();                                                           \
     if (__handler)                                                                                                     \
-      __handler(athena::error::Level::Message, __FILE__, AT_PRETTY_FUNCTION, __LINE__, __FIRST_ARG__(__VA_ARGS__),     \
-                __make_args_checked__(__VA_ARGS__));                                                                   \
+      __handler(athena::error::Level::Message, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt,                            \
+                std::make_format_args(__VA_ARGS__));                                                                   \
   } while (0)
 
-#define atWarning(...)                                                                                                 \
+#define atWarning(fmt, ...)                                                                                            \
   do {                                                                                                                 \
     atEXCEPTION_HANDLER __handler = atGetExceptionHandler();                                                           \
     if (__handler) {                                                                                                   \
-      __handler(athena::error::Level::Warning, __FILE__, AT_PRETTY_FUNCTION, __LINE__, __FIRST_ARG__(__VA_ARGS__),     \
-                __make_args_checked__(__VA_ARGS__));                                                                   \
+      __handler(athena::error::Level::Warning, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt,                            \
+                std::make_format_args(__VA_ARGS__));                                                                   \
     }                                                                                                                  \
   } while (0)
 
-#define atError(...)                                                                                                   \
+#define atError(fmt, ...)                                                                                              \
   do {                                                                                                                 \
     atEXCEPTION_HANDLER __handler = atGetExceptionHandler();                                                           \
     if (__handler)                                                                                                     \
-      __handler(athena::error::Level::Error, __FILE__, AT_PRETTY_FUNCTION, __LINE__, __FIRST_ARG__(__VA_ARGS__),       \
-                __make_args_checked__(__VA_ARGS__));                                                                   \
+      __handler(athena::error::Level::Error, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt,                              \
+                std::make_format_args(__VA_ARGS__));                                                                   \
   } while (0)
 
-#define atFatal(...)                                                                                                   \
+#define atFatal(fmt, ...)                                                                                              \
   do {                                                                                                                 \
     atEXCEPTION_HANDLER __handler = atGetExceptionHandler();                                                           \
     if (__handler)                                                                                                     \
-      __handler(athena::error::Level::Fatal, __FILE__, AT_PRETTY_FUNCTION, __LINE__, __FIRST_ARG__(__VA_ARGS__),       \
-                __make_args_checked__(__VA_ARGS__));                                                                   \
+      __handler(athena::error::Level::Fatal, __FILE__, AT_PRETTY_FUNCTION, __LINE__, fmt,                              \
+                std::make_format_args(__VA_ARGS__));                                                                   \
   } while (0)

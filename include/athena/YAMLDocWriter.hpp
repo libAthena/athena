@@ -47,12 +47,6 @@ public:
 
   RecordRAII enterSubRecord(std::string_view name = {});
 
-  template <class T>
-  void enumerate(std::string_view name, T& record, std::enable_if_t<__IsDNARecord_v<T>>* = nullptr) {
-    if (auto rec = enterSubRecord(name))
-      record.write(*this);
-  }
-
   class VectorRAII {
     friend class YAMLDocWriter;
     YAMLDocWriter* m_w = nullptr;

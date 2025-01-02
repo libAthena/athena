@@ -156,7 +156,6 @@ add_library(athena-core
     src/LZ77/LZBase.cpp
     src/athena/FileInfo.cpp
     src/athena/Dir.cpp
-    src/athena/DNAYaml.cpp
 
     include/athena/IStream.hpp
     include/athena/IStreamReader.hpp
@@ -179,9 +178,6 @@ add_library(athena-core
     include/LZ77/LZType11.hpp
     include/athena/FileInfo.hpp
     include/athena/Dir.hpp
-    include/athena/DNA.hpp
-    include/athena/DNAYaml.hpp
-    include/athena/DNAOp.hpp
     include/athena/YAMLCommon.hpp
     include/athena/YAMLDocReader.hpp
     include/athena/YAMLDocWriter.hpp
@@ -225,7 +221,6 @@ target_include_directories(athena-core PUBLIC
 )
 target_link_libraries(athena-core PUBLIC
     athena-libyaml
-    fmt
     $<BUILD_INTERFACE:${ZLIB_LIBRARIES}>
 )
 
@@ -244,6 +239,9 @@ add_library(athena-sakura EXCLUDE_FROM_ALL
     include/athena/SpriteFileWriter.hpp
     include/athena/SpriteFrame.hpp
     include/athena/SpritePart.hpp
+)
+target_include_directories(athena-sakura PUBLIC
+    include
 )
 
 add_library(athena-wiisave EXCLUDE_FROM_ALL
@@ -270,6 +268,9 @@ add_library(athena-wiisave EXCLUDE_FROM_ALL
     include/ec.hpp
     include/md5.h
     include/sha1.h
+)
+target_include_directories(athena-wiisave PUBLIC
+        include
 )
 if(NOT MSVC AND ${CMAKE_SYSTEM_PROCESSOR} STREQUAL x86_64)
     set_source_files_properties(src/aes.cpp PROPERTIES COMPILE_FLAGS -maes)
@@ -310,7 +311,9 @@ add_library(athena-zelda EXCLUDE_FROM_ALL
     include/athena/ZQuestFileReader.hpp
     include/athena/ZQuestFileWriter.hpp
 )
-
+target_include_directories(athena-zelda PUBLIC
+        include
+)
 # Icon
 set(ATHENA_ICO ${CMAKE_CURRENT_SOURCE_DIR}/Athena.ico)
 
@@ -331,12 +334,9 @@ endforeach()
 
 # Define installs
 install(DIRECTORY include/athena DESTINATION ${INSTALL_INCLUDE_DIR} COMPONENT athena)
-install(DIRECTORY extern/fmt/include/fmt DESTINATION ${INSTALL_INCLUDE_DIR} COMPONENT athena)
 if (ATHENA_ZLIB)
   set(ZLIB_INSTALL ${ZLIB_LIBRARIES})
 endif ()
-install(TARGETS athena-core fmt ${ZLIB_INSTALL}
-    DESTINATION ${INSTALL_LIB_DIR} EXPORT AthenaTargets COMPONENT athena)
 if(WIN32 AND NOT CYGWIN)
 install(FILES Athena.ico DESTINATION ${INSTALL_LIB_DIR} COMPONENT athena)
 elseif(UNIX)
@@ -349,9 +349,6 @@ endif()
 ##################
 # Package Export #
 ##################
-
-# Add all targets to the build-tree export set
-export(TARGETS athena-core athena-libyaml fmt ${ZLIB_LIBRARIES} FILE "${CMAKE_CURRENT_BINARY_DIR}/AthenaTargets.cmake")
 
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)
@@ -379,23 +376,6 @@ install(FILES
 
 # Install the export set for use with the install-tree
 install(EXPORT AthenaTargets DESTINATION ${INSTALL_CMAKE_DIR} COMPONENT athena)
-
-################
-# atdna import #
-################
-
-add_subdirectory(atdna)
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-# Test target
-add_executable(atdna-test atdna/test.cpp atdna/test.hpp)
-if (CMAKE_SYSTEM_NAME STREQUAL "Switch")
-    set_target_properties(atdna-test PROPERTIES SUFFIX ".elf")
-    target_link_libraries(atdna-test athena-core nx)
-else()
-    target_link_libraries(atdna-test athena-core)
-endif()
-target_atdna(atdna-test atdna_test.cpp atdna/test.hpp)
-endif()
 
 #########
 # CPack #

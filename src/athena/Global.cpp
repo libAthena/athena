@@ -35,7 +35,7 @@ std::ostream& operator<<(std::ostream& os, const athena::Endian& endian) {
 }
 
 static void __defaultExceptionHandler(athena::error::Level level, const char* file, const char* function, int line,
-                                      fmt::string_view fmt, fmt::format_args args) {
+                                      std::string_view fmt, std::format_args args) {
   std::string levelStr;
   switch (level) {
   case athena::error::Level::Warning:
@@ -51,7 +51,7 @@ static void __defaultExceptionHandler(athena::error::Level level, const char* fi
     break;
   }
 
-  std::string msg = fmt::vformat(fmt, args);
+  std::string msg = std::vformat(fmt, args);
   std::cerr << levelStr << " " << file << " " << function << "(" << line << "): " << msg << std::endl;
 }
 

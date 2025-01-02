@@ -2,7 +2,3 @@
 	path = extern/lzokay
 	url = https://github.com/AxioDL/lzokay.git
 	branch = master
-[submodule "extern/fmt"]
-	path = extern/fmt
-	url = https://github.com/fmtlib/fmt
-	branch = master

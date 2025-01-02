@@ -78,7 +78,7 @@ static void square(atUint8* d, const atUint8* a) {
 
 static void itInvert(atUint8* d, const atUint8* a, const atUint8* b, atUint32 j) {
   atUint8 t[30];
-  memcpy(t, a, 32);
+  memcpy(t, a, 30);
   while (j--) {
     square(d, t);
     memcpy(t, d, 30);

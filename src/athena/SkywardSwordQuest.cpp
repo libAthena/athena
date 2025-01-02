@@ -1,7 +1,7 @@
 #include "athena/SkywardSwordQuest.hpp"
 #include "athena/Checksums.hpp"
 #include "athena/Utility.hpp"
-#include "utf8proc.h"
+#include "athena/utf8proc.h"
 #include <sstream>
 
 namespace athena {
