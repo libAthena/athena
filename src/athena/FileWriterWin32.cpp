@@ -48,8 +48,10 @@ void FileWriter::open(bool overwrite) {
 
   if (m_fileHandle == INVALID_HANDLE_VALUE) {
     m_fileHandle = 0;
-    if (m_globalErr)
-      atError("Unable to open file '{}'", filename());
+    if (m_globalErr) {
+      auto _filename = filename();
+      atError("Unable to open file '{}'", _filename);
+    }
     setError();
     return;
   }
