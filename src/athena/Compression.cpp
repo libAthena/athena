@@ -49,6 +49,41 @@ atInt32 decompressZlib(const atUint8* src, atUint32 srcLen, atUint8* dst, atUint
   return ret;
 }
 
+atInt32 compressZlib(const atUint8* src, atUint32 srcLen, atUint8* dst, atUint32 dstLen) {
+  z_stream strm = {};
+  strm.total_in = strm.avail_in = srcLen;
+  strm.total_out = strm.avail_out = dstLen;
+  strm.next_in = (Bytef*)src;
+  strm.next_out = (Bytef*)dst;
+
+  strm.zalloc = Z_NULL;
+  strm.zfree = Z_NULL;
+  strm.opaque = Z_NULL;
+
+  atInt32 err = -1;
+  atInt32 ret = -1;
+
+  err = deflateInit(&strm, Z_BEST_COMPRESSION);
+
+  if (err == Z_OK) {
+    err = deflate(&strm, Z_FINISH);
+
+    if (err == Z_STREAM_END)
+      ret = strm.total_out;
+    else {
+      deflateEnd(&strm);
+      return err;
+    }
+  } else {
+    deflateEnd(&strm);
+    return err;
+  }
+
+  deflateEnd(&strm);
+
+  return ret;
+}
+
 #if AT_LZOKAY
 atInt32 decompressLZO(const atUint8* source, const atInt32 sourceSize, atUint8* dst, atInt32& dstSize) {
   size_t size = dstSize;
