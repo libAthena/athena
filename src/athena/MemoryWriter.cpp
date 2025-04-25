@@ -189,7 +189,8 @@ void MemoryWriter::save(std::string_view filename) {
     m_filepath = filename;
   }
 
-  std::unique_ptr<FILE, decltype(&std::fclose)> out{std::fopen(m_filepath.c_str(), "wb"), std::fclose};
+  auto deleter = [](FILE* f) { return std::fclose(f); };
+  std::unique_ptr<FILE, decltype(deleter)> out{std::fopen(m_filepath.c_str(), "wb"), deleter};
   if (!out) {
     atError("Unable to open file '{}'", m_filepath);
     setError();
