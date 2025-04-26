@@ -140,7 +140,7 @@ endif ()
 
 add_subdirectory(extern)
 
-add_library(athena-core
+add_library(athena-core STATIC
     src/athena/Utility.cpp
     src/athena/MemoryReader.cpp
     src/athena/MemoryWriter.cpp
@@ -226,7 +226,7 @@ target_link_libraries(athena-core PUBLIC
     $<BUILD_INTERFACE:${ZLIB_LIBRARIES}>
 )
 
-add_library(athena-sakura EXCLUDE_FROM_ALL
+add_library(athena-sakura STATIC EXCLUDE_FROM_ALL
     src/athena/Sprite.cpp
     src/athena/SpriteFile.cpp
     src/athena/SpriteFileReader.cpp
@@ -246,7 +246,7 @@ target_include_directories(athena-sakura PUBLIC
     include
 )
 
-add_library(athena-wiisave EXCLUDE_FROM_ALL
+add_library(athena-wiisave STATIC EXCLUDE_FROM_ALL
     src/athena/WiiBanner.cpp
     src/athena/WiiFile.cpp
     src/athena/WiiImage.cpp
@@ -277,7 +277,7 @@ if(NOT MSVC AND ${CMAKE_SYSTEM_PROCESSOR} STREQUAL x86_64)
 endif()
 
 
-add_library(athena-zelda EXCLUDE_FROM_ALL
+add_library(athena-zelda STATIC EXCLUDE_FROM_ALL
     src/athena/ALTTPFile.cpp
     src/athena/ALTTPFileReader.cpp
     src/athena/ALTTPFileWriter.cpp
