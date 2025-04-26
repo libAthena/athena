@@ -79,7 +79,7 @@ void FileWriter::close() {
   rename(tmpFilename.c_str(), m_filename.c_str());
 }
 
-void FileWriter::seek(atInt64 pos, SeekOrigin origin) {
+void FileWriter::seek(int64_t pos, SeekOrigin origin) {
   if (!isOpen()) {
     if (m_globalErr)
       atError("Unable to seek in file, not open");
@@ -94,11 +94,11 @@ void FileWriter::seek(atInt64 pos, SeekOrigin origin) {
   }
 }
 
-atUint64 FileWriter::position() const { return atUint64(ftello64(m_fileHandle)); }
+uint64_t FileWriter::position() const { return uint64_t(ftello64(m_fileHandle)); }
 
-atUint64 FileWriter::length() const { return utility::fileSize(m_filename); }
+uint64_t FileWriter::length() const { return utility::fileSize(m_filename); }
 
-void FileWriter::writeUBytes(const atUint8* data, atUint64 len) {
+void FileWriter::writeUBytes(const uint8_t* data, uint64_t len) {
   if (!isOpen()) {
     if (m_globalErr)
       atError("File not open for writing");
