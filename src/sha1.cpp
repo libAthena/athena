@@ -334,15 +334,15 @@ void SHA1PadMessage(SHA1Context* context) {
   SHA1ProcessMessageBlock(context);
 }
 
-atUint8* getSha1(atUint8* stuff, atUint32 stuff_size) {
+uint8_t* getSha1(uint8_t* stuff, uint32_t stuff_size) {
   SHA1Context sha;
   SHA1Reset(&sha);
-  SHA1Input(&sha, (const atUint8*)stuff, stuff_size);
+  SHA1Input(&sha, (const uint8_t*)stuff, stuff_size);
 
   if (!SHA1Result(&sha))
     return 0;
 
-  atUint8* ret = new atUint8[20];
+  uint8_t* ret = new uint8_t[20];
   memset(ret, 0, 20);
 
   for (int i = 0; i < 5; i++) {

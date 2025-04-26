@@ -30,10 +30,10 @@ public:
   void open(bool overwrite = true);
   void close();
   bool isOpen() const { return m_fileHandle != nullptr; }
-  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override;
-  atUint64 position() const override;
-  atUint64 length() const override;
-  void writeUBytes(const atUint8* data, atUint64 len) override;
+  void seek(int64_t pos, SeekOrigin origin = SeekOrigin::Current) override;
+  uint64_t position() const override;
+  uint64_t length() const override;
+  void writeUBytes(const uint8_t* data, uint64_t len) override;
 
 #ifdef _WIN32
   using HandleType = void*;
@@ -61,7 +61,7 @@ class TransactionalFileWriter : public IStreamWriter {
 #endif
   bool m_overwrite, m_globalErr;
   std::vector<uint8_t> m_deferredBuffer;
-  atUint64 m_position = 0;
+  uint64_t m_position = 0;
 
 public:
   explicit TransactionalFileWriter(std::string_view filename, bool overwrite = true, bool globalErr = true)
@@ -94,10 +94,10 @@ public:
     m_position = 0;
   }
 
-  atUint64 position() const override { return m_position; }
-  atUint64 length() const override { return m_deferredBuffer.size(); }
-  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override;
-  void writeUBytes(const atUint8* data, atUint64 len) override;
+  uint64_t position() const override { return m_position; }
+  uint64_t length() const override { return m_deferredBuffer.size(); }
+  void seek(int64_t pos, SeekOrigin origin = SeekOrigin::Current) override;
+  void writeUBytes(const uint8_t* data, uint64_t len) override;
 
   ~TransactionalFileWriter() override { flush(); }
 };

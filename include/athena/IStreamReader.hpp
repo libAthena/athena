@@ -24,7 +24,7 @@ public:
    *  @param position where in the buffer to seek
    *  @param origin The Origin to seek relative to
    */
-  void seek(atInt64 position, SeekOrigin origin = SeekOrigin::Current) override = 0;
+  void seek(int64_t position, SeekOrigin origin = SeekOrigin::Current) override = 0;
 
   /** @brief Sets the buffer's position relative to the next 64-byte aligned position.<br />
    */
@@ -52,33 +52,33 @@ public:
    *
    *  @return The current position in the stream.
    */
-  atUint64 position() const override = 0;
+  uint64_t position() const override = 0;
 
   /** @brief Returns the length of the file.
    *
    *  @return True length of the file.
    */
-  atUint64 length() const override = 0;
+  uint64_t length() const override = 0;
 
   /** @brief Reads a byte at the current position and advances the current position
    *
    * @return The value at the current position
    */
-  atInt8 readByte() {
-    atInt8 val = 0;
+  int8_t readByte() {
+    int8_t val = 0;
     readUBytesToBuf(&val, 1);
     return val;
   }
   template <class T>
-  atInt8 readVal(std::enable_if_t<std::is_same_v<T, atInt8>>* = nullptr) {
+  int8_t readVal(std::enable_if_t<std::is_same_v<T, int8_t>>* = nullptr) {
     return readByte();
   }
   template <class T>
-  atInt8 readValLittle(std::enable_if_t<std::is_same_v<T, atInt8>>* = nullptr) {
+  int8_t readValLittle(std::enable_if_t<std::is_same_v<T, int8_t>>* = nullptr) {
     return readByte();
   }
   template <class T>
-  atInt8 readValBig(std::enable_if_t<std::is_same_v<T, atInt8>>* = nullptr) {
+  int8_t readValBig(std::enable_if_t<std::is_same_v<T, int8_t>>* = nullptr) {
     return readByte();
   }
 
@@ -86,17 +86,17 @@ public:
    *
    * @return The value at the current position
    */
-  atUint8 readUByte() { return readByte(); }
+  uint8_t readUByte() { return readByte(); }
   template <class T>
-  atUint8 readVal(std::enable_if_t<std::is_same_v<T, atUint8>>* = nullptr) {
+  uint8_t readVal(std::enable_if_t<std::is_same_v<T, uint8_t>>* = nullptr) {
     return readUByte();
   }
   template <class T>
-  atUint8 readValLittle(std::enable_if_t<std::is_same_v<T, atUint8>>* = nullptr) {
+  uint8_t readValLittle(std::enable_if_t<std::is_same_v<T, uint8_t>>* = nullptr) {
     return readUByte();
   }
   template <class T>
-  atUint8 readValBig(std::enable_if_t<std::is_same_v<T, atUint8>>* = nullptr) {
+  uint8_t readValBig(std::enable_if_t<std::is_same_v<T, uint8_t>>* = nullptr) {
     return readUByte();
   }
 
@@ -104,8 +104,8 @@ public:
    *
    * @return The buffer at the current position from the given length.
    */
-  std::unique_ptr<atInt8[]> readBytes(atUint64 length) {
-    auto buf = std::make_unique<atInt8[]>(length);
+  std::unique_ptr<int8_t[]> readBytes(uint64_t length) {
+    auto buf = std::make_unique<int8_t[]>(length);
     readUBytesToBuf(buf.get(), length);
     return buf;
   }
@@ -114,8 +114,8 @@ public:
    *
    *  @return The buffer at the current position from the given length.
    */
-  std::unique_ptr<atUint8[]> readUBytes(atUint64 length) {
-    auto buf = std::make_unique<atUint8[]>(length);
+  std::unique_ptr<uint8_t[]> readUBytes(uint64_t length) {
+    auto buf = std::make_unique<uint8_t[]>(length);
     readUBytesToBuf(buf.get(), length);
     return buf;
   }
@@ -125,7 +125,7 @@ public:
    *  @param len The length of the buffer
    *  @return How much data was actually read, useful for detecting read errors.
    */
-  atUint64 readBytesToBuf(void* buf, atUint64 len) { return readUBytesToBuf(buf, len); }
+  uint64_t readBytesToBuf(void* buf, uint64_t len) { return readUBytesToBuf(buf, len); }
 
   /** @brief Attempts to read a fixed length of data into a pre-allocated buffer, this function is client defined
    *  and must be implemented.
@@ -133,20 +133,20 @@ public:
    *  @param len The length of the buffer
    *  @return How much data was actually read, useful for detecting read errors.
    */
-  virtual atUint64 readUBytesToBuf(void* buf, atUint64 len) = 0;
+  virtual uint64_t readUBytesToBuf(void* buf, uint64_t len) = 0;
 
   /** @brief Reads a Int16 and swaps to endianness specified by setEndian depending on platform
    *  and advances the current position
    *
    *  @return The value at the current address
    */
-  atInt16 readInt16() {
-    atInt16 val = 0;
+  int16_t readInt16() {
+    int16_t val = 0;
     readUBytesToBuf(&val, 2);
     return m_endian == Endian::Big ? utility::BigInt16(val) : utility::LittleInt16(val);
   }
   template <class T>
-  atInt16 readVal(std::enable_if_t<std::is_same_v<T, atInt16>>* = nullptr) {
+  int16_t readVal(std::enable_if_t<std::is_same_v<T, int16_t>>* = nullptr) {
     return readInt16();
   }
 
@@ -155,13 +155,13 @@ public:
    *
    *  @return The value at the current address
    */
-  atInt16 readInt16Little() {
-    atInt16 val = 0;
+  int16_t readInt16Little() {
+    int16_t val = 0;
     readUBytesToBuf(&val, 2);
     return utility::LittleInt16(val);
   }
   template <class T>
-  atInt16 readValLittle(std::enable_if_t<std::is_same_v<T, atInt16>>* = nullptr) {
+  int16_t readValLittle(std::enable_if_t<std::is_same_v<T, int16_t>>* = nullptr) {
     return readInt16Little();
   }
 
@@ -170,13 +170,13 @@ public:
    *
    *  @return The value at the current address
    */
-  atInt16 readInt16Big() {
-    atInt16 val = 0;
+  int16_t readInt16Big() {
+    int16_t val = 0;
     readUBytesToBuf(&val, 2);
     return utility::BigInt16(val);
   }
   template <class T>
-  atInt16 readValBig(std::enable_if_t<std::is_same_v<T, atInt16>>* = nullptr) {
+  int16_t readValBig(std::enable_if_t<std::is_same_v<T, int16_t>>* = nullptr) {
     return readInt16Big();
   }
 
@@ -185,9 +185,9 @@ public:
    *
    *  @return The value at the current address
    */
-  atUint16 readUint16() { return readInt16(); }
+  uint16_t readUint16() { return readInt16(); }
   template <class T>
-  atUint16 readVal(std::enable_if_t<std::is_same_v<T, atUint16>>* = 0) {
+  uint16_t readVal(std::enable_if_t<std::is_same_v<T, uint16_t>>* = 0) {
     return readUint16();
   }
 
@@ -196,13 +196,13 @@ public:
    *
    *  @return The value at the current address
    */
-  atUint16 readUint16Little() {
-    atUint16 val = 0;
+  uint16_t readUint16Little() {
+    uint16_t val = 0;
     readUBytesToBuf(&val, 2);
     return utility::LittleUint16(val);
   }
   template <class T>
-  atUint16 readValLittle(std::enable_if_t<std::is_same_v<T, atUint16>>* = nullptr) {
+  uint16_t readValLittle(std::enable_if_t<std::is_same_v<T, uint16_t>>* = nullptr) {
     return readUint16Little();
   }
 
@@ -211,13 +211,13 @@ public:
    *
    *  @return The value at the current address
    */
-  atUint16 readUint16Big() {
-    atUint16 val = 0;
+  uint16_t readUint16Big() {
+    uint16_t val = 0;
     readUBytesToBuf(&val, 2);
     return utility::BigUint16(val);
   }
   template <class T>
-  atUint16 readValBig(std::enable_if_t<std::is_same_v<T, atUint16>>* = nullptr) {
+  uint16_t readValBig(std::enable_if_t<std::is_same_v<T, uint16_t>>* = nullptr) {
     return readUint16Big();
   }
 
@@ -226,13 +226,13 @@ public:
    *
    *  @return The value at the current address
    */
-  atInt32 readInt32() {
-    atInt32 val = 0;
+  int32_t readInt32() {
+    int32_t val = 0;
     readUBytesToBuf(&val, 4);
     return m_endian == Endian::Big ? utility::BigInt32(val) : utility::LittleInt32(val);
   }
   template <class T>
-  atInt32 readVal(std::enable_if_t<std::is_same_v<T, atInt32>>* = nullptr) {
+  int32_t readVal(std::enable_if_t<std::is_same_v<T, int32_t>>* = nullptr) {
     return readInt32();
   }
 
@@ -241,13 +241,13 @@ public:
    *
    *  @return The value at the current address
    */
-  atInt32 readInt32Little() {
-    atInt32 val = 0;
+  int32_t readInt32Little() {
+    int32_t val = 0;
     readUBytesToBuf(&val, 4);
     return utility::LittleInt32(val);
   }
   template <class T>
-  atInt32 readValLittle(std::enable_if_t<std::is_same_v<T, atInt32>>* = nullptr) {
+  int32_t readValLittle(std::enable_if_t<std::is_same_v<T, int32_t>>* = nullptr) {
     return readInt32Little();
   }
 
@@ -256,13 +256,13 @@ public:
    *
    *  @return The value at the current address
    */
-  atInt32 readInt32Big() {
-    atInt32 val = 0;
+  int32_t readInt32Big() {
+    int32_t val = 0;
     readUBytesToBuf(&val, 4);
     return utility::BigInt32(val);
   }
   template <class T>
-  atInt32 readValBig(std::enable_if_t<std::is_same_v<T, atInt32>>* = nullptr) {
+  int32_t readValBig(std::enable_if_t<std::is_same_v<T, int32_t>>* = nullptr) {
     return readInt32Big();
   }
 
@@ -271,9 +271,9 @@ public:
    *
    *  @return The value at the current address
    */
-  atUint32 readUint32() { return readInt32(); }
+  uint32_t readUint32() { return readInt32(); }
   template <class T>
-  atUint32 readVal(std::enable_if_t<std::is_same_v<T, atUint32>>* = nullptr) {
+  uint32_t readVal(std::enable_if_t<std::is_same_v<T, uint32_t>>* = nullptr) {
     return readUint32();
   }
 
@@ -282,13 +282,13 @@ public:
    *
    *  @return The value at the current address
    */
-  atUint32 readUint32Little() {
-    atUint32 val = 0;
+  uint32_t readUint32Little() {
+    uint32_t val = 0;
     readUBytesToBuf(&val, 4);
     return utility::LittleUint32(val);
   }
   template <class T>
-  atInt32 readValLittle(std::enable_if_t<std::is_same_v<T, atUint32>>* = nullptr) {
+  int32_t readValLittle(std::enable_if_t<std::is_same_v<T, uint32_t>>* = nullptr) {
     return readUint32Little();
   }
 
@@ -297,13 +297,13 @@ public:
    *
    *  @return The value at the current address
    */
-  atUint32 readUint32Big() {
-    atUint32 val = 0;
+  uint32_t readUint32Big() {
+    uint32_t val = 0;
     readUBytesToBuf(&val, 4);
     return utility::BigUint32(val);
   }
   template <class T>
-  atUint32 readValBig(std::enable_if_t<std::is_same_v<T, atUint32>>* = nullptr) {
+  uint32_t readValBig(std::enable_if_t<std::is_same_v<T, uint32_t>>* = nullptr) {
     return readUint32Big();
   }
 
@@ -312,13 +312,13 @@ public:
    *
    *  @return The value at the current address
    */
-  atInt64 readInt64() {
-    atInt64 val = 0;
+  int64_t readInt64() {
+    int64_t val = 0;
     readUBytesToBuf(&val, 8);
     return m_endian == Endian::Big ? utility::BigInt64(val) : utility::LittleInt64(val);
   }
   template <class T>
-  atInt64 readVal(std::enable_if_t<std::is_same_v<T, atInt64>>* = nullptr) {
+  int64_t readVal(std::enable_if_t<std::is_same_v<T, int64_t>>* = nullptr) {
     return readInt64();
   }
 
@@ -327,13 +327,13 @@ public:
    *
    *  @return The value at the current address
    */
-  atInt64 readInt64Little() {
-    atInt64 val = 0;
+  int64_t readInt64Little() {
+    int64_t val = 0;
     readUBytesToBuf(&val, 8);
     return utility::LittleInt64(val);
   }
   template <class T>
-  atInt64 readValLittle(std::enable_if_t<std::is_same_v<T, atInt64>>* = nullptr) {
+  int64_t readValLittle(std::enable_if_t<std::is_same_v<T, int64_t>>* = nullptr) {
     return readInt64Little();
   }
 
@@ -342,13 +342,13 @@ public:
    *
    *  @return The value at the current address
    */
-  atInt64 readInt64Big() {
-    atInt64 val = 0;
+  int64_t readInt64Big() {
+    int64_t val = 0;
     readUBytesToBuf(&val, 8);
     return utility::BigInt64(val);
   }
   template <class T>
-  atInt64 readValBig(std::enable_if_t<std::is_same_v<T, atInt64>>* = nullptr) {
+  int64_t readValBig(std::enable_if_t<std::is_same_v<T, int64_t>>* = nullptr) {
     return readInt64Big();
   }
 
@@ -357,9 +357,9 @@ public:
    *
    *  @return The value at the current address
    */
-  atUint64 readUint64() { return readInt64(); }
+  uint64_t readUint64() { return readInt64(); }
   template <class T>
-  atUint64 readVal(std::enable_if_t<std::is_same_v<T, atUint64>>* = nullptr) {
+  uint64_t readVal(std::enable_if_t<std::is_same_v<T, uint64_t>>* = nullptr) {
     return readUint64();
   }
 
@@ -368,13 +368,13 @@ public:
    *
    *  @return The value at the current address
    */
-  atUint64 readUint64Little() {
-    atUint64 val = 0;
+  uint64_t readUint64Little() {
+    uint64_t val = 0;
     readUBytesToBuf(&val, 8);
     return utility::LittleUint64(val);
   }
   template <class T>
-  atUint64 readValLittle(std::enable_if_t<std::is_same_v<T, atUint64>>* = nullptr) {
+  uint64_t readValLittle(std::enable_if_t<std::is_same_v<T, uint64_t>>* = nullptr) {
     return readUint64Little();
   }
 
@@ -383,13 +383,13 @@ public:
    *
    *  @return The value at the current address
    */
-  atUint64 readUint64Big() {
-    atUint64 val = 0;
+  uint64_t readUint64Big() {
+    uint64_t val = 0;
     readUBytesToBuf(&val, 8);
     return utility::BigUint64(val);
   }
   template <class T>
-  atUint64 readValBig(std::enable_if_t<std::is_same_v<T, atUint64>>* = nullptr) {
+  uint64_t readValBig(std::enable_if_t<std::is_same_v<T, uint64_t>>* = nullptr) {
     return readUint64Big();
   }
 
@@ -488,7 +488,7 @@ public:
    *  @return The value at the current address
    */
   bool readBool() {
-    atUint8 val = false;
+    uint8_t val = false;
     readUBytesToBuf(&val, 1);
     return val != 0;
   }
@@ -927,13 +927,13 @@ public:
    *
    *  @return The read string
    */
-  std::string readString(atInt32 fixedLen = -1, bool doSeek = true) {
+  std::string readString(int32_t fixedLen = -1, bool doSeek = true) {
     if (fixedLen == 0)
       return std::string();
     std::string ret;
-    atUint8 chr = readByte();
+    uint8_t chr = readByte();
 
-    atInt32 i;
+    int32_t i;
     for (i = 1; chr != 0; ++i) {
       ret += chr;
 
@@ -961,14 +961,14 @@ public:
    *
    *  @return The read wstring
    */
-  std::wstring readWString(atInt32 fixedLen = -1, bool doSeek = true) {
+  std::wstring readWString(int32_t fixedLen = -1, bool doSeek = true) {
     if (fixedLen == 0)
       return std::wstring();
 
     std::wstring ret;
-    atUint16 chr = readUint16();
+    uint16_t chr = readUint16();
 
-    atInt32 i;
+    int32_t i;
     for (i = 1; chr != 0; ++i) {
       ret += chr;
 
@@ -997,14 +997,14 @@ public:
    *
    *  @return The read wstring
    */
-  std::wstring readWStringLittle(atInt32 fixedLen = -1, bool doSeek = true) {
+  std::wstring readWStringLittle(int32_t fixedLen = -1, bool doSeek = true) {
     if (fixedLen == 0)
       return std::wstring();
 
     std::wstring ret;
-    atUint16 chr = readUint16Little();
+    uint16_t chr = readUint16Little();
 
-    atInt32 i;
+    int32_t i;
     for (i = 1; chr != 0; ++i) {
       ret += chr;
 
@@ -1033,13 +1033,13 @@ public:
    *
    *  @return The read wstring
    */
-  std::wstring readWStringBig(atInt32 fixedLen = -1, bool doSeek = true) {
+  std::wstring readWStringBig(int32_t fixedLen = -1, bool doSeek = true) {
     if (fixedLen == 0)
       return std::wstring();
     std::wstring ret;
-    atUint16 chr = readUint16Big();
+    uint16_t chr = readUint16Big();
 
-    atInt32 i;
+    int32_t i;
     for (i = 1; chr != 0; ++i) {
       ret += chr;
 
@@ -1068,13 +1068,13 @@ public:
    *
    *  @return The read wstring
    */
-  std::u16string readU16StringBig(atInt32 fixedLen = -1, bool doSeek = true) {
+  std::u16string readU16StringBig(int32_t fixedLen = -1, bool doSeek = true) {
     if (fixedLen == 0)
       return std::u16string();
     std::u16string ret;
     char16_t chr = readUint16Big();
 
-    atInt32 i;
+    int32_t i;
     for (i = 1; chr != 0; ++i) {
       ret += chr;
 
@@ -1103,13 +1103,13 @@ public:
    *
    *  @return The read wstring
    */
-  std::u32string readU32StringBig(atInt32 fixedLen = -1, bool doSeek = true) {
+  std::u32string readU32StringBig(int32_t fixedLen = -1, bool doSeek = true) {
     if (fixedLen == 0)
       return std::u32string();
     std::u32string ret;
     char32_t chr = readUint32Big();
 
-    atInt32 i;
+    int32_t i;
     for (i = 1; chr != 0; ++i) {
       ret += chr;
 

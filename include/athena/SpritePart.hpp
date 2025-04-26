@@ -56,7 +56,7 @@ public:
    * \param width
    * \param height
    */
-  void setSize(atUint32 width, atUint32 height);
+  void setSize(uint32_t width, uint32_t height);
 
   /*!
    * \brief setSize
@@ -105,6 +105,6 @@ private:
   Vector2Di m_size;
   bool m_flippedH;
   bool m_flippedV;
-  atUint32 m_frameIndex;
+  uint32_t m_frameIndex;
 };
 } // namespace athena::Sakura

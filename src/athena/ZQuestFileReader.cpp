@@ -9,16 +9,16 @@
 
 namespace athena::io {
 
-ZQuestFileReader::ZQuestFileReader(atUint8* data, atUint64 length) : MemoryCopyReader(data, length) {}
+ZQuestFileReader::ZQuestFileReader(uint8_t* data, uint64_t length) : MemoryCopyReader(data, length) {}
 
 ZQuestFileReader::ZQuestFileReader(const std::string& filename) : MemoryCopyReader(filename) {}
 
 ZQuestFile* ZQuestFileReader::read() {
-  atUint32 magic, version, compressedLen, uncompressedLen;
+  uint32_t magic, version, compressedLen, uncompressedLen;
   ZQuestFile::Game game = ZQuestFile::NoGame;
   std::string gameString;
-  atUint16 BOM;
-  atUint32 checksum = 0;
+  uint16_t BOM;
+  uint32_t checksum = 0;
 
   magic = readUint32();
 
@@ -56,7 +56,7 @@ ZQuestFile* ZQuestFileReader::read() {
     seek(0x0A);
   }
 
-  std::unique_ptr<atUint8[]> data = readUBytes(compressedLen); // compressedLen is always the total file size
+  std::unique_ptr<uint8_t[]> data = readUBytes(compressedLen); // compressedLen is always the total file size
 
   if (version >= ZQUEST_VERSION_CHECK(2, 0, 0)) {
     if (checksum != athena::checksums::crc32(data.get(), compressedLen)) {
@@ -70,8 +70,8 @@ ZQuestFile* ZQuestFileReader::read() {
   }
 
   if (compressedLen != uncompressedLen) {
-    atUint8* dst = new atUint8[uncompressedLen];
-    atUint32 dstLen = io::Compression::decompressZlib(data.get(), compressedLen, dst, uncompressedLen);
+    uint8_t* dst = new uint8_t[uncompressedLen];
+    uint32_t dstLen = io::Compression::decompressZlib(data.get(), compressedLen, dst, uncompressedLen);
 
     if (dstLen != uncompressedLen) {
       delete[] dst;

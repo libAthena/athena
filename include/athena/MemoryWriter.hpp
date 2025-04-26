@@ -26,26 +26,26 @@ public:
    *   @param takeOwnership Whether or not this writer takes ownership of the supplied data buffer.
    *                        If true, the buffer will be deleted by this when the destructor executes.
    */
-  explicit MemoryWriter(atUint8* data, atUint64 length, bool takeOwnership = false);
+  explicit MemoryWriter(uint8_t* data, uint64_t length, bool takeOwnership = false);
 
   /*! @brief Sets the buffers position relative to the specified position.<br />
    *         It seeks relative to the current position by default.
    *  @param position where in the buffer to seek
    *  @param origin The Origin to seek @sa SeekOrigin
    */
-  void seek(atInt64 position, SeekOrigin origin = SeekOrigin::Current) override;
+  void seek(int64_t position, SeekOrigin origin = SeekOrigin::Current) override;
 
   /*! @brief Returns the current position in the stream.
    *
    *  @return Int64 The current position in the stream.
    */
-  atUint64 position() const override { return m_position; }
+  uint64_t position() const override { return m_position; }
 
   /*! @brief Returns the length of the stream.
    *
    *  @return Int64 The length of the stream.
    */
-  atUint64 length() const override { return m_length; }
+  uint64_t length() const override { return m_length; }
 
   bool isOpen() const { return true; }
 
@@ -54,14 +54,14 @@ public:
    *  @param length The length of the new buffer.
    *  @param takeOwnership Whether the Stream now owns the buffer.
    */
-  void setData(atUint8* data, atUint64 length, bool takeOwnership = false);
+  void setData(uint8_t* data, uint64_t length, bool takeOwnership = false);
 
   /*! @brief Returns a copy of the current buffer.<br />
    *         Changes to the copy do not affect the buffer so it's perfectly safe to
    *         directly edit the buffer and use setData to set the new information.<br />
    *  @return Uint8* The copy of the buffer.
    */
-  atUint8* data() const;
+  uint8_t* data() const;
 
   /*! @brief Sets the target file
    *
@@ -87,13 +87,13 @@ public:
    * @param data The buffer to write
    * @param length The amount to write
    */
-  void writeUBytes(const atUint8* data, atUint64 length) override;
+  void writeUBytes(const uint8_t* data, uint64_t length) override;
 
 protected:
   MemoryWriter() = default;
-  atUint8* m_data = nullptr;
-  atUint64 m_length = 0;
-  atUint64 m_position = 0;
+  uint8_t* m_data = nullptr;
+  uint64_t m_length = 0;
+  uint64_t m_position = 0;
   bool m_bufferOwned = false;
   std::string m_filepath; //!< Path to the target file
 };
@@ -105,7 +105,7 @@ public:
    *   @param data The existing buffer
    *   @param length The length of the existing buffer
    */
-  explicit MemoryCopyWriter(atUint8* data = nullptr, atUint64 length = 0x10);
+  explicit MemoryCopyWriter(uint8_t* data = nullptr, uint64_t length = 0x10);
 
   /*! @brief This constructor creates an instance from a file on disk.
    *
@@ -118,7 +118,7 @@ public:
    *  @param position where in the buffer to seek
    *  @param origin The Origin to seek @sa SeekOrigin
    */
-  void seek(atInt64 position, SeekOrigin origin = SeekOrigin::Current) override;
+  void seek(int64_t position, SeekOrigin origin = SeekOrigin::Current) override;
 
   /*! @brief Sets the buffer to the given one, deleting the current one.<br />
    *         <b>BEWARE:</b> As this deletes the current buffer it WILL cause a loss of data
@@ -129,7 +129,7 @@ public:
    *  @param length The length of the new buffer.
    *  @throw IOException
    */
-  void setData(const atUint8* data, atUint64 length);
+  void setData(const uint8_t* data, uint64_t length);
 
   /*! @brief Writes the given buffer with the specified length, buffers can be bigger than the length
    *  however it's undefined behavior to try and write a buffer which is smaller than the given length.
@@ -137,13 +137,13 @@ public:
    * @param data The buffer to write
    * @param length The amount to write
    */
-  void writeUBytes(const atUint8* data, atUint64 length) override;
+  void writeUBytes(const uint8_t* data, uint64_t length) override;
 
 protected:
-  std::unique_ptr<atUint8[]> m_dataCopy;
+  std::unique_ptr<uint8_t[]> m_dataCopy;
 
 private:
-  void resize(atUint64 newSize);
+  void resize(uint64_t newSize);
 };
 
 } // namespace athena::io

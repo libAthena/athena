@@ -24,7 +24,7 @@ public:
    * \param data The existing buffer
    * \param length The length of the existing buffer
    */
-  MCFileWriter(atUint8*, atUint64);
+  MCFileWriter(uint8_t*, uint64_t);
 
   /*!
    * \brief This constructor creates an instance from a file on disk.
@@ -40,10 +40,10 @@ public:
    */
   void writeFile(MCFile* file);
 
-  static atUint16 calculateChecksum(atUint8* data, atUint32 length);
+  static uint16_t calculateChecksum(uint8_t* data, uint32_t length);
 
 private:
-  atUint16 calculateSlotChecksum(atUint32 game);
+  uint16_t calculateSlotChecksum(uint32_t game);
 };
 
 } // namespace io

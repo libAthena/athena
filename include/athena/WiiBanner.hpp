@@ -27,7 +27,7 @@ public:
    * \param m_banner
    * \param icons
    */
-  WiiBanner(atUint32 gameId, const std::u16string& title, const std::u16string& subtitle, WiiImage* m_banner,
+  WiiBanner(uint32_t gameId, const std::u16string& title, const std::u16string& subtitle, WiiImage* m_banner,
             std::vector<WiiImage*> icons);
   virtual ~WiiBanner();
 
@@ -35,13 +35,13 @@ public:
    * \brief setGameID
    * \param id
    */
-  void setGameID(atUint64 id);
+  void setGameID(uint64_t id);
 
   /*!
    * \brief gameID
    * \return
    */
-  atUint64 gameID() const;
+  uint64_t gameID() const;
 
   /*!
    * \brief setBannerImage
@@ -59,13 +59,13 @@ public:
    * \brief setBannerSize
    * \param size
    */
-  void setBannerSize(atUint32 size);
+  void setBannerSize(uint32_t size);
 
   /*!
    * \brief bannerSize
    * \return
    */
-  atUint32 bannerSize() const;
+  uint32_t bannerSize() const;
 
   /*!
    * \brief setTitle
@@ -102,14 +102,14 @@ public:
    * \param id
    * \param icon
    */
-  void setIcon(atUint32 id, WiiImage* icon);
+  void setIcon(uint32_t id, WiiImage* icon);
 
   /*!
    * \brief getIcon
    * \param id
    * \return
    */
-  WiiImage* getIcon(atUint32 id) const;
+  WiiImage* getIcon(uint32_t id) const;
 
   /*!
    * \brief icons
@@ -121,46 +121,46 @@ public:
    * \brief setAnimationSpeed
    * \param animSpeed
    */
-  void setAnimationSpeed(atUint16 animSpeed);
+  void setAnimationSpeed(uint16_t animSpeed);
 
   /*!
    * \brief animationSpeed
    * \return
    */
-  atUint16 animationSpeed() const;
+  uint16_t animationSpeed() const;
 
   /*!
    * \brief setPermissions
    * \param permissions
    */
-  void setPermissions(atUint8 permissions);
+  void setPermissions(uint8_t permissions);
 
   /*!
    * \brief permissions
    * \return
    */
-  atUint8 permissions() const;
+  uint8_t permissions() const;
 
   /*!
    * \brief setFlags
    * \param flags
    */
-  void setFlags(atUint32 flags);
+  void setFlags(uint32_t flags);
 
   /*!
    * \brief flags
    * \return
    */
-  atUint32 flags() const;
+  uint32_t flags() const;
 
 protected:
 private:
-  atUint64 m_gameId;
+  uint64_t m_gameId;
   WiiImage* m_banner;
-  atUint32 m_animSpeed;
-  atUint8 m_permissions;
-  atUint32 m_flags;
-  atUint32 m_bannerSize;
+  uint32_t m_animSpeed;
+  uint8_t m_permissions;
+  uint32_t m_flags;
+  uint32_t m_bannerSize;
   std::vector<WiiImage*> m_icons;
   std::u16string m_title;
   std::u16string m_subtitle;

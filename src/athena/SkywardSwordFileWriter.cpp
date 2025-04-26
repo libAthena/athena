@@ -4,7 +4,7 @@
 
 namespace athena::io {
 
-SkywardSwordFileWriter::SkywardSwordFileWriter(atUint8* data, atUint64 len) : MemoryCopyWriter(data, len) {
+SkywardSwordFileWriter::SkywardSwordFileWriter(uint8_t* data, uint64_t len) : MemoryCopyWriter(data, len) {
   setEndian(Endian::Big);
 }
 
@@ -18,7 +18,7 @@ void SkywardSwordFileWriter::write(SkywardSwordFile* file) {
     return;
   }
 
-  atUint32 magic = (file->region() == Region::NTSC
+  uint32_t magic = (file->region() == Region::NTSC
                         ? SkywardSwordFile::USMagic
                         : (file->region() == Region::NTSCJ ? SkywardSwordFile::JAMagic : SkywardSwordFile::EUMagic));
 
@@ -39,7 +39,7 @@ void SkywardSwordFileWriter::write(SkywardSwordFile* file) {
     q->fixChecksums();
     // Write the save data
     writeUBytes(q->data(), q->length());
-    atUint64 pos = position();
+    uint64_t pos = position();
     // Write the slots skip data
     seek(0xFB60 + (i * 0x24), SeekOrigin::Begin);
     writeUBytes(q->skipData(), 0x24);

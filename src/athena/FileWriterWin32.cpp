@@ -76,7 +76,7 @@ void FileWriter::close() {
   MoveFileExW(tmpFilename.c_str(), m_filename.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH);
 }
 
-void FileWriter::seek(atInt64 pos, SeekOrigin origin) {
+void FileWriter::seek(int64_t pos, SeekOrigin origin) {
   if (!isOpen()) {
     if (m_globalErr)
       atError("Unable to seek in file, not open");
@@ -93,16 +93,16 @@ void FileWriter::seek(atInt64 pos, SeekOrigin origin) {
   }
 }
 
-atUint64 FileWriter::position() const {
+uint64_t FileWriter::position() const {
   LARGE_INTEGER li = {};
   LARGE_INTEGER res;
   SetFilePointerEx(m_fileHandle, li, &res, FILE_CURRENT);
-  return static_cast<atUint64>(res.QuadPart);
+  return static_cast<uint64_t>(res.QuadPart);
 }
 
-atUint64 FileWriter::length() const { return utility::fileSize(m_filename); }
+uint64_t FileWriter::length() const { return utility::fileSize(m_filename); }
 
-void FileWriter::writeUBytes(const atUint8* data, atUint64 len) {
+void FileWriter::writeUBytes(const uint8_t* data, uint64_t len) {
   if (!isOpen()) {
     if (m_globalErr) {
       atError("File not open for writing");
@@ -111,9 +111,9 @@ void FileWriter::writeUBytes(const atUint8* data, atUint64 len) {
     return;
   }
 
-  atUint64 remaining = len;
+  uint64_t remaining = len;
   do {
-    const auto toWrite = static_cast<DWORD>(std::min(remaining, atUint64{std::numeric_limits<DWORD>::max()}));
+    const auto toWrite = static_cast<DWORD>(std::min(remaining, uint64_t{std::numeric_limits<DWORD>::max()}));
     DWORD written = 0;
 
     if (WriteFile(m_fileHandle, data, toWrite, &written, nullptr) == FALSE) {

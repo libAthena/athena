@@ -22,7 +22,7 @@ public:
    *   \param data The existing buffer
    *   \param length The length of the existing buffer
    */
-  ALTTPFileWriter(atUint8*, atUint64);
+  ALTTPFileWriter(uint8_t*, uint64_t);
 
   /*! \brief This constructor creates an instance from a file on disk.
    *
@@ -40,7 +40,7 @@ private:
   void writeRoomFlags(ALTTPRoomFlags*);
   void writeOverworldEvent(ALTTPOverworldEvent*);
   void writeDungeonItems(ALTTPDungeonItemFlags);
-  atUint16 calculateChecksum(atUint32 game);
+  uint16_t calculateChecksum(uint32_t game);
 };
 
 } // namespace io

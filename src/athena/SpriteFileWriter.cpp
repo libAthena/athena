@@ -5,7 +5,7 @@
 #include "athena/SpriteFrame.hpp"
 
 namespace athena::io {
-SpriteFileWriter::SpriteFileWriter(atUint8* data, atUint64 length) : MemoryCopyWriter(data, length) {}
+SpriteFileWriter::SpriteFileWriter(uint8_t* data, uint64_t length) : MemoryCopyWriter(data, length) {}
 
 SpriteFileWriter::SpriteFileWriter(std::string_view filepath) : MemoryCopyWriter(filepath) {}
 

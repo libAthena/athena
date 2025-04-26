@@ -2,7 +2,7 @@
 #include "athena/Types.hpp"
 
 namespace ecc {
-void checkEC(atUint8* ng, atUint8* ap, atUint8* sig, atUint8* sigHash, bool& apValid, bool& ngValid);
-void makeECCert(atUint8* cert, atUint8* sig, const char* signer, const char* name, atUint8* priv, atUint32 keyId);
-void createECDSA(atUint8* R, atUint8* S, atUint8* k, atUint8* hash);
+void checkEC(uint8_t* ng, uint8_t* ap, uint8_t* sig, uint8_t* sigHash, bool& apValid, bool& ngValid);
+void makeECCert(uint8_t* cert, uint8_t* sig, const char* signer, const char* name, uint8_t* priv, uint32_t keyId);
+void createECDSA(uint8_t* R, uint8_t* S, uint8_t* k, uint8_t* hash);
 } // namespace ecc

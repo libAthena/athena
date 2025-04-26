@@ -31,7 +31,7 @@ public:
   void setParts(std::vector<SpritePart*> parts);
   std::vector<SpritePart*> parts() const;
 
-  atUint32 partCount() const;
+  uint32_t partCount() const;
 
   void setRoot(Sprite* root);
   Sprite* root() const;

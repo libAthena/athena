@@ -50,7 +50,7 @@ bool Dir::rm(std::string_view path) { return !(remove((m_path + "/" + path.data(
 
 bool Dir::touch() {
   std::srand(std::time(nullptr));
-  atUint64 tmp = utility::rand64();
+  uint64_t tmp = utility::rand64();
   std::string tmpFile = std::format("{:016X}.tmp", tmp);
   bool ret = FileInfo(m_path + "/" + tmpFile).touch();
   if (ret)

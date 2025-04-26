@@ -55,16 +55,16 @@ void Sprite::setStateIds(std::vector<int> ids) {
 
 std::vector<int> Sprite::stateIds() const { return m_stateIds; }
 
-atUint32 Sprite::stateCount() const { return (atUint32)m_stateIds.size(); }
+uint32_t Sprite::stateCount() const { return (uint32_t)m_stateIds.size(); }
 
-void Sprite::setCurrentState(const atUint32 id) {
+void Sprite::setCurrentState(const uint32_t id) {
   if (id >= m_stateIds.size())
     return;
 
   m_currentState = id;
 }
 
-atUint32 Sprite::currentState() const { return m_currentState; }
+uint32_t Sprite::currentState() const { return m_currentState; }
 
 bool Sprite::addFrame(SpriteFrame* part) {
   if (m_frames.size() > 65536)
@@ -89,7 +89,7 @@ bool Sprite::removeFrame(SpriteFrame* frame) {
   return false;
 }
 
-void Sprite::setFrame(atUint32 id) {
+void Sprite::setFrame(uint32_t id) {
   if (id > m_frames.size())
     return;
 }
@@ -110,14 +110,14 @@ void Sprite::setFrames(std::vector<SpriteFrame*> frames) {
   m_frames = frames;
 }
 
-atUint32 Sprite::frameCount() const { return (atUint32)m_frames.size(); }
+uint32_t Sprite::frameCount() const { return (uint32_t)m_frames.size(); }
 
 std::vector<SpriteFrame*> Sprite::frames() const { return m_frames; }
 
 SpriteFile* Sprite::container() const { return m_root; }
 
 void Sprite::setCurrentFrame(SpriteFrame* frame) {
-  atUint32 id = 0;
+  uint32_t id = 0;
 
   for (SpriteFrame* tmpFrame : m_frames) {
     if (tmpFrame == frame) {
@@ -129,7 +129,7 @@ void Sprite::setCurrentFrame(SpriteFrame* frame) {
   }
 }
 
-void Sprite::setCurrentFrame(atUint32 id) {
+void Sprite::setCurrentFrame(uint32_t id) {
   if (id >= m_frames.size())
     return;
 
@@ -142,7 +142,7 @@ void Sprite::advanceFrame() {
   m_currentFrame++;
 
   if (m_currentFrame >= m_frames.size())
-    m_currentFrame = (atUint32)m_frames.size() - 1;
+    m_currentFrame = (uint32_t)m_frames.size() - 1;
 }
 
 void Sprite::retreatFrame() {

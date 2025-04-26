@@ -92,7 +92,7 @@ struct ALTTPDungeonItemFlags {
       bool IcePalace : 1;
       bool SkullWoods : 1;
     };
-    atUint8 flags1;
+    uint8_t flags1;
   };
 
   union {
@@ -106,7 +106,7 @@ struct ALTTPDungeonItemFlags {
       bool HyruleCastle : 1; // unused exist in original game
       bool SewerPassage : 1; // unused exist in original game
     };
-    atUint8 flags2;
+    uint8_t flags2;
   };
 };
 

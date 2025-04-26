@@ -5,7 +5,7 @@
 
 namespace athena::io {
 
-SkywardSwordFileReader::SkywardSwordFileReader(atUint8* data, atUint64 length) : MemoryCopyReader(data, length) {
+SkywardSwordFileReader::SkywardSwordFileReader(uint8_t* data, uint64_t length) : MemoryCopyReader(data, length) {
   setEndian(Endian::Big);
 }
 
@@ -21,7 +21,7 @@ SkywardSwordFile* SkywardSwordFileReader::read() {
     return nullptr;
   }
 
-  atUint32 magic = readUint32();
+  uint32_t magic = readUint32();
 
   if (magic != SkywardSwordFile::USMagic && magic != SkywardSwordFile::JAMagic && magic != SkywardSwordFile::EUMagic) {
     atError("Not a valid Skyward Sword save file");
@@ -29,7 +29,7 @@ SkywardSwordFile* SkywardSwordFileReader::read() {
   }
 
   seek(0x01C, SeekOrigin::Begin);
-  atUint32 headerSize = readUint32(); // Seems to be (headerSize - 1)
+  uint32_t headerSize = readUint32(); // Seems to be (headerSize - 1)
 
   if (headerSize != 0x1D) {
     atError("Invalid header size, Corrupted data?");
@@ -44,7 +44,7 @@ SkywardSwordFile* SkywardSwordFileReader::read() {
 
   for (int i = 0; i < 3; i++) {
     SkywardSwordQuest* q = new SkywardSwordQuest(readUBytes(0x53C0), 0x53C0);
-    atUint64 pos = position();
+    uint64_t pos = position();
     // seek to the skip data for this particular quest
     seek(0xFB60 + (i * 0x24), SeekOrigin::Begin);
     q->setSkipData(readUBytes(0x24));

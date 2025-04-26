@@ -18,24 +18,24 @@ public:
   /*!
    * \brief The current major version of the ZQuest format
    */
-  static const atUint32 Major;
+  static const uint32_t Major;
   /*!
    * \brief The current minor version of the ZQuest format
    */
-  static const atUint32 Minor;
+  static const uint32_t Minor;
   /*!
    * \brief The current revision of the ZQuest format
    */
-  static const atUint32 Revision;
+  static const uint32_t Revision;
   /*!
    * \brief The current version of the ZQuest format
    */
-  static const atUint32 Version;
+  static const uint32_t Version;
 
   /*!
    * \brief The magic number used to identify the file e.g. "ZQS1"
    */
-  static const atUint32 Magic;
+  static const uint32_t Magic;
 
   /*!
    * \enum Game
@@ -79,7 +79,7 @@ public:
    * \param data
    * \param length
    */
-  ZQuestFile(Game game, Endian endian, std::unique_ptr<atUint8[]>&& data, atUint32 length,
+  ZQuestFile(Game game, Endian endian, std::unique_ptr<uint8_t[]>&& data, uint32_t length,
              const std::string& gameString = std::string());
 
   /*!
@@ -111,19 +111,19 @@ public:
    * \param data   The data to assign
    * \param length The length of the data
    */
-  void setData(std::unique_ptr<atUint8[]>&& data, atUint32 length);
+  void setData(std::unique_ptr<uint8_t[]>&& data, uint32_t length);
 
   /*!
    * \brief data
    * \return
    */
-  atUint8* data() const;
+  uint8_t* data() const;
 
   /*!
    * \brief length
    * \return
    */
-  atUint32 length() const;
+  uint32_t length() const;
 
   void setGameString(const std::string& gameString);
   /*!
@@ -138,8 +138,8 @@ protected:
   Game m_game;
   std::string m_gameString;
   Endian m_endian;
-  std::unique_ptr<atUint8[]> m_data;
-  atUint32 m_length;
+  std::unique_ptr<uint8_t[]> m_data;
+  uint32_t m_length;
 
   // Game strings support
 };

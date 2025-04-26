@@ -2,10 +2,10 @@
 
 #include "athena/Types.hpp"
 namespace bignum {
-int compare(const atUint8* a, const atUint8* b, atUint32 n);
-void subModulus(atUint8* a, const atUint8* N, atUint32 n);
-void add(atUint8* d, atUint8* a, const atUint8* b, const atUint8* N, atUint32 n);
-void mul(atUint8* d, atUint8* a, const atUint8* b, const atUint8* N, atUint32 n);
-void exp(atUint8* d, const atUint8* a, const atUint8* N, atUint32 n, atUint8* e, atUint32 en);
-void inv(atUint8* d, atUint8* a, const atUint8* N, atUint32 n);
+int compare(const uint8_t* a, const uint8_t* b, uint32_t n);
+void subModulus(uint8_t* a, const uint8_t* N, uint32_t n);
+void add(uint8_t* d, uint8_t* a, const uint8_t* b, const uint8_t* N, uint32_t n);
+void mul(uint8_t* d, uint8_t* a, const uint8_t* b, const uint8_t* N, uint32_t n);
+void exp(uint8_t* d, const uint8_t* a, const uint8_t* N, uint32_t n, uint8_t* e, uint32_t en);
+void inv(uint8_t* d, uint8_t* a, const uint8_t* N, uint32_t n);
 } // namespace bignum

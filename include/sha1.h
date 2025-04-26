@@ -37,7 +37,7 @@ void SHA1Input(SHA1Context*,
 
 
 
-atUint8* getSha1(atUint8* stuff, atUint32 stuff_size);
+uint8_t* getSha1(uint8_t* stuff, uint32_t stuff_size);
 
 #ifdef __cplusplus
 }

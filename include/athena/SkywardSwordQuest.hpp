@@ -11,40 +11,40 @@ class SkywardSwordQuest : public ZQuestFile {
 public:
   enum AmmoType { Arrows, Bombs, Seeds };
 
-  SkywardSwordQuest(std::unique_ptr<atUint8[]>&& data, atUint32 len);
+  SkywardSwordQuest(std::unique_ptr<uint8_t[]>&& data, uint32_t len);
 
   void setPlayerName(const std::string& name);
   std::string playerName() const;
 
-  void setRupeeCount(atUint16 value);
-  atUint16 rupeeCount();
-  void setAmmoCount(AmmoType type, atUint32 count);
-  atUint32 ammoCount(AmmoType type);
-  void setMaxHP(atUint16 val);
-  atUint16 maxHP();
+  void setRupeeCount(uint16_t value);
+  uint16_t rupeeCount();
+  void setAmmoCount(AmmoType type, uint32_t count);
+  uint32_t ammoCount(AmmoType type);
+  void setMaxHP(uint16_t val);
+  uint16_t maxHP();
   float maxHearts();
-  void setSpawnHP(atUint16 val);
-  atUint16 spawnHP();
+  void setSpawnHP(uint16_t val);
+  uint16_t spawnHP();
   float spawnHearts();
-  void setCurrentHP(atUint16 val);
-  atUint16 currentHP();
+  void setCurrentHP(uint16_t val);
+  uint16_t currentHP();
   float currentHearts();
   std::string currentLocation();
   std::string currentArea();
   std::string currentLocationCopy();
 
-  void setSkipData(std::unique_ptr<atUint8[]>&& data);
-  atUint8* skipData() const;
+  void setSkipData(std::unique_ptr<uint8_t[]>&& data);
+  uint8_t* skipData() const;
 
-  atUint32 slotChecksum();
-  atUint32 skipChecksum();
+  uint32_t slotChecksum();
+  uint32_t skipChecksum();
   void fixChecksums();
 
   void setNew(bool isNew);
   bool isNew() const;
 
 private:
-  std::unique_ptr<atUint8[]> m_skipData;
+  std::unique_ptr<uint8_t[]> m_skipData;
 };
 
 } // namespace athena

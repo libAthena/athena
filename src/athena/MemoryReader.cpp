@@ -9,7 +9,7 @@
 #endif // HW_RVL
 
 namespace athena::io {
-MemoryReader::MemoryReader(const void* data, atUint64 length, bool takeOwnership, bool globalErr)
+MemoryReader::MemoryReader(const void* data, uint64_t length, bool takeOwnership, bool globalErr)
 : m_data(data), m_length(length), m_position(0), m_owns(takeOwnership), m_globalErr(globalErr) {
   if (!data) {
     if (m_globalErr)
@@ -21,10 +21,10 @@ MemoryReader::MemoryReader(const void* data, atUint64 length, bool takeOwnership
 
 MemoryReader::~MemoryReader() {
   if (m_owns)
-    delete[] static_cast<const atUint8*>(m_data);
+    delete[] static_cast<const uint8_t*>(m_data);
 }
 
-MemoryCopyReader::MemoryCopyReader(const void* data, atUint64 length) : MemoryReader(data, length, false) {
+MemoryCopyReader::MemoryCopyReader(const void* data, uint64_t length) : MemoryReader(data, length, false) {
   if (!data) {
     if (m_globalErr)
       atError("data cannot be NULL");
@@ -32,15 +32,15 @@ MemoryCopyReader::MemoryCopyReader(const void* data, atUint64 length) : MemoryRe
     return;
   }
 
-  m_dataCopy.reset(new atUint8[m_length]);
+  m_dataCopy.reset(new uint8_t[m_length]);
   m_data = m_dataCopy.get();
   memmove(m_dataCopy.get(), data, m_length);
 }
 
-void MemoryReader::seek(atInt64 position, SeekOrigin origin) {
+void MemoryReader::seek(int64_t position, SeekOrigin origin) {
   switch (origin) {
   case SeekOrigin::Begin:
-    if ((position < 0 || atInt64(position) > atInt64(m_length))) {
+    if ((position < 0 || int64_t(position) > int64_t(m_length))) {
       if (m_globalErr)
         atFatal("Position {:08X} outside stream bounds ", position);
       m_position = m_length;
@@ -48,11 +48,11 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin) {
       return;
     }
 
-    m_position = atUint64(position);
+    m_position = uint64_t(position);
     break;
 
   case SeekOrigin::Current:
-    if (((atInt64(m_position) + position) < 0 || (m_position + atUint64(position)) > m_length)) {
+    if (((int64_t(m_position) + position) < 0 || (m_position + uint64_t(position)) > m_length)) {
       if (m_globalErr)
         atFatal("Position {:08X} outside stream bounds ", position);
       m_position = (position < 0 ? 0 : m_length);
@@ -64,7 +64,7 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin) {
     break;
 
   case SeekOrigin::End:
-    if ((((atInt64)m_length - position < 0) || (m_length - position) > m_length)) {
+    if ((((int64_t)m_length - position < 0) || (m_length - position) > m_length)) {
       if (m_globalErr)
         atFatal("Position {:08X} outside stream bounds ", position);
       m_position = m_length;
@@ -77,31 +77,31 @@ void MemoryReader::seek(atInt64 position, SeekOrigin origin) {
   }
 }
 
-void MemoryReader::setData(const atUint8* data, atUint64 length, bool takeOwnership) {
+void MemoryReader::setData(const uint8_t* data, uint64_t length, bool takeOwnership) {
   if (m_owns)
-    delete[] static_cast<const atUint8*>(m_data);
-  m_data = (atUint8*)data;
+    delete[] static_cast<const uint8_t*>(m_data);
+  m_data = (uint8_t*)data;
   m_length = length;
   m_position = 0;
   m_owns = takeOwnership;
 }
 
-void MemoryCopyReader::setData(const atUint8* data, atUint64 length) {
-  m_dataCopy.reset(new atUint8[length]);
+void MemoryCopyReader::setData(const uint8_t* data, uint64_t length) {
+  m_dataCopy.reset(new uint8_t[length]);
   m_data = m_dataCopy.get();
   memmove(m_dataCopy.get(), data, length);
   m_length = length;
   m_position = 0;
 }
 
-atUint8* MemoryReader::data() const {
-  atUint8* ret = new atUint8[m_length];
+uint8_t* MemoryReader::data() const {
+  uint8_t* ret = new uint8_t[m_length];
   memset(ret, 0, m_length);
   memmove(ret, m_data, m_length);
   return ret;
 }
 
-atUint64 MemoryReader::readUBytesToBuf(void* buf, atUint64 length) {
+uint64_t MemoryReader::readUBytesToBuf(void* buf, uint64_t length) {
   if (m_position >= m_length) {
     if (m_globalErr)
       atError("Position {:08X} outside stream bounds ", m_position);
@@ -111,14 +111,14 @@ atUint64 MemoryReader::readUBytesToBuf(void* buf, atUint64 length) {
   }
 
   length = std::min(length, m_length - m_position);
-  memmove(buf, static_cast<const atUint8*>(m_data) + m_position, length);
+  memmove(buf, static_cast<const uint8_t*>(m_data) + m_position, length);
   m_position += length;
   return length;
 }
 
 void MemoryCopyReader::loadData() {
   FILE* in;
-  atUint64 length;
+  uint64_t length;
   in = fopen(m_filepath.c_str(), "rb");
 
   if (!in) {
@@ -131,17 +131,17 @@ void MemoryCopyReader::loadData() {
   rewind(in);
 
   length = utility::fileSize(m_filepath);
-  m_dataCopy.reset(new atUint8[length]);
+  m_dataCopy.reset(new uint8_t[length]);
   m_data = m_dataCopy.get();
 
-  atUint64 done = 0;
-  atUint64 blocksize = BLOCKSZ;
+  uint64_t done = 0;
+  uint64_t blocksize = BLOCKSZ;
 
   do {
     if (blocksize > length - done)
       blocksize = length - done;
 
-    atInt64 ret = fread(m_dataCopy.get() + done, 1, blocksize, in);
+    int64_t ret = fread(m_dataCopy.get() + done, 1, blocksize, in);
 
     if (ret < 0) {
       if (m_globalErr)

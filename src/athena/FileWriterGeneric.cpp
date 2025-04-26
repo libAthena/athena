@@ -3,7 +3,7 @@
 #include <cstring>
 
 namespace athena::io {
-void TransactionalFileWriter::seek(atInt64 pos, SeekOrigin origin) {
+void TransactionalFileWriter::seek(int64_t pos, SeekOrigin origin) {
   switch (origin) {
   case SeekOrigin::Begin:
     m_position = pos;
@@ -16,8 +16,8 @@ void TransactionalFileWriter::seek(atInt64 pos, SeekOrigin origin) {
   }
 }
 
-void TransactionalFileWriter::writeUBytes(const atUint8* data, atUint64 len) {
-  atUint64 neededSz = m_position + len;
+void TransactionalFileWriter::writeUBytes(const uint8_t* data, uint64_t len) {
+  uint64_t neededSz = m_position + len;
   if (neededSz > m_deferredBuffer.size()) {
     m_deferredBuffer.reserve(neededSz * 2);
     m_deferredBuffer.resize(neededSz);

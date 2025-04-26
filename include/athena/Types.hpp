@@ -3,15 +3,6 @@
 #include <cinttypes>
 #include <cstdint>
 
-using atInt8 = std::int8_t;
-using atUint8 = std::uint8_t;
-using atInt16 = std::int16_t;
-using atUint16 = std::uint16_t;
-using atInt32 = std::int32_t;
-using atUint32 = std::uint32_t;
-using atInt64 = std::int64_t;
-using atUint64 = std::uint64_t;
-
 // Vector types
 #include "simd/simd.hpp"
 struct atVec2f {

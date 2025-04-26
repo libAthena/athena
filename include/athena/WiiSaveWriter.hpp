@@ -36,14 +36,14 @@ public:
    * \param filepath
    * \return
    */
-  bool writeSave(WiiSave* save, atUint8* macAddress, atUint32 ngId, atUint8* ngPriv, atUint8* ngSig, atUint32 ngKeyId,
+  bool writeSave(WiiSave* save, uint8_t* macAddress, uint32_t ngId, uint8_t* ngPriv, uint8_t* ngSig, uint32_t ngKeyId,
                  const std::string& filepath = "");
 
 private:
   void writeBanner(WiiBanner* banner);
-  atUint32 writeFile(WiiFile* file);
+  uint32_t writeFile(WiiFile* file);
   void writeImage(WiiImage* image);
-  void writeCerts(atUint32 filesSize, atUint32 ngId, atUint8* ngPriv, atUint8* ngSig, atUint32 ngKeyId);
+  void writeCerts(uint32_t filesSize, uint32_t ngId, uint8_t* ngPriv, uint8_t* ngSig, uint32_t ngKeyId);
 };
 
 } // namespace io

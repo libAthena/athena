@@ -20,7 +20,7 @@ public:
    * \param data
    * \param length
    */
-  ZQuestFileReader(atUint8* data, atUint64 length);
+  ZQuestFileReader(uint8_t* data, uint64_t length);
 
   /*!
    * \brief ZQuestFileReader

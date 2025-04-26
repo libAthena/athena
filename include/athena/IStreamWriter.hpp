@@ -19,7 +19,7 @@ public:
    *  @param position where in the buffer to seek
    *  @param origin The location to seek relative to
    */
-  void seek(atInt64 position, SeekOrigin origin = SeekOrigin::Current) override = 0;
+  void seek(int64_t position, SeekOrigin origin = SeekOrigin::Current) override = 0;
 
   /** @brief Sets the buffers position relative to the next 32-byte aligned position.<br />
    */
@@ -27,11 +27,11 @@ public:
 
   /** @brief Writes zero up to specified absolute offset.<br />
    */
-  void writeZeroTo(atInt64 pos) {
-    atInt64 delta = pos - position();
+  void writeZeroTo(int64_t pos) {
+    int64_t delta = pos - position();
     if (delta <= 0)
       return;
-    for (atInt64 i = 0; i < delta; ++i)
+    for (int64_t i = 0; i < delta; ++i)
       writeUByte(0);
   }
 
@@ -45,29 +45,29 @@ public:
    *
    *  @return The current position in the stream.
    */
-  atUint64 position() const override = 0;
+  uint64_t position() const override = 0;
 
   /** @brief Returns whether or not the stream is at the end.
    *
    *  @return True if at end; False otherwise.
    */
-  atUint64 length() const override = 0;
+  uint64_t length() const override = 0;
 
   /** @brief Writes a byte at the current position and advances the position by one byte.
    *  @param val The value to write
    */
-  void writeUByte(atUint8 val) { writeUBytes(&val, 1); }
-  void writeVal(atUint8 val) { writeUByte(val); }
-  void writeValLittle(atUint8 val) { writeUByte(val); }
-  void writeValBig(atUint8 val) { writeUByte(val); }
+  void writeUByte(uint8_t val) { writeUBytes(&val, 1); }
+  void writeVal(uint8_t val) { writeUByte(val); }
+  void writeValLittle(uint8_t val) { writeUByte(val); }
+  void writeValBig(uint8_t val) { writeUByte(val); }
 
   /** @brief Writes a byte at the current position and advances the position by one byte.
    *  @param val The value to write
    */
-  void writeByte(atInt8 val) { writeUByte(val); }
-  void writeVal(atInt8 val) { writeByte(val); }
-  void writeValLittle(atInt8 val) { writeByte(val); }
-  void writeValBig(atInt8 val) { writeByte(val); }
+  void writeByte(int8_t val) { writeUByte(val); }
+  void writeVal(int8_t val) { writeByte(val); }
+  void writeValLittle(int8_t val) { writeByte(val); }
+  void writeValBig(int8_t val) { writeByte(val); }
 
   /** @brief Writes the given buffer with the specified length, buffers can be bigger than the length
    *  however it's undefined behavior to try and write a buffer which is smaller than the given length.
@@ -75,7 +75,7 @@ public:
    *  @param data The buffer to write
    *  @param length The amount to write
    */
-  virtual void writeUBytes(const atUint8* data, atUint64 length) = 0;
+  virtual void writeUBytes(const uint8_t* data, uint64_t length) = 0;
 
   /** @brief Writes the given buffer with the specified length, buffers can be bigger than the length
    *  however it's undefined behavior to try and write a buffer which is smaller than the given length.
@@ -83,14 +83,14 @@ public:
    *  @param data The buffer to write
    *  @param length The amount to write
    */
-  void writeBytes(const void* data, atUint64 length) { writeUBytes(reinterpret_cast<const atUint8*>(data), length); }
+  void writeBytes(const void* data, uint64_t length) { writeUBytes(reinterpret_cast<const uint8_t*>(data), length); }
 
   /** @brief Writes an Int16 to the buffer and advances the buffer.
    *         It also swaps the bytes depending on the platform and Stream settings.
    *
    *  @param val The value to write to the buffer
    */
-  void writeInt16(atInt16 val) {
+  void writeInt16(int16_t val) {
     if (m_endian == Endian::Big) {
       utility::BigInt16(val);
     } else {
@@ -98,60 +98,60 @@ public:
     }
     writeBytes(&val, sizeof(val));
   }
-  void writeVal(atInt16 val) { writeInt16(val); }
+  void writeVal(int16_t val) { writeInt16(val); }
 
   /** @brief Writes an Int16 to the buffer and advances the buffer.
    *         It also swaps the bytes against little depending on the platform.
    *
    *  @param val The value to write to the buffer
    */
-  void writeInt16Little(atInt16 val) {
+  void writeInt16Little(int16_t val) {
     utility::LittleInt16(val);
     writeBytes(&val, sizeof(val));
   }
-  void writeValLittle(atInt16 val) { writeInt16Little(val); }
+  void writeValLittle(int16_t val) { writeInt16Little(val); }
 
   /** @brief Writes an Int16 to the buffer and advances the buffer.
    *         It also swaps the bytes against big depending on the platform.
    *
    *  @param val The value to write to the buffer
    */
-  void writeInt16Big(atInt16 val) {
+  void writeInt16Big(int16_t val) {
     utility::BigInt16(val);
     writeBytes(&val, sizeof(val));
   }
-  void writeValBig(atInt16 val) { writeInt16Big(val); }
+  void writeValBig(int16_t val) { writeInt16Big(val); }
 
   /** @brief Writes an Uint16 to the buffer and advances the buffer.
    *         It also swaps the bytes depending on the platform and Stream settings
    *
    *  @param val The value to write to the buffer
    */
-  void writeUint16(atUint16 val) { writeInt16(val); }
-  void writeVal(atUint16 val) { writeUint16(val); }
+  void writeUint16(uint16_t val) { writeInt16(val); }
+  void writeVal(uint16_t val) { writeUint16(val); }
 
   /** @brief Writes an Uint16 to the buffer and advances the buffer.
    *         It also swaps the bytes against little depending on the platform
    *
    *  @param val The value to write to the buffer
    */
-  void writeUint16Little(atUint16 val) { writeInt16Little(val); }
-  void writeValLittle(atUint16 val) { writeUint16Little(val); }
+  void writeUint16Little(uint16_t val) { writeInt16Little(val); }
+  void writeValLittle(uint16_t val) { writeUint16Little(val); }
 
   /** @brief Writes an Uint16 to the buffer and advances the buffer.
    *         It also swaps the bytes against big depending on the platform
    *
    *  @param val The value to write to the buffer
    */
-  void writeUint16Big(atUint16 val) { writeInt16Big(val); }
-  void writeValBig(atUint16 val) { writeUint16Big(val); }
+  void writeUint16Big(uint16_t val) { writeInt16Big(val); }
+  void writeValBig(uint16_t val) { writeUint16Big(val); }
 
   /** @brief Writes an Int32 to the buffer and advances the buffer.
    *         It also swaps the bytes depending on the platform and Stream settings.
    *
    *  @param val The value to write to the buffer
    */
-  void writeInt32(atInt32 val) {
+  void writeInt32(int32_t val) {
     if (m_endian == Endian::Big) {
       utility::BigInt32(val);
     } else {
@@ -159,60 +159,60 @@ public:
     }
     writeBytes(&val, sizeof(val));
   }
-  void writeVal(atInt32 val) { writeInt32(val); }
+  void writeVal(int32_t val) { writeInt32(val); }
 
   /** @brief Writes an Int32 to the buffer and advances the buffer.
    *         It also swaps the bytes against little depending on the platform.
    *
    *  @param val The value to write to the buffer
    */
-  void writeInt32Little(atInt32 val) {
+  void writeInt32Little(int32_t val) {
     utility::LittleInt32(val);
     writeBytes(&val, sizeof(val));
   }
-  void writeValLittle(atInt32 val) { writeInt32Little(val); }
+  void writeValLittle(int32_t val) { writeInt32Little(val); }
 
   /** @brief Writes an Int32 to the buffer and advances the buffer.
    *         It also swaps the bytes against big depending on the platform.
    *
    *  @param val The value to write to the buffer
    */
-  void writeInt32Big(atInt32 val) {
+  void writeInt32Big(int32_t val) {
     utility::BigInt32(val);
     writeBytes(&val, sizeof(val));
   }
-  void writeValBig(atInt32 val) { writeInt32Big(val); }
+  void writeValBig(int32_t val) { writeInt32Big(val); }
 
   /** @brief Writes an Uint32 to the buffer and advances the buffer.
    *         It also swaps the bytes depending on the platform and Stream settings.
    *
    *  @param val The value to write to the buffer
    */
-  void writeUint32(atUint32 val) { writeInt32(val); }
-  void writeVal(atUint32 val) { writeUint32(val); }
+  void writeUint32(uint32_t val) { writeInt32(val); }
+  void writeVal(uint32_t val) { writeUint32(val); }
 
   /** @brief Writes an Uint32 to the buffer and advances the buffer.
    *         It also swaps the bytes against little depending on the platform.
    *
    *  @param val The value to write to the buffer
    */
-  void writeUint32Little(atUint32 val) { writeInt32Little(val); }
-  void writeValLittle(atUint32 val) { writeUint32Little(val); }
+  void writeUint32Little(uint32_t val) { writeInt32Little(val); }
+  void writeValLittle(uint32_t val) { writeUint32Little(val); }
 
   /** @brief Writes an Uint32 to the buffer and advances the buffer.
    *         It also swaps the bytes against big depending on the platform.
    *
    *  @param val The value to write to the buffer
    */
-  void writeUint32Big(atUint32 val) { writeInt32Big(val); }
-  void writeValBig(atUint32 val) { writeUint32Big(val); }
+  void writeUint32Big(uint32_t val) { writeInt32Big(val); }
+  void writeValBig(uint32_t val) { writeUint32Big(val); }
 
   /** @brief Writes an Int64 to the buffer and advances the buffer.
    *         It also swaps the bytes depending on the platform and Stream settings.
    *
    *  @param val The value to write to the buffer
    */
-  void writeInt64(atInt64 val) {
+  void writeInt64(int64_t val) {
     if (m_endian == Endian::Big) {
       utility::BigInt64(val);
     } else {
@@ -220,53 +220,53 @@ public:
     }
     writeBytes(&val, sizeof(val));
   }
-  void writeVal(atInt64 val) { writeInt64(val); }
+  void writeVal(int64_t val) { writeInt64(val); }
 
   /** @brief Writes an Int64 to the buffer and advances the buffer.
    *         It also swaps the bytes against little depending on the platform.
    *
    *  @param val The value to write to the buffer
    */
-  void writeInt64Little(atInt64 val) {
+  void writeInt64Little(int64_t val) {
     utility::LittleInt64(val);
     writeBytes(&val, sizeof(val));
   }
-  void writeValLittle(atInt64 val) { writeInt64Little(val); }
+  void writeValLittle(int64_t val) { writeInt64Little(val); }
 
   /** @brief Writes an Int64 to the buffer and advances the buffer.
    *         It also swaps the bytes against big depending on the platform.
    *
    *  @param val The value to write to the buffer
    */
-  void writeInt64Big(atInt64 val) {
+  void writeInt64Big(int64_t val) {
     utility::BigInt64(val);
     writeBytes(&val, sizeof(val));
   }
-  void writeValBig(atInt64 val) { writeInt64Big(val); }
+  void writeValBig(int64_t val) { writeInt64Big(val); }
 
   /** @brief Writes an Uint64 to the buffer and advances the buffer.
    *         It also swaps the bytes depending on the platform and Stream settings.
    *
    *  @param val The value to write to the buffer
    */
-  void writeUint64(atUint64 val) { writeInt64(val); }
-  void writeVal(atUint64 val) { writeUint64(val); }
+  void writeUint64(uint64_t val) { writeInt64(val); }
+  void writeVal(uint64_t val) { writeUint64(val); }
 
   /** @brief Writes an Uint64 to the buffer and advances the buffer.
    *         It also swaps the bytes against little depending on the platform.
    *
    *  @param val The value to write to the buffer
    */
-  void writeUint64Little(atUint64 val) { writeInt64Little(val); }
-  void writeValLittle(atUint64 val) { writeUint64Little(val); }
+  void writeUint64Little(uint64_t val) { writeInt64Little(val); }
+  void writeValLittle(uint64_t val) { writeUint64Little(val); }
 
   /** @brief Writes an Uint64 to the buffer and advances the buffer.
    *         It also swaps the bytes against big depending on the platform.
    *
    *  @param val The value to write to the buffer
    */
-  void writeUint64Big(atUint64 val) { writeInt64Big(val); }
-  void writeValBig(atUint64 val) { writeUint64Big(val); }
+  void writeUint64Big(uint64_t val) { writeInt64Big(val); }
+  void writeValBig(uint64_t val) { writeUint64Big(val); }
 
   /** @brief Writes an float to the buffer and advances the buffer.
    *         It also swaps the bytes depending on the platform and Stream settings.
@@ -348,7 +348,7 @@ public:
    *  @param val The value to write to the buffer
    */
   void writeBool(bool val) {
-    const auto u8Value = atUint8(val);
+    const auto u8Value = uint8_t(val);
     writeUBytes(&u8Value, sizeof(u8Value));
   }
   void writeVal(bool val) { writeBool(val); }
@@ -651,7 +651,7 @@ public:
    *
    *  Endianness is set with setEndian
    */
-  void writeStringAsWString(std::string_view str, atInt32 fixedLen = -1) {
+  void writeStringAsWString(std::string_view str, int32_t fixedLen = -1) {
     if (fixedLen == 0)
       return;
     std::string tmpStr = std::string("\xEF\xBB\xBF") + str.data();
@@ -666,11 +666,11 @@ public:
         }
         buf += len;
         if (wc != 0xFEFF)
-          writeUint16(atUint16(wc));
+          writeUint16(uint16_t(wc));
       }
       writeUint16(0);
     } else {
-      for (atInt32 i = 0; i < fixedLen; ++i) {
+      for (int32_t i = 0; i < fixedLen; ++i) {
         utf8proc_int32_t wc = 0;
         if (*buf) {
           utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
@@ -686,7 +686,7 @@ public:
           continue;
         }
 
-        writeUint16(atUint16(wc));
+        writeUint16(uint16_t(wc));
       }
     }
   }
@@ -699,7 +699,7 @@ public:
    *
    *  Endianness is little
    */
-  void writeStringAsWStringLittle(std::string_view str, atInt32 fixedLen = -1) {
+  void writeStringAsWStringLittle(std::string_view str, int32_t fixedLen = -1) {
     if (fixedLen == 0)
       return;
     std::string tmpStr = std::string("\xEF\xBB\xBF") + str.data();
@@ -714,11 +714,11 @@ public:
         }
         buf += len;
         if (wc != 0xFEFF)
-          writeUint16Little(atUint16(wc));
+          writeUint16Little(uint16_t(wc));
       }
       writeUint16Little(0);
     } else {
-      for (atInt32 i = 0; i < fixedLen; ++i) {
+      for (int32_t i = 0; i < fixedLen; ++i) {
         utf8proc_int32_t wc = 0;
         if (*buf) {
           utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
@@ -734,7 +734,7 @@ public:
           continue;
         }
 
-        writeUint16Little(atUint16(wc));
+        writeUint16Little(uint16_t(wc));
       }
     }
   }
@@ -747,7 +747,7 @@ public:
    *
    *  Endianness is big
    */
-  void writeStringAsWStringBig(std::string_view str, atInt32 fixedLen = -1) {
+  void writeStringAsWStringBig(std::string_view str, int32_t fixedLen = -1) {
     if (fixedLen == 0)
       return;
 
@@ -763,11 +763,11 @@ public:
         }
         buf += len;
         if (wc != 0xFEFF)
-          writeUint16Big(atUint16(wc));
+          writeUint16Big(uint16_t(wc));
       }
       writeUint16Big(0);
     } else {
-      for (atInt32 i = 0; i < fixedLen; ++i) {
+      for (int32_t i = 0; i < fixedLen; ++i) {
         utf8proc_int32_t wc = 0;
         if (*buf) {
           utf8proc_ssize_t len = utf8proc_iterate(buf, -1, &wc);
@@ -783,7 +783,7 @@ public:
           continue;
         }
 
-        writeUint16Big(atUint16(wc));
+        writeUint16Big(uint16_t(wc));
       }
     }
   }
@@ -793,12 +793,12 @@ public:
    *  @param str The string to write to the buffer
    *  @param fixedLen If not -1, the number of characters to zero-fill string to
    */
-  void writeString(std::string_view str, atInt32 fixedLen = -1) {
+  void writeString(std::string_view str, int32_t fixedLen = -1) {
     if (fixedLen == 0)
       return;
 
     if (fixedLen < 0) {
-      for (atUint8 c : str) {
+      for (uint8_t c : str) {
         writeUByte(c);
 
         if (c == '\0')
@@ -807,8 +807,8 @@ public:
       writeUByte(0);
     } else {
       auto it = str.begin();
-      for (atInt32 i = 0; i < fixedLen; ++i) {
-        atUint8 chr;
+      for (int32_t i = 0; i < fixedLen; ++i) {
+        uint8_t chr;
         if (it == str.end())
           chr = 0;
         else
@@ -826,12 +826,12 @@ public:
    *
    *  Endianness is set with setEndian
    */
-  void writeWString(std::wstring_view str, atInt32 fixedLen = -1) {
+  void writeWString(std::wstring_view str, int32_t fixedLen = -1) {
     if (fixedLen == 0)
       return;
 
     if (fixedLen < 0) {
-      for (atUint16 c : str) {
+      for (uint16_t c : str) {
         writeUint16(c);
 
         if (c == L'\0')
@@ -840,8 +840,8 @@ public:
       writeUint16(0);
     } else {
       auto it = str.begin();
-      for (atInt32 i = 0; i < fixedLen; ++i) {
-        atUint16 chr;
+      for (int32_t i = 0; i < fixedLen; ++i) {
+        uint16_t chr;
         if (it == str.end())
           chr = 0;
         else
@@ -859,12 +859,12 @@ public:
    *
    *  Endianness is little
    */
-  void writeWStringLittle(std::wstring_view str, atInt32 fixedLen = -1) {
+  void writeWStringLittle(std::wstring_view str, int32_t fixedLen = -1) {
     if (fixedLen == 0)
       return;
 
     if (fixedLen < 0) {
-      for (atUint16 c : str) {
+      for (uint16_t c : str) {
         writeUint16Little(c);
 
         if (c == L'\0')
@@ -873,8 +873,8 @@ public:
       writeUint16Little(0);
     } else {
       auto it = str.begin();
-      for (atInt32 i = 0; i < fixedLen; ++i) {
-        atUint16 chr;
+      for (int32_t i = 0; i < fixedLen; ++i) {
+        uint16_t chr;
         if (it == str.end())
           chr = 0;
         else
@@ -892,7 +892,7 @@ public:
    *
    *  Endianness is big
    */
-  void writeWStringBig(std::wstring_view str, atInt32 fixedLen = -1) {
+  void writeWStringBig(std::wstring_view str, int32_t fixedLen = -1) {
     if (fixedLen == 0)
       return;
 
@@ -906,7 +906,7 @@ public:
       writeUint16Big(0);
     } else {
       auto it = str.begin();
-      for (atInt32 i = 0; i < fixedLen; ++i) {
+      for (int32_t i = 0; i < fixedLen; ++i) {
         wchar_t chr;
         if (it == str.end())
           chr = 0;
@@ -925,7 +925,7 @@ public:
    *
    *  Endianness is big
    */
-  void writeU16StringBig(std::u16string_view str, atInt32 fixedLen = -1) {
+  void writeU16StringBig(std::u16string_view str, int32_t fixedLen = -1) {
     if (fixedLen == 0)
       return;
 
@@ -939,7 +939,7 @@ public:
       writeUint16Big(0);
     } else {
       auto it = str.begin();
-      for (atInt32 i = 0; i < fixedLen; ++i) {
+      for (int32_t i = 0; i < fixedLen; ++i) {
         char16_t chr;
         if (it == str.end())
           chr = 0;
@@ -958,7 +958,7 @@ public:
    *
    *  Endianness is big
    */
-  void writeU32StringBig(std::u32string_view str, atInt32 fixedLen = -1) {
+  void writeU32StringBig(std::u32string_view str, int32_t fixedLen = -1) {
     if (fixedLen == 0)
       return;
 
@@ -972,7 +972,7 @@ public:
       writeUint32Big(0);
     } else {
       auto it = str.begin();
-      for (atInt32 i = 0; i < fixedLen; ++i) {
+      for (int32_t i = 0; i < fixedLen; ++i) {
         char32_t chr;
         if (it == str.end())
           chr = 0;
@@ -984,15 +984,15 @@ public:
   }
   void writeValBig(std::u32string_view val) { writeU32StringBig(val); }
 
-  void fill(atUint8 val, atUint64 length) {
+  void fill(uint8_t val, uint64_t length) {
     if (length == 0)
       return;
 
-    const std::vector<atUint8> tmp(length, val);
+    const std::vector<uint8_t> tmp(length, val);
     writeUBytes(tmp.data(), length);
   }
 
-  void fill(atInt8 val, atUint64 length) { fill((atUint8)val, length); }
+  void fill(int8_t val, uint64_t length) { fill((uint8_t)val, length); }
 
   /** @brief Performs automatic std::vector enumeration writes using numeric type T
    *  @param vector The std::vector read from when writing data

@@ -11,7 +11,7 @@ namespace io {
 
 class SpriteFileReader : public MemoryCopyReader {
 public:
-  SpriteFileReader(atUint8* data, atUint64 length);
+  SpriteFileReader(uint8_t* data, uint64_t length);
   SpriteFileReader(const std::string& filepath);
 
   Sakura::SpriteFile* readFile();

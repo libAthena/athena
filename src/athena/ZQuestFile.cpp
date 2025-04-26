@@ -27,17 +27,17 @@ void initGameStrings() {
   GameStrings.push_back("A Link Between Worlds");
 }
 
-const atUint32 ZQuestFile::Major = 2;
-const atUint32 ZQuestFile::Minor = 0;
-const atUint32 ZQuestFile::Revision = 0;
+const uint32_t ZQuestFile::Major = 2;
+const uint32_t ZQuestFile::Minor = 0;
+const uint32_t ZQuestFile::Revision = 0;
 
-const atUint32 ZQuestFile::Version = Major | (Minor << 8) | (Revision << 16);
+const uint32_t ZQuestFile::Version = Major | (Minor << 8) | (Revision << 16);
 
-const atUint32 ZQuestFile::Magic = 'Z' | ('Q' << 8) | ('S' << 16) | (('0' + ZQuestFile::Major) << 24);
+const uint32_t ZQuestFile::Magic = 'Z' | ('Q' << 8) | ('S' << 16) | (('0' + ZQuestFile::Major) << 24);
 
 ZQuestFile::ZQuestFile() : m_game(NoGame), m_endian(Endian::Little), m_length(0) { initGameStrings(); }
 
-ZQuestFile::ZQuestFile(ZQuestFile::Game game, Endian endian, std::unique_ptr<atUint8[]>&& data, atUint32 length,
+ZQuestFile::ZQuestFile(ZQuestFile::Game game, Endian endian, std::unique_ptr<uint8_t[]>&& data, uint32_t length,
                        const std::string& gameString)
 : m_game(game), m_gameString(gameString), m_endian(endian), m_data(std::move(data)), m_length(length) {
   initGameStrings();
@@ -61,14 +61,14 @@ void ZQuestFile::setEndian(Endian endian) { m_endian = endian; }
 
 Endian ZQuestFile::endian() const { return m_endian; }
 
-void ZQuestFile::setData(std::unique_ptr<atUint8[]>&& data, atUint32 length) {
+void ZQuestFile::setData(std::unique_ptr<uint8_t[]>&& data, uint32_t length) {
   m_data = std::move(data);
   m_length = length;
 }
 
-atUint8* ZQuestFile::data() const { return m_data.get(); }
+uint8_t* ZQuestFile::data() const { return m_data.get(); }
 
-atUint32 ZQuestFile::length() const { return m_length; }
+uint32_t ZQuestFile::length() const { return m_length; }
 
 void ZQuestFile::setGameString(const std::string& gameString) { m_gameString = gameString; }
 

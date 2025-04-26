@@ -33,7 +33,7 @@ public:
    * \param rf
    * \param id
    */
-  void setRoomFlags(ALTTPRoomFlags* rf, atUint32 id);
+  void setRoomFlags(ALTTPRoomFlags* rf, uint32_t id);
 
   /*!
    * \brief roomFlags
@@ -46,7 +46,7 @@ public:
    * \param id
    * \return
    */
-  ALTTPRoomFlags* roomFlags(atUint32 id);
+  ALTTPRoomFlags* roomFlags(uint32_t id);
 
   /*!
    * \brief setOverworldEvents
@@ -59,7 +59,7 @@ public:
    * \param ow
    * \param id
    */
-  void setOverworldEvents(ALTTPOverworldEvent* ow, atUint32 id);
+  void setOverworldEvents(ALTTPOverworldEvent* ow, uint32_t id);
 
   /*!
    * \brief overworldEvents
@@ -72,7 +72,7 @@ public:
    * \param id
    * \return
    */
-  ALTTPOverworldEvent* overworldEvent(atUint32 id) const;
+  ALTTPOverworldEvent* overworldEvent(uint32_t id) const;
 
   /*!
    * \brief setInventory
@@ -90,25 +90,25 @@ public:
    * \brief setRupeeMax
    * \param val
    */
-  void setRupeeMax(atUint16 val);
+  void setRupeeMax(uint16_t val);
 
   /*!
    * \brief rupeeMax
    * \return
    */
-  atUint16 rupeeMax() const;
+  uint16_t rupeeMax() const;
 
   /*!
    * \brief setRupeeCurrent
    * \param val
    */
-  void setRupeeCurrent(atUint16 val);
+  void setRupeeCurrent(uint16_t val);
 
   /*!
    * \brief rupeeCurrent
    * \return
    */
-  atUint16 rupeeCurrent() const;
+  uint16_t rupeeCurrent() const;
 
   /*!
    * \brief setCompasses
@@ -150,109 +150,109 @@ public:
    * \brief setWishingPond
    * \param val
    */
-  void setWishingPond(atUint16 val);
+  void setWishingPond(uint16_t val);
 
   /*!
    * \brief wishingPond
    * \return
    */
-  atUint16 wishingPond() const;
+  uint16_t wishingPond() const;
 
   /*!
    * \brief setHealthMax
    * \param val
    */
-  void setHealthMax(atUint8 val);
+  void setHealthMax(uint8_t val);
 
   /*!
    * \brief healthMax
    * \return
    */
-  atUint8 healthMax() const;
+  uint8_t healthMax() const;
 
   /*!
    * \brief setHealth
    * \param val
    */
-  void setHealth(atUint8 val);
+  void setHealth(uint8_t val);
 
   /*!
    * \brief health
    * \return
    */
-  atUint8 health() const;
+  uint8_t health() const;
 
   /*!
    * \brief setMagicPower
    * \param val
    */
-  void setMagicPower(atUint8 val);
+  void setMagicPower(uint8_t val);
 
   /*!
    * \brief magicPower
    * \return
    */
-  atUint8 magicPower() const;
+  uint8_t magicPower() const;
 
   /*!
    * \brief setKeys
    * \param val
    */
-  void setKeys(atUint8 val);
+  void setKeys(uint8_t val);
 
   /*!
    * \brief keys
    * \return
    */
-  atUint8 keys() const;
+  uint8_t keys() const;
 
   /*!
    * \brief setBombUpgrades
    * \param val
    */
-  void setBombUpgrades(atUint8 val);
+  void setBombUpgrades(uint8_t val);
 
   /*!
    * \brief bombUpgrades
    * \return
    */
-  atUint8 bombUpgrades() const;
+  uint8_t bombUpgrades() const;
 
   /*!
    * \brief setArrowUpgrades
    * \param val
    */
-  void setArrowUpgrades(atUint8 val);
+  void setArrowUpgrades(uint8_t val);
 
   /*!
    * \brief arrowUpgrades
    * \return
    */
-  atUint8 arrowUpgrades() const;
+  uint8_t arrowUpgrades() const;
 
   /*!
    * \brief setHealthFiller
    * \param val
    */
-  void setHealthFiller(atUint8 val);
+  void setHealthFiller(uint8_t val);
 
   /*!
    * \brief healthFiller
    * \return
    */
-  atUint8 healthFiller() const;
+  uint8_t healthFiller() const;
 
   /*!
    * \brief setMagicFiller
    * \param val
    */
-  void setMagicFiller(atUint8 val);
+  void setMagicFiller(uint8_t val);
 
   /*!
    * \brief magicFiller
    * \return
    */
-  atUint8 magicFiller() const;
+  uint8_t magicFiller() const;
 
   /*!
    * \brief setPendants
@@ -270,37 +270,37 @@ public:
    * \brief setBombFiller
    * \param val
    */
-  void setBombFiller(atUint8 val);
+  void setBombFiller(uint8_t val);
 
   /*!
    * \brief bombFiller
    * \return
    */
-  atUint8 bombFiller() const;
+  uint8_t bombFiller() const;
 
   /*!
    * \brief setArrowFiller
    * \param val
    */
-  void setArrowFiller(atUint8 val);
+  void setArrowFiller(uint8_t val);
 
   /*!
    * \brief arrowFiller
    * \return
    */
-  atUint8 arrowFiller() const;
+  uint8_t arrowFiller() const;
 
   /*!
    * \brief setArrows
    * \param val
    */
-  void setArrows(atUint8 val);
+  void setArrows(uint8_t val);
 
   /*!
    * \brief arrows
    * \return
    */
-  atUint8 arrows() const;
+  uint8_t arrows() const;
 
   /*!
    * \brief setAbilityFlags
@@ -342,27 +342,27 @@ public:
    * \brief setDungeonKeys
    * \param val
    */
-  void setDungeonKeys(std::vector<atUint8> val);
+  void setDungeonKeys(std::vector<uint8_t> val);
 
   /*!
    * \brief setDungeonKeys
    * \param id
    * \param val
    */
-  void setDungeonKeys(atUint32 id, atUint8 val);
+  void setDungeonKeys(uint32_t id, uint8_t val);
 
   /*!
    * \brief dungeonKeys
    * \param id
    * \return
    */
-  atUint8 dungeonKeys(atUint32 id) const;
+  uint8_t dungeonKeys(uint32_t id) const;
 
   /*!
    * \brief dungeonCount
    * \return
    */
-  atUint32 dungeonCount() const;
+  uint32_t dungeonCount() const;
 
   /*!
    * \brief setProgressIndicator
@@ -452,71 +452,71 @@ public:
    * \brief setOldManFlags
    * \param flags
    */
-  void setOldManFlags(std::vector<atUint8> flags);
+  void setOldManFlags(std::vector<uint8_t> flags);
 
   /*!
    * \brief setOldManFlag
    * \param id
    * \param val
    */
-  void setOldManFlag(atUint32 id, atUint8 val);
+  void setOldManFlag(uint32_t id, uint8_t val);
 
   /*!
    * \brief oldManFlag
    * \param id
    * \return
    */
-  atUint8 oldManFlag(atUint32 id);
+  uint8_t oldManFlag(uint32_t id);
 
   /*!
    * \brief oldManFlagCount
    * \return
    */
-  atUint32 oldManFlagCount() const;
+  uint32_t oldManFlagCount() const;
 
   /*!
    * \brief setBombFlag
    * \param flag
    */
-  void setBombFlag(atUint8 flag);
+  void setBombFlag(uint8_t flag);
 
   /*!
    * \brief bombFlag
    * \return
    */
-  atUint8 bombFlag() const;
+  uint8_t bombFlag() const;
 
   /*!
    * \brief setUnknown1
    * \param flags
    */
-  void setUnknown1(std::vector<atUint8> flags);
+  void setUnknown1(std::vector<uint8_t> flags);
 
   /*!
    * \brief setUnknown1
    * \param id
    * \param val
    */
-  void setUnknown1(atUint32 id, atUint8 val);
+  void setUnknown1(uint32_t id, uint8_t val);
 
   /*!
    * \brief unknown1
    * \param id
    * \return
    */
-  atUint8 unknown1(atUint32 id);
+  uint8_t unknown1(uint32_t id);
 
   /*!
    * \brief unknown1Count
    * \return
    */
-  atUint32 unknown1Count() const;
+  uint32_t unknown1Count() const;
 
   /*!
    * \brief setPlayerName
    * \param playerName
    */
-  void setPlayerName(std::vector<atUint16> playerName);
+  void setPlayerName(std::vector<uint16_t> playerName);
   /*!
    * \brief setPlayerName
    * \param playerName
@@ -526,7 +526,7 @@ public:
    * \brief playerName
    * \return
    */
-  std::vector<atUint16> playerName() const;
+  std::vector<uint16_t> playerName() const;
   /*!
    * \brief playerNameToString
    * \return
@@ -549,102 +549,102 @@ public:
    * \brief setDungeonDeathTotals
    * \param val
    */
-  void setDungeonDeathTotals(std::vector<atUint16> val);
+  void setDungeonDeathTotals(std::vector<uint16_t> val);
 
   /*!
    * \brief setDungeonDeathTotal
    * \param id
    * \param val
    */
-  void setDungeonDeathTotal(atUint32 id, atUint16 val);
+  void setDungeonDeathTotal(uint32_t id, uint16_t val);
 
   /*!
    * \brief dungeonDeathTotal
    * \param id
    * \return
    */
-  atUint16 dungeonDeathTotal(atUint32 id) const;
+  uint16_t dungeonDeathTotal(uint32_t id) const;
 
   /*!
    * \brief dungeonDeathTotalCount
    * \return
    */
-  atUint16 dungeonDeathTotalCount() const;
+  uint16_t dungeonDeathTotalCount() const;
 
   /*!
    * \brief setUnknown2
    * \param val
    */
-  void setUnknown2(atUint16 val);
+  void setUnknown2(uint16_t val);
 
   /*!
    * \brief unknown2
    * \return
    */
-  atUint16 unknown2() const;
+  uint16_t unknown2() const;
 
   /*!
    * \brief setDeathSaveCount
    * \param val
    */
-  void setDeathSaveCount(atUint16 val);
+  void setDeathSaveCount(uint16_t val);
 
   /*!
    * \brief deathSaveCount
    * \return
    */
-  atUint16 deathSaveCount() const;
+  uint16_t deathSaveCount() const;
 
   /*!
    * \brief setPostGameDeathCounter
    * \param val
    */
-  void setPostGameDeathCounter(atInt16 val);
+  void setPostGameDeathCounter(int16_t val);
 
   /*!
    * \brief postGameDeathCounter
    * \return
    */
-  atInt16 postGameDeathCounter() const;
+  int16_t postGameDeathCounter() const;
 
   /*!
    * \brief setChecksum
    * \param checksum
    */
-  void setChecksum(atUint16 checksum);
+  void setChecksum(uint16_t checksum);
 
   /*!
    * \brief checksum
    * \return
    */
-  atUint16 checksum() const;
+  uint16_t checksum() const;
 
 private:
   std::vector<ALTTPRoomFlags*> m_roomFlags;
   std::vector<ALTTPOverworldEvent*> m_overworldEvents;
   ALTTPInventory m_inventory;
-  atUint16 m_rupeeMax;
-  atUint16 m_rupeeCurrent;
+  uint16_t m_rupeeMax;
+  uint16_t m_rupeeCurrent;
   ALTTPDungeonItemFlags m_compasses;
   ALTTPDungeonItemFlags m_bigKeys;
   ALTTPDungeonItemFlags m_dungeonMaps;
-  atUint16 m_wishingPond;
-  atUint8 m_healthMax;
-  atUint8 m_health;
-  atUint8 m_magicPower;
-  atUint8 m_keys;
-  atUint8 m_bombUpgrades;
-  atUint8 m_arrowUpgrades;
-  atUint8 m_heartFiller;
-  atUint8 m_magicFiller;
+  uint16_t m_wishingPond;
+  uint8_t m_healthMax;
+  uint8_t m_health;
+  uint8_t m_magicPower;
+  uint8_t m_keys;
+  uint8_t m_bombUpgrades;
+  uint8_t m_arrowUpgrades;
+  uint8_t m_heartFiller;
+  uint8_t m_magicFiller;
   ALTTPPendants m_pendants;
-  atUint8 m_bombFiller;
-  atUint8 m_arrowFiller;
-  atUint8 m_arrows;
+  uint8_t m_bombFiller;
+  uint8_t m_arrowFiller;
+  uint8_t m_arrows;
   ALTTPAbilities m_abilityFlags;
   ALTTPCrystals m_crystals;
   ALTTPMagicUsage m_magicUsage;
-  std::vector<atUint8> m_dungeonKeys;
+  std::vector<uint8_t> m_dungeonKeys;
   ALTTPProgressIndicator m_progressIndicator;
   ALTTPProgressFlags1 m_progressFlags1;
   ALTTPMapIcon m_mapIcon;
@@ -652,16 +652,16 @@ private:
   ALTTPProgressFlags2 m_progressFlags2;
   ALTTPLightDarkWorldIndicator m_lightDarkWorldIndicator;
   ALTTPTagAlong m_tagAlong;
-  std::vector<atUint8> m_oldManFlags;
-  atUint8 m_bombFlag;
-  std::vector<atUint8> m_unknown1;
-  std::vector<atUint16> m_playerName;
+  std::vector<uint8_t> m_oldManFlags;
+  uint8_t m_bombFlag;
+  std::vector<uint8_t> m_unknown1;
+  std::vector<uint16_t> m_playerName;
   bool m_valid;
-  std::vector<atUint16> m_dungeonDeathTotals;
-  atUint16 m_unknown2;
-  atUint16 m_deathSaveCount;
-  atInt16 m_postGameDeathCounter;
-  atUint16 m_checksum;
+  std::vector<uint16_t> m_dungeonDeathTotals;
+  uint16_t m_unknown2;
+  uint16_t m_deathSaveCount;
+  int16_t m_postGameDeathCounter;
+  uint16_t m_checksum;
 };
 
 } // namespace athena

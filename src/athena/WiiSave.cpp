@@ -47,7 +47,7 @@ WiiFile* WiiSave::file(const std::string& filepath) {
   return m_root->child(cleanPath);
 }
 
-atUint32 WiiSave::fileCount() const { return m_root->fileCount(); }
+uint32_t WiiSave::fileCount() const { return m_root->fileCount(); }
 
 WiiFile* WiiSave::root() { return m_root; }
 

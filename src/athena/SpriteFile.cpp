@@ -4,17 +4,17 @@
 #include <iostream>
 
 namespace athena::Sakura {
-const atUint32 SpriteFile::Major = 1;
-const atUint32 SpriteFile::Minor = 0;
-const atUint32 SpriteFile::Revision = 2;
-const atUint32 SpriteFile::Build = 0;
-const atUint32 SpriteFile::Version = Major | (Minor << 8) | (Revision << 16) | (Build << 24);
+const uint32_t SpriteFile::Major = 1;
+const uint32_t SpriteFile::Minor = 0;
+const uint32_t SpriteFile::Revision = 2;
+const uint32_t SpriteFile::Build = 0;
+const uint32_t SpriteFile::Version = Major | (Minor << 8) | (Revision << 16) | (Build << 24);
 
-const atUint32 SpriteFile::Magic = 'S' | ('P' << 8) | ('R' << 16) | ('S' << 24);
+const uint32_t SpriteFile::Magic = 'S' | ('P' << 8) | ('R' << 16) | ('S' << 24);
 
 SpriteFile::SpriteFile() {}
 
-SpriteFile::SpriteFile(atUint32 width, atUint32 height, float originX, float originY)
+SpriteFile::SpriteFile(uint32_t width, uint32_t height, float originX, float originY)
 : m_size(width, height), m_origin(originX, originY) {}
 
 SpriteFile::SpriteFile(const Vector2Di& size, const Vector2Df& origin) : m_size(size), m_origin(origin) {}
@@ -28,15 +28,15 @@ SpriteFile::~SpriteFile() {
   m_sprites.clear();
 }
 
-void SpriteFile::setSize(atUint32 width, atUint32 height) { setSize(Vector2Di(width, height)); }
+void SpriteFile::setSize(uint32_t width, uint32_t height) { setSize(Vector2Di(width, height)); }
 
 void SpriteFile::setSize(const Vector2Di& size) { m_size = size; }
 
 Vector2Di SpriteFile::size() const { return m_size; }
 
-atUint32 SpriteFile::width() const { return m_size.x; }
+uint32_t SpriteFile::width() const { return m_size.x; }
 
-atUint32 SpriteFile::height() const { return m_size.y; }
+uint32_t SpriteFile::height() const { return m_size.y; }
 
 void SpriteFile::setOrigin(const float x, const float y) { setOrigin(Vector2Df(x, y)); }
 
@@ -65,7 +65,7 @@ void SpriteFile::removeTexture(int id) {
   delete tex;
 }
 
-STexture* SpriteFile::texture(atUint32 id) {
+STexture* SpriteFile::texture(uint32_t id) {
   if (id >= m_textures.size())
     return NULL;
 
@@ -74,7 +74,7 @@ STexture* SpriteFile::texture(atUint32 id) {
 
 std::vector<STexture*> SpriteFile::textures() const { return m_textures; }
 
-atUint32 SpriteFile::textureCount() const { return (atUint32)m_textures.size(); }
+uint32_t SpriteFile::textureCount() const { return (uint32_t)m_textures.size(); }
 
 void SpriteFile::addSprite(Sprite* sprite) {
   std::string name(sprite->name());
@@ -125,7 +125,7 @@ Sprite* SpriteFile::sprite(const std::string& name) {
 
 std::unordered_map<std::string, Sprite*> SpriteFile::sprites() const { return m_sprites; }
 
-atUint32 SpriteFile::spriteCount() const { return (atUint32)m_sprites.size(); }
+uint32_t SpriteFile::spriteCount() const { return (uint32_t)m_sprites.size(); }
 
 void SpriteFile::setTextures(std::vector<STexture*> textures) {
   if (textures.size() == 0)

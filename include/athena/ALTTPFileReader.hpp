@@ -23,7 +23,7 @@ public:
    *   \param data The existing buffer
    *   \param length The length of the existing buffer
    */
-  ALTTPFileReader(atUint8*, atUint64);
+  ALTTPFileReader(uint8_t*, uint64_t);
 
   /*! \brief This constructor creates an instance from a file on disk.
    *

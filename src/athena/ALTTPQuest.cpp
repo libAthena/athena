@@ -15,19 +15,19 @@ ALTTPQuest::~ALTTPQuest() {
 
 void ALTTPQuest::setRoomFlags(std::vector<ALTTPRoomFlags*> rf) { m_roomFlags = rf; }
 
-void ALTTPQuest::setRoomFlags(ALTTPRoomFlags* rf, atUint32 id) { m_roomFlags[id] = rf; }
+void ALTTPQuest::setRoomFlags(ALTTPRoomFlags* rf, uint32_t id) { m_roomFlags[id] = rf; }
 
 std::vector<ALTTPRoomFlags*> ALTTPQuest::roomFlags() { return m_roomFlags; }
 
-ALTTPRoomFlags* ALTTPQuest::roomFlags(atUint32 id) { return m_roomFlags[id]; }
+ALTTPRoomFlags* ALTTPQuest::roomFlags(uint32_t id) { return m_roomFlags[id]; }
 
 void ALTTPQuest::setOverworldEvents(std::vector<ALTTPOverworldEvent*> ow) { m_overworldEvents = ow; }
 
-void ALTTPQuest::setOverworldEvents(ALTTPOverworldEvent* ow, atUint32 id) { m_overworldEvents[id] = ow; }
+void ALTTPQuest::setOverworldEvents(ALTTPOverworldEvent* ow, uint32_t id) { m_overworldEvents[id] = ow; }
 
 std::vector<ALTTPOverworldEvent*> ALTTPQuest::overworldEvents() const { return m_overworldEvents; }
 
-ALTTPOverworldEvent* ALTTPQuest::overworldEvent(atUint32 id) const {
+ALTTPOverworldEvent* ALTTPQuest::overworldEvent(uint32_t id) const {
   if (id > m_overworldEvents.size() - 1) {
     atWarning("index out of range");
     return nullptr;
@@ -40,13 +40,13 @@ void ALTTPQuest::setInventory(const ALTTPInventory& inv) { m_inventory = inv; }
 
 const ALTTPInventory& ALTTPQuest::inventory() const { return m_inventory; }
 
-void ALTTPQuest::setRupeeMax(atUint16 val) { m_rupeeMax = val; }
+void ALTTPQuest::setRupeeMax(uint16_t val) { m_rupeeMax = val; }
 
-atUint16 ALTTPQuest::rupeeMax() const { return m_rupeeMax; }
+uint16_t ALTTPQuest::rupeeMax() const { return m_rupeeMax; }
 
-void ALTTPQuest::setRupeeCurrent(atUint16 val) { m_rupeeCurrent = val; }
+void ALTTPQuest::setRupeeCurrent(uint16_t val) { m_rupeeCurrent = val; }
 
-atUint16 ALTTPQuest::rupeeCurrent() const { return m_rupeeCurrent; }
+uint16_t ALTTPQuest::rupeeCurrent() const { return m_rupeeCurrent; }
 
 void ALTTPQuest::setCompasses(ALTTPDungeonItemFlags flags) { m_compasses = flags; }
 
@@ -60,55 +60,55 @@ void ALTTPQuest::setDungeonMaps(ALTTPDungeonItemFlags flags) { m_dungeonMaps = f
 
 ALTTPDungeonItemFlags ALTTPQuest::dungeonMaps() const { return m_dungeonMaps; }
 
-void ALTTPQuest::setWishingPond(atUint16 val) { m_wishingPond = val; }
+void ALTTPQuest::setWishingPond(uint16_t val) { m_wishingPond = val; }
 
-atUint16 ALTTPQuest::wishingPond() const { return m_wishingPond; }
+uint16_t ALTTPQuest::wishingPond() const { return m_wishingPond; }
 
-void ALTTPQuest::setHealthMax(atUint8 val) { m_healthMax = val; }
+void ALTTPQuest::setHealthMax(uint8_t val) { m_healthMax = val; }
 
-atUint8 ALTTPQuest::healthMax() const { return m_healthMax; }
+uint8_t ALTTPQuest::healthMax() const { return m_healthMax; }
 
-void ALTTPQuest::setHealth(atUint8 val) { m_health = val; }
+void ALTTPQuest::setHealth(uint8_t val) { m_health = val; }
 
-atUint8 ALTTPQuest::health() const { return m_health; }
+uint8_t ALTTPQuest::health() const { return m_health; }
 
-void ALTTPQuest::setMagicPower(atUint8 val) { m_magicPower = val; }
+void ALTTPQuest::setMagicPower(uint8_t val) { m_magicPower = val; }
 
-atUint8 ALTTPQuest::magicPower() const { return m_magicPower; }
+uint8_t ALTTPQuest::magicPower() const { return m_magicPower; }
 
-void ALTTPQuest::setKeys(atUint8 val) { m_keys = val; }
+void ALTTPQuest::setKeys(uint8_t val) { m_keys = val; }
 
-atUint8 ALTTPQuest::keys() const { return m_keys; }
+uint8_t ALTTPQuest::keys() const { return m_keys; }
 
-void ALTTPQuest::setBombUpgrades(atUint8 val) { m_bombUpgrades = val; }
+void ALTTPQuest::setBombUpgrades(uint8_t val) { m_bombUpgrades = val; }
 
-atUint8 ALTTPQuest::bombUpgrades() const { return m_bombUpgrades; }
+uint8_t ALTTPQuest::bombUpgrades() const { return m_bombUpgrades; }
 
-void ALTTPQuest::setArrowUpgrades(atUint8 val) { m_arrowUpgrades = val; }
+void ALTTPQuest::setArrowUpgrades(uint8_t val) { m_arrowUpgrades = val; }
 
-atUint8 ALTTPQuest::arrowUpgrades() const { return m_arrowUpgrades; }
+uint8_t ALTTPQuest::arrowUpgrades() const { return m_arrowUpgrades; }
 
-void ALTTPQuest::setHealthFiller(atUint8 val) { m_heartFiller = val; }
+void ALTTPQuest::setHealthFiller(uint8_t val) { m_heartFiller = val; }
 
-atUint8 ALTTPQuest::healthFiller() const { return m_heartFiller; }
-void ALTTPQuest::setMagicFiller(atUint8 val) { m_heartFiller = val; }
+uint8_t ALTTPQuest::healthFiller() const { return m_heartFiller; }
+void ALTTPQuest::setMagicFiller(uint8_t val) { m_heartFiller = val; }
 
-atUint8 ALTTPQuest::magicFiller() const { return m_heartFiller; }
+uint8_t ALTTPQuest::magicFiller() const { return m_heartFiller; }
 
 void ALTTPQuest::setPendants(ALTTPPendants val) { m_pendants = val; }
 
 ALTTPPendants ALTTPQuest::pendants() const { return m_pendants; }
 
-void ALTTPQuest::setBombFiller(atUint8 val) { m_bombFiller = val; }
+void ALTTPQuest::setBombFiller(uint8_t val) { m_bombFiller = val; }
 
-atUint8 ALTTPQuest::bombFiller() const { return m_bombFiller; }
+uint8_t ALTTPQuest::bombFiller() const { return m_bombFiller; }
 
-void ALTTPQuest::setArrowFiller(atUint8 val) { m_arrowFiller = val; }
+void ALTTPQuest::setArrowFiller(uint8_t val) { m_arrowFiller = val; }
 
-atUint8 ALTTPQuest::arrowFiller() const { return m_arrowFiller; }
-void ALTTPQuest::setArrows(atUint8 val) { m_arrows = val; }
+uint8_t ALTTPQuest::arrowFiller() const { return m_arrowFiller; }
+void ALTTPQuest::setArrows(uint8_t val) { m_arrows = val; }
 
-atUint8 ALTTPQuest::arrows() const { return m_arrows; }
+uint8_t ALTTPQuest::arrows() const { return m_arrows; }
 
 void ALTTPQuest::setAbilityFlags(ALTTPAbilities val) { m_abilityFlags = val; }
 
@@ -122,9 +122,9 @@ void ALTTPQuest::setMagicUsage(ALTTPMagicUsage val) { m_magicUsage = val; }
 
 ALTTPMagicUsage ALTTPQuest::magicUsage() const { return m_magicUsage; }
 
-void ALTTPQuest::setDungeonKeys(std::vector<atUint8> val) { m_dungeonKeys = val; }
+void ALTTPQuest::setDungeonKeys(std::vector<uint8_t> val) { m_dungeonKeys = val; }
 
-void ALTTPQuest::setDungeonKeys(atUint32 id, atUint8 val) {
+void ALTTPQuest::setDungeonKeys(uint32_t id, uint8_t val) {
   if (id > m_dungeonKeys.size() - 1) {
     atWarning("index out of range");
     return;
@@ -133,7 +133,7 @@ void ALTTPQuest::setDungeonKeys(atUint32 id, atUint8 val) {
   m_dungeonKeys[id] = val;
 }
 
-atUint8 ALTTPQuest::dungeonKeys(atUint32 id) const {
+uint8_t ALTTPQuest::dungeonKeys(uint32_t id) const {
   if (id > m_dungeonKeys.size() - 1) {
     atWarning("index out of range");
     return 0;
@@ -142,7 +142,7 @@ atUint8 ALTTPQuest::dungeonKeys(atUint32 id) const {
   return m_dungeonKeys[id];
 }
 
-atUint32 ALTTPQuest::dungeonCount() const { return (atUint32)m_dungeonKeys.size(); }
+uint32_t ALTTPQuest::dungeonCount() const { return (uint32_t)m_dungeonKeys.size(); }
 
 void ALTTPQuest::setProgressIndicator(ALTTPProgressIndicator val) { m_progressIndicator = val; }
 
@@ -172,9 +172,9 @@ void ALTTPQuest::setTagAlong(ALTTPTagAlong val) { m_tagAlong = val; }
 
 ALTTPTagAlong ALTTPQuest::tagAlong() const { return m_tagAlong; }
 
-void ALTTPQuest::setOldManFlags(std::vector<atUint8> flags) { m_oldManFlags = flags; }
+void ALTTPQuest::setOldManFlags(std::vector<uint8_t> flags) { m_oldManFlags = flags; }
 
-void ALTTPQuest::setOldManFlag(atUint32 id, atUint8 val) {
+void ALTTPQuest::setOldManFlag(uint32_t id, uint8_t val) {
   if (id > m_oldManFlags.size() - 1) {
     atWarning("index out of range");
     return;
@@ -183,7 +183,7 @@ void ALTTPQuest::setOldManFlag(atUint32 id, atUint8 val) {
   m_oldManFlags[id] = val;
 }
 
-atUint8 ALTTPQuest::oldManFlag(atUint32 id) {
+uint8_t ALTTPQuest::oldManFlag(uint32_t id) {
   if (id > m_oldManFlags.size() - 1) {
     atWarning("index out of range");
     return 0;
@@ -191,15 +191,15 @@ atUint8 ALTTPQuest::oldManFlag(atUint32 id) {
   return m_oldManFlags[id];
 }
 
-atUint32 ALTTPQuest::oldManFlagCount() const { return (atUint32)m_oldManFlags.size(); }
+uint32_t ALTTPQuest::oldManFlagCount() const { return (uint32_t)m_oldManFlags.size(); }
 
-void ALTTPQuest::setBombFlag(atUint8 flag) { m_bombFlag = flag; }
+void ALTTPQuest::setBombFlag(uint8_t flag) { m_bombFlag = flag; }
 
-atUint8 ALTTPQuest::bombFlag() const { return m_bombFlag; }
+uint8_t ALTTPQuest::bombFlag() const { return m_bombFlag; }
 
-void ALTTPQuest::setUnknown1(std::vector<atUint8> flags) { m_unknown1 = flags; }
+void ALTTPQuest::setUnknown1(std::vector<uint8_t> flags) { m_unknown1 = flags; }
 
-void ALTTPQuest::setUnknown1(atUint32 id, atUint8 val) {
+void ALTTPQuest::setUnknown1(uint32_t id, uint8_t val) {
   if (id > m_unknown1.size()) {
     atWarning("index out of range");
     return;
@@ -208,7 +208,7 @@ void ALTTPQuest::setUnknown1(atUint32 id, atUint8 val) {
   m_unknown1[id] = val;
 }
 
-atUint8 ALTTPQuest::unknown1(atUint32 id) {
+uint8_t ALTTPQuest::unknown1(uint32_t id) {
   if (id > m_unknown1.size()) {
     atWarning("index out of range");
     return 0;
@@ -217,9 +217,9 @@ atUint8 ALTTPQuest::unknown1(atUint32 id) {
   return m_unknown1[id];
 }
 
-atUint32 ALTTPQuest::unknown1Count() const { return (atUint32)m_unknown1.size(); }
+uint32_t ALTTPQuest::unknown1Count() const { return (uint32_t)m_unknown1.size(); }
 
-void ALTTPQuest::setPlayerName(std::vector<atUint16> playerName) { m_playerName = playerName; }
+void ALTTPQuest::setPlayerName(std::vector<uint16_t> playerName) { m_playerName = playerName; }
 
 void ALTTPQuest::setPlayerName(const std::string& playerName) {
   if (playerName == std::string() || playerName.size() > 6) {
@@ -229,9 +229,9 @@ void ALTTPQuest::setPlayerName(const std::string& playerName) {
 
   m_playerName.clear();
 
-  for (atUint32 i = 0; i < 6; i++) {
+  for (uint32_t i = 0; i < 6; i++) {
     if (i > playerName.size() - 1) {
-      m_playerName.push_back((atUint16)0xA9);
+      m_playerName.push_back((uint16_t)0xA9);
       continue;
     }
 
@@ -239,19 +239,19 @@ void ALTTPQuest::setPlayerName(const std::string& playerName) {
 
     if (c >= 'A' && c <= 'P' && c != 'I') {
 
-      m_playerName.push_back((atUint16)(c - 'A'));
+      m_playerName.push_back((uint16_t)(c - 'A'));
       continue;
     }
 
     if (c >= 'Q' && c <= 'Z') {
-      std::cout << std::hex << (atUint16)((c - 'Q') + 0x20) << std::endl;
-      m_playerName.push_back((atUint16)((c - 'Q') + 0x20));
+      std::cout << std::hex << (uint16_t)((c - 'Q') + 0x20) << std::endl;
+      m_playerName.push_back((uint16_t)((c - 'Q') + 0x20));
       continue;
     }
 
     if (c >= 'a' && c <= 'f') {
-      std::cout << std::hex << (atUint16)((c - 'a') + 0x2A) << std::endl;
-      m_playerName.push_back((atUint16)((c - 'a') + 0x2A));
+      std::cout << std::hex << (uint16_t)((c - 'a') + 0x2A) << std::endl;
+      m_playerName.push_back((uint16_t)((c - 'a') + 0x2A));
       continue;
     }
 
@@ -266,22 +266,22 @@ void ALTTPQuest::setPlayerName(const std::string& playerName) {
         continue;
       }
 
-      m_playerName.push_back((atUint16)((c - 'g') + 0x40));
+      m_playerName.push_back((uint16_t)((c - 'g') + 0x40));
       continue;
     }
 
     if (c >= 'w' && c <= 'z') {
-      m_playerName.push_back((atUint16)((c - 'w') + 0x60));
+      m_playerName.push_back((uint16_t)((c - 'w') + 0x60));
       continue;
     }
 
     if (c >= '0' && c <= '9') {
-      m_playerName.push_back((atUint16)((c - '0') + 0x64));
+      m_playerName.push_back((uint16_t)((c - '0') + 0x64));
       continue;
     }
 
     if (c == '-' || c == '.') {
-      m_playerName.push_back((atUint16)(c - '-') + 0x80);
+      m_playerName.push_back((uint16_t)(c - '-') + 0x80);
       continue;
     }
 
@@ -313,12 +313,12 @@ void ALTTPQuest::setPlayerName(const std::string& playerName) {
   }
 }
 
-std::vector<atUint16> ALTTPQuest::playerName() const { return m_playerName; }
+std::vector<uint16_t> ALTTPQuest::playerName() const { return m_playerName; }
 
 std::string ALTTPQuest::playerNameToString() const {
   std::string ret;
 
-  for (atInt16 c : m_playerName) {
+  for (int16_t c : m_playerName) {
     if (c >= 0x00 && c <= 0x0F) {
       ret.push_back((char)('A' + c));
       continue;
@@ -397,9 +397,9 @@ void ALTTPQuest::setValid(bool val) { m_valid = val; }
 
 bool ALTTPQuest::valid() { return m_valid; }
 
-void ALTTPQuest::setDungeonDeathTotals(std::vector<atUint16> val) { m_dungeonDeathTotals = val; }
+void ALTTPQuest::setDungeonDeathTotals(std::vector<uint16_t> val) { m_dungeonDeathTotals = val; }
 
-void ALTTPQuest::setDungeonDeathTotal(atUint32 id, atUint16 val) {
+void ALTTPQuest::setDungeonDeathTotal(uint32_t id, uint16_t val) {
   if (id > m_dungeonDeathTotals.size()) {
     atWarning("index out of range");
     return;
@@ -408,7 +408,7 @@ void ALTTPQuest::setDungeonDeathTotal(atUint32 id, atUint16 val) {
   m_dungeonDeathTotals[id] = val;
 }
 
-atUint16 ALTTPQuest::dungeonDeathTotal(atUint32 id) const {
+uint16_t ALTTPQuest::dungeonDeathTotal(uint32_t id) const {
   if (id > m_dungeonDeathTotals.size()) {
     atWarning("index out of range");
     return 0;
@@ -417,21 +417,21 @@ atUint16 ALTTPQuest::dungeonDeathTotal(atUint32 id) const {
   return m_dungeonDeathTotals[id];
 }
 
-atUint16 ALTTPQuest::dungeonDeathTotalCount() const { return (atUint16)m_dungeonDeathTotals.size(); }
+uint16_t ALTTPQuest::dungeonDeathTotalCount() const { return (uint16_t)m_dungeonDeathTotals.size(); }
 
-void ALTTPQuest::setUnknown2(atUint16 val) { m_unknown2 = val; }
+void ALTTPQuest::setUnknown2(uint16_t val) { m_unknown2 = val; }
 
-atUint16 ALTTPQuest::unknown2() const { return m_unknown2; }
+uint16_t ALTTPQuest::unknown2() const { return m_unknown2; }
 
-void ALTTPQuest::setDeathSaveCount(atUint16 val) { m_deathSaveCount = val; }
-atUint16 ALTTPQuest::deathSaveCount() const { return m_deathSaveCount; }
+void ALTTPQuest::setDeathSaveCount(uint16_t val) { m_deathSaveCount = val; }
+uint16_t ALTTPQuest::deathSaveCount() const { return m_deathSaveCount; }
 
-void ALTTPQuest::setPostGameDeathCounter(atInt16 val) { m_postGameDeathCounter = val; }
+void ALTTPQuest::setPostGameDeathCounter(int16_t val) { m_postGameDeathCounter = val; }
 
-atInt16 ALTTPQuest::postGameDeathCounter() const { return m_postGameDeathCounter; }
+int16_t ALTTPQuest::postGameDeathCounter() const { return m_postGameDeathCounter; }
 
-void ALTTPQuest::setChecksum(atUint16 checksum) { m_checksum = checksum; }
+void ALTTPQuest::setChecksum(uint16_t checksum) { m_checksum = checksum; }
 
-atUint16 ALTTPQuest::checksum() const { return m_checksum; }
+uint16_t ALTTPQuest::checksum() const { return m_checksum; }
 
 } // namespace athena

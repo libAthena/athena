@@ -20,16 +20,16 @@
 
 namespace athena::utility {
 
-void fillRandom(atUint8* rndArea, atUint64 count) {
-  atUint8* buf = rndArea;
-  for (atUint64 i = 0; i < count / 4; i++) {
-    *(atUint32*)(buf) = rand();
+void fillRandom(uint8_t* rndArea, uint64_t count) {
+  uint8_t* buf = rndArea;
+  for (uint64_t i = 0; i < count / 4; i++) {
+    *(uint32_t*)(buf) = rand();
     buf += 4;
   }
 
-  atUint64 rem = count % 4;
+  uint64_t rem = count % 4;
   if (rem) {
-    for (atUint64 j = 0; j < rem; j++) {
+    for (uint64_t j = 0; j < rem; j++) {
       *buf = rand();
       buf++;
     }
@@ -113,14 +113,14 @@ int countChar(std::string_view str, const char chr, int* lastOccur) {
   return ret;
 }
 
-atUint64 fileSize(std::string_view filename) {
+uint64_t fileSize(std::string_view filename) {
   atStat64_t st;
   atStat64(filename.data(), &st);
   return st.st_size;
 }
 
 #ifdef _WIN32
-atUint64 fileSize(std::wstring_view filename) {
+uint64_t fileSize(std::wstring_view filename) {
   atStat64_t st;
   _wstati64(filename.data(), &st);
   return st.st_size;
@@ -151,12 +151,12 @@ std::string& trim(std::string& s) {
   return s;
 }
 
-atUint64 rand64() {
+uint64_t rand64() {
   // Combine 4 parts of low 16-bit of each rand()
-  atUint64 r0 = (atUint64)rand() << 48;
-  atUint64 r1 = (atUint64)rand() << 48 >> 16;
-  atUint64 r2 = (atUint64)rand() << 48 >> 32;
-  atUint64 r3 = (atUint64)rand() << 48 >> 48;
+  uint64_t r0 = (uint64_t)rand() << 48;
+  uint64_t r1 = (uint64_t)rand() << 48 >> 16;
+  uint64_t r2 = (uint64_t)rand() << 48 >> 32;
+  uint64_t r3 = (uint64_t)rand() << 48 >> 48;
   return r0 | r1 | r2 | r3;
 }
 

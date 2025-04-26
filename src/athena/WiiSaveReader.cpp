@@ -17,7 +17,7 @@ namespace athena {
 
 namespace io {
 
-WiiSaveReader::WiiSaveReader(const atUint8* data, atUint64 length) : MemoryCopyReader(data, length) {
+WiiSaveReader::WiiSaveReader(const uint8_t* data, uint64_t length) : MemoryCopyReader(data, length) {
   setEndian(Endian::Big);
 }
 
@@ -39,14 +39,14 @@ std::unique_ptr<WiiSave> WiiSaveReader::readSave() {
   }
 
   ret->setBanner(banner);
-  atUint32 bkVer = readUint32();
+  uint32_t bkVer = readUint32();
 
   if (bkVer != 0x00000070) {
     atError("Invalid BacKup header size");
     return nullptr;
   }
 
-  atUint32 bkMagic = readUint32();
+  uint32_t bkMagic = readUint32();
 
   if (bkMagic != 0x426B0001) {
     atError("Invalid BacKup header magic");
@@ -54,12 +54,12 @@ std::unique_ptr<WiiSave> WiiSaveReader::readSave() {
   }
 
   /*atUint32 ngId =*/readUint32();
-  atUint32 numFiles = readUint32();
+  uint32_t numFiles = readUint32();
 
   /*int fileSize =*/readUint32();
   seek(8); // skip unknown data;
 
-  atUint32 totalSize = readUint32();
+  uint32_t totalSize = readUint32();
   seek(64); // Unknown (Most likely padding)
   seek(8);
   seek(6);
@@ -68,7 +68,7 @@ std::unique_ptr<WiiSave> WiiSaveReader::readSave() {
 
   std::vector<WiiFile*> files;
 
-  for (atUint32 i = 0; i < numFiles; ++i) {
+  for (uint32_t i = 0; i < numFiles; ++i) {
     WiiFile* file = readFile();
 
     if (file)
@@ -82,18 +82,18 @@ std::unique_ptr<WiiSave> WiiSaveReader::readSave() {
 }
 
 WiiBanner* WiiSaveReader::readBanner() {
-  atUint8* dec = new atUint8[0xF0C0];
+  uint8_t* dec = new uint8_t[0xF0C0];
   memset(dec, 0, 0xF0C0);
-  std::unique_ptr<atUint8[]> buf = readUBytes(0xF0C0);
-  atUint8* oldData = data();
-  atUint64 oldPos = position();
-  atUint64 oldLen = length();
-  atUint64 gameId;
-  atUint32 bannerSize;
-  atUint8 permissions;
-  atUint8 md5[16];
-  atUint8 md5Calc[16];
-  atUint8 tmpIV[16];
+  std::unique_ptr<uint8_t[]> buf = readUBytes(0xF0C0);
+  uint8_t* oldData = data();
+  uint64_t oldPos = position();
+  uint64_t oldLen = length();
+  uint64_t gameId;
+  uint32_t bannerSize;
+  uint8_t permissions;
+  uint8_t md5[16];
+  uint8_t md5Calc[16];
+  uint8_t tmpIV[16];
   memcpy(tmpIV, SD_IV, 16);
 
   std::cout << "Decrypting: banner.bin...";
@@ -210,24 +210,24 @@ WiiBanner* WiiSaveReader::readBanner() {
   return banner;
 }
 
-WiiImage* WiiSaveReader::readImage(atUint32 width, atUint32 height) {
-  std::unique_ptr<atUint8[]> image = readUBytes(width * height * 2);
+WiiImage* WiiSaveReader::readImage(uint32_t width, uint32_t height) {
+  std::unique_ptr<uint8_t[]> image = readUBytes(width * height * 2);
 
-  if (!utility::isEmpty((atInt8*)image.get(), width * height * 2))
+  if (!utility::isEmpty((int8_t*)image.get(), width * height * 2))
     return new WiiImage(width, height, std::move(image));
 
   return NULL;
 }
 
 WiiFile* WiiSaveReader::readFile() {
-  atUint32 fileLen;
-  atUint8 permissions;
-  atUint8 attributes;
-  atUint8 type;
+  uint32_t fileLen;
+  uint8_t permissions;
+  uint8_t attributes;
+  uint8_t type;
   std::string name;
   WiiFile* ret;
 
-  atUint32 magic = readUint32();
+  uint32_t magic = readUint32();
 
   if (magic != 0x03adf17e) {
     std::cerr << "Not a valid File entry header: 0x" << std::hex << magic << std::endl;
@@ -243,17 +243,17 @@ WiiFile* WiiSaveReader::readFile() {
   ret->setPermissions(permissions);
   ret->setAttributes(attributes);
   ret->setType((WiiFile::Type)type);
-  std::unique_ptr<atUint8[]> iv = readUBytes(0x10);
+  std::unique_ptr<uint8_t[]> iv = readUBytes(0x10);
   seek(0x20);
 
   if (type == WiiFile::File) {
     // Read file data
     int roundedLen = (fileLen + 63) & ~63;
-    std::unique_ptr<atUint8[]> filedata = readUBytes(roundedLen);
+    std::unique_ptr<uint8_t[]> filedata = readUBytes(roundedLen);
 
     // Decrypt file
     std::cout << "Decrypting: " << ret->filename() << "...";
-    atUint8* decData = new atUint8[roundedLen];
+    uint8_t* decData = new uint8_t[roundedLen];
     std::unique_ptr<IAES> aes = NewAES();
     aes->setKey(SD_KEY);
     aes->decrypt(iv.get(), filedata.get(), decData, roundedLen);
@@ -265,19 +265,19 @@ WiiFile* WiiSaveReader::readFile() {
   return ret;
 }
 
-void WiiSaveReader::readCerts(atUint32 totalSize) {
+void WiiSaveReader::readCerts(uint32_t totalSize) {
   std::cout << "Reading certs..." << std::endl;
-  atUint32 dataSize = totalSize - 0x340;
-  std::unique_ptr<atUint8[]> sig = readUBytes(0x40);
-  std::unique_ptr<atUint8[]> ngCert = readUBytes(0x180);
-  std::unique_ptr<atUint8[]> apCert = readUBytes(0x180);
+  uint32_t dataSize = totalSize - 0x340;
+  std::unique_ptr<uint8_t[]> sig = readUBytes(0x40);
+  std::unique_ptr<uint8_t[]> ngCert = readUBytes(0x180);
+  std::unique_ptr<uint8_t[]> apCert = readUBytes(0x180);
   seek(0xF0C0, SeekOrigin::Begin);
-  std::unique_ptr<atUint8[]> data = readUBytes(dataSize);
-  atUint8* hash;
+  std::unique_ptr<uint8_t[]> data = readUBytes(dataSize);
+  uint8_t* hash;
 
   std::cout << "validating..." << std::endl;
   hash = getSha1(data.get(), dataSize);
-  atUint8* hash2 = getSha1(hash, 20);
+  uint8_t* hash2 = getSha1(hash, 20);
   bool ngValid = false;
   bool apValid = false;
   ecc::checkEC(ngCert.get(), apCert.get(), sig.get(), hash2, apValid, ngValid);

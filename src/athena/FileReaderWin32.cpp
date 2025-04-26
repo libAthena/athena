@@ -8,14 +8,14 @@
 #include "win32_largefilewrapper.h"
 
 namespace athena::io {
-FileReader::FileReader(std::string_view filename, atInt32 cacheSize, bool globalErr)
+FileReader::FileReader(std::string_view filename, int32_t cacheSize, bool globalErr)
 : m_fileHandle(nullptr), m_cacheData(nullptr), m_offset(0), m_globalErr(globalErr) {
   m_filename = utility::utf8ToWide(filename);
   open();
   setCacheSize(cacheSize);
 }
 
-FileReader::FileReader(std::wstring_view filename, atInt32 cacheSize, bool globalErr)
+FileReader::FileReader(std::wstring_view filename, int32_t cacheSize, bool globalErr)
 : m_fileHandle(nullptr), m_cacheData(nullptr), m_offset(0), m_globalErr(globalErr) {
   m_filename = filename;
   open();
@@ -64,13 +64,13 @@ void FileReader::close() {
   return;
 }
 
-void FileReader::seek(atInt64 pos, SeekOrigin origin) {
+void FileReader::seek(int64_t pos, SeekOrigin origin) {
   if (!isOpen())
     return;
 
   // check block position
   if (m_blockSize > 0) {
-    atUint64 oldOff = m_offset;
+    uint64_t oldOff = m_offset;
     switch (origin) {
     case SeekOrigin::Begin:
       m_offset = pos;
@@ -97,7 +97,7 @@ void FileReader::seek(atInt64 pos, SeekOrigin origin) {
       SetFilePointerEx(m_fileHandle, li, nullptr, FILE_BEGIN);
       DWORD readSz;
       ReadFile(m_fileHandle, m_cacheData.get(), m_blockSize, &readSz, nullptr);
-      m_curBlock = (atInt32)block;
+      m_curBlock = (int32_t)block;
     }
   } else {
     LARGE_INTEGER li;
@@ -110,7 +110,7 @@ void FileReader::seek(atInt64 pos, SeekOrigin origin) {
   }
 }
 
-atUint64 FileReader::position() const {
+uint64_t FileReader::position() const {
   if (!isOpen()) {
     if (m_globalErr)
       atError("File not open");
@@ -127,7 +127,7 @@ atUint64 FileReader::position() const {
   }
 }
 
-atUint64 FileReader::length() const {
+uint64_t FileReader::length() const {
   if (!isOpen()) {
     if (m_globalErr)
       atError("File not open");
@@ -139,7 +139,7 @@ atUint64 FileReader::length() const {
   return res.QuadPart;
 }
 
-atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len) {
+uint64_t FileReader::readUBytesToBuf(void* buf, uint64_t len) {
   if (!isOpen()) {
     if (m_globalErr)
       atError("File not open for reading");
@@ -154,16 +154,16 @@ atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len) {
   } else {
     LARGE_INTEGER fs;
     GetFileSizeEx(m_fileHandle, &fs);
-    if (m_offset >= atUint64(fs.QuadPart))
+    if (m_offset >= uint64_t(fs.QuadPart))
       return 0;
-    if (m_offset + len >= atUint64(fs.QuadPart))
+    if (m_offset + len >= uint64_t(fs.QuadPart))
       len = fs.QuadPart - m_offset;
 
     size_t block = m_offset / m_blockSize;
-    atUint64 cacheOffset = m_offset % m_blockSize;
-    atUint64 cacheSize;
-    atUint64 rem = len;
-    atUint8* dst = (atUint8*)buf;
+    uint64_t cacheOffset = m_offset % m_blockSize;
+    uint64_t cacheSize;
+    uint64_t rem = len;
+    uint8_t* dst = (uint8_t*)buf;
 
     while (rem) {
       if (block != m_curBlock) {
@@ -172,7 +172,7 @@ atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len) {
         SetFilePointerEx(m_fileHandle, li, nullptr, FILE_BEGIN);
         DWORD readSz;
         ReadFile(m_fileHandle, m_cacheData.get(), m_blockSize, &readSz, nullptr);
-        m_curBlock = (atInt32)block;
+        m_curBlock = (int32_t)block;
       }
 
       cacheSize = rem;
@@ -186,19 +186,19 @@ atUint64 FileReader::readUBytesToBuf(void* buf, atUint64 len) {
       ++block;
     }
     m_offset += len;
-    return dst - (atUint8*)buf;
+    return dst - (uint8_t*)buf;
   }
 }
 
-void FileReader::setCacheSize(const atInt32 blockSize) {
+void FileReader::setCacheSize(const int32_t blockSize) {
   m_blockSize = blockSize;
 
   if (m_blockSize > length())
-    m_blockSize = (atInt32)length();
+    m_blockSize = (int32_t)length();
 
   m_curBlock = -1;
   if (m_blockSize > 0)
-    m_cacheData.reset(new atUint8[m_blockSize]);
+    m_cacheData.reset(new uint8_t[m_blockSize]);
 }
 
 } // namespace athena::io

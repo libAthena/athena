@@ -10,8 +10,8 @@
 namespace athena::io {
 class FileReader : public IStreamReader {
 public:
-  explicit FileReader(std::string_view filename, atInt32 cacheSize = (32 * 1024), bool globalErr = true);
-  explicit FileReader(std::wstring_view filename, atInt32 cacheSize = (32 * 1024), bool globalErr = true);
+  explicit FileReader(std::string_view filename, int32_t cacheSize = (32 * 1024), bool globalErr = true);
+  explicit FileReader(std::wstring_view filename, int32_t cacheSize = (32 * 1024), bool globalErr = true);
   ~FileReader() override;
 
   std::string filename() const {
@@ -33,12 +33,12 @@ public:
   void open();
   void close();
   bool isOpen() const { return m_fileHandle != nullptr; }
-  void seek(atInt64 pos, SeekOrigin origin = SeekOrigin::Current) override;
-  atUint64 position() const override;
-  atUint64 length() const override;
-  atUint64 readUBytesToBuf(void* buf, atUint64 len) override;
+  void seek(int64_t pos, SeekOrigin origin = SeekOrigin::Current) override;
+  uint64_t position() const override;
+  uint64_t length() const override;
+  uint64_t readUBytesToBuf(void* buf, uint64_t len) override;
 
-  void setCacheSize(const atInt32 blockSize);
+  void setCacheSize(const int32_t blockSize);
 
 #if _WIN32
   using HandleType = void*;
@@ -55,11 +55,11 @@ protected:
   std::string m_filename;
 #endif
   HandleType m_fileHandle;
-  atUint64 m_fileSize;
-  std::unique_ptr<atUint8[]> m_cacheData;
-  atInt32 m_blockSize;
-  atInt32 m_curBlock;
-  atUint64 m_offset;
+  uint64_t m_fileSize;
+  std::unique_ptr<uint8_t[]> m_cacheData;
+  int32_t m_blockSize;
+  int32_t m_curBlock;
+  uint64_t m_offset;
   bool m_globalErr;
 };
 } // namespace athena::io

@@ -6,8 +6,8 @@
 #include <athena/Types.hpp>
 
 struct LZLengthOffset {
-  atUint32 length; // The number of bytes compressed
-  atUint16 offset; // How far back in sliding window where bytes that match the lookAheadBuffer is located
+  uint32_t length; // The number of bytes compressed
+  uint16_t offset; // How far back in sliding window where bytes that match the lookAheadBuffer is located
   bool operator==(const LZLengthOffset& lo_pair) const { return length == lo_pair.length && offset == lo_pair.offset; }
   bool operator!=(const LZLengthOffset& lo_pair) const { return !operator==(lo_pair); }
 };
@@ -15,16 +15,16 @@ struct LZLengthOffset {
 class LZLookupTable {
 public:
   LZLookupTable();
-  explicit LZLookupTable(atInt32 minimumMatch, atInt32 slidingWindow = 4096, atInt32 lookAheadWindow = 18);
+  explicit LZLookupTable(int32_t minimumMatch, int32_t slidingWindow = 4096, int32_t lookAheadWindow = 18);
   ~LZLookupTable();
-  LZLengthOffset search(const atUint8* curPos, const atUint8* dataBegin, const atUint8* dataEnd);
-  void setLookAheadWindow(atInt32 lookAheadWindow);
+  LZLengthOffset search(const uint8_t* curPos, const uint8_t* dataBegin, const uint8_t* dataEnd);
+  void setLookAheadWindow(int32_t lookAheadWindow);
 
 private:
   using LookupTable = std::multimap<std::vector<uint8_t>, int32_t>;
   LookupTable table;
-  atInt32 m_minimumMatch = 3;
-  atInt32 m_slidingWindow = 4096;
-  atInt32 m_lookAheadWindow = 18;
+  int32_t m_minimumMatch = 3;
+  int32_t m_slidingWindow = 4096;
+  int32_t m_lookAheadWindow = 18;
   std::vector<uint8_t> m_buffer;
 };

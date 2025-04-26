@@ -19,32 +19,32 @@ public:
   /*!
    * \brief Major
    */
-  static const atUint32 Major;
+  static const uint32_t Major;
 
   /*!
    * \brief Minor
    */
-  static const atUint32 Minor;
+  static const uint32_t Minor;
 
   /*!
    * \brief Revision
    */
-  static const atUint32 Revision;
+  static const uint32_t Revision;
 
   /*!
    * \brief Patch
    */
-  static const atUint32 Build;
+  static const uint32_t Build;
 
   /*!
    * \brief Version
    */
-  static const atUint32 Version;
+  static const uint32_t Version;
 
   /*!
    * \brief Magic
    */
-  static const atUint32 Magic;
+  static const uint32_t Magic;
 
   /*!
    * \brief SSprite
@@ -58,7 +58,7 @@ public:
    * \param originX
    * \param originY
    */
-  SpriteFile(atUint32 width, atUint32 height, float originX, float originY);
+  SpriteFile(uint32_t width, uint32_t height, float originX, float originY);
 
   /*!
    * \brief SSpriteFile
@@ -84,7 +84,7 @@ public slots:
    * \param width
    * \param height
    */
-  void setSize(atUint32 width, atUint32 height);
+  void setSize(uint32_t width, uint32_t height);
 
   /*!
    * \brief setSize
@@ -102,13 +102,13 @@ public slots:
    * \brief width
    * \return
    */
-  atUint32 width() const;
+  uint32_t width() const;
 
   /*!
    * \brief height
    * \return
    */
-  atUint32 height() const;
+  uint32_t height() const;
 
   /*!
    * \brief setOrigin
@@ -158,10 +158,10 @@ public slots:
    * \param id
    * \return
    */
-  STexture* texture(atUint32 id);
+  STexture* texture(uint32_t id);
   std::vector<STexture*> textures() const;
 
-  atUint32 textureCount() const;
+  uint32_t textureCount() const;
   /*!
    * \brief setTextures
    * \param textures
@@ -177,7 +177,7 @@ public slots:
   Sprite* sprite(const std::string& name);
   std::unordered_map<std::string, Sprite*> sprites() const;
 
-  atUint32 spriteCount() const;
+  uint32_t spriteCount() const;
 
 private:
   std::vector<STexture*> m_textures;

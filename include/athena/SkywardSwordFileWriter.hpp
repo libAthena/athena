@@ -9,7 +9,7 @@ namespace io {
 
 class SkywardSwordFileWriter : public MemoryCopyWriter {
 public:
-  SkywardSwordFileWriter(atUint8* data, atUint64 len);
+  SkywardSwordFileWriter(uint8_t* data, uint64_t len);
   SkywardSwordFileWriter(const std::string& filename);
 
   void write(SkywardSwordFile* file);

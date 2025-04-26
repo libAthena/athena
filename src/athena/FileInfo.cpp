@@ -69,7 +69,7 @@ std::string FileInfo::extension() const {
   return m_path.substr(pos + 1);
 }
 
-atUint64 FileInfo::size() const { return utility::fileSize(m_path); }
+uint64_t FileInfo::size() const { return utility::fileSize(m_path); }
 
 bool FileInfo::exists() const {
   atStat64_t st;

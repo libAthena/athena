@@ -25,7 +25,7 @@ public:
    *   \param data The existing buffer
    *   \param length The length of the existing buffer
    */
-  WiiSaveReader(const atUint8*, atUint64);
+  WiiSaveReader(const uint8_t*, uint64_t);
 
   /*! \brief This constructor creates an instance from a file on disk.
    *
@@ -42,8 +42,8 @@ public:
 private:
   WiiBanner* readBanner();
   WiiFile* readFile();
-  WiiImage* readImage(atUint32 width, atUint32 height);
-  void readCerts(atUint32 totalSize);
+  WiiImage* readImage(uint32_t width, uint32_t height);
+  void readCerts(uint32_t totalSize);
   WiiFile* buildTree(std::vector<WiiFile*> files);
 };
 

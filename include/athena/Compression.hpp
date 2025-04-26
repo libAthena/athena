@@ -4,8 +4,8 @@
 
 namespace athena::io::Compression {
 // Zlib compression
-atInt32 decompressZlib(const atUint8* src, atUint32 srcLen, atUint8* dst, atUint32 dstLen);
-atInt32 compressZlib(const atUint8* src, atUint32 srcLen, atUint8* dst, atUint32 dstLen);
+int32_t decompressZlib(const uint8_t* src, uint32_t srcLen, uint8_t* dst, uint32_t dstLen);
+int32_t compressZlib(const uint8_t* src, uint32_t srcLen, uint8_t* dst, uint32_t dstLen);
 
 #if AT_LZOKAY
 // lzo compression
@@ -13,9 +13,9 @@ atInt32 decompressLZO(const atUint8* source, atInt32 sourceSize, atUint8* dst, a
 #endif
 
 // Yaz0 encoding
-atUint32 yaz0Decode(const atUint8* src, atUint8* dst, atUint32 uncompressedSize);
-atUint32 yaz0Encode(const atUint8* src, atUint32 srcSize, atUint8* data);
+uint32_t yaz0Decode(const uint8_t* src, uint8_t* dst, uint32_t uncompressedSize);
+uint32_t yaz0Encode(const uint8_t* src, uint32_t srcSize, uint8_t* data);
 
-atUint32 decompressLZ77(const atUint8* src, atUint32 srcLen, atUint8** dst);
-atUint32 compressLZ77(const atUint8* src, atUint32 srcLen, atUint8** dst, bool extended = false);
+uint32_t decompressLZ77(const uint8_t* src, uint32_t srcLen, uint8_t** dst);
+uint32_t compressLZ77(const uint8_t* src, uint32_t srcLen, uint8_t** dst, bool extended = false);
 } // namespace athena::io::Compression

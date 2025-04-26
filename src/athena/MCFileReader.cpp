@@ -4,8 +4,8 @@ namespace athena {
 
 namespace io {
 
-static const atUint32 SCRAMBLE_VALUE = 0x5A424741;
-MCFileReader::MCFileReader(atUint8* data, atUint64 length) : MemoryCopyReader(data, length) {}
+static const uint32_t SCRAMBLE_VALUE = 0x5A424741;
+MCFileReader::MCFileReader(uint8_t* data, uint64_t length) : MemoryCopyReader(data, length) {}
 
 MCFileReader::MCFileReader(const std::string& filename) : MemoryCopyReader(filename) {}
 

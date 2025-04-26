@@ -3,7 +3,7 @@
 
 LZLookupTable::LZLookupTable() : m_buffer(m_minimumMatch) {}
 
-LZLookupTable::LZLookupTable(atInt32 minimumMatch, atInt32 slidingWindow, atInt32 lookAheadWindow) {
+LZLookupTable::LZLookupTable(int32_t minimumMatch, int32_t slidingWindow, int32_t lookAheadWindow) {
   if (minimumMatch > 0)
     m_minimumMatch = minimumMatch;
   else
@@ -21,14 +21,14 @@ LZLookupTable::LZLookupTable(atInt32 minimumMatch, atInt32 slidingWindow, atInt3
 
 LZLookupTable::~LZLookupTable() = default;
 
-void LZLookupTable::setLookAheadWindow(atInt32 lookAheadWindow) {
+void LZLookupTable::setLookAheadWindow(int32_t lookAheadWindow) {
   if (lookAheadWindow > 0)
     m_lookAheadWindow = lookAheadWindow;
   else
     m_lookAheadWindow = 18;
 }
 
-LZLengthOffset LZLookupTable::search(const atUint8* curPos, const atUint8* dataBegin, const atUint8* dataEnd) {
+LZLengthOffset LZLookupTable::search(const uint8_t* curPos, const uint8_t* dataBegin, const uint8_t* dataEnd) {
   LZLengthOffset loPair = {0, 0};
 
   // Returns negative 1 for search failures since the current position is passed the size to be compressed
@@ -38,7 +38,7 @@ LZLengthOffset LZLookupTable::search(const atUint8* curPos, const atUint8* dataB
   }
 
   std::copy(curPos, curPos + m_minimumMatch, m_buffer.begin());
-  int32_t currentOffset = static_cast<atInt32>(curPos - dataBegin);
+  int32_t currentOffset = static_cast<int32_t>(curPos - dataBegin);
 
   // Find code
   if (currentOffset > 0 && (dataEnd - curPos) >= m_minimumMatch) {
@@ -60,13 +60,13 @@ LZLengthOffset LZLookupTable::search(const atUint8* curPos, const atUint8* dataB
 
       // Store the longest match found so far into length_offset struct.
       // When lengths are the same the closer offset to the lookahead buffer wins
-      if (loPair.length < (atUint32)matchLength) {
+      if (loPair.length < (uint32_t)matchLength) {
         loPair.length = matchLength;
         loPair.offset = currentOffset - iter->second;
       }
 
       // Found the longest match so break out of loop
-      if (loPair.length == (atUint32)m_lookAheadWindow)
+      if (loPair.length == (uint32_t)m_lookAheadWindow)
         break;
     }
   }
@@ -75,7 +75,7 @@ LZLengthOffset LZLookupTable::search(const atUint8* curPos, const atUint8* dataB
   // Insert code
   table.insert(std::make_pair(m_buffer, currentOffset));
 
-  for (atUint32 i = 1; i < loPair.length; i++) {
+  for (uint32_t i = 1; i < loPair.length; i++) {
     if (dataEnd - (curPos + i) < m_minimumMatch)
       break;
 

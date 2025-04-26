@@ -6,7 +6,7 @@
 
 namespace athena::io {
 
-ALTTPFileReader::ALTTPFileReader(atUint8* data, atUint64 length) : MemoryCopyReader(data, length) {}
+ALTTPFileReader::ALTTPFileReader(uint8_t* data, uint64_t length) : MemoryCopyReader(data, length) {}
 
 ALTTPFileReader::ALTTPFileReader(const std::string& filename) : MemoryCopyReader(filename) {}
 
@@ -14,16 +14,16 @@ ALTTPFile* ALTTPFileReader::readFile() {
   std::vector<ALTTPQuest*> quests;
   std::vector<ALTTPQuest*> backup;
 
-  for (atUint32 i = 0; i < 6; i++) {
+  for (uint32_t i = 0; i < 6; i++) {
     // Temporary values to use for each save
     ALTTPQuest* quest = new ALTTPQuest();
     std::vector<ALTTPRoomFlags*> roomFlags;
     std::vector<ALTTPOverworldEvent*> owEvents;
-    std::vector<atUint8> dungeonKeys;
-    std::vector<atUint8> oldmanFlags;
-    std::vector<atUint8> unknown1;
-    std::vector<atUint16> playerName;
-    std::vector<atUint16> dungeonDeaths;
+    std::vector<uint8_t> dungeonKeys;
+    std::vector<uint8_t> oldmanFlags;
+    std::vector<uint8_t> unknown1;
+    std::vector<uint16_t> playerName;
+    std::vector<uint16_t> dungeonDeaths;
 
     int j = 0x140;
 
@@ -55,7 +55,7 @@ ALTTPFile* ALTTPFileReader::readFile() {
     quest->setArrowUpgrades(readByte());
     quest->setHealthFiller(readByte());
     quest->setMagicFiller(readByte());
-    atUint8 pendantsByte = readUByte();
+    uint8_t pendantsByte = readUByte();
     ALTTPPendants pendants;
     pendants.Courage = pendantsByte & 1;
     pendants.Wisdom = (pendantsByte >> 1) & 1;
@@ -70,7 +70,7 @@ ALTTPFile* ALTTPFileReader::readFile() {
     quest->setArrowFiller(readByte());
     quest->setArrows(readByte());
     seek(1);
-    atUint8 abilitiesByte = readUByte();
+    uint8_t abilitiesByte = readUByte();
     ALTTPAbilities abilities;
     abilities.Nothing = abilitiesByte & 1;
     abilities.Swim = (abilitiesByte >> 1) & 1;
@@ -154,7 +154,7 @@ ALTTPFile* ALTTPFileReader::readFile() {
 
 ALTTPRoomFlags* ALTTPFileReader::readRoomFlags() {
   ALTTPRoomFlags* flags = new ALTTPRoomFlags;
-  atUint8 flagsByte = readUByte();
+  uint8_t flagsByte = readUByte();
   flags->Chest1 = flagsByte & 1;
   flags->Chest2 = (flagsByte >> 1) & 1;
   flags->Chest3 = (flagsByte >> 2) & 1;
@@ -178,7 +178,7 @@ ALTTPRoomFlags* ALTTPFileReader::readRoomFlags() {
 
 ALTTPOverworldEvent* ALTTPFileReader::readOverworldEvent() {
   ALTTPOverworldEvent* event = new ALTTPOverworldEvent;
-  atUint8 flagsByte = readUByte();
+  uint8_t flagsByte = readUByte();
   event->Unused1 = flagsByte & 1;
   event->HeartPiece = (flagsByte >> 1) & 1;
   event->Overlay = (flagsByte >> 2) & 1;
@@ -192,7 +192,7 @@ ALTTPOverworldEvent* ALTTPFileReader::readOverworldEvent() {
 
 ALTTPDungeonItemFlags ALTTPFileReader::readDungeonFlags() {
   ALTTPDungeonItemFlags flags;
-  atUint8 flagsByte = readUByte();
+  uint8_t flagsByte = readUByte();
   flags.Unused1 = flagsByte & 1;
   flags.Unused2 = (flagsByte >> 1) & 1;
   flags.GanonsTower = (flagsByte >> 2) & 1;

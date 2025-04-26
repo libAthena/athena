@@ -19,7 +19,7 @@ public:
    * \param data
    * \param length
    */
-  ZQuestFileWriter(atUint8* data, atUint64 length);
+  ZQuestFileWriter(uint8_t* data, uint64_t length);
 
   /*!
    * \brief ZQuestFileWriter

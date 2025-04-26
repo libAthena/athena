@@ -4,31 +4,31 @@
 
 class LZBase {
 public:
-  explicit LZBase(atInt32 minimumOffset = 1, atInt32 slidingWindow = 4096, atInt32 minimumMatch = 3,
-                  atInt32 blockSize = 8);
+  explicit LZBase(int32_t minimumOffset = 1, int32_t slidingWindow = 4096, int32_t minimumMatch = 3,
+                  int32_t blockSize = 8);
   virtual ~LZBase();
 
-  virtual atUint32 compress(const atUint8* src, atUint8** dest, atUint32 srcLength) = 0;
-  virtual atUint32 decompress(const atUint8* src, atUint8** dest, atUint32 srcLength) = 0;
+  virtual uint32_t compress(const uint8_t* src, uint8_t** dest, uint32_t srcLength) = 0;
+  virtual uint32_t decompress(const uint8_t* src, uint8_t** dest, uint32_t srcLength) = 0;
 
-  void setSlidingWindow(atInt32 SlidingWindow);
-  atInt32 slidingWindow() const;
-  void setReadAheadBuffer(atInt32 ReadAheadBuffer);
-  atInt32 readAheadBuffer() const;
-  void setMinMatch(atInt32 minimumMatch);
-  atInt32 minMatch() const;
-  void setBlockSize(atInt32 BlockSize);
-  atInt32 blockSize() const;
-  void setMinimumOffset(atUint32 minimumOffset);
-  atUint32 minimumOffset() const;
+  void setSlidingWindow(int32_t SlidingWindow);
+  int32_t slidingWindow() const;
+  void setReadAheadBuffer(int32_t ReadAheadBuffer);
+  int32_t readAheadBuffer() const;
+  void setMinMatch(int32_t minimumMatch);
+  int32_t minMatch() const;
+  void setBlockSize(int32_t BlockSize);
+  int32_t blockSize() const;
+  void setMinimumOffset(uint32_t minimumOffset);
+  uint32_t minimumOffset() const;
 
 protected:
-  LZLengthOffset search(const atUint8* posPtr, const atUint8* dataBegin, const atUint8* dataEnd) const;
+  LZLengthOffset search(const uint8_t* posPtr, const uint8_t* dataBegin, const uint8_t* dataEnd) const;
 
-  atInt32 m_slidingWindow;
-  atInt32 m_readAheadBuffer;
-  atInt32 m_minMatch; // Minimum number of bytes that have to matched to go through with compression
-  atInt32 m_blockSize;
-  atUint32 m_minOffset;
+  int32_t m_slidingWindow;
+  int32_t m_readAheadBuffer;
+  int32_t m_minMatch; // Minimum number of bytes that have to matched to go through with compression
+  int32_t m_blockSize;
+  uint32_t m_minOffset;
   LZLookupTable m_lookupTable;
 };

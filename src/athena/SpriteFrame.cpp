@@ -14,7 +14,7 @@ void SpriteFrame::setParts(std::vector<SpritePart*> parts) { m_parts = parts; }
 
 std::vector<SpritePart*> SpriteFrame::parts() const { return m_parts; }
 
-atUint32 SpriteFrame::partCount() const { return (atUint32)m_parts.size(); }
+uint32_t SpriteFrame::partCount() const { return (uint32_t)m_parts.size(); }
 
 float SpriteFrame::frameTime() const { return m_frameTime; }
 

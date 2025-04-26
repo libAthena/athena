@@ -20,54 +20,54 @@ public:
    * \param height
    * \param data
    */
-  WiiImage(atUint32 width, atUint32 height, std::unique_ptr<atUint8[]>&& data);
+  WiiImage(uint32_t width, uint32_t height, std::unique_ptr<uint8_t[]>&& data);
 
   /*!
    * \brief setWidth
    * \param width
    */
-  void setWidth(const atUint32 width);
+  void setWidth(const uint32_t width);
 
   /*!
    * \brief width
    * \return
    */
-  atUint32 width() const;
+  uint32_t width() const;
 
   /*!
    * \brief setHeight
    * \param height
    */
-  void setHeight(const atUint32 height);
+  void setHeight(const uint32_t height);
 
   /*!
    * \brief height
    * \return
    */
-  atUint32 height() const;
+  uint32_t height() const;
 
   /*!
    * \brief setData
    * \param data
    */
-  void setData(const atUint8* data);
+  void setData(const uint8_t* data);
 
   /*!
    * \brief data
    * \return
    */
-  atUint8* data();
+  uint8_t* data();
 
   /*!
    * \brief toRGBA
    * \return
    */
-  atUint8* toRGBA();
+  uint8_t* toRGBA();
 
 private:
-  atUint32 m_width;
-  atUint32 m_height;
-  std::unique_ptr<atUint8[]> m_data;
+  uint32_t m_width;
+  uint32_t m_height;
+  std::unique_ptr<uint8_t[]> m_data;
 };
 
 } // namespace athena

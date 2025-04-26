@@ -34,7 +34,7 @@ void SpritePart::setTextureOffset(const Vector2Df& offset) { m_textureOffset = o
 
 Vector2Df SpritePart::textureOffset() const { return m_textureOffset; }
 
-void SpritePart::setSize(atUint32 width, atUint32 height) { setSize(Vector2Di(width, height)); }
+void SpritePart::setSize(uint32_t width, uint32_t height) { setSize(Vector2Di(width, height)); }
 
 void SpritePart::setSize(const Vector2Di& size) { m_size = size; }
 

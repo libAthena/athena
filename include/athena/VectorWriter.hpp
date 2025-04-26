@@ -22,19 +22,19 @@ public:
    *  @param position where in the buffer to seek
    *  @param origin The Origin to seek @sa SeekOrigin
    */
-  void seek(atInt64 position, SeekOrigin origin = SeekOrigin::Current) override;
+  void seek(int64_t position, SeekOrigin origin = SeekOrigin::Current) override;
 
   /*! @brief Returns the current position in the stream.
    *
    *  @return Int64 The current position in the stream.
    */
-  atUint64 position() const override { return m_position; }
+  uint64_t position() const override { return m_position; }
 
   /*! @brief Returns the length of the stream.
    *
    *  @return Int64 The length of the stream.
    */
-  atUint64 length() const override { return m_data.size(); }
+  uint64_t length() const override { return m_data.size(); }
 
   bool isOpen() const { return true; }
 
@@ -48,11 +48,11 @@ public:
    * @param data The buffer to write
    * @param length The amount to write
    */
-  void writeUBytes(const atUint8* data, atUint64 length) override;
+  void writeUBytes(const uint8_t* data, uint64_t length) override;
 
 protected:
   std::vector<uint8_t> m_data;
-  atUint64 m_position = 0;
+  uint64_t m_position = 0;
 };
 
 } // namespace athena::io

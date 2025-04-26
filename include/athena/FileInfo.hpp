@@ -24,8 +24,8 @@ public:
   std::string extension() const;
   static std::string extension(std::string_view path) { return FileInfo(path).extension(); }
 
-  atUint64 size() const;
-  static atUint64 size(std::string_view path) { return FileInfo(path).size(); }
+  uint64_t size() const;
+  static uint64_t size(std::string_view path) { return FileInfo(path).size(); }
 
   bool exists() const;
   static bool exists(std::string_view path) { return FileInfo(path).exists(); }

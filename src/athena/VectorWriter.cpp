@@ -6,7 +6,7 @@
 
 namespace athena::io {
 
-void VectorWriter::seek(atInt64 position, SeekOrigin origin) {
+void VectorWriter::seek(int64_t position, SeekOrigin origin) {
   switch (origin) {
   case SeekOrigin::Begin:
     if (position < 0) {
@@ -15,14 +15,14 @@ void VectorWriter::seek(atInt64 position, SeekOrigin origin) {
       return;
     }
 
-    if ((atUint64)position > m_data.size())
+    if ((uint64_t)position > m_data.size())
       m_data.resize(position);
 
     m_position = position;
     break;
 
   case SeekOrigin::Current:
-    if ((((atInt64)m_position + position) < 0)) {
+    if ((((int64_t)m_position + position) < 0)) {
       atError("Position outside stream bounds");
       setError();
       return;
@@ -35,13 +35,13 @@ void VectorWriter::seek(atInt64 position, SeekOrigin origin) {
     break;
 
   case SeekOrigin::End:
-    if (((atInt64)m_data.size() - position) < 0) {
+    if (((int64_t)m_data.size() - position) < 0) {
       atError("Position outside stream bounds");
       setError();
       return;
     }
 
-    if ((atUint64)position > m_data.size()) {
+    if ((uint64_t)position > m_data.size()) {
       atError("data exceeds vector size");
       setError();
       return;
@@ -52,7 +52,7 @@ void VectorWriter::seek(atInt64 position, SeekOrigin origin) {
   }
 }
 
-void VectorWriter::writeUBytes(const atUint8* data, atUint64 length) {
+void VectorWriter::writeUBytes(const uint8_t* data, uint64_t length) {
   if (!data) {
     atError("data cannnot be NULL");
     setError();
@@ -61,7 +61,7 @@ void VectorWriter::writeUBytes(const atUint8* data, atUint64 length) {
 
   if (m_position < m_data.size()) {
     size_t delta = std::min(m_data.size() - m_position, length);
-    memmove(reinterpret_cast<atInt8*>(&m_data[m_position]), data, delta);
+    memmove(reinterpret_cast<int8_t*>(&m_data[m_position]), data, delta);
     data += delta;
     length -= delta;
     m_position += delta;
@@ -70,7 +70,7 @@ void VectorWriter::writeUBytes(const atUint8* data, atUint64 length) {
   if (length != 0) {
     size_t insertPos = m_data.size();
     m_data.resize(insertPos + length);
-    memmove(reinterpret_cast<atInt8*>(&m_data[insertPos]), data, length);
+    memmove(reinterpret_cast<int8_t*>(&m_data[insertPos]), data, length);
     m_position += length;
   }
 }

@@ -5,21 +5,21 @@
 
 namespace bignum {
 
-void subModulus(atUint8* a, const atUint8* N, atUint32 n) {
-  atUint8 c = 0;
+void subModulus(uint8_t* a, const uint8_t* N, uint32_t n) {
+  uint8_t c = 0;
 
-  for (atUint32 i = n - 1; i < n; i--) {
-    atUint32 dig = N[i] + c;
+  for (uint32_t i = n - 1; i < n; i--) {
+    uint32_t dig = N[i] + c;
     c = (a[i] < dig);
     a[i] -= dig;
   }
 }
 
-void add(atUint8* d, atUint8* a, const atUint8* b, const atUint8* N, atUint32 n) {
-  atUint8 c = 0;
+void add(uint8_t* d, uint8_t* a, const uint8_t* b, const uint8_t* N, uint32_t n) {
+  uint8_t c = 0;
 
-  for (atUint32 i = n - 1; i < n; i--) {
-    atUint32 dig = a[i] + b[i] + c;
+  for (uint32_t i = n - 1; i < n; i--) {
+    uint32_t dig = a[i] + b[i] + c;
     c = (dig >= 0x100);
     d[i] = dig;
   }
@@ -31,11 +31,11 @@ void add(atUint8* d, atUint8* a, const atUint8* b, const atUint8* N, atUint32 n)
     subModulus(d, N, n);
 }
 
-void mul(atUint8* d, atUint8* a, const atUint8* b, const atUint8* N, atUint32 n) {
+void mul(uint8_t* d, uint8_t* a, const uint8_t* b, const uint8_t* N, uint32_t n) {
   memset(d, 0, n);
 
-  for (atUint32 i = 0; i < n; i++) {
-    for (atUint8 mask = 0x80; mask != 0; mask >>= 1) {
+  for (uint32_t i = 0; i < n; i++) {
+    for (uint8_t mask = 0x80; mask != 0; mask >>= 1) {
       add(d, d, d, N, n);
 
       if ((a[i] & mask) != 0)
@@ -44,13 +44,13 @@ void mul(atUint8* d, atUint8* a, const atUint8* b, const atUint8* N, atUint32 n)
   }
 }
 
-void exp(atUint8* d, const atUint8* a, const atUint8* N, atUint32 n, atUint8* e, atUint32 en) {
-  atUint8 t[512];
+void exp(uint8_t* d, const uint8_t* a, const uint8_t* N, uint32_t n, uint8_t* e, uint32_t en) {
+  uint8_t t[512];
   memset(d, 0, n);
   d[n - 1] = 1;
 
-  for (atUint32 i = 0; i < en; i++) {
-    for (atUint8 mask = 0x80; mask != 0; mask >>= 1) {
+  for (uint32_t i = 0; i < en; i++) {
+    for (uint8_t mask = 0x80; mask != 0; mask >>= 1) {
       mul(t, d, d, N, n);
 
       if ((e[i] & mask) != 0)
@@ -61,8 +61,8 @@ void exp(atUint8* d, const atUint8* a, const atUint8* N, atUint32 n, atUint8* e,
   }
 }
 
-void inv(atUint8* d, atUint8* a, const atUint8* N, atUint32 n) {
-  atUint8 t[512], s[512];
+void inv(uint8_t* d, uint8_t* a, const uint8_t* N, uint32_t n) {
+  uint8_t t[512], s[512];
 
   memcpy(t, N, n);
   memset(s, 0, n);
@@ -71,8 +71,8 @@ void inv(atUint8* d, atUint8* a, const atUint8* N, atUint32 n) {
   exp(d, a, N, n, t, n);
 }
 
-int compare(const atUint8* a, const atUint8* b, atUint32 n) {
-  for (atUint32 i = 0; i < n; i++) {
+int compare(const uint8_t* a, const uint8_t* b, uint32_t n) {
+  for (uint32_t i = 0; i < n; i++) {
     if (a[i] < b[i])
       return -1;
 

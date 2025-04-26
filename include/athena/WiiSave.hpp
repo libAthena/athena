@@ -48,7 +48,7 @@ public:
    */
   WiiFile* file(const std::string& filename);
 
-  atUint32 fileCount() const;
+  uint32_t fileCount() const;
   /*!
    * \brief fileList
    * \return

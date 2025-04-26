@@ -12,10 +12,10 @@ public:
   Endian endian() const { return m_endian; }
   bool isBigEndian() const { return (m_endian == Endian::Big); }
   bool isLittleEndian() const { return (m_endian == Endian::Little); }
-  virtual void seek(atInt64, SeekOrigin) = 0;
+  virtual void seek(int64_t, SeekOrigin) = 0;
   virtual bool atEnd() const = 0;
-  virtual atUint64 position() const = 0;
-  virtual atUint64 length() const = 0;
+  virtual uint64_t position() const = 0;
+  virtual uint64_t length() const = 0;
   bool hasError() const { return m_hasError; }
 
 protected:

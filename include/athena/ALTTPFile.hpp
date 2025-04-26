@@ -40,7 +40,7 @@ public:
    * \param val The new quest to assign to the given index
    * \throw InvalidOperationException on index out of range
    */
-  void setQuest(atUint32 id, ALTTPQuest* val);
+  void setQuest(uint32_t id, ALTTPQuest* val);
   /*! \brief Returns the primary quest list
    *
    * \return The primary quest list
@@ -54,13 +54,13 @@ public:
    * \return ALTTPQuest*
    * \throw InvalidOperationException on index out of range
    */
-  ALTTPQuest* quest(atUint32 id) const;
+  ALTTPQuest* quest(uint32_t id) const;
 
   /*! \brief Returns the number of primary quests
    *
    * \return The number of quests
    */
-  atUint32 questCount() const;
+  uint32_t questCount() const;
 
 private:
   std::vector<ALTTPQuest*> m_quests;

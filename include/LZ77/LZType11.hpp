@@ -4,8 +4,8 @@
 
 class LZType11 : public LZBase {
 public:
-  explicit LZType11(atInt32 MinimumOffset = 1, atInt32 SlidingWindow = 4096, atInt32 MinimumMatch = 3,
-                    atInt32 BlockSize = 8);
-  atUint32 compress(const atUint8* src, atUint8** dst, atUint32 srcLength) override;
-  atUint32 decompress(const atUint8* src, atUint8** dst, atUint32 srcLength) override;
+  explicit LZType11(int32_t MinimumOffset = 1, int32_t SlidingWindow = 4096, int32_t MinimumMatch = 3,
+                    int32_t BlockSize = 8);
+  uint32_t compress(const uint8_t* src, uint8_t** dst, uint32_t srcLength) override;
+  uint32_t decompress(const uint8_t* src, uint8_t** dst, uint32_t srcLength) override;
 };

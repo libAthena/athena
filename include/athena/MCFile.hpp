@@ -19,7 +19,7 @@ public:
 
   MCFile();
 
-  static atUint8* unscramble(atUint8* data, atUint64 length);
+  static uint8_t* unscramble(uint8_t* data, uint64_t length);
 
 private:
   MCSlot* m_slots[3];

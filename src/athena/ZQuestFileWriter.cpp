@@ -5,7 +5,7 @@
 
 namespace athena::io {
 
-ZQuestFileWriter::ZQuestFileWriter(atUint8* data, atUint64 length) : MemoryCopyWriter(data, length) {}
+ZQuestFileWriter::ZQuestFileWriter(uint8_t* data, uint64_t length) : MemoryCopyWriter(data, length) {}
 
 ZQuestFileWriter::ZQuestFileWriter(const std::string& filename) : MemoryCopyWriter(filename) {}
 
@@ -17,12 +17,12 @@ void ZQuestFileWriter::write(ZQuestFile* quest, bool compress) {
 
   writeUint32(ZQuestFile::Magic);
   writeUint32(ZQuestFile::Version);
-  atUint8* questData = quest->data();
-  atUint32 compLen;
+  uint8_t* questData = quest->data();
+  uint32_t compLen;
 
   if (compress) {
-    atUint8* compData =
-        new atUint8[quest->length() + 0x40]; // add 20 bytes because sometimes the file grows with compression
+    uint8_t* compData =
+        new uint8_t[quest->length() + 0x40]; // add 20 bytes because sometimes the file grows with compression
     compLen = quest->length() + 0x40;
     compLen = io::Compression::compressZlib(questData, quest->length(), compData, compLen);
 
@@ -44,7 +44,7 @@ void ZQuestFileWriter::write(ZQuestFile* quest, bool compress) {
   }
 
   writeUint32(quest->length());
-  writeBytes((atInt8*)quest->gameString().substr(0, 0x0A).c_str(), 0x0A);
+  writeBytes((int8_t*)quest->gameString().substr(0, 0x0A).c_str(), 0x0A);
   writeUint16(quest->endian() == Endian::Big ? 0xFFFE : 0xFEFF);
   writeUint32(athena::checksums::crc32(questData, compLen));
   writeUBytes(questData, compLen);

@@ -11,7 +11,7 @@ namespace io {
 
 class SpriteFileWriter : public MemoryCopyWriter {
 public:
-  SpriteFileWriter(atUint8* data, atUint64 length);
+  SpriteFileWriter(uint8_t* data, uint64_t length);
 
   SpriteFileWriter(std::string_view filepath);
 

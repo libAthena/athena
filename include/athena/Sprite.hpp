@@ -30,23 +30,23 @@ public:
   int stateId(int index) const;
   void setStateIds(std::vector<int> ids);
   std::vector<int> stateIds() const;
-  atUint32 stateCount() const;
-  void setCurrentState(atUint32 id);
-  atUint32 currentState() const;
+  uint32_t stateCount() const;
+  void setCurrentState(uint32_t id);
+  uint32_t currentState() const;
 
   bool addFrame(SpriteFrame* Frame);
   bool removeFrame(SpriteFrame* Frame);
-  SpriteFrame* Frame(atUint32 id);
-  void setFrame(atUint32 id);
+  SpriteFrame* Frame(uint32_t id);
+  void setFrame(uint32_t id);
   void setFrames(std::vector<SpriteFrame*> frames);
-  atUint32 frameCount() const;
+  uint32_t frameCount() const;
 
   std::vector<SpriteFrame*> frames() const;
 
   SpriteFile* container() const;
 
   void setCurrentFrame(SpriteFrame* frame);
-  void setCurrentFrame(atUint32 id);
+  void setCurrentFrame(uint32_t id);
   SpriteFrame* currentFrame() const;
 
   void advanceFrame();
@@ -61,8 +61,8 @@ private:
   Vector2Df m_position;
   std::vector<int> m_stateIds; //!< Stores the texture id's for each state.
   std::vector<SpriteFrame*> m_frames;
-  atUint32 m_currentState;
-  atUint32 m_currentFrame;
+  uint32_t m_currentState;
+  uint32_t m_currentFrame;
 };
 
 } // namespace athena::Sakura

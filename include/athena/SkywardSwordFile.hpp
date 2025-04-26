@@ -19,7 +19,7 @@ public:
   ~SkywardSwordFile();
 
   void addQuest(SkywardSwordQuest* q);
-  SkywardSwordQuest* quest(atUint32 id);
+  SkywardSwordQuest* quest(uint32_t id);
   std::vector<SkywardSwordQuest*> questList() const;
 
   void setRegion(Region region);
@@ -29,7 +29,7 @@ private:
   Region m_region;
   // A vector is a bit overkill
   std::vector<SkywardSwordQuest*> m_quests;
-  atUint32 m_numQuests;
+  uint32_t m_numQuests;
 };
 
 } // namespace athena
