@@ -2,7 +2,7 @@
 
 #include <string>
 
-#if _WIN32
+#if _WIN32 && !defined(__MINGW32__)
 using mode_t = int;
 #else
 #include <sys/stat.h>

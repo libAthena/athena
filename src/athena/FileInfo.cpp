@@ -9,7 +9,7 @@
 #include "athena/FileWriter.hpp"
 #include "athena/Utility.hpp"
 
-#ifndef _WIN32
+#if !defined(_WIN32) || defined(__MINGW32__)
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -25,7 +25,7 @@
 #include <cwchar>
 #endif
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__MINGW32__)
 #include <functional>
 #include <locale>
 #define realpath(__name, __resolved) _fullpath((__resolved), (__name), 4096)
@@ -78,16 +78,24 @@ bool FileInfo::exists() const {
   if (e < 0)
     return false;
 
-  return (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode));
+  return (S_ISREG(st.st_mode)
+#ifndef _WIN32
+    || S_ISLNK(st.st_mode)
+#endif
+    );
 }
 
 bool FileInfo::isLink() const {
+#ifndef _WIN32
   atStat64_t st;
   int e = atStat64(m_path.c_str(), &st);
   if (e < 0)
     return false;
 
   return (S_ISLNK(st.st_mode));
+#else
+  return false;
+#endif
 }
 
 bool FileInfo::isFile() const {
@@ -100,7 +108,7 @@ bool FileInfo::isFile() const {
 }
 
 bool FileInfo::touch() const {
-#if defined(__GNUC__) && !(defined(HW_DOL) || defined(HW_RVL) || defined(GEKKO))
+#if defined(__GNUC__) && !(defined(HW_DOL) || defined(HW_RVL) || defined(GEKKO)) && !defined(__MINGW32__)
   atStat64_t st;
   if (atStat64(m_path.c_str(), &st) < 0) {
     (void)athena::io::FileWriter(m_path);
