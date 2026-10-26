@@ -655,8 +655,10 @@ public:
 #include <functional>
 #include <bitset>
 
+#ifdef __GNUC__
 #if !defined(_LIBCPP_HAS_NO_PRAGMA_SYSTEM_HEADER)
 #pragma GCC system_header
+#endif
 #endif
 
 namespace athena::_simd {
