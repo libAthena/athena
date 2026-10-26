@@ -218,8 +218,10 @@ else()
     endif()
 endif()
 
+SET(ATHENA_INCLUDE_DIR $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+
 target_include_directories(athena-core PUBLIC
-   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+   ${ATHENA_INCLUDE_DIR}
 )
 target_link_libraries(athena-core PUBLIC
     athena-libyaml
